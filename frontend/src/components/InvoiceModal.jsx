@@ -4,7 +4,6 @@ import { FileText, Plus, Trash2, Download, CheckCircle2, Edit3 } from 'lucide-re
 import Modal from './Modal';
 import { fetchInvoices, saveInvoice, deleteInvoice, fetchAccounts, settleInvoice } from '../utils/api';
 import { formatCurrency, getCurrency, SUPPORTED_CURRENCIES, haptic } from '../utils/format';
-import { generateInvoicePDF } from '../utils/pdfReport';
 import toast from 'react-hot-toast';
 import { toYMD, todayYMD } from '../utils/dates';
 
@@ -108,6 +107,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
   const handleDownloadPDF = async (inv) => {
     setGeneratingPDFId(inv.id);
     try {
+      const { generateInvoicePDF } = await import('../utils/pdfReport');
       await generateInvoicePDF(inv);
       toast.success('Invoice PDF generated! 📥');
       haptic();

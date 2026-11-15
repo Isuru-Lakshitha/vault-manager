@@ -4,9 +4,12 @@ import './professional.css'
 import './minimal.css'
 import './shell.css'
 import App from './App.jsx'
+import { installGlobalErrorHandlers } from './utils/errorLogger'
+
+installGlobalErrorHandlers();
 
 // Build stamp: changing this automatically flushes stale service worker caches on client devices
-const BUILD_STAMP = '20261108_1936';
+const BUILD_STAMP = '20261115_0920';
 try {
   if (localStorage.getItem('vm_build_stamp') !== BUILD_STAMP) {
     localStorage.setItem('vm_build_stamp', BUILD_STAMP);

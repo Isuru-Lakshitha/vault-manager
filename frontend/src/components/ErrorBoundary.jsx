@@ -1,5 +1,6 @@
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
+import { logError } from '../utils/errorLogger';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -13,6 +14,10 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error('ErrorBoundary caught:', error, errorInfo);
+    logError(error, {
+      level: 'error',
+      context: errorInfo?.componentStack || 'ErrorBoundary',
+    });
     const msg = error?.message || '';
     if (
       msg.includes('MIME type') ||

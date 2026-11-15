@@ -422,8 +422,14 @@ test('transfer normalization strips same-currency destination_amount, enforces c
   from_account_id: 'cash_lkr',
  });
  assert.equal(records.get('accounts/cash_lkr').balance, 6600);
+ assert.equal(records.get('accounts/cash_lkr').last_ledger_ref, expId);
+ assert.equal(records.get('accounts/cash_lkr').last_ledger_op, 'create');
  await api.updateTransaction(expId, { amount: 350 });
  assert.equal(records.get('accounts/cash_lkr').balance, 6450);
+ assert.equal(records.get('accounts/cash_lkr').last_ledger_ref, expId);
+ assert.equal(records.get('accounts/cash_lkr').last_ledger_op, 'update');
  await api.reversePayment(expId, 'Wrong merchant charge');
  assert.equal(records.get('accounts/cash_lkr').balance, 6800);
+ assert.equal(records.get('accounts/cash_lkr').last_ledger_ref, `${expId}_reversal`);
+ assert.equal(records.get('accounts/cash_lkr').last_ledger_op, 'reverse');
 });

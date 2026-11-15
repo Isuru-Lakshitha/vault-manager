@@ -19,6 +19,7 @@ import { auth } from './utils/firebase';
 import { fetchUserPrefs, prefetchAll, startLiveSync, stopLiveSync, invalidateCache, fetchBills, fetchBudgets, fetchTransactions } from './utils/api';
 import { getMaintenanceMode, isSuperAdmin, startSystemConfigSync, stopSystemConfigSync, registerUserPresence } from './utils/adminService';
 import { checkFinancialTriggers } from './utils/notificationService';
+import { getSessionTimeoutMinutes } from './utils/sessionTimeout';
 
 // Auto-retry lazy component imports on chunk mismatch after new deploy
 const lazyWithRetry = (importFn) =>
@@ -75,6 +76,7 @@ const Investments = lazyWithRetry(pageImporters.Investments);
 const CreditCards = lazyWithRetry(pageImporters.CreditCards);
 const Recurring = lazyWithRetry(pageImporters.Recurring);
 const AdminPanel = lazyWithRetry(() => import('./pages/AdminPanel'));
+const Privacy = lazyWithRetry(() => import('./pages/Privacy'));
 const GlobalSearch = lazyWithRetry(() => import('./components/GlobalSearch'));
 
 // Warm all main route chunks after initial paint so switching pages never waits on network I/O
@@ -142,6 +144,7 @@ const AnimatedRoutes = () => (
         <Route path="/credit-cards" element={<CreditCards />} />
         <Route path="/recurring"    element={<Recurring />} />
         <Route path="/admin"        element={<AdminPanel />} />
+        <Route path="/privacy"      element={<Privacy />} />
       </Routes>
     </Suspense>
   </MotionConfig>
@@ -405,12 +408,14 @@ function App() {
   // Show PIN lock screen on inactivity (instead of immediate logout)
   const triggerPinLock = useCallback(() => {
     const hasPinSet = !!localStorage.getItem('vm_pin_hash');
+    const timeoutMins = getSessionTimeoutMinutes(auth.currentUser?.uid);
     if (hasPinSet) {
       setPinLocked(true);
       if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-      // Full logout after 30 min of no PIN entry
-      logoutTimerRef.current = setTimeout(handleLogout, 30 * 60 * 1000);
-    } else {
+      if (timeoutMins > 0) {
+        logoutTimerRef.current = setTimeout(handleLogout, timeoutMins * 60 * 1000);
+      }
+    } else if (timeoutMins > 0) {
       handleLogout();
     }
   }, [handleLogout]);
@@ -418,8 +423,14 @@ function App() {
   const resetTimer = useCallback(() => {
     if (pinTimerRef.current) clearTimeout(pinTimerRef.current);
     if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-    pinTimerRef.current = setTimeout(triggerPinLock, getPinLockTimeout());
-  }, [triggerPinLock]);
+    const hasPinSet = !!localStorage.getItem('vm_pin_hash');
+    const timeoutMins = getSessionTimeoutMinutes(auth.currentUser?.uid);
+    if (hasPinSet) {
+      pinTimerRef.current = setTimeout(triggerPinLock, getPinLockTimeout());
+    } else if (timeoutMins > 0) {
+      logoutTimerRef.current = setTimeout(handleLogout, timeoutMins * 60 * 1000);
+    }
+  }, [triggerPinLock, handleLogout]);
 
   useEffect(() => {
     // Safety fallback so the loading screen can never hang on slow mobile IndexedDB locks
@@ -551,6 +562,13 @@ function App() {
   }
 
   if (!isAuthenticated) {
+    if (location.pathname === '/privacy') {
+      return (
+        <Suspense fallback={<LoadingSpinner />}>
+          <Privacy />
+        </Suspense>
+      );
+    }
     return <Login onLogin={() => { setPinLocked(false); resetTimer(); }} />;
   }
 

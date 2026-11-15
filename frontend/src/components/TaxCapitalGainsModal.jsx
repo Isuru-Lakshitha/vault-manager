@@ -5,7 +5,6 @@ import Modal from './Modal';
 import { fetchTransactions, fetchInvestments, fetchExchangeRates } from '../utils/api';
 import { toYMD } from '../utils/dates';
 import { convertCurrency, formatCurrency, getCurrency, haptic } from '../utils/format';
-import { generateTaxSchedulePDF, exportTaxDeductionsCSV } from '../utils/pdfReport';
 import toast from 'react-hot-toast';
 
 const TAX_BRACKETS = [10, 12, 15, 22, 24, 32, 35, 37];
@@ -118,6 +117,7 @@ export default function TaxCapitalGainsModal({ isOpen, onClose }) {
   const handleDownloadPDF = async () => {
     setExportingPDF(true);
     try {
+      const { generateTaxSchedulePDF } = await import('../utils/pdfReport');
       await generateTaxSchedulePDF({
         taxYear: selectedYear,
         transactions: deductibleTxs,
@@ -133,7 +133,8 @@ export default function TaxCapitalGainsModal({ isOpen, onClose }) {
     }
   };
 
-  const handleDownloadCSV = () => {
+  const handleDownloadCSV = async () => {
+    const { exportTaxDeductionsCSV } = await import('../utils/pdfReport');
     exportTaxDeductionsCSV({
       taxYear: selectedYear,
       transactions: deductibleTxs,

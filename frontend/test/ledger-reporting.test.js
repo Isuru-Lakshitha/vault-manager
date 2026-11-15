@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { summarizePayments, reconcileAccount, auditStatus, accountMovement, summarizeAccountHistory, isEditableTransaction } from '../src/utils/ledgerReporting.js';
+import { summarizePayments, reconcileAccount, auditStatus, accountMovement, summarizeAccountHistory, isEditableTransaction, auditLedger } from '../src/utils/ledgerReporting.js';
 import { planBackupImport } from '../src/utils/backupPlan.js';
 test('reversed payments and compensating entries remain visible but do not inflate summaries',()=>{
  const entries=[{type:'Expense',amount:25,reversed_at:'today',from_account_id:'bank'},{type:'Income',amount:25,reversal_of:'old',to_account_id:'bank'}];
@@ -59,4 +59,21 @@ test('isEditableTransaction excludes reversed, reversal, transfer fee, and invoi
  assert.equal(isEditableTransaction({id:'t3',type:'Income',amount:50,reversal_of:'t2'}),false);
  assert.equal(isEditableTransaction({id:'t4',type:'Expense',amount:5,is_transfer_fee:true}),false);
  assert.equal(isEditableTransaction({id:'t5',type:'Income',amount:100,invoice_id:'inv1'}),false);
+});
+test('auditLedger reports drifted accounts and unknown baselines using cents math',()=>{
+ const accounts=[
+  {id:'bank',name:'Bank',currency:'LKR',balance:900,opening_balance:1000},
+  {id:'cash',name:'Cash Wallet',currency:'LKR',balance:500,opening_balance:200},
+  {id:'legacy',name:'Legacy',currency:'LKR',balance:300},
+ ];
+ const txs=[
+  {type:'Expense',amount:100,from_account_id:'bank'},
+  {type:'Income',amount:200,to_account_id:'cash'},
+ ];
+ const audit=auditLedger(accounts,txs);
+ assert.equal(audit.knownCount,2);
+ assert.equal(audit.driftedCount,1);
+ assert.equal(audit.unknownBaselineCount,1);
+ assert.equal(audit.accounts.find(a=>a.id==='bank').drifted,false);
+ assert.equal(audit.accounts.find(a=>a.id==='cash').difference,100);
 });

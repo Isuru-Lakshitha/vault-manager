@@ -10,6 +10,9 @@
   "hosting": {
     "site": "money-manager-isuru",
     "public": "frontend/dist",
+    "predeploy": [
+      "npm --prefix frontend run verify"
+    ],
     "ignore": [
       "firebase.json",
       "**/.*",

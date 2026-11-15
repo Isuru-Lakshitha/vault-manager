@@ -8,7 +8,6 @@ import Modal from './Modal';
 import ReceiptImage from './ReceiptImage';
 import getCategoryEmoji from '../utils/categoryEmoji';
 import { formatCurrency, getCurrency, haptic } from '../utils/format';
-import { generatePaymentVoucherPDF } from '../utils/pdfReport';
 import toast from 'react-hot-toast';
 
 const TYPE_CONFIG = {
@@ -145,6 +144,7 @@ const TransactionPopup = ({
     setVoucherLoading(true);
     try {
       toast.loading('Generating official voucher...', { id: 'voucher-toast' });
+      const { generatePaymentVoucherPDF } = await import('../utils/pdfReport');
       await generatePaymentVoucherPDF(transaction, fromAccName || toAccName);
       toast.success('Official payment voucher downloaded!', { id: 'voucher-toast' });
     } catch (e) {

@@ -10,8 +10,14 @@
     "preview": "vite preview",
     "test": "node --test test/*test.js",
     "test:rules": "node --test test/rules.emulator.mjs",
+    "verify": "npm test && npm run lint && npm run build",
+    "deploy:preview": "npm run verify && npx firebase-tools hosting:channel:deploy preview --expires 7d",
+    "deploy:live": "npm run verify && npx firebase-tools deploy --only firestore:rules,hosting",
     "dev:test": "vite --config vite.browser.config.js",
     "test:browser": "playwright test"
+  },
+  "engines": {
+    "node": ">=20 <25"
   },
   "dependencies": {
     "firebase": "^12.16.0",

@@ -4,6 +4,7 @@ import { parseExchangeRates, currencyRate } from './exchangeRates.js';
 import { calculateLoanPayment } from './loanPayment.js';
 import { advanceBill } from './billSchedule.js';
 import { validateTransaction, mutateBalances as _mutateBalances, transferFee, roundMoney } from './transactionLedger.js';
+import { addMoney, subMoney } from './money.js';
 import { db, auth } from './firebase';
 import { collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, query, where, runTransaction, writeBatch, serverTimestamp, onSnapshot, deleteField } from "firebase/firestore";
 import { executeRulesOnTransaction, DEFAULT_RULES } from './rulesEngine';
@@ -254,7 +255,7 @@ export const reconcileBalance = async (id, expectedBalance, actualBalance, note)
     if (roundMoney(snap.data().balance) !== roundMoney(expectedBalance)) throw new Error('The balance changed. Refresh and reconcile again.');
     const difference = roundMoney(actualBalance - roundMoney(expectedBalance));
     if (!difference) return;
-    txn.update(accountRef, { balance: actualBalance });
+    txn.update(accountRef, { balance: actualBalance, last_ledger_ref: String(entryRef.id), last_ledger_op: 'reconcile' });
     txn.set(entryRef, { uid, type: difference > 0 ? 'Income' : 'Expense', amount: Math.abs(difference),
       currency: snap.data().currency || 'LKR', date: todayYMD(), category: 'Reconciliation', notes: note || 'Balance reconciliation',
       from_account_id: difference < 0 ? String(id) : null, to_account_id: difference > 0 ? String(id) : null,
@@ -348,7 +349,7 @@ export const createTransaction = async (data, requestId = null, expectedUid = nu
     const preBalances = {};
     for (const [aid, acc] of Object.entries(accounts)) preBalances[aid] = acc.balance;
     _mutateBalances(accounts, payload);
-    for (const account of Object.values(accounts)) txn.update(account.ref, { balance: account.balance });
+    for (const account of Object.values(accounts)) txn.update(account.ref, { balance: account.balance, last_ledger_ref: String(ref.id), last_ledger_op: 'create' });
     payload.recorded_at = payload.recorded_at || new Date().toISOString();
     payload.reversal_context = Object.entries(accounts)
       .filter(([aid, acc]) => acc.balance !== preBalances[aid])
@@ -487,7 +488,7 @@ const changeTransaction = async (id, updates) => {
     const preNextBalances = {};
     for (const [aid, acc] of Object.entries(accounts)) preNextBalances[aid] = acc.balance;
     if (next && (nextHasAccounts || !nextAllowOptionalAcct)) _mutateBalances(accounts, next);
-    for (const account of Object.values(accounts)) txn.update(account.ref, { balance: account.balance });
+    for (const account of Object.values(accounts)) txn.update(account.ref, { balance: account.balance, last_ledger_ref: String(id), last_ledger_op: next ? 'update' : 'delete' });
     if (next) {
       const financialChanged =
         Number(next.amount) !== Number(old.amount) ||
@@ -677,6 +678,7 @@ export const updateRecurringTransaction = async (id, data) => {
 // without these snapshots remain protected from unsafe guessed reversals.
 const auditedPayment = async (database, callback) => runTransaction(database, async transaction => {
   const snapshots = new Map(), writes = [], targets = [];
+  let primaryTxId = null;
   const txn = {
     get: async ref => { const snap = await transaction.get(ref); snapshots.set(ref.path, snap.data()); return snap; },
     update: (ref, changes) => {
@@ -685,9 +687,17 @@ const auditedPayment = async (database, callback) => runTransaction(database, as
       const before = {}, absent = [];
       for (const key of Object.keys(changes)) { if (Object.hasOwn(old, key)) before[key] = old[key]; else absent.push(key); }
       targets.push({ path: ref.path, before, absent, after: changes });
-      writes.push(() => transaction.update(ref, { ...changes, ...(ref.path.startsWith('accounts/') ? {} : { has_payment_history: true }) }));
+      writes.push(() => transaction.update(ref, {
+        ...changes,
+        ...(ref.path.startsWith('accounts/')
+          ? (Object.hasOwn(changes, 'balance') && primaryTxId ? { last_ledger_ref: String(primaryTxId), last_ledger_op: 'create' } : {})
+          : { has_payment_history: true })
+      }));
     },
-    set: (ref, data) => writes.push(() => transaction.set(ref, data.is_transfer_fee ? data : { ...data, currency: data.currency || snapshots.get(`accounts/${data.from_account_id || data.to_account_id}`)?.currency || getCurrency(), recorded_at: new Date().toISOString(), reversal_context: targets })),
+    set: (ref, data) => {
+      if (ref.path.startsWith('transactions/') && !data.is_transfer_fee) primaryTxId = ref.id;
+      writes.push(() => transaction.set(ref, data.is_transfer_fee ? data : { ...data, currency: data.currency || snapshots.get(`accounts/${data.from_account_id || data.to_account_id}`)?.currency || getCurrency(), recorded_at: new Date().toISOString(), reversal_context: targets }));
+    },
   };
   await callback(txn);
   for (const write of writes) write();
@@ -713,7 +723,7 @@ export const reversePayment = async (id, reason) => {
       if (!current.exists() || (parts[0] !== 'users' && current.data().uid !== uid)) throw new Error('Linked record unavailable');
       let update;
       if (parts[0] === 'accounts') {
-        update = { balance: roundMoney(current.data().balance + target.before.balance - target.after.balance) };
+        update = { balance: addMoney(current.data().balance, subMoney(target.before.balance, target.after.balance)), last_ledger_ref: String(reversalRef.id), last_ledger_op: 'reverse' };
       } else {
         for (const [key, value] of Object.entries(target.after)) if (JSON.stringify(current.data()[key]) !== JSON.stringify(value)) throw new Error('A later change affects this payment. Reverse newer payments first.');
         update = { ...target.before };
@@ -2170,7 +2180,7 @@ export const settleInvoice = async (id, accountId) => {
     const amount = roundMoney(subtotal * (1 + tax / 100));
     if (!Number.isFinite(amount) || amount <= 0 || amount > 1e12) throw new Error('Invalid invoice total');
     const date = todayYMD(), now = new Date().toISOString();
-    txn.update(accountRef, { balance: roundMoney(account.data().balance + amount) });
+    txn.update(accountRef, { balance: addMoney(account.data().balance, amount), last_ledger_ref: String(paymentRef.id), last_ledger_op: 'create' });
     txn.update(invoiceRef, { status: 'Paid', paidDate: date, payment_transaction_id: paymentRef.id, account_id: accountId, updated_at: now });
     txn.set(paymentRef, { uid, type: 'Income', amount, date, currency: inv.currency || 'LKR', category: 'Business', notes: `Payment for Invoice #${inv.invoiceNumber || id}`, to_account_id: accountId, from_account_id: null, invoice_id: id, recorded_at: now });
   });

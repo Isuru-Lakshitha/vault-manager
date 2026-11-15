@@ -12,8 +12,10 @@ rules_version = '2';
 //    - uid: string (required, immutable) - Firebase Auth UID of the owner
 //    - name: string - Account display name (e.g. "Main Checking")
 //    - type: string - Account category ("Bank", "Cash", "Mobile Wallet", "Credit Card")
-//    - balance: number - Current balance
+//    - balance: number - Current balance (updates that change balance require last_ledger_ref & last_ledger_op proof)
 //    - cashback_rate: number (optional) - Percentage cashback if applicable
+//    - last_ledger_ref: string (optional/required on balance change) - Transaction ID proving balance delta
+//    - last_ledger_op: string (optional/required on balance change) - 'create' | 'update' | 'delete' | 'reverse' | 'reconcile'
 //
 // 2. transactions/{transactionId}
 //    - uid: string (required, immutable) - Firebase Auth UID of the owner
@@ -119,8 +121,9 @@ rules_version = '2';
 //    - data: string - Image data URI / encoded receipt content
 //    - created_at: string - ISO creation timestamp
 //
-// 13. users/{userId} (and subcollections: users/{userId}/bills, users/{userId}/investments)
+// 13. users/{userId} (and subcollections: users/{userId}/bills, users/{userId}/investments, users/{userId}/error_logs)
 //    - Private user scope: userId matches request.auth.uid
+//    - error_logs/{logId}: append-only client telemetry (message ≤1000, stack ≤4000, url ≤500, ua ≤300, level 'error'|'warn', app_version ≤40, context ≤500, ts)
 //
 // 14. system_config/{docId} (only docId == 'global')
 //    - announcement: map or null (optional) - message (string ≤500), level ('info'|'warning'|'critical'), active (bool), updatedAt (string), author (string)
@@ -225,6 +228,62 @@ service cloud.firestore {
       return sid != '' && get(/databases/$(database)/documents/goals/$(sid)).data.uid == request.auth.uid;
     }
     function validAccount(d) { return (!('archived' in d) || d.archived is bool) && named(d, 'name') && named(d, 'type') && boundedNumber(d.balance); }
+    function closeEnough(a, b) { return math.abs(a - b) < 0.005; }
+    function txMovementForAccount(tx, accId) {
+      let amt = tx.get('amount', 0);
+      let fee = tx.get('fee_amount', 0);
+      let destAmt = tx.get('destination_amount', null);
+      let fromId = toIdStr(tx.get('from_account_id', null));
+      let toId = toIdStr(tx.get('to_account_id', null));
+      return tx.get('is_transfer_fee', false) == true ? 0 : (
+        tx.type == 'Income' ? (toId == accId ? amt : 0) : (
+          tx.type == 'Transfer' ? (
+            (fromId == accId ? -(amt + fee) : 0) + (toId == accId ? (destAmt != null ? destAmt : amt) : 0)
+          ) : (fromId == accId ? -amt : 0)
+        )
+      );
+    }
+    function checkLedgerCreate(txPath, accountId, delta) {
+      let txAfter = getAfter(txPath).data;
+      return txAfter.uid == request.auth.uid &&
+        closeEnough(delta, txMovementForAccount(txAfter, accountId));
+    }
+    function checkLedgerDelete(txPath, accountId, delta) {
+      let txBefore = get(txPath).data;
+      return txBefore.uid == request.auth.uid &&
+        closeEnough(delta, -txMovementForAccount(txBefore, accountId));
+    }
+    function checkLedgerUpdate(txPath, accountId, delta) {
+      let txBefore = get(txPath).data;
+      let txAfter = getAfter(txPath).data;
+      return txBefore.uid == request.auth.uid &&
+        txAfter.uid == request.auth.uid &&
+        closeEnough(delta, txMovementForAccount(txAfter, accountId) - txMovementForAccount(txBefore, accountId));
+    }
+    function validLedgerOp(op, txPath, accountId, delta) {
+      return (op in ['create', 'reverse', 'reconcile'] && !exists(txPath) && existsAfter(txPath) && checkLedgerCreate(txPath, accountId, delta)) ||
+        (op == 'delete' && exists(txPath) && !existsAfter(txPath) && checkLedgerDelete(txPath, accountId, delta)) ||
+        (op == 'update' && exists(txPath) && existsAfter(txPath) && checkLedgerUpdate(txPath, accountId, delta));
+    }
+    function validAccountBalanceChange(accountId) {
+      let d = request.resource.data;
+      let delta = d.balance - resource.data.balance;
+      let op = d.get('last_ledger_op', '');
+      let ref = d.get('last_ledger_ref', '');
+      return ref is string && ref.size() > 0 &&
+        op in ['create', 'update', 'delete', 'reverse', 'reconcile'] &&
+        validLedgerOp(op, /databases/$(database)/documents/transactions/$(ref), accountId, delta);
+    }
+    function validErrorLog(d) {
+      return d.keys().hasOnly(['message', 'stack', 'url', 'ua', 'ts', 'level', 'app_version', 'context']) &&
+        'message' in d && d.message is string && d.message.size() >= 1 && d.message.size() <= 1000 &&
+        (!('stack' in d) || (d.stack is string && d.stack.size() <= 4000)) &&
+        (!('url' in d) || (d.url is string && d.url.size() <= 500)) &&
+        (!('ua' in d) || (d.ua is string && d.ua.size() <= 300)) &&
+        (!('level' in d) || d.level in ['error', 'warn']) &&
+        (!('app_version' in d) || (d.app_version is string && d.app_version.size() <= 40)) &&
+        (!('context' in d) || (d.context is string && d.context.size() <= 500));
+    }
     function validTransaction(d) {
       let source = d.get('from_account_id', null);
       let destination = d.get('to_account_id', null);
@@ -321,7 +380,8 @@ service cloud.firestore {
       allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/accounts/$(accountId)) || isDocOwner());
       allow list, delete: if isDocOwner();
       allow create: if isCreatingForSelf() && validAccount(request.resource.data);
-      allow update: if isDocOwner() && uidNotModified() && validAccount(request.resource.data);
+      allow update: if isDocOwner() && uidNotModified() && validAccount(request.resource.data) &&
+        (request.resource.data.balance == resource.data.balance || validAccountBalanceChange(accountId));
     }
 
     // Transactions
@@ -430,6 +490,11 @@ service cloud.firestore {
         allow read, delete: if isAuthenticated() && request.auth.uid == userId;
         allow create, update: if isAuthenticated() && request.auth.uid == userId && validInvestment(request.resource.data);
       }
+      match /error_logs/{logId} {
+        allow read, delete: if isAuthenticated() && request.auth.uid == userId;
+        allow create: if isAuthenticated() && request.auth.uid == userId && validErrorLog(request.resource.data);
+        allow update: if false;
+      }
       match /{section}/{id} {
         allow read, write: if isAuthenticated() && request.auth.uid == userId && section in ['rules', 'shared_tabs', 'invoices', 'ious'];
       }
@@ -461,7 +526,7 @@ service cloud.firestore {
         request.resource.data.email == request.auth.token.email &&
         request.resource.data.keys().hasOnly(['uid', 'email', 'created_at', 'last_active']);
       allow update: if isOwnerUserDirectoryUpdate(userId) || isAdminUserDirectoryUpdate();
-      allow delete: if isSuperAdmin();
+      allow delete: if (isAuthenticated() && request.auth.uid == userId) || isSuperAdmin();
     }
 
     // Admin Audit Log: append-only record of super-admin actions.

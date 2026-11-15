@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { auth } from '../utils/firebase';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from 'firebase/auth';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  getMultiFactorResolver,
+  TotpMultiFactorGenerator,
+} from 'firebase/auth';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { registerUserPresence } from '../utils/adminService';
@@ -12,6 +20,8 @@ function Login({ onLogin }) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [mfaResolver, setMfaResolver] = useState(null);
+  const [mfaCode, setMfaCode] = useState('');
 
   const getPasswordStrength = (pwd) => {
     if (!pwd) return { score: 0, label: '', color: 'transparent' };
@@ -45,6 +55,44 @@ function Login({ onLogin }) {
       toast.success('Password reset link sent! Check your inbox.');
     } catch (err) {
       toast.error(err.message || 'Could not send reset email');
+    }
+  };
+
+  const handleMfaResolve = async (e) => {
+    e.preventDefault();
+    if (!mfaResolver) return;
+    const cleaned = mfaCode.trim();
+    if (!/^\d{6}$/.test(cleaned)) {
+      setError('Enter the 6-digit code from your authenticator app.');
+      return;
+    }
+    setIsLoading(true);
+    setError('');
+    try {
+      const factor = mfaResolver.hints?.find((h) => h.factorId === TotpMultiFactorGenerator.FACTOR_ID) || mfaResolver.hints?.[0];
+      if (!factor) {
+        setError('No TOTP authenticator factor found.');
+        setIsLoading(false);
+        return;
+      }
+      const assertion = TotpMultiFactorGenerator.assertionForSignIn(factor.uid, cleaned);
+      const cred = await mfaResolver.resolveSignIn(assertion);
+      try {
+        localStorage.setItem('vm_onboarded', 'true');
+        localStorage.setItem('vm_never_show_onboarding', 'true');
+        if (cred?.user?.uid) {
+          localStorage.setItem('vm_onboarded_' + cred.user.uid, 'true');
+          localStorage.removeItem('vm_first_time_user_' + cred.user.uid);
+        }
+      } catch {}
+      setMfaResolver(null);
+      setMfaCode('');
+      toast.success('2FA verified — welcome back to your vault.');
+      onLogin(true);
+    } catch (err) {
+      setError(err?.message || 'Invalid 2FA verification code.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -94,7 +142,16 @@ function Login({ onLogin }) {
     } catch (err) {
       console.error(err);
       const code = err?.code || '';
-      if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
+      if (code === 'auth/multi-factor-auth-required') {
+        try {
+          const resolver = getMultiFactorResolver(auth, err);
+          setMfaResolver(resolver);
+          setMfaCode('');
+          setError('');
+        } catch (mfaErr) {
+          setError(mfaErr?.message || 'Multi-factor authentication required.');
+        }
+      } else if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found') {
         setError('Invalid username/email or password. Please try again.');
       } else if (code === 'auth/email-already-in-use') {
         setError('This username or email is already registered.');
@@ -156,6 +213,75 @@ function Login({ onLogin }) {
           </p>
         </div>
 
+        {mfaResolver ? (
+          <form onSubmit={handleMfaResolve} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 600 }}>
+                6-Digit Authenticator Code
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={mfaCode}
+                onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ''))}
+                placeholder="000000"
+                autoFocus
+                required
+                style={{
+                  width: '100%',
+                  padding: '14px 16px',
+                  background: 'var(--bg-deep)',
+                  border: '1px solid var(--border-glass)',
+                  borderRadius: '12px',
+                  color: 'var(--text-primary)',
+                  fontSize: '18px',
+                  letterSpacing: '4px',
+                  textAlign: 'center',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+            {error && (
+              <div style={{
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#f87171',
+                padding: '12px',
+                borderRadius: '10px',
+                fontSize: '13px',
+                textAlign: 'center',
+              }}>
+                {error}
+              </div>
+            )}
+            <button
+              type="submit"
+              disabled={isLoading}
+              style={{
+                width: '100%',
+                padding: '15px',
+                background: 'var(--gradient-primary)',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '12px',
+                fontSize: '15px',
+                fontWeight: 700,
+                cursor: isLoading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {isLoading ? 'Verifying 2FA...' : 'Verify & Unlock Vault'}
+            </button>
+            <button
+              type="button"
+              onClick={() => { setMfaResolver(null); setMfaCode(''); setError(''); }}
+              style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '13px' }}
+            >
+              ← Back to Sign In
+            </button>
+          </form>
+        ) : (
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 600 }}>Username or Email</label>
@@ -294,6 +420,7 @@ function Login({ onLogin }) {
             {isLoading ? 'Authenticating...' : (isSignUp ? 'Create Vault Account' : 'Unlock Vault')}
           </button>
         </form>
+        )}
 
         <div style={{ textAlign: 'center', marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <button 
@@ -311,6 +438,11 @@ function Login({ onLogin }) {
           </button>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '11px', color: 'var(--text-muted)' }}>
             <ShieldCheck size={13} color="#4ade80" /> Secure sign-in · Cloud sync · Offline viewing
+          </div>
+          <div>
+            <Link to="/privacy" style={{ color: 'var(--text-muted)', fontSize: '11.5px', textDecoration: 'underline' }}>
+              Privacy Policy &amp; Data Rights
+            </Link>
           </div>
         </div>
       </div>

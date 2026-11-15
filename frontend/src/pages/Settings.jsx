@@ -15,6 +15,9 @@ import { requestNotificationPermission, sendNotification, getNotificationPermiss
 import { isStandalone, isIOS, triggerInstallPrompt } from '../utils/pwaInstall';
 import { exportFullVaultBackup, decryptVaultBackup, getBackupHealthStatus } from '../utils/backupCrypto';
 import { getBackupReminderDays, setBackupReminderDays } from '../utils/alertEngine';
+import TotpMfaPanel from '../components/TotpMfaPanel';
+import AccountDataRightsPanel from '../components/AccountDataRightsPanel';
+import { getSessionTimeoutMinutes, setSessionTimeoutMinutes, SESSION_TIMEOUT_OPTIONS } from '../utils/sessionTimeout';
 
 
 const SUGGESTED_CATEGORIES = [
@@ -102,6 +105,7 @@ const Settings = () => {
   const [notifications, setNotifications] = useState(() => localStorage.getItem('vm_notifications') === 'true');
   const [notifPerm, setNotifPerm] = useState(() => getNotificationPermission());
   const [pinEnabled, setPinEnabled] = useState(() => !!localStorage.getItem('vm_pin_hash'));
+  const [sessionTimeoutMins, setSessionTimeoutMins] = useState(() => getSessionTimeoutMinutes(auth.currentUser?.uid));
   const [privacyShield, setPrivacyShield] = useState(() => localStorage.getItem('vm_privacy_shield') !== 'false');
   const [showPinSetup, setShowPinSetup] = useState(false);
   const [pinStep, setPinStep] = useState('enter'); // 'enter' | 'confirm'
@@ -1050,9 +1054,35 @@ const Settings = () => {
           {/* SECURITY */}
           </div></details>
           <details className="quiet-section settings-disclosure"><summary>Security</summary><div className="quiet-section-content">
-          <SettingsRow icon={Shield} label="Auto Lock" description="PIN screen after 5 min inactivity, full logout after 30 min" color="#4ade80">
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', color: '#4ade80', background: 'rgba(16,185,129,0.1)', padding: '0.25rem 0.6rem', borderRadius: 6 }}>ACTIVE</span>
+          <SettingsRow icon={Shield} label="Inactivity Session Timeout" description="Automatically lock or sign out after a period of inactivity" color="#4ade80">
+            <select
+              aria-label="Inactivity Session Timeout"
+              value={sessionTimeoutMins}
+              onChange={(e) => {
+                const next = setSessionTimeoutMinutes(auth.currentUser?.uid, Number(e.target.value));
+                setSessionTimeoutMins(next);
+                toast.success(next === 0 ? 'Auto-logout disabled' : `Session timeout set to ${next} min`);
+              }}
+              style={{
+                padding: '0.35rem 0.65rem',
+                borderRadius: 8,
+                background: 'rgba(0,0,0,0.35)',
+                border: '1px solid rgba(74,222,128,0.3)',
+                color: '#4ade80',
+                fontSize: '0.78rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              {SESSION_TIMEOUT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
           </SettingsRow>
+
+          <TotpMfaPanel />
 
           <SettingsRow icon={ShieldCheck} label="Multitasking Privacy Shield" description="Blur screen when switching apps on mobile or backgrounding tabs" color="#4ade80">
             <Toggle checked={privacyShield} onChange={handlePrivacyShieldToggle} color="#4ade80" />
@@ -1304,6 +1334,8 @@ const Settings = () => {
               </div>
             )}
           </motion.div>
+
+          <AccountDataRightsPanel />
 
           {/* DATA STATISTICS */}
           </div></details>

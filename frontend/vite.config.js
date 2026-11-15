@@ -169,7 +169,17 @@ export default defineConfig({
     chunkSizeWarningLimit: 700,
     // Inline small assets directly in JS (< 4kb)
     assetsInlineLimit: 4096,
-    modulePreload: { polyfill: false },
+    modulePreload: {
+      polyfill: false,
+      resolveDependencies: (_filename, deps) =>
+        deps.filter(
+          (dep) =>
+            !dep.includes('xlsx-') &&
+            !dep.includes('export-') &&
+            !dep.includes('pdfReport-') &&
+            !dep.includes('charts-')
+        ),
+    },
     rolldownOptions: {
       output: {
         // Aggressive code splitting for faster initial load
