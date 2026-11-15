@@ -1,0 +1,24 @@
+/* Compact insight panels (Bills / Budgets / Loans) — graphite, --mm-* vars */
+.ins-grid { display: grid; gap: 14px; grid-template-columns: 2fr 1fr; margin-bottom: 1.25rem; }
+.ins-grid.ins-single { grid-template-columns: 1fr; }
+.ins-card header { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; margin-bottom: .8rem; }
+.ins-card h3 { font-size: .82rem; margin: 0; letter-spacing: -.01em; }
+.ins-card header small { color: var(--text-muted); font-size: .68rem; }
+.ins-empty { color: var(--text-muted); font-size: .78rem; margin: 0; }
+@media (max-width: 900px) { .ins-grid { grid-template-columns: 1fr; } }
+.ins-row { margin-bottom: .6rem; }
+.ins-row-top { display: flex; justify-content: space-between; gap: .5rem; font-size: .76rem; margin-bottom: .3rem; }
+.ins-row-top em { font-style: normal; color: var(--text-muted); font-size: .66rem; margin-left: .25rem; }
+.ins-row-top b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.ins-track { display: block; height: 5px; border-radius: 99px; background: var(--mm-border-soft, rgba(255,255,255,.06)); overflow: hidden; }
+.ins-track > span { display: block; height: 100%; border-radius: inherit; background: var(--mm-accent, var(--cyan)); transition: width .35s var(--ease-out-expo); }
+.ins-track > span.is-bad { background: var(--mm-danger, #e5636b); }
+.ins-track > span.is-warn { background: var(--mm-warning, #d9a441); }
+.ins-ratio { display: flex; height: 10px; border-radius: 99px; overflow: hidden; gap: 2px; margin-bottom: 1rem; background: var(--mm-border-soft); }
+.ins-ratio span { display: block; height: 100%; transition: width .35s var(--ease-out-expo); }
+.ins-ratio .is-good { background: var(--mm-success, #3dbb84); }
+.ins-ratio .is-bad { background: var(--mm-danger, #e5636b); }
+.ins-facts { display: grid; gap: .55rem; margin: 0; }
+.ins-facts div { display: flex; justify-content: space-between; gap: .5rem; font-size: .76rem; }
+.ins-facts dt { color: var(--text-muted); }
+.ins-facts dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }

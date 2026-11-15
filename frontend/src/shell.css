@@ -1,0 +1,115 @@
+/* ============================================================
+   ADVANCED APP SHELL — desktop top bar, collapsible sidebar,
+   fluid content grid and bento utilities.
+   Loaded after minimal.css so it can refine the base layout.
+   ============================================================ */
+
+/* ---------- Collapsible sidebar (desktop) ---------- */
+.sidebar { transition: width .22s var(--ease-out-expo), transform .32s var(--ease-out-expo); }
+.sidebar-collapse-btn { display: none; }
+
+@media (min-width: 901px) {
+  .sidebar-collapse-btn {
+    display: grid; place-items: center; position: absolute; top: 30px; right: -12px;
+    width: 24px; height: 24px; border-radius: 50%; padding: 0; cursor: pointer; z-index: 5;
+    background: var(--mm-panel, var(--bg-surface)); color: var(--text-secondary);
+    border: 1px solid var(--mm-border, var(--border-glass));
+    transition: transform .22s var(--ease-out-expo), color .15s;
+  }
+  .sidebar-collapse-btn:hover { color: var(--text-primary); }
+  body.sidebar-collapsed { --sidebar-width: 68px; }
+  body.sidebar-collapsed .sidebar { padding: 0 10px; }
+  body.sidebar-collapsed .sidebar-collapse-btn { transform: rotate(180deg); }
+  body.sidebar-collapsed .workspace-brand > span:last-child,
+  body.sidebar-collapsed .workspace-link > span,
+  body.sidebar-collapsed .workspace-search > span,
+  body.sidebar-collapsed .workspace-search > kbd,
+  body.sidebar-collapsed .workspace-section,
+  body.sidebar-collapsed .quiet-nav-group > summary { display: none; }
+  body.sidebar-collapsed .workspace-brand,
+  body.sidebar-collapsed .workspace-link,
+  body.sidebar-collapsed .workspace-search { justify-content: center; padding-inline: 0; }
+  body.sidebar-collapsed .workspace-link { gap: 0; }
+  .sidebar { overflow: visible; }
+  .workspace-nav { overflow-x: hidden; }
+}
+
+/* ---------- Desktop top bar ---------- */
+.shell-topbar { display: none; }
+@media (min-width: 901px) {
+  .mobile-header { display: none !important; }
+  .shell-topbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-shrink: 0;
+    padding: 0 clamp(1.25rem, 2.2vw, 2rem); height: 58px; z-index: 50;
+    background: color-mix(in srgb, var(--mm-bg, var(--bg-void)) 82%, transparent);
+    backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border-bottom: 1px solid var(--mm-border-soft, var(--border-subtle));
+  }
+  .shell-crumb { display: flex; align-items: baseline; gap: .6rem; min-width: 0; }
+  .shell-crumb h2 { font-size: 1rem; margin: 0; letter-spacing: -.02em; white-space: nowrap; }
+  .shell-crumb small { color: var(--text-muted); font-size: .72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .shell-actions { display: flex; align-items: center; gap: .4rem; flex-shrink: 0; }
+  .shell-search {
+    display: flex; align-items: center; gap: .5rem; width: clamp(160px, 18vw, 260px);
+    padding: .42rem .7rem; border-radius: 9px; cursor: pointer; font: inherit; font-size: .78rem;
+    background: transparent; color: var(--text-secondary); border: 1px solid var(--mm-border, var(--border-glass));
+    transition: border-color .15s, color .15s;
+  }
+  .shell-search:hover { color: var(--text-primary); border-color: var(--mm-accent, var(--cyan)); }
+  .shell-search kbd { margin-left: auto; font-size: .66rem; color: var(--text-muted); font-family: inherit; }
+  .shell-primary {
+    display: inline-flex; align-items: center; gap: .35rem; padding: .45rem .85rem; border-radius: 9px;
+    border: none; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 600;
+    background: var(--mm-accent, var(--cyan)); color: #fff;
+    transition: filter .15s, transform .15s;
+  }
+  .shell-primary:hover { filter: brightness(1.1); }
+  .shell-primary:active { transform: scale(.97); }
+  .shell-actions .menu-toggle { width: 36px; height: 36px; padding: 0; border-radius: 9px; }
+}
+
+/* ---------- Fluid content width ---------- */
+.main-content > .page-shell,
+.main-content > div > .page-shell { max-width: 1480px; margin-inline: auto; }
+@media (min-width: 1900px) { .main-content { padding-inline: clamp(2rem, 6vw, 8rem); } }
+
+/* ---------- Bento utilities (opt-in, GPU-cheap) ---------- */
+.bento { display: grid; gap: 14px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+.bento > * { min-width: 0; }
+.bento-4 { grid-column: span 4; } .bento-6 { grid-column: span 6; }
+.bento-8 { grid-column: span 8; } .bento-12 { grid-column: span 12; }
+@media (max-width: 1100px) { .bento-4 { grid-column: span 6; } .bento-8 { grid-column: span 12; } }
+@media (max-width: 700px) { .bento > * { grid-column: span 12 !important; } }
+.bento-card {
+  padding: 1.1rem 1.2rem; border-radius: 14px;
+  background: var(--mm-surface, var(--bg-surface)); border: 1px solid var(--mm-border-soft, var(--border-subtle));
+  transition: border-color .18s, transform .18s;
+}
+.bento-card:hover { border-color: var(--mm-border, var(--border-glass)); }
+
+/* ---------- Rendering performance & Accessibility ---------- */
+.main-content { scrollbar-gutter: stable; }
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[role="tab"]:focus-visible {
+  outline: 2px solid var(--mm-accent, #5b8def);
+  outline-offset: 2px;
+}
+
+/* Elevate low-contrast inline greys (#444, #555, #666) to accessible muted text */
+[style*="color: #444"],
+[style*="color:#444"],
+[style*="color: #555"],
+[style*="color:#555"],
+[style*="color: #666"],
+[style*="color:#666"],
+[style*="color: rgb(68, 68, 68)"],
+[style*="color: rgb(85, 85, 85)"],
+[style*="color: rgb(102, 102, 102)"] {
+  color: var(--mm-text-2, #a6adb8) !important;
+}

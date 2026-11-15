@@ -1,0 +1,496 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model & Architecture
+// ===============================================================
+//
+// This is a personal finance application ("VaultManager" / "Money Manager").
+// Every user-owned document across all collections is strictly partitioned by
+// the authenticated user's Firebase UID (`request.auth.uid`).
+//
+// 1. accounts/{accountId}
+//    - uid: string (required, immutable) - Firebase Auth UID of the owner
+//    - name: string - Account display name (e.g. "Main Checking")
+//    - type: string - Account category ("Bank", "Cash", "Mobile Wallet", "Credit Card")
+//    - balance: number - Current balance
+//    - cashback_rate: number (optional) - Percentage cashback if applicable
+//
+// 2. transactions/{transactionId}
+//    - uid: string (required, immutable) - Firebase Auth UID of the owner
+//    - type: string - "Income", "Expense", "Transfer", "Loan Payment"
+//    - amount: number - Transaction value
+//    - date: string - ISO date string (YYYY-MM-DD)
+//    - category: string (optional) - Category name
+//    - notes: string (optional) - Description or note
+//    - from_account_id: string (optional) - Source account ID
+//    - to_account_id: string (optional) - Destination account ID
+//    - fee_amount: number (optional) - Any transfer or bank fee
+//    - loan_id: string (optional) - Associated loan ID if type is "Loan Payment"
+//    - receipt_url: string (optional) - Pointer to receipt doc or URL
+//
+// 3. budgets/{budgetId}
+//    - uid: string (required, immutable) - Firebase Auth UID of the owner
+//    - category: string - Budget category
+//    - amount: number - Budget spending limit
+//    - month: string - Month identifier (YYYY-MM)
+//
+// 4. goals/{goalId}
+//    - uid: string (required, immutable) - Firebase Auth UID of the owner
+//    - name: string - Goal title
+//    - target_amount: number - Target savings target
+//    - current_amount: number - Currently allocated amount
+//    - target_date: string (optional) - Projected target date
+//    - start_date: string (optional) - Goal start date
+//    - category: string (optional) - Goal category
+//    - priority: string (optional) - Priority indicator
+//    - is_achieved: bool (optional) - Whether goal reached target
+//    - milestones: list (optional) - Progress milestone entries
+//
+// 5. loans/{loanId}
+//    - uid: string (required, immutable) - Firebase Auth UID of the owner
+//    - item_name: string - Loan name / title
+//    - principal_amount: number - Outstanding principal
+//    - annual_interest_rate: number - APR percentage
+//    - start_date: string - Origination date
+//    - end_date: string (optional) - Maturity date
+//    - last_interest_calc_date: string - Interest accrual baseline date
+//    - total_interest_paid: number - Accumulated interest paid
+//    - unpaid_interest: number - Accrued unpaid interest
+//    - status: string - "Active", "Paid", etc.
+//
+// 6. bills/{billId}
+//    - uid: string (required, immutable) - Firebase Auth UID of the owner
+//    - name: string - Bill name / provider
+//    - amount: number - Bill amount
+//    - due_date: string - Due date (YYYY-MM-DD)
+//    - frequency: string (optional) - "Monthly", "Weekly", "Yearly", "Once"
+//    - category: string (optional) - Category tag
+//    - paid: bool (optional) - Status flag
+//
+// 7. investments/{investmentId}
+//    - uid: string (required, immutable) - Firebase Auth UID of the owner
+//    - name: string - Asset name
+//    - symbol: string (optional) - Ticker symbol
+//    - type: string - "Stock", "Crypto", "Bond", "Real Estate", etc.
+//    - quantity: number - Units held
+//    - buy_price: number - Purchase price per unit
+//    - current_price: number - Latest market price per unit
+//    - purchase_date: string (optional) - Purchase date
+//
+// 8. credit_cards/{cardId}
+//    - uid: string (required, immutable) - Firebase Auth UID of the owner
+//    - name: string - Card name
+//    - bank: string - Issuing bank
+//    - last4: string - Last 4 digits
+//    - network: string - "Visa", "Mastercard", "Amex", etc.
+//    - credit_limit: number - Credit limit
+//    - balance: number - Current statement balance
+//    - apr: number - Annual percentage rate
+//    - statement_date: string (optional) - Statement closing date
+//    - due_date: string (optional) - Payment due date
+//    - min_payment_pct: number (optional) - Minimum payment percentage
+//
+// 9. recurring_transactions/{recurringId}
+//    - uid: string (required, immutable) - Firebase Auth UID of the owner
+//    - name: string - Recurring rule title
+//    - type: string - "Income", "Expense", "Transfer"
+//    - amount: number - Recurring amount
+//    - category: string - Category
+//    - frequency: string - "Monthly", "Weekly", "Yearly"
+//    - day_of_month: number - Target execution day
+//    - paused: bool (optional) - Pause toggle
+//    - last_applied_month: string (optional) - Last generated month (YYYY-MM)
+//
+// 10. net_worth_history/{historyId} & net_worth_snapshots/{snapshotId}
+//    - uid: string (required, immutable) - Firebase Auth UID of the owner
+//    - date: string - Snapshot date (YYYY-MM-DD)
+//    - netWorth: number - Total assets minus liabilities
+//    - assets: number - Total assets
+//    - liabilities: number - Total liabilities
+//
+// 11. user_prefs/{prefId}
+//    - prefId: matches request.auth.uid (or document contains uid field)
+//    - theme: string (optional)
+//    - currency: string (optional)
+//    - accent: string (optional)
+//
+// 12. receipts/{receiptId}
+//    - uid: string (required, immutable) - Firebase Auth UID of the owner
+//    - data: string - Image data URI / encoded receipt content
+//    - created_at: string - ISO creation timestamp
+//
+// 13. users/{userId} (and subcollections: users/{userId}/bills, users/{userId}/investments)
+//    - Private user scope: userId matches request.auth.uid
+//
+// 14. system_config/{docId} (only docId == 'global')
+//    - announcement: map or null (optional) - message (string ≤500), level ('info'|'warning'|'critical'), active (bool), updatedAt (string), author (string)
+//    - maintenance: map (optional) - active (bool), reason (string ≤500), updatedAt (string), setBy (string)
+//    - updated_at: string (optional) - ISO timestamp
+//
+// 15. user_directory/{userId}
+//    - uid: string (required, immutable, matches userId)
+//    - email: string (required, matches auth token email)
+//    - created_at: string (optional) - ISO registration timestamp
+//    - last_active: string (optional) - ISO last activity timestamp
+//    - status: string (optional) - 'Active' | 'Suspended' (admin-controlled)
+//    - notes: string (optional) - Administrator notes (string ≤300)
+//    - verified_by_admin: bool (optional) - Administrator verification flag
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    // Check if the user is authenticated with Firebase Auth
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if the user is the platform Super Administrator
+    function isSuperAdmin() {
+      return isAuthenticated() &&
+        request.auth.token.email is string &&
+        request.auth.token.email.lower() == 'isuru@moneymanager.app' &&
+        (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider == 'password');
+    }
+
+    // Check if user owns the document based on the document's uid field
+    function isDocOwner() {
+      return isAuthenticated() && resource.data.uid == request.auth.uid;
+    }
+
+    // Check if user is creating a document for themselves
+    function isCreatingForSelf() {
+      return isAuthenticated() &&
+        request.resource.data.uid == request.auth.uid;
+    }
+
+    // Ensure the uid field cannot be altered or hijacked during updates
+    function uidNotModified() {
+      return request.resource.data.uid == resource.data.uid &&
+        request.resource.data.uid == request.auth.uid;
+    }
+
+    // Helper for user preferences document ownership
+    function isPrefOwner(prefId) {
+      return isAuthenticated() && (
+        prefId == request.auth.uid ||
+        (resource != null && resource.data.uid == request.auth.uid)
+      );
+    }
+
+    function isPrefCreationValid(prefId) {
+      return isAuthenticated() && (
+        prefId == request.auth.uid ||
+        request.resource.data.uid == request.auth.uid
+      ) && (
+        !('uid' in request.resource.data) ||
+        request.resource.data.uid == request.auth.uid
+      );
+    }
+
+    function isPrefUpdateValid(prefId) {
+      return isPrefOwner(prefId) && (
+        !('uid' in request.resource.data) ||
+        request.resource.data.uid == request.auth.uid
+      );
+    }
+
+    function boundedNumber(n) { return n is number && n >= -1000000000000 && n <= 1000000000000; }
+    function nonNegative(n) { return boundedNumber(n) && n >= 0; }
+    function positive(n) { return boundedNumber(n) && n > 0; }
+    function validDate(d) { return d is string && d.matches('^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])(T.*)?$'); }
+    function named(d, field) { return field in d && d[field] is string && d[field].size() > 0 && d[field].size() <= 200; }
+    function toIdStr(id) {
+      return id is int ? string(id) : (id is string ? id : '');
+    }
+    function ownsAccount(id) {
+      let sid = toIdStr(id);
+      return sid != '' && get(/databases/$(database)/documents/accounts/$(sid)).data.uid == request.auth.uid;
+    }
+    function ownsLoan(id) {
+      let sid = toIdStr(id);
+      return sid != '' && get(/databases/$(database)/documents/loans/$(sid)).data.uid == request.auth.uid;
+    }
+    function ownsCard(id) {
+      let sid = toIdStr(id);
+      return sid != '' && get(/databases/$(database)/documents/credit_cards/$(sid)).data.uid == request.auth.uid;
+    }
+    function ownsGoal(id) {
+      let sid = toIdStr(id);
+      return sid != '' && get(/databases/$(database)/documents/goals/$(sid)).data.uid == request.auth.uid;
+    }
+    function validAccount(d) { return (!('archived' in d) || d.archived is bool) && named(d, 'name') && named(d, 'type') && boundedNumber(d.balance); }
+    function validTransaction(d) {
+      let source = d.get('from_account_id', null);
+      let destination = d.get('to_account_id', null);
+      let goal = d.get('goal_id', null);
+      let loan = d.get('loan_id', null);
+      let card = d.get('credit_card_id', null);
+      let sid = toIdStr(source);
+      let did = toIdStr(destination);
+      return positive(d.amount) &&
+        (!('destination_amount' in d) || d.destination_amount == null || (d.type == 'Transfer' && positive(d.destination_amount))) &&
+        validDate(d.date) &&
+        nonNegative(d.get('fee_amount', 0)) &&
+        d.type in ['Income', 'Expense', 'Transfer', 'Loan Payment'] &&
+        (d.type == 'Transfer' || d.get('fee_amount', 0) == 0) &&
+        (sid == '' || ownsAccount(source)) &&
+        (did == '' || ownsAccount(destination)) &&
+        (loan == null || loan == '' || ownsLoan(loan)) &&
+        (card == null || card == '' || ownsCard(card)) &&
+        (goal == null || goal == '' || ownsGoal(goal)) &&
+        (
+          d.type == 'Income' ||
+          d.type == 'Expense' ||
+          (d.type == 'Transfer' && sid != '' && did != '' && sid != did && ownsAccount(source) && ownsAccount(destination)) ||
+          (d.type == 'Loan Payment' && (loan == null || loan == '' || ownsLoan(loan)))
+        ) &&
+        (!d.get('is_transfer_fee', false) || validFee(d));
+    }
+    function validFee(d) {
+      let parentId = d.get('parent_transaction_id', '');
+      let parent = getAfter(/databases/$(database)/documents/transactions/$(parentId)).data;
+      return parentId is string && parentId.size() > 0 && d.type == 'Expense' &&
+        parent.uid == request.auth.uid && parent.type == 'Transfer' && parent.fee_amount == d.amount &&
+        toIdStr(parent.from_account_id) == toIdStr(d.from_account_id) && parent.date == d.date;
+    }
+    function validBudget(d) { return named(d, 'category') && positive(d.amount) && d.month.matches('^[0-9]{4}-(0[1-9]|1[0-2])$'); }
+    function validGoal(d) { return named(d, 'name') && positive(d.target_amount) && nonNegative(d.get('current_amount', 0)); }
+    function validLoan(d) { return named(d, 'item_name') && nonNegative(d.principal_amount) && nonNegative(d.get('annual_interest_rate', 0)) && validDate(d.start_date) && nonNegative(d.get('unpaid_interest', 0)) && nonNegative(d.get('total_interest_paid', 0)); }
+    function validBill(d) { return named(d, 'name') && positive(d.amount) && validDate(d.due_date); }
+    function validInvestment(d) { return named(d, 'name') && nonNegative(d.quantity) && nonNegative(d.buy_price) && nonNegative(d.current_price); }
+    function validCard(d) { return named(d, 'name') && nonNegative(d.credit_limit) && boundedNumber(d.balance) && nonNegative(d.get('apr', 0)); }
+    function validRecurring(d) {
+      let sid = toIdStr(d.get('from_account_id', null));
+      let did = toIdStr(d.get('to_account_id', null));
+      let lid = toIdStr(d.get('loan_id', null));
+      return (named(d, 'name') || named(d, 'category') || named(d, 'notes')) && nonNegative(d.amount) && d.type in ['Income', 'Expense', 'Transfer', 'Loan Payment'] &&
+        (sid == '' || ownsAccount(d.from_account_id)) &&
+        (did == '' || ownsAccount(d.to_account_id)) &&
+        (lid == '' || ownsLoan(d.loan_id));
+    }
+    function validSystemConfig(d) {
+      let a = d.get('announcement', null);
+      let m = d.get('maintenance', null);
+      return d.keys().hasOnly(['announcement', 'maintenance', 'updated_at']) &&
+        (!('updated_at' in d) || d.updated_at is string) &&
+        (a == null || (
+          a is map &&
+          a.keys().hasOnly(['message', 'level', 'active', 'updatedAt', 'author']) &&
+          (!('message' in a) || (a.message is string && a.message.size() <= 500)) &&
+          (!('level' in a) || a.level in ['info', 'warning', 'critical']) &&
+          (!('active' in a) || a.active is bool) &&
+          (!('updatedAt' in a) || a.updatedAt is string) &&
+          (!('author' in a) || (a.author is string && a.author.size() <= 200))
+        )) &&
+        (m == null || (
+          m is map &&
+          m.keys().hasOnly(['active', 'reason', 'updatedAt', 'setBy']) &&
+          (!('active' in m) || m.active is bool) &&
+          (!('reason' in m) || (m.reason is string && m.reason.size() <= 500)) &&
+          (!('updatedAt' in m) || m.updatedAt is string) &&
+          (!('setBy' in m) || (m.setBy is string && m.setBy.size() <= 200))
+        ));
+    }
+    function isOwnerUserDirectoryUpdate(userId) {
+      return isAuthenticated() &&
+        request.auth.uid == userId &&
+        resource.data.uid == userId &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email', 'last_active']) &&
+        request.resource.data.email == request.auth.token.email;
+    }
+    function isAdminUserDirectoryUpdate() {
+      return isSuperAdmin() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'notes', 'verified_by_admin']) &&
+        (!('status' in request.resource.data) || request.resource.data.status in ['Active', 'Suspended']) &&
+        (!('notes' in request.resource.data) || (request.resource.data.notes is string && request.resource.data.notes.size() <= 300)) &&
+        (!('verified_by_admin' in request.resource.data) || request.resource.data.verified_by_admin is bool);
+    }
+
+    // ===============================================================
+    // Collection Rules
+    // ===============================================================
+
+    // Accounts
+    match /accounts/{accountId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/accounts/$(accountId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf() && validAccount(request.resource.data);
+      allow update: if isDocOwner() && uidNotModified() && validAccount(request.resource.data);
+    }
+
+    // Transactions
+    match /transactions/{transactionId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/transactions/$(transactionId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf() && validTransaction(request.resource.data);
+      allow update: if isDocOwner() && uidNotModified() && validTransaction(request.resource.data);
+    }
+
+    // Budgets
+    match /budgets/{budgetId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/budgets/$(budgetId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf() && validBudget(request.resource.data);
+      allow update: if isDocOwner() && uidNotModified() && validBudget(request.resource.data);
+    }
+
+    // Goals
+    match /goals/{goalId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/goals/$(goalId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf() && validGoal(request.resource.data);
+      allow update: if isDocOwner() && uidNotModified() && validGoal(request.resource.data);
+    }
+
+    // Loans
+    match /loans/{loanId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/loans/$(loanId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf() && validLoan(request.resource.data);
+      allow update: if isDocOwner() && uidNotModified() && validLoan(request.resource.data);
+    }
+
+    // Bills (top-level collection)
+    match /bills/{billId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/bills/$(billId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf() && validBill(request.resource.data);
+      allow update: if isDocOwner() && uidNotModified() && validBill(request.resource.data);
+    }
+
+    // Investments (top-level collection)
+    match /investments/{investmentId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/investments/$(investmentId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf() && validInvestment(request.resource.data);
+      allow update: if isDocOwner() && uidNotModified() && validInvestment(request.resource.data);
+    }
+
+    // Credit Cards
+    match /credit_cards/{cardId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/credit_cards/$(cardId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf() && validCard(request.resource.data);
+      allow update: if isDocOwner() && uidNotModified() && validCard(request.resource.data);
+    }
+
+    // Recurring Transactions
+    match /recurring_transactions/{recurringId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/recurring_transactions/$(recurringId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf() && validRecurring(request.resource.data);
+      allow update: if isDocOwner() && uidNotModified() && validRecurring(request.resource.data);
+    }
+
+    // Net Worth History & Snapshots
+    match /net_worth_history/{historyId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/net_worth_history/$(historyId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf();
+      allow update: if isDocOwner() && uidNotModified();
+    }
+
+    match /net_worth_snapshots/{snapshotId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/net_worth_snapshots/$(snapshotId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf();
+      allow update: if isDocOwner() && uidNotModified();
+    }
+
+    // Receipts
+    match /receipts/{receiptId} {
+      allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/receipts/$(receiptId)) || isDocOwner());
+      allow list, delete: if isDocOwner();
+      allow create: if isCreatingForSelf();
+      allow update: if isDocOwner() && uidNotModified();
+    }
+
+    // User Preferences (documents indexed by uid or containing uid)
+    match /user_prefs/{prefId} {
+      allow read, delete: if isPrefOwner(prefId);
+      allow create: if isPrefCreationValid(prefId);
+      allow update: if isPrefUpdateValid(prefId);
+    }
+
+    // User scoped paths & subcollections (e.g. users/{userId}/bills, users/{userId}/investments)
+    match /users/{userId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+
+      match /bills/{id} {
+        allow read, delete: if isAuthenticated() && request.auth.uid == userId;
+        allow create, update: if isAuthenticated() && request.auth.uid == userId && validBill(request.resource.data);
+      }
+      match /investments/{id} {
+        allow read, delete: if isAuthenticated() && request.auth.uid == userId;
+        allow create, update: if isAuthenticated() && request.auth.uid == userId && validInvestment(request.resource.data);
+      }
+      match /{section}/{id} {
+        allow read, write: if isAuthenticated() && request.auth.uid == userId && section in ['rules', 'shared_tabs', 'invoices', 'ious'];
+      }
+    }
+
+    // System Health diagnostic ping (read-only for authenticated diagnostic checks)
+    match /system_health/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+
+    // System Configuration (global platform banner and maintenance controls)
+    match /system_config/{docId} {
+      allow get: if isAuthenticated() && docId == 'global';
+      allow list: if isSuperAdmin();
+      allow create, update: if isSuperAdmin() && docId == 'global' &&
+        request.resource.data.keys().hasOnly(['announcement', 'maintenance', 'updated_at']) &&
+        validSystemConfig(request.resource.data);
+      allow delete: if isSuperAdmin() && docId == 'global';
+    }
+
+    // User Directory (lightweight sign-in registry)
+    match /user_directory/{userId} {
+      allow get: if isAuthenticated() && (request.auth.uid == userId || isSuperAdmin());
+      allow list: if isSuperAdmin();
+      allow create: if isAuthenticated() &&
+        request.auth.uid == userId &&
+        request.resource.data.uid == userId &&
+        request.resource.data.email == request.auth.token.email &&
+        request.resource.data.keys().hasOnly(['uid', 'email', 'created_at', 'last_active']);
+      allow update: if isOwnerUserDirectoryUpdate(userId) || isAdminUserDirectoryUpdate();
+      allow delete: if isSuperAdmin();
+    }
+
+    // Admin Audit Log: append-only record of super-admin actions.
+    // Only the super admin may read or create entries; entries are immutable.
+    match /admin_audit/{entryId} {
+      allow get, list: if isSuperAdmin();
+      allow create: if isSuperAdmin() &&
+        request.resource.data.keys().hasOnly(['admin', 'uid', 'action', 'target', 'details', 'timestamp']) &&
+        request.resource.data.keys().hasAll(['admin', 'uid', 'action', 'target', 'details', 'timestamp']) &&
+        request.resource.data.admin is string &&
+        request.resource.data.admin.size() <= 200 &&
+        request.resource.data.admin == request.auth.token.email &&
+        request.resource.data.uid is string &&
+        request.resource.data.uid == request.auth.uid &&
+        request.resource.data.action is string &&
+        request.resource.data.action.size() >= 1 &&
+        request.resource.data.action.size() <= 64 &&
+        request.resource.data.target is string &&
+        request.resource.data.target.size() <= 300 &&
+        request.resource.data.details is string &&
+        request.resource.data.details.size() <= 1000 &&
+        request.resource.data.timestamp is timestamp &&
+        request.resource.data.timestamp == request.time;
+      allow update, delete: if false;
+    }
+
+    // Default Deny: All other paths are explicitly rejected
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

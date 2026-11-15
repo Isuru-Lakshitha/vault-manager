@@ -1,0 +1,30 @@
+# Dependencies & builds
+node_modules/
+dist/
+dist-ssr/
+.firebase/
+coverage/
+test-results/
+playwright-report/
+
+# Logs
+*.log
+logs/
+
+# Secrets & personal data — never commit
+.env
+.env.*
+!.env.example
+*.local
+frontend/users.json
+**/serviceAccount*.json
+**/*-firebase-adminsdk-*.json
+backend/money_manager.sqlite
+backend/uploads/
+
+# OS / editor
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.sw?

@@ -1,0 +1,50 @@
+// Integration gate: run only against the local demo project, never production.
+import { test, after } from 'node:test';
+import assert from 'node:assert/strict';
+import { initializeApp, deleteApp } from 'firebase/app';
+import { getFirestore, connectFirestoreEmulator, doc, setDoc, getDoc, writeBatch } from 'firebase/firestore';
+const host = process.env.FIRESTORE_EMULATOR_HOST;
+if (!host || !/^(127\.0\.0\.1|localhost):\d+$/.test(host)) throw new Error('Start the local Firestore emulator and set FIRESTORE_EMULATOR_HOST=127.0.0.1:8080');
+await fetch(`http://${host}`, { signal: AbortSignal.timeout(2000) });
+const apps = [];
+function client(uid) {
+ const app=initializeApp({projectId:'demo-money-manager',apiKey:'demo-key'},uid||'anonymous');apps.push(app);
+ const db=getFirestore(app);const [hostname,port]=host.split(':');
+ connectFirestoreEmulator(db,hostname,Number(port),uid?{mockUserToken:{sub:uid,user_id:uid}}:{});return db;
+}
+const alice=client('alice'),bob=client('bob'),anonymous=client();
+const prefix=String(Date.now());
+const account=id=>`${prefix}-${id}`;
+const tx={uid:'alice',type:'Transfer',amount:100,date:'2026-10-21',fee_amount:0,from_account_id:account('bank'),to_account_id:account('cash')};
+await setDoc(doc(alice,'accounts',account('bank')),{uid:'alice',name:'Bank',type:'Bank',balance:1000});
+await setDoc(doc(alice,'accounts',account('cash')),{uid:'alice',name:'Cash',type:'Cash',balance:200});
+await setDoc(doc(bob,'accounts',account('bob')),{uid:'bob',name:'Private',type:'Bank',balance:50});
+const denied=promise=>assert.rejects(promise,error=>error.code==='permission-denied');
+after(async()=>{await Promise.all(apps.map(deleteApp))});
+test('unauthenticated and foreign users cannot read accounts',async()=>{
+ await denied(getDoc(doc(anonymous,'accounts',account('bank'))));await denied(getDoc(doc(bob,'accounts',account('bank'))));
+});
+test('valid financial records succeed while negative, invalid-type and cross-owner records fail',async()=>{
+ await setDoc(doc(alice,'transactions',account('valid')),tx);
+ for(const [index,patch] of [{amount:-1},{amount:'100'},{fee_amount:-1},{type:'invalid'},{to_account_id:account('bob')},{from_account_id:account('bank'),to_account_id:account('bank')},{uid:'bob'}].entries())
+  await denied(setDoc(doc(alice,'transactions',account('bad'+index)),{...tx,...patch}));
+});
+test('account ownership is immutable',async()=>{
+ await denied(setDoc(doc(alice,'accounts',account('bank')),{uid:'bob',name:'Bank',type:'Bank',balance:1000}));
+});
+test('user subcollections cannot bypass financial validation',async()=>{
+ await denied(setDoc(doc(alice,'users','alice','bills',account('invalid')),{name:'Bill',amount:-1,due_date:'2026-10-21'}));
+ await setDoc(doc(alice,'users','alice','bills',account('valid')),{name:'Bill',amount:20,due_date:'2026-10-21'});
+ await denied(setDoc(doc(alice,'users','bob','bills',account('other')),{name:'Bill',amount:20,due_date:'2026-10-21'}));
+});
+test('fee reporting rows require a matching parent in the same atomic write',async()=>{
+ const parent=account('parent'),feeId=account('fee');
+ const fee={uid:'alice',type:'Expense',amount:5,date:tx.date,from_account_id:tx.from_account_id,is_transfer_fee:true,parent_transaction_id:parent};
+ await denied(setDoc(doc(alice,'transactions',feeId),fee));
+ const batch=writeBatch(alice);batch.set(doc(alice,'transactions',parent),{...tx,fee_amount:5,fee_transaction_id:feeId});batch.set(doc(alice,'transactions',feeId),fee);await batch.commit();
+});
+
+test('authenticated absent-document reads support idempotent creation without exposing existing foreign records',async()=>{
+ assert.equal((await getDoc(doc(alice,'transactions',account('not-created')))).exists(),false);
+ await denied(getDoc(doc(anonymous,'transactions',account('not-created'))));
+});
