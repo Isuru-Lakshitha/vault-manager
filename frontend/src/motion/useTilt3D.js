@@ -10,9 +10,11 @@ import { useEffect } from 'react';
  * transform, sheen and depth layers live in CSS (see pages/dashboard.css).
  *
  * Disabled on touch / coarse pointers and under prefers-reduced-motion, so
- * figures stay perfectly still where tilt would hurt readability.
+ * figures stay perfectly still where tilt would hurt readability. Cards wider
+ * than `maxWidth` (big tables, charts) and cards holding form fields never
+ * tilt, so nothing moves while you read a table or type.
  */
-export default function useTilt3D(containerRef, { max = 7, selector = '[data-tilt]' } = {}) {
+export default function useTilt3D(containerRef, { max = 7, selector = '[data-tilt]', maxWidth = Infinity } = {}) {
   useEffect(() => {
     const root = containerRef.current;
     if (!root || typeof window === 'undefined') return undefined;
@@ -46,11 +48,18 @@ export default function useTilt3D(containerRef, { max = 7, selector = '[data-til
       el.style.setProperty('--ry', '0deg');
     };
 
+    const eligible = (el) => {
+      if (!el || !root.contains(el)) return false;
+      if (el.offsetWidth > maxWidth) return false;
+      return !el.querySelector('input, select, textarea');
+    };
+
     const onMove = (e) => {
-      const el = e.target instanceof Element ? e.target.closest(selector) : null;
+      let el = e.target instanceof Element ? e.target.closest(selector) : null;
+      if (el && !eligible(el)) el = null;
       if (el !== active) {
         release(active);
-        active = el && root.contains(el) ? el : null;
+        active = el;
         if (active) active.classList.add('is-tilting');
       }
       last = { x: e.clientX, y: e.clientY };
@@ -67,5 +76,5 @@ export default function useTilt3D(containerRef, { max = 7, selector = '[data-til
       if (frame) cancelAnimationFrame(frame);
       release(active);
     };
-  }, [containerRef, max, selector]);
+  }, [containerRef, max, selector, maxWidth]);
 }

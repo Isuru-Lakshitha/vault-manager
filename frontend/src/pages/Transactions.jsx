@@ -1396,7 +1396,7 @@ const Transactions = () => {
                 <button type="button" className="tx-chip" onClick={handleExportExcel} title="Export filtered or selected rows to Excel (.xlsx) with category summary sheet">
                   ⬇ Excel
                 </button>
-                <span title="Shortcuts"><kbd>N</kbd> new · <kbd>/</kbd> search</span>
+                <span className="kbd-hint" title="Shortcuts"><kbd>N</kbd> new · <kbd>/</kbd> search</span>
               </div>
             </div>
 

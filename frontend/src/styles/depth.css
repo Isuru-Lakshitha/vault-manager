@@ -1,0 +1,227 @@
+/* ==========================================================================
+   Depth — app-wide dark 3D surface language
+   Loaded after shell.css and before motion.css. Gives every page the same
+   look as the Dashboard:
+     • an ambient-lit dark scene behind the content
+     • raised surfaces: inset top highlight + layered soft shadows
+     • pointer tilt + specular light on cards (driven by PageWrapper's
+       useTilt3D, which only sets --rx/--ry/--mx/--my and .is-tilting)
+     • a cleaner mobile layout: floating nav dock, stacked headers,
+       two-up stat cards, scrollable tables and filter rows
+   ========================================================================== */
+
+/* ---------- Tokens ---------- */
+:root {
+  --depth-radius: 16px;
+  --depth-edge: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  --depth-1:
+    var(--depth-edge),
+    0 1px 2px rgba(0, 0, 0, 0.32),
+    0 12px 28px -16px rgba(0, 0, 0, 0.75);
+  --depth-2:
+    inset 0 1px 0 rgba(255, 255, 255, 0.075),
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 28px 52px -24px rgba(0, 0, 0, 0.9);
+  --depth-inset: inset 0 1px 2px rgba(0, 0, 0, 0.35), inset 0 0 0 1px var(--mm-border, #262a31);
+  --depth-sheen: rgba(255, 255, 255, 0.07);
+}
+body.light-mode {
+  --depth-edge: inset 0 1px 0 #fff;
+  --depth-1:
+    var(--depth-edge),
+    0 1px 2px rgba(17, 24, 39, 0.06),
+    0 10px 24px -16px rgba(17, 24, 39, 0.22);
+  --depth-2:
+    inset 0 1px 0 #fff,
+    0 2px 4px rgba(17, 24, 39, 0.06),
+    0 26px 44px -24px rgba(17, 24, 39, 0.3);
+  --depth-inset: inset 0 1px 2px rgba(17, 24, 39, 0.06), inset 0 0 0 1px var(--mm-border, #e3e6eb);
+  --depth-sheen: rgba(255, 255, 255, 0.75);
+}
+
+/* ---------- Ambient scene (dark) ---------- */
+body:not(.light-mode) {
+  background-color: var(--mm-bg, #0e1013);
+  background-image:
+    radial-gradient(1100px 620px at 12% -8%, color-mix(in srgb, var(--mm-accent, #5b8def) 11%, transparent), transparent 62%),
+    radial-gradient(900px 560px at 108% 112%, rgba(139, 92, 246, 0.07), transparent 60%);
+  background-attachment: fixed;
+}
+body:not(.light-mode) .app-container,
+body:not(.light-mode) .main-content-wrapper,
+body:not(.light-mode) .main-content { background: transparent !important; }
+
+/* ---------- Raised surfaces ---------- */
+.page-shell :is(.bento-item, .hud-panel, .ins-card, .txi-card, .quiet-section, .acc-spend, .acc-hero, .acc-recon-inner) {
+  border-radius: var(--depth-radius);
+  border: 1px solid var(--mm-border, var(--border-glass)) !important;
+  box-shadow: var(--depth-1) !important;
+}
+body:not(.light-mode) .page-shell :is(.bento-item, .hud-panel, .ins-card, .txi-card, .quiet-section) {
+  background-color: var(--mm-surface, #16191e);
+}
+.page-shell .acc-card { box-shadow: var(--depth-1); }
+
+/* Inline-styled cards (most pages build cards with inline styles): a bordered,
+   padded, rounded block is treated as a surface and given the same depth. */
+.page-shell [style*="border: 1px solid"][style*="padding"]:is(
+  [style*="border-radius: 12px"], [style*="border-radius: 14px"],
+  [style*="border-radius: 16px"], [style*="border-radius: 18px"], [style*="border-radius: 20px"]
+):not(button):not(input):not(.modal-overlay):not(.modal-panel):not(.modal-sheet) {
+  box-shadow: var(--depth-1) !important;
+}
+
+/* Stat strip -> separate raised stat cards */
+.page-shell .monthly-strip {
+  gap: 0.75rem;
+  background: transparent;
+  border: 0;
+  overflow: visible;
+  border-radius: 0;
+}
+.page-shell .monthly-strip-item {
+  position: relative;
+  border-radius: 14px;
+  border: 1px solid var(--mm-border, var(--border-glass));
+  background-color: var(--mm-surface, var(--bg-surface));
+  box-shadow: var(--depth-1);
+  text-align: left;
+  padding: 1rem 1.15rem;
+}
+.page-shell .monthly-strip-label {
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  color: var(--mm-text-3, var(--text-muted));
+}
+.page-shell .monthly-strip-value {
+  font-family: Inter, system-ui, sans-serif;
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  font-weight: 700;
+}
+
+/* Inputs sit *into* the surface */
+.page-shell :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]), select, textarea),
+.modal-panel :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]), select, textarea) {
+  border-radius: 10px;
+  box-shadow: var(--depth-inset);
+  border-color: transparent !important;
+}
+.page-shell :is(input, select, textarea):focus,
+.modal-panel :is(input, select, textarea):focus {
+  box-shadow: var(--depth-inset), 0 0 0 3px color-mix(in srgb, var(--mm-accent, #5b8def) 28%, transparent) !important;
+}
+
+/* Buttons: tactile, lit from above */
+.btn-primary {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 8px 18px -10px color-mix(in srgb, var(--mm-accent, #5b8def) 80%, transparent) !important;
+}
+.btn-secondary {
+  background-color: var(--mm-elevated, var(--bg-elevated));
+  box-shadow: var(--depth-edge), 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+/* Modals float highest */
+.modal-panel, .modal-sheet { box-shadow: var(--depth-2), 0 40px 80px -30px rgba(0, 0, 0, 0.7) !important; }
+
+/* Page headers: clean hierarchy */
+.page-header h1 { letter-spacing: -0.03em; }
+.page-header h1.glow-text, .page-header .glow-text { text-shadow: none !important; }
+
+/* ---------- Pointer tilt + light (desktop only; set by useTilt3D) ---------- */
+.page-shell .is-tilting {
+  transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateZ(0) !important;
+  transition: transform 0.12s linear, box-shadow 0.35s ease, border-color 0.25s ease !important;
+  box-shadow: var(--depth-2) !important;
+  border-color: color-mix(in srgb, var(--mm-accent, #5b8def) 32%, var(--mm-border, #262a31)) !important;
+  background-image: radial-gradient(480px circle at var(--mx, 50%) var(--my, 0%), var(--depth-sheen), transparent 42%) !important;
+  z-index: 1;
+}
+/* Ease back to rest when the pointer leaves. */
+.page-shell :is(.bento-item, .hud-panel, .ins-card, .txi-card, .monthly-strip-item, .acc-card) {
+  transition:
+    transform 0.6s var(--ease-out-expo, ease),
+    box-shadow 0.35s ease,
+    border-color 0.25s ease,
+    translate var(--dur-base, 0.24s) var(--ease-out-expo, ease);
+}
+
+/* ---------- Mobile layout ---------- */
+@media (max-width: 900px) {
+  /* Floating navigation dock */
+  .bottom-nav {
+    left: 10px !important;
+    right: 10px !important;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+    height: 64px !important;
+    padding: 0 0.35rem !important;
+    border-radius: 22px;
+    border: 1px solid var(--mm-border, rgba(255, 255, 255, 0.08)) !important;
+    background: color-mix(in srgb, var(--mm-panel, #121418) 86%, transparent) !important;
+    backdrop-filter: blur(18px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
+    box-shadow: var(--depth-2) !important;
+  }
+  .bottom-nav-inner { height: 62px; }
+  :root { --bottom-nav-height: calc(84px + env(safe-area-inset-bottom, 0px)) !important; }
+  .main-content { padding-bottom: calc(var(--bottom-nav-height) + 1rem) !important; }
+
+  /* Sticky glass header with depth */
+  .mobile-header {
+    box-shadow: 0 1px 0 var(--mm-border-soft, rgba(255, 255, 255, 0.05)), 0 10px 24px -18px rgba(0, 0, 0, 0.8) !important;
+  }
+
+  /* Cards: a little tighter, same depth */
+  .page-shell :is(.bento-item, .hud-panel, .ins-card) { padding: 1rem !important; border-radius: 14px; }
+  .bento-grid, .bento { gap: 0.75rem !important; }
+
+  /* Horizontal chip / filter rows scroll with soft edge fades */
+  .filter-scroll-row:not(.quiet-filter-row) {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    mask-image: linear-gradient(90deg, transparent 0, #000 12px, #000 calc(100% - 18px), transparent 100%);
+    padding-inline: 2px;
+  }
+
+  /* Search + filter panel: search gets its own full-width row */
+  .quiet-filter-row { flex-wrap: wrap !important; }
+  .quiet-filter-row > :first-child { flex: 1 1 100% !important; }
+
+  /* Keyboard-shortcut hints are noise on phones */
+  .kbd-hint { display: none !important; }
+
+  /* Wide tables scroll inside their card instead of stretching the page */
+  .page-shell table { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .page-shell table th, .page-shell table td { white-space: nowrap; }
+}
+
+@media (max-width: 640px) {
+  /* Page header: title on top, actions as a tidy wrapping row */
+  .page-header { flex-direction: column; align-items: stretch !important; gap: 0.75rem !important; margin-bottom: 1rem !important; }
+  .page-header > :last-child:not(:first-child) {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; width: 100%;
+  }
+  .page-header > :last-child:not(:first-child) > :is(.btn, button, details) { flex: 1 1 auto; justify-content: center; }
+  .page-header h1 { font-size: 1.45rem !important; }
+
+  /* Stats: two-up grid, odd last card spans the row */
+  .page-shell .monthly-strip { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 0.6rem; }
+  .page-shell .monthly-strip > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .page-shell .monthly-strip-item { padding: 0.85rem 0.9rem; }
+
+  /* Long button labels wrap inside their card instead of overflowing */
+  .page-shell .btn { white-space: normal; max-width: 100%; text-align: center; line-height: 1.3; }
+
+  /* Comfortable tap targets */
+  .icon-btn, .menu-toggle { min-width: 40px; min-height: 40px; }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .page-shell .is-tilting { transform: none !important; }
+}

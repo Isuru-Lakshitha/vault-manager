@@ -4,6 +4,7 @@
      2. theme-professional flat professional surface treatment
      3. theme-minimal      minimal palette (--mm-*) + light/dark refinements
      4. shell              app shell: sidebar, top bar, fluid layout
+     4b. depth             dark 3D surfaces, pointer tilt, mobile layout
      5. motion             animation system (always last so it can opt back in)
    Feature styles (insights, transactions, accounts) are imported by the
    component that owns them.
@@ -12,4 +13,5 @@
 @import './theme-professional.css';
 @import './theme-minimal.css';
 @import './shell.css';
+@import './depth.css';
 @import './motion.css';
