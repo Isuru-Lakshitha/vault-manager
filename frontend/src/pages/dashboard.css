@@ -408,3 +408,25 @@ button.dash-3d, .dash-3d[role='button'] { cursor: pointer; text-align: left; fon
   .dash-nw-orb, .dash-ratio > span, .dash-tx { animation: none; }
   .dash-3d:active { scale: none; }
 }
+
+/* ---------- Detailed view: sectioned layout ---------- */
+.dash-section-title {
+  display: flex; align-items: baseline; gap: 0.6rem;
+  margin: 1.75rem 0 0.85rem;
+  font-size: 1rem; font-weight: 650; letter-spacing: -0.01em;
+  color: var(--mm-text);
+}
+.dash-section-title::before {
+  content: ''; align-self: center;
+  width: 4px; height: 16px; border-radius: 2px;
+  background: var(--dash-accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--dash-accent) 60%, transparent);
+}
+.dash-section-title span { font-size: 0.75rem; font-weight: 500; color: var(--mm-text-3); }
+.dash-pair { margin-bottom: var(--dash-gap); }
+.dash-pair > * { margin-top: 0 !important; }
+.dash-pair > :only-child { grid-column: span 12 !important; }
+.dash-pair:empty { display: none; }
+.dash .more-section { margin-top: var(--dash-gap); }
+/* A titled group with nothing to show hides its heading too. */
+.dash-group:not(:has(> :not(.dash-section-title):not(:empty))) { display: none; }

@@ -279,3 +279,47 @@ summary::marker, summary::-webkit-details-marker { transition: rotate var(--dur-
   .txi-card:hover, .btn-primary:hover { translate: none !important; }
   .btn:active, .icon-btn:active, .menu-toggle:active, .shell-primary:active, .tx-chip:active { scale: none; }
 }
+
+/* ---------- Pull-to-refresh (motion/PullToRefresh.jsx) ---------- */
+.ptr-indicator {
+  position: fixed;
+  left: 50%;
+  top: calc(var(--ptr-top, 64px) + env(safe-area-inset-top, 0px));
+  z-index: 600;
+  width: 42px; height: 42px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--mm-surface, #16191e);
+  border: 1px solid var(--mm-border, #262a31);
+  box-shadow: var(--depth-2, 0 10px 30px rgba(0,0,0,.5));
+  color: var(--mm-accent, #5b8def);
+  opacity: 0;
+  transform: translate3d(-50%, -48px, 0);
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.ptr-indicator > * { grid-area: 1 / 1; }
+.ptr-indicator > svg:first-child { rotate: var(--ptr-rot, 0deg); }
+.ptr-track { stroke: color-mix(in srgb, var(--mm-text, #fff) 12%, transparent); }
+.ptr-arc { stroke: currentColor; transform: rotate(-90deg); transform-origin: 50% 50%; }
+.ptr-check { opacity: 0; scale: 0.6; transition: opacity 0.15s ease, scale 0.25s var(--ease-spring); }
+.ptr-indicator.is-armed { background: var(--mm-accent, #5b8def); color: #fff; border-color: transparent; }
+.ptr-indicator.is-armed .ptr-track { stroke: rgba(255,255,255,0.3); }
+.ptr-indicator.is-armed .ptr-check { opacity: 1; scale: 1; }
+.ptr-indicator.is-armed .ptr-arc, .ptr-indicator.is-armed .ptr-track { opacity: 0; }
+.ptr-indicator.is-refreshing { background: var(--mm-surface, #16191e); color: var(--mm-accent, #5b8def); border-color: var(--mm-border, #262a31); }
+.ptr-indicator.is-refreshing .ptr-check { opacity: 0; }
+.ptr-indicator.is-refreshing .ptr-arc, .ptr-indicator.is-refreshing .ptr-track { opacity: 1; }
+.ptr-indicator.is-refreshing svg:first-child { animation: mm-spin 0.75s linear infinite; }
+.ptr-indicator.is-refreshing .ptr-arc { stroke-dashoffset: 42 !important; }
+.ptr-indicator { transition: opacity 0.2s ease, transform 0.45s var(--ease-out-expo), background-color 0.2s ease; }
+
+/* Content follows the finger; eases back on release. */
+.is-pulling > :not(.ptr-indicator) { transform: translate3d(0, var(--ptr-y, 0px), 0); }
+.ptr-animate > :not(.ptr-indicator) { transition: transform 0.45s var(--ease-out-expo); }
+.main-content { overscroll-behavior-y: contain; }
+
+@media (prefers-reduced-motion: reduce) {
+  .is-pulling > :not(.ptr-indicator) { transform: none; }
+  .ptr-indicator.is-refreshing svg:first-child { animation-duration: 1.6s; }
+}

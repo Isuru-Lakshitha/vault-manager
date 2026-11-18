@@ -7,6 +7,7 @@ import { todayYMD, toYMD } from '../utils/dates';
 import { auth } from '../utils/firebase';
 import { TrendingUp, TrendingDown, Landmark, Activity, Zap, X, ChevronUp, ChevronDown, ArrowRight, ArrowUpRight } from 'lucide-react';
 import PageWrapper from '../components/PageWrapper';
+import MoreSection from '../components/MoreSection';
 import Modal from '../components/Modal';
 import TransactionPopup from '../components/TransactionPopup';
 import SmartDigestWidget from '../components/SmartDigestWidget';
@@ -1023,6 +1024,7 @@ const Dashboard = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
+            {/* Alerts that need attention */}
             {/* Unmanaged Subscriptions Smart Alert */}
             {unmanagedSubscriptions.length > 0 && !dismissedSubs && (
               <motion.div
@@ -1171,6 +1173,24 @@ const Dashboard = () => {
               </motion.div>
             )}
 
+            {/* Loan alerts */}
+            {loans.filter(l => l.status === 'Active' && (l.unpaid_interest || 0) > 0).length > 0 && (
+              <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:12, padding:'1.25rem 1.5rem', marginBottom:'1.75rem' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', color:'var(--danger)', marginBottom:'0.75rem' }}>
+                  <TrendingDown size={18} />
+                  <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'1px', fontSize:'0.85rem' }}>UNPAID INTEREST DETECTED</h3>
+                </div>
+                {loans.filter(l => l.status === 'Active' && (l.unpaid_interest || 0) > 0).map(loan => (
+                  <div key={loan.id} style={{ display:'flex', justifyContent:'space-between', padding:'0.6rem 0.75rem', background:'rgba(0,0,0,0.2)', borderRadius:8, marginBottom:4 }}>
+                    <span>{loan.item_name || 'Loan'}</span>
+                    <span style={{ color:'var(--danger)', fontWeight:'bold' }}>{formatCurrency(loan.unpaid_interest)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <section className="dash-group">
+            <h2 className="dash-section-title">This month</h2>
             {/* Monthly Summary Strip */}
             <motion.div className="monthly-strip" initial={{ opacity:0, y:-10 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4 }} style={{ marginBottom:'0.75rem' }}>
               {[
@@ -1250,232 +1270,10 @@ const Dashboard = () => {
               );
             })()}
 
-            {/* Safe-to-Spend Daily Allowance Hero Widget */}
-            <SafeToSpendCard safeToSpendData={safeToSpendData} />
+            </section>
 
-            {/* Custom Smart Spending Limits (Daily & Weekly Velocity Guardrails) */}
-            {(() => {
-              const todayKey = todayYMD();
-              const sevenDaysAgo = new Date();
-              sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
-              const sevenDaysKey = toYMD(sevenDaysAgo);
-
-              const activeExp = transactions.filter(t => t && !t.reversed_at && !t.reversal_of && !t.is_transfer_fee && (t.type === 'Expense' || t.type === 'Loan Payment'));
-              const todaySpent = activeExp
-                .filter(t => t.date === todayKey)
-                .reduce((s, t) => s + (Number(t.amount) || 0), 0);
-              const weekSpent = activeExp
-                .filter(t => t.date >= sevenDaysKey && t.date <= todayKey)
-                .reduce((s, t) => s + (Number(t.amount) || 0), 0);
-
-              const effectiveDaily = dailyLimit > 0 ? dailyLimit : Math.round(safeToSpendData?.dailyAllowance || 0);
-              const effectiveWeekly = weeklyLimit > 0 ? weeklyLimit : Math.round((safeToSpendData?.dailyAllowance || 0) * 7);
-
-              const dPct = effectiveDaily > 0 ? Math.min(100, Math.round((todaySpent / effectiveDaily) * 100)) : 0;
-              const wPct = effectiveWeekly > 0 ? Math.min(100, Math.round((weekSpent / effectiveWeekly) * 100)) : 0;
-
-              const dColor = todaySpent > effectiveDaily && effectiveDaily > 0 ? '#f87171' : dPct >= 80 ? '#fbbf24' : '#4ade80';
-              const wColor = weekSpent > effectiveWeekly && effectiveWeekly > 0 ? '#f87171' : wPct >= 80 ? '#fbbf24' : '#38bdf8';
-
-              const handleSaveCaps = () => {
-                const dVal = parseFloat(capForm.daily) || 0;
-                const wVal = parseFloat(capForm.weekly) || 0;
-                if (dVal > 0) localStorage.setItem('vm_daily_limit', String(dVal));
-                else localStorage.removeItem('vm_daily_limit');
-                if (wVal > 0) localStorage.setItem('vm_weekly_limit', String(wVal));
-                else localStorage.removeItem('vm_weekly_limit');
-                setDailyLimit(dVal);
-                setWeeklyLimit(wVal);
-                setEditingCaps(false);
-                haptic();
-                toast.success('Smart spending velocity caps updated!');
-                loadData(true);
-              };
-
-              return (
-                <div style={{
-                  marginBottom: '1.5rem',
-                  padding: '1rem 1.25rem',
-                  background: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.07)',
-                  borderRadius: 14,
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.85rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <span style={{ fontSize: '1rem' }}>🚦</span>
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.76rem', fontWeight: 700, letterSpacing: '1.2px', color: 'var(--text-secondary)' }}>
-                        SMART SPEND VELOCITY GUARDRAILS
-                      </span>
-                      <span style={{
-                        fontSize: '0.64rem',
-                        padding: '0.12rem 0.45rem',
-                        borderRadius: 20,
-                        background: (dailyLimit > 0 || weeklyLimit > 0) ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.05)',
-                        color: (dailyLimit > 0 || weeklyLimit > 0) ? '#4ade80' : 'var(--text-muted)',
-                        fontFamily: 'Inter, sans-serif',
-                        fontWeight: 600,
-                      }}>
-                        {(dailyLimit > 0 || weeklyLimit > 0) ? 'Custom Caps Active' : 'Auto Safe-Spend Benchmark'}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setEditingCaps(v => !v)}
-                      style={{
-                        padding: '0.28rem 0.7rem',
-                        borderRadius: 8,
-                        background: 'rgba(251, 146, 60, 0.12)',
-                        border: '1px solid rgba(251, 146, 60, 0.3)',
-                        color: '#fb923c',
-                        fontSize: '0.72rem',
-                        fontFamily: 'Inter, sans-serif',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {editingCaps ? 'Cancel' : '⚙ Set Daily / Weekly Caps'}
-                    </button>
-                  </div>
-
-                  {editingCaps && (
-                    <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                      gap: '0.75rem',
-                      padding: '0.85rem',
-                      background: 'rgba(0,0,0,0.25)',
-                      borderRadius: 10,
-                      marginBottom: '0.85rem',
-                      border: '1px solid rgba(251,146,60,0.2)',
-                    }}>
-                      <div>
-                        <label style={{ display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 4, fontFamily: 'Inter, sans-serif' }}>
-                          {`Daily Spend Cap (${getCurrencyLabel()})`}
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          placeholder="0 = Auto Safe-Spend"
-                          value={capForm.daily}
-                          onChange={e => setCapForm(f => ({ ...f, daily: e.target.value }))}
-                          style={{ width: '100%', padding: '0.45rem 0.65rem', fontSize: '0.82rem' }}
-                        />
-                      </div>
-                      <div>
-                        <label style={{ display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 4, fontFamily: 'Inter, sans-serif' }}>
-                          {`7-Day Weekly Cap (${getCurrencyLabel()})`}
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          placeholder="0 = Auto 7x Daily"
-                          value={capForm.weekly}
-                          onChange={e => setCapForm(f => ({ ...f, weekly: e.target.value }))}
-                          style={{ width: '100%', padding: '0.45rem 0.65rem', fontSize: '0.82rem' }}
-                        />
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-                        <button
-                          type="button"
-                          onClick={handleSaveCaps}
-                          style={{
-                            width: '100%',
-                            padding: '0.5rem 0.85rem',
-                            borderRadius: 8,
-                            background: 'linear-gradient(135deg, #fb923c, #f97316)',
-                            color: '#0f172a',
-                            border: 'none',
-                            fontWeight: 700,
-                            fontSize: '0.78rem',
-                            cursor: 'pointer',
-                            fontFamily: 'Inter, sans-serif',
-                          }}
-                        >
-                          Save Velocity Caps
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1rem' }}>
-                    {/* Today's Velocity */}
-                    <div style={{ background: 'rgba(255,255,255,0.015)', padding: '0.75rem 0.9rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.04)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', fontFamily: 'Inter, sans-serif', marginBottom: 6 }}>
-                        <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Today&apos;s Spend Velocity</span>
-                        <span style={{ color: dColor, fontWeight: 700 }}>
-                          {formatCurrency(todaySpent)} / {formatCurrency(effectiveDaily)}
-                        </span>
-                      </div>
-                      <div style={{ height: 7, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
-                        <div style={{ width: `${dPct}%`, height: '100%', background: dColor, borderRadius: 4, transition: 'width 0.5s ease' }} />
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: 4, fontFamily: 'Inter, sans-serif' }}>
-                        <span>{todaySpent > effectiveDaily && effectiveDaily > 0 ? '⚠ Exceeded daily cap' : `${Math.max(0, 100 - dPct)}% daily buffer left`}</span>
-                        <span>{dPct}%</span>
-                      </div>
-                    </div>
-
-                    {/* 7-Day Rolling Velocity */}
-                    <div style={{ background: 'rgba(255,255,255,0.015)', padding: '0.75rem 0.9rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.04)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', fontFamily: 'Inter, sans-serif', marginBottom: 6 }}>
-                        <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>7-Day Rolling Velocity</span>
-                        <span style={{ color: wColor, fontWeight: 700 }}>
-                          {formatCurrency(weekSpent)} / {formatCurrency(effectiveWeekly)}
-                        </span>
-                      </div>
-                      <div style={{ height: 7, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
-                        <div style={{ width: `${wPct}%`, height: '100%', background: wColor, borderRadius: 4, transition: 'width 0.5s ease' }} />
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: 4, fontFamily: 'Inter, sans-serif' }}>
-                        <span>{weekSpent > effectiveWeekly && effectiveWeekly > 0 ? '⚠ Exceeded 7-day cap' : `${Math.max(0, 100 - wPct)}% weekly buffer left`}</span>
-                        <span>{wPct}%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Smart Financial Intelligence & Anomaly Engine Widget */}
-            <div style={{ marginBottom: '1.5rem' }}>
-              <SmartDigestWidget
-                safeToSpendData={safeToSpendData}
-                anomalies={anomalies}
-                insights={digestInsights}
-                onOpenCalendar={() => setCalendarOpen(true)}
-                onViewTransaction={(txId) => navigate(`/transactions?q=${encodeURIComponent(txId)}`)}
-              />
-            </div>
-
-            {/* Emergency Runway & Financial Fortress Intelligence */}
-            <EmergencyRunwayCard
-              accounts={accounts}
-              analytics={analytics || {}}
-              onNavigateGoals={() => navigate('/goals')}
-            />
-
-            {/* Quick actions */}
-            <div style={{ display:'flex', gap:'1rem', marginBottom:'1.75rem', flexWrap:'wrap' }}>
-              <a href="/transactions" className="btn btn-primary" style={{ display:'flex', alignItems:'center', gap:'0.5rem', textDecoration:'none' }}><Activity size={16}/> QUICK ADD TXN</a>
-              <a href="/loans" className="btn btn-secondary" style={{ display:'flex', alignItems:'center', gap:'0.5rem', textDecoration:'none' }}><TrendingDown size={16}/> PAY LOAN</a>
-            </div>
-
-            {/* Loan alerts */}
-            {loans.filter(l => l.status === 'Active' && (l.unpaid_interest || 0) > 0).length > 0 && (
-              <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:12, padding:'1.25rem 1.5rem', marginBottom:'1.75rem' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', color:'var(--danger)', marginBottom:'0.75rem' }}>
-                  <TrendingDown size={18} />
-                  <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'1px', fontSize:'0.85rem' }}>UNPAID INTEREST DETECTED</h3>
-                </div>
-                {loans.filter(l => l.status === 'Active' && (l.unpaid_interest || 0) > 0).map(loan => (
-                  <div key={loan.id} style={{ display:'flex', justifyContent:'space-between', padding:'0.6rem 0.75rem', background:'rgba(0,0,0,0.2)', borderRadius:8, marginBottom:4 }}>
-                    <span>{loan.item_name || 'Loan'}</span>
-                    <span style={{ color:'var(--danger)', fontWeight:'bold' }}>{formatCurrency(loan.unpaid_interest)}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
+            <section className="dash-group">
+            <h2 className="dash-section-title">Net worth</h2>
             {/* Main bento grid */}
             <div className="bento bento-grid" style={{ marginBottom:'1.75rem' }}>
               {/* Net Worth — Hero 3D card */}
@@ -1714,45 +1512,14 @@ const Dashboard = () => {
               );
             })()}
 
-            {/* Upcoming Bills */}
-            {bills.length > 0 && (() => {
-              const today = new Date(); today.setHours(0,0,0,0);
-              const upcoming = bills
-                .filter(b => !b.paid)
-                .map(b => {
-                  const d = new Date(b.due_date + 'T00:00:00');
-                  const days = Math.ceil((d - today) / (1000*60*60*24));
-                  return { ...b, days };
-                })
-                .filter(b => b.days >= 0 && b.days <= 14)
-                .sort((a, b) => a.days - b.days)
-                .slice(0, 5);
-              if (!upcoming.length) return null;
-              return (
-                <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.38 }}
-                  className="bento-card bento-item bento-6" style={{ flexDirection:'column', marginTop:'0.5rem' }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.875rem' }}>
-                    <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:0 }}>🔔 UPCOMING BILLS (14d)</h3>
-                    <a href="/bills" style={{ fontSize:'0.68rem', color:'var(--cyan,#00f5ff)', fontFamily:'Inter, sans-serif', textDecoration:'none' }}>VIEW ALL →</a>
-                  </div>
-                  <div style={{ display:'flex', flexDirection:'column', gap:'0.35rem' }}>
-                    {upcoming.map(bill => {
-                      const col = bill.days <= 3 ? '#f87171' : bill.days <= 7 ? '#fbbf24' : '#4ade80';
-                      return (
-                        <div key={bill.id} style={{ display:'flex', alignItems:'center', gap:'0.625rem', padding:'0.5rem 0.75rem', background:`${col}06`, border:`1px solid ${col}18`, borderLeft:`3px solid ${col}`, borderRadius:8 }}>
-                          <div style={{ minWidth:36, textAlign:'center', fontSize:'0.65rem', fontFamily:'Inter, sans-serif', color:col }}>
-                            {bill.days === 0 ? 'TODAY' : `${bill.days}d`}
-                          </div>
-                          <div style={{ flex:1, fontSize:'0.82rem', fontWeight:600, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{bill.name}</div>
-                          <div style={{ fontWeight:700, color:col, fontFamily:'Inter, sans-serif', fontSize:'0.82rem', flexShrink:0 }}>{formatCurrency(bill.amount)}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              );
-            })()}
+            </section>
 
+            <section className="dash-group">
+            <h2 className="dash-section-title">Spending</h2>
+            {/* Safe-to-Spend Daily Allowance Hero Widget */}
+            <SafeToSpendCard safeToSpendData={safeToSpendData} />
+
+            <div className="bento dash-pair">
             {/* Top Spending Categories this month */}
             {analytics?.categoryData?.length > 0 && (
               <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.39 }}
@@ -1778,141 +1545,7 @@ const Dashboard = () => {
               </motion.div>
             )}
 
-            {/* Goals Progress */}
-            {goals.filter(g => !g.is_achieved).length > 0 && (
-              <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.4 }}
-                className="bento-card bento-item bento-12" style={{ flexDirection:'column', marginTop:'0.5rem' }}>
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.875rem' }}>
-                  <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:0 }}>🎯 GOALS PROGRESS</h3>
-                  <a href="/goals" style={{ fontSize:'0.68rem', color:'var(--cyan,#00f5ff)', fontFamily:'Inter, sans-serif', textDecoration:'none' }}>VIEW ALL →</a>
-                </div>
-                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:'0.75rem' }}>
-                  {goals.filter(g => !g.is_achieved).slice(0, 4).map(g => {
-                    const pct = Math.min(100, Math.round(((g.current_amount || 0) / (g.target_amount || 1)) * 100));
-                    const remaining = (g.target_amount || 0) - (g.current_amount || 0);
-                    const isAtRisk = g.target_date && (() => {
-                      const daysLeft = Math.ceil((new Date(g.target_date) - new Date()) / (1000*60*60*24));
-                      const needed = remaining / (daysLeft / 30);
-                      return daysLeft > 0 && needed > (monthlyIncome * 0.5);
-                    })();
-                    const col = pct >= 75 ? '#4ade80' : pct >= 40 ? '#fbbf24' : '#f87171';
-                    const r = 22, circ = 2 * Math.PI * r;
-                    return (
-                      <div key={g.id} style={{ display:'flex', alignItems:'center', gap:'0.875rem', padding:'0.75rem 1rem', background:'rgba(255,255,255,0.025)', borderRadius:12, border:`1px solid ${col}18` }}>
-                        {/* Mini ring */}
-                        <svg width={52} height={52} style={{ flexShrink:0 }}>
-                          <circle cx={26} cy={26} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={4}/>
-                          <circle cx={26} cy={26} r={r} fill="none" stroke={col} strokeWidth={4}
-                            strokeDasharray={circ} strokeDashoffset={circ - (circ * pct / 100)}
-                            strokeLinecap="round" transform="rotate(-90 26 26)" style={{ transition:'stroke-dashoffset 1s ease' }}/>
-                          <text x={26} y={30} textAnchor="middle" fill={col} fontSize={11} fontFamily="Outfit, sans-serif" fontWeight={700}>{pct}%</text>
-                        </svg>
-                        <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ fontWeight:600, fontSize:'0.85rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{g.goal_name || g.name}</div>
-                          <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:2 }}>
-                            {formatCurrency(g.current_amount || 0)} / {formatCurrency(g.target_amount || 0)}
-                          </div>
-                          <div style={{ fontSize:'0.65rem', marginTop:3, fontFamily:'Inter, sans-serif', color: isAtRisk ? '#f87171' : '#4ade80' }}>
-                            {isAtRisk ? '⚠ At Risk' : '✓ On Track'}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-
-            {/* AI Insight of the Day */}
-            {analytics?.recommendations?.length > 0 && (() => {
-              const rec = analytics.recommendations[0];
-              const typeColors = { warning:'#fbbf24', danger:'#f87171', success:'#4ade80', info:'#00f5ff' };
-              const col = typeColors[rec.type] || '#00f5ff';
-              return (
-                <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.41 }}
-                  style={{ background:`${col}08`, border:`1px solid ${col}22`, borderLeft:`3px solid ${col}`, borderRadius:12, padding:'1rem 1.25rem', marginTop:'0.5rem', display:'flex', alignItems:'flex-start', gap:'0.875rem' }}>
-                  <div style={{ fontSize:'1.25rem', flexShrink:0 }}>{rec.icon || '💡'}</div>
-                  <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.7rem', letterSpacing:'1.5px', color:col, marginBottom:'0.3rem', fontWeight:600 }}>INSIGHT</div>
-                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.82rem', fontWeight:600, marginBottom:'0.2rem' }}>{rec.title}</div>
-                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', color:'var(--text-muted)', lineHeight:1.5 }}>{rec.body}</div>
-                  </div>
-                  <a href="/analytics" style={{ textDecoration:'none', color:col, fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'1px', flexShrink:0, marginTop:2 }}>DETAILS →</a>
-                </motion.div>
-              );
-            })()}
-
-            {/* Live Exchange Rates */}
-            {rates && (() => {
-              const base = localStorage.getItem('vm_currency') || 'LKR';
-              const pairs = ['USD','EUR','GBP','AED','SGD','INR','AUD'].filter(c => c !== base).slice(0, 6);
-              const baseRate = rates._source ? rates[base] : NaN;
-              return (
-                <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.4 }}
-                  style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16, padding:'1.25rem 1.5rem', marginTop:'0.5rem' }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.875rem' }}>
-                    <h3 style={{ fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.7rem', margin:0, color:'var(--text-secondary)' }}>REFERENCE RATES · {rates._date || 'Unavailable'}</h3>
-                    <span style={{ fontSize:'0.65rem', color:'#444', fontFamily:'Inter, sans-serif' }}>1 {base} =</span>
-                  </div>
-                  <div style={{ display:'flex', gap:'0.6rem', flexWrap:'wrap' }}>
-                    {pairs.map(cur => {
-                      const curRate = rates[cur];
-                      const rate = baseRate / curRate;
-                      return (
-                        <div key={cur} style={{ flex:'1 1 90px', padding:'0.6rem 0.75rem', background:'rgba(255,255,255,0.02)', borderRadius:10, border:'1px solid rgba(255,255,255,0.05)', textAlign:'center' }}>
-                          <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.62rem', letterSpacing:'1.5px', color:'#555', marginBottom:'0.25rem' }}>{cur}</div>
-                          <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.95rem', color:'#06b6d4' }}>
-                            {!Number.isFinite(rate) ? 'Unavailable' : rate >= 100 ? rate.toFixed(0) : rate >= 1 ? rate.toFixed(2) : rate.toFixed(4)}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              );
-            })()}
-            {/* Recent Activity */}
-            {analytics && (analytics.allTransactions || []).length > 0 && (() => {
-              const recent = (analytics.allTransactions || []).slice(0, 6);
-              return (
-                <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.5 }}
-                  style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16, padding:'1.25rem 1.5rem', marginTop:'0.75rem' }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.875rem' }}>
-                    <h3 style={{ fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.7rem', margin:0, color:'var(--text-secondary)' }}>RECENT ACTIVITY</h3>
-                    <a href="/transactions" style={{ textDecoration:'none', color:'var(--cyan)', fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'1px' }}>VIEW ALL →</a>
-                  </div>
-                  <div style={{ display:'flex', flexDirection:'column', gap:'0.4rem' }}>
-                    {recent.map((tx, i) => {
-                      const isIncome = tx.type === 'Income';
-                      const isTransfer = tx.type === 'Transfer';
-                      const amtColor = isIncome ? '#4ade80' : isTransfer ? '#818cf8' : '#f87171';
-                      const amtSign = isIncome ? '+' : isTransfer ? '↔' : '-';
-                      return (
-                        <motion.div key={tx.id || i} initial={{ opacity:0, x:-8 }} animate={{ opacity:1, x:0 }} transition={{ delay:0.05*i }}
-                          whileHover={{ scale: 1.01 }}
-                          whileTap={{ scale: 0.99 }}
-                          onClick={() => { haptic(); setPopupTx(tx); }}
-                          style={{ display:'flex', alignItems:'center', gap:'0.75rem', padding:'0.5rem 0.75rem', borderRadius:10, background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.04)', cursor:'pointer', transition:'background 0.15s, border-color 0.15s' }}>
-                          <div style={{ width:32, height:32, borderRadius:10, background:'rgba(255,255,255,0.04)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'1.1rem', flexShrink:0 }}>
-                            {getCategoryEmoji(tx.category) || (isIncome ? '💰' : isTransfer ? '🔄' : '💸')}
-                          </div>
-                          <div style={{ flex:1, minWidth:0 }}>
-                            <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.8rem', fontWeight:600, color:'var(--text-primary)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
-                              {tx.category || tx.type}
-                            </div>
-                            {tx.notes && <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.68rem', color:'var(--text-muted)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{tx.notes}</div>}
-                          </div>
-                          <div style={{ textAlign:'right', flexShrink:0 }}>
-                            <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.85rem', color:amtColor }}>{amtSign}{formatCurrency(tx.amount)}</div>
-                            <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.62rem', color:'#444' }}>{tx.date}</div>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              );
-            })()}
+            </div>
 
             {/* Spending Calendar — current month daily heatmap */}
             {transactions.length > 0 && (() => {
@@ -1960,6 +1593,357 @@ const Dashboard = () => {
                 </motion.div>
               );
             })()}
+            </section>
+
+            <section className="dash-group">
+            <h2 className="dash-section-title">Bills &amp; goals</h2>
+            <div className="bento dash-pair">
+            {/* Upcoming Bills */}
+            {bills.length > 0 && (() => {
+              const today = new Date(); today.setHours(0,0,0,0);
+              const upcoming = bills
+                .filter(b => !b.paid)
+                .map(b => {
+                  const d = new Date(b.due_date + 'T00:00:00');
+                  const days = Math.ceil((d - today) / (1000*60*60*24));
+                  return { ...b, days };
+                })
+                .filter(b => b.days >= 0 && b.days <= 14)
+                .sort((a, b) => a.days - b.days)
+                .slice(0, 5);
+              if (!upcoming.length) return null;
+              return (
+                <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.38 }}
+                  className="bento-card bento-item bento-6" style={{ flexDirection:'column', marginTop:'0.5rem' }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.875rem' }}>
+                    <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:0 }}>🔔 UPCOMING BILLS (14d)</h3>
+                    <a href="/bills" style={{ fontSize:'0.68rem', color:'var(--cyan,#00f5ff)', fontFamily:'Inter, sans-serif', textDecoration:'none' }}>VIEW ALL →</a>
+                  </div>
+                  <div style={{ display:'flex', flexDirection:'column', gap:'0.35rem' }}>
+                    {upcoming.map(bill => {
+                      const col = bill.days <= 3 ? '#f87171' : bill.days <= 7 ? '#fbbf24' : '#4ade80';
+                      return (
+                        <div key={bill.id} style={{ display:'flex', alignItems:'center', gap:'0.625rem', padding:'0.5rem 0.75rem', background:`${col}06`, border:`1px solid ${col}18`, borderLeft:`3px solid ${col}`, borderRadius:8 }}>
+                          <div style={{ minWidth:36, textAlign:'center', fontSize:'0.65rem', fontFamily:'Inter, sans-serif', color:col }}>
+                            {bill.days === 0 ? 'TODAY' : `${bill.days}d`}
+                          </div>
+                          <div style={{ flex:1, fontSize:'0.82rem', fontWeight:600, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{bill.name}</div>
+                          <div style={{ fontWeight:700, color:col, fontFamily:'Inter, sans-serif', fontSize:'0.82rem', flexShrink:0 }}>{formatCurrency(bill.amount)}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              );
+            })()}
+
+            </div>
+
+            {/* Goals Progress */}
+            {goals.filter(g => !g.is_achieved).length > 0 && (
+              <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.4 }}
+                className="bento-card bento-item bento-12" style={{ flexDirection:'column', marginTop:'0.5rem' }}>
+                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.875rem' }}>
+                  <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:0 }}>🎯 GOALS PROGRESS</h3>
+                  <a href="/goals" style={{ fontSize:'0.68rem', color:'var(--cyan,#00f5ff)', fontFamily:'Inter, sans-serif', textDecoration:'none' }}>VIEW ALL →</a>
+                </div>
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:'0.75rem' }}>
+                  {goals.filter(g => !g.is_achieved).slice(0, 4).map(g => {
+                    const pct = Math.min(100, Math.round(((g.current_amount || 0) / (g.target_amount || 1)) * 100));
+                    const remaining = (g.target_amount || 0) - (g.current_amount || 0);
+                    const isAtRisk = g.target_date && (() => {
+                      const daysLeft = Math.ceil((new Date(g.target_date) - new Date()) / (1000*60*60*24));
+                      const needed = remaining / (daysLeft / 30);
+                      return daysLeft > 0 && needed > (monthlyIncome * 0.5);
+                    })();
+                    const col = pct >= 75 ? '#4ade80' : pct >= 40 ? '#fbbf24' : '#f87171';
+                    const r = 22, circ = 2 * Math.PI * r;
+                    return (
+                      <div key={g.id} style={{ display:'flex', alignItems:'center', gap:'0.875rem', padding:'0.75rem 1rem', background:'rgba(255,255,255,0.025)', borderRadius:12, border:`1px solid ${col}18` }}>
+                        {/* Mini ring */}
+                        <svg width={52} height={52} style={{ flexShrink:0 }}>
+                          <circle cx={26} cy={26} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={4}/>
+                          <circle cx={26} cy={26} r={r} fill="none" stroke={col} strokeWidth={4}
+                            strokeDasharray={circ} strokeDashoffset={circ - (circ * pct / 100)}
+                            strokeLinecap="round" transform="rotate(-90 26 26)" style={{ transition:'stroke-dashoffset 1s ease' }}/>
+                          <text x={26} y={30} textAnchor="middle" fill={col} fontSize={11} fontFamily="Outfit, sans-serif" fontWeight={700}>{pct}%</text>
+                        </svg>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div style={{ fontWeight:600, fontSize:'0.85rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{g.goal_name || g.name}</div>
+                          <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:2 }}>
+                            {formatCurrency(g.current_amount || 0)} / {formatCurrency(g.target_amount || 0)}
+                          </div>
+                          <div style={{ fontSize:'0.65rem', marginTop:3, fontFamily:'Inter, sans-serif', color: isAtRisk ? '#f87171' : '#4ade80' }}>
+                            {isAtRisk ? '⚠ At Risk' : '✓ On Track'}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+
+            </section>
+
+            <MoreSection title="Spending limits" hint="Daily & weekly guardrails">
+            {/* Custom Smart Spending Limits (Daily & Weekly Velocity Guardrails) */}
+            {(() => {
+              const todayKey = todayYMD();
+              const sevenDaysAgo = new Date();
+              sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+              const sevenDaysKey = toYMD(sevenDaysAgo);
+
+              const activeExp = transactions.filter(t => t && !t.reversed_at && !t.reversal_of && !t.is_transfer_fee && (t.type === 'Expense' || t.type === 'Loan Payment'));
+              const todaySpent = activeExp
+                .filter(t => t.date === todayKey)
+                .reduce((s, t) => s + (Number(t.amount) || 0), 0);
+              const weekSpent = activeExp
+                .filter(t => t.date >= sevenDaysKey && t.date <= todayKey)
+                .reduce((s, t) => s + (Number(t.amount) || 0), 0);
+
+              const effectiveDaily = dailyLimit > 0 ? dailyLimit : Math.round(safeToSpendData?.dailyAllowance || 0);
+              const effectiveWeekly = weeklyLimit > 0 ? weeklyLimit : Math.round((safeToSpendData?.dailyAllowance || 0) * 7);
+
+              const dPct = effectiveDaily > 0 ? Math.min(100, Math.round((todaySpent / effectiveDaily) * 100)) : 0;
+              const wPct = effectiveWeekly > 0 ? Math.min(100, Math.round((weekSpent / effectiveWeekly) * 100)) : 0;
+
+              const dColor = todaySpent > effectiveDaily && effectiveDaily > 0 ? '#f87171' : dPct >= 80 ? '#fbbf24' : '#4ade80';
+              const wColor = weekSpent > effectiveWeekly && effectiveWeekly > 0 ? '#f87171' : wPct >= 80 ? '#fbbf24' : '#38bdf8';
+
+              const handleSaveCaps = () => {
+                const dVal = parseFloat(capForm.daily) || 0;
+                const wVal = parseFloat(capForm.weekly) || 0;
+                if (dVal > 0) localStorage.setItem('vm_daily_limit', String(dVal));
+                else localStorage.removeItem('vm_daily_limit');
+                if (wVal > 0) localStorage.setItem('vm_weekly_limit', String(wVal));
+                else localStorage.removeItem('vm_weekly_limit');
+                setDailyLimit(dVal);
+                setWeeklyLimit(wVal);
+                setEditingCaps(false);
+                haptic();
+                toast.success('Smart spending velocity caps updated!');
+                loadData(true);
+              };
+
+              return (
+                <div style={{
+                  marginBottom: '1.5rem',
+                  padding: '1rem 1.25rem',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.07)',
+                  borderRadius: 14,
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.85rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span style={{ fontSize: '1rem' }}>🚦</span>
+                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.76rem', fontWeight: 700, letterSpacing: '1.2px', color: 'var(--text-secondary)' }}>
+                        SMART SPEND VELOCITY GUARDRAILS
+                      </span>
+                      <span style={{
+                        fontSize: '0.64rem',
+                        padding: '0.12rem 0.45rem',
+                        borderRadius: 20,
+                        background: (dailyLimit > 0 || weeklyLimit > 0) ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.05)',
+                        color: (dailyLimit > 0 || weeklyLimit > 0) ? '#4ade80' : 'var(--text-muted)',
+                        fontFamily: 'Inter, sans-serif',
+                        fontWeight: 600,
+                      }}>
+                        {(dailyLimit > 0 || weeklyLimit > 0) ? 'Custom Caps Active' : 'Auto Safe-Spend Benchmark'}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setEditingCaps(v => !v)}
+                      style={{
+                        padding: '0.28rem 0.7rem',
+                        borderRadius: 8,
+                        background: 'rgba(251, 146, 60, 0.12)',
+                        border: '1px solid rgba(251, 146, 60, 0.3)',
+                        color: '#fb923c',
+                        fontSize: '0.72rem',
+                        fontFamily: 'Inter, sans-serif',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {editingCaps ? 'Cancel' : '⚙ Set Daily / Weekly Caps'}
+                    </button>
+                  </div>
+
+                  {editingCaps && (
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                      gap: '0.75rem',
+                      padding: '0.85rem',
+                      background: 'rgba(0,0,0,0.25)',
+                      borderRadius: 10,
+                      marginBottom: '0.85rem',
+                      border: '1px solid rgba(251,146,60,0.2)',
+                    }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 4, fontFamily: 'Inter, sans-serif' }}>
+                          {`Daily Spend Cap (${getCurrencyLabel()})`}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0 = Auto Safe-Spend"
+                          value={capForm.daily}
+                          onChange={e => setCapForm(f => ({ ...f, daily: e.target.value }))}
+                          style={{ width: '100%', padding: '0.45rem 0.65rem', fontSize: '0.82rem' }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 4, fontFamily: 'Inter, sans-serif' }}>
+                          {`7-Day Weekly Cap (${getCurrencyLabel()})`}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          placeholder="0 = Auto 7x Daily"
+                          value={capForm.weekly}
+                          onChange={e => setCapForm(f => ({ ...f, weekly: e.target.value }))}
+                          style={{ width: '100%', padding: '0.45rem 0.65rem', fontSize: '0.82rem' }}
+                        />
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                        <button
+                          type="button"
+                          onClick={handleSaveCaps}
+                          style={{
+                            width: '100%',
+                            padding: '0.5rem 0.85rem',
+                            borderRadius: 8,
+                            background: 'linear-gradient(135deg, #fb923c, #f97316)',
+                            color: '#0f172a',
+                            border: 'none',
+                            fontWeight: 700,
+                            fontSize: '0.78rem',
+                            cursor: 'pointer',
+                            fontFamily: 'Inter, sans-serif',
+                          }}
+                        >
+                          Save Velocity Caps
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1rem' }}>
+                    {/* Today's Velocity */}
+                    <div style={{ background: 'rgba(255,255,255,0.015)', padding: '0.75rem 0.9rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.04)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', fontFamily: 'Inter, sans-serif', marginBottom: 6 }}>
+                        <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Today&apos;s Spend Velocity</span>
+                        <span style={{ color: dColor, fontWeight: 700 }}>
+                          {formatCurrency(todaySpent)} / {formatCurrency(effectiveDaily)}
+                        </span>
+                      </div>
+                      <div style={{ height: 7, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
+                        <div style={{ width: `${dPct}%`, height: '100%', background: dColor, borderRadius: 4, transition: 'width 0.5s ease' }} />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: 4, fontFamily: 'Inter, sans-serif' }}>
+                        <span>{todaySpent > effectiveDaily && effectiveDaily > 0 ? '⚠ Exceeded daily cap' : `${Math.max(0, 100 - dPct)}% daily buffer left`}</span>
+                        <span>{dPct}%</span>
+                      </div>
+                    </div>
+
+                    {/* 7-Day Rolling Velocity */}
+                    <div style={{ background: 'rgba(255,255,255,0.015)', padding: '0.75rem 0.9rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.04)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', fontFamily: 'Inter, sans-serif', marginBottom: 6 }}>
+                        <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>7-Day Rolling Velocity</span>
+                        <span style={{ color: wColor, fontWeight: 700 }}>
+                          {formatCurrency(weekSpent)} / {formatCurrency(effectiveWeekly)}
+                        </span>
+                      </div>
+                      <div style={{ height: 7, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
+                        <div style={{ width: `${wPct}%`, height: '100%', background: wColor, borderRadius: 4, transition: 'width 0.5s ease' }} />
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: 4, fontFamily: 'Inter, sans-serif' }}>
+                        <span>{weekSpent > effectiveWeekly && effectiveWeekly > 0 ? '⚠ Exceeded 7-day cap' : `${Math.max(0, 100 - wPct)}% weekly buffer left`}</span>
+                        <span>{wPct}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            </MoreSection>
+
+            <MoreSection title="Smart insights" hint="Anomalies, runway & tips">
+            {/* Smart Financial Intelligence & Anomaly Engine Widget */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <SmartDigestWidget
+                safeToSpendData={safeToSpendData}
+                anomalies={anomalies}
+                insights={digestInsights}
+                onOpenCalendar={() => setCalendarOpen(true)}
+                onViewTransaction={(txId) => navigate(`/transactions?q=${encodeURIComponent(txId)}`)}
+              />
+            </div>
+
+            {/* Emergency Runway & Financial Fortress Intelligence */}
+            <EmergencyRunwayCard
+              accounts={accounts}
+              analytics={analytics || {}}
+              onNavigateGoals={() => navigate('/goals')}
+            />
+
+            {/* AI Insight of the Day */}
+            {analytics?.recommendations?.length > 0 && (() => {
+              const rec = analytics.recommendations[0];
+              const typeColors = { warning:'#fbbf24', danger:'#f87171', success:'#4ade80', info:'#00f5ff' };
+              const col = typeColors[rec.type] || '#00f5ff';
+              return (
+                <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.41 }}
+                  style={{ background:`${col}08`, border:`1px solid ${col}22`, borderLeft:`3px solid ${col}`, borderRadius:12, padding:'1rem 1.25rem', marginTop:'0.5rem', display:'flex', alignItems:'flex-start', gap:'0.875rem' }}>
+                  <div style={{ fontSize:'1.25rem', flexShrink:0 }}>{rec.icon || '💡'}</div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.7rem', letterSpacing:'1.5px', color:col, marginBottom:'0.3rem', fontWeight:600 }}>INSIGHT</div>
+                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.82rem', fontWeight:600, marginBottom:'0.2rem' }}>{rec.title}</div>
+                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', color:'var(--text-muted)', lineHeight:1.5 }}>{rec.body}</div>
+                  </div>
+                  <a href="/analytics" style={{ textDecoration:'none', color:col, fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'1px', flexShrink:0, marginTop:2 }}>DETAILS →</a>
+                </motion.div>
+              );
+            })()}
+
+            </MoreSection>
+
+            <MoreSection title="Exchange rates" hint="Live">
+            {/* Live Exchange Rates */}
+            {rates && (() => {
+              const base = localStorage.getItem('vm_currency') || 'LKR';
+              const pairs = ['USD','EUR','GBP','AED','SGD','INR','AUD'].filter(c => c !== base).slice(0, 6);
+              const baseRate = rates._source ? rates[base] : NaN;
+              return (
+                <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.4 }}
+                  style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16, padding:'1.25rem 1.5rem', marginTop:'0.5rem' }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.875rem' }}>
+                    <h3 style={{ fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.7rem', margin:0, color:'var(--text-secondary)' }}>REFERENCE RATES · {rates._date || 'Unavailable'}</h3>
+                    <span style={{ fontSize:'0.65rem', color:'#444', fontFamily:'Inter, sans-serif' }}>1 {base} =</span>
+                  </div>
+                  <div style={{ display:'flex', gap:'0.6rem', flexWrap:'wrap' }}>
+                    {pairs.map(cur => {
+                      const curRate = rates[cur];
+                      const rate = baseRate / curRate;
+                      return (
+                        <div key={cur} style={{ flex:'1 1 90px', padding:'0.6rem 0.75rem', background:'rgba(255,255,255,0.02)', borderRadius:10, border:'1px solid rgba(255,255,255,0.05)', textAlign:'center' }}>
+                          <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.62rem', letterSpacing:'1.5px', color:'#555', marginBottom:'0.25rem' }}>{cur}</div>
+                          <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.95rem', color:'#06b6d4' }}>
+                            {!Number.isFinite(rate) ? 'Unavailable' : rate >= 100 ? rate.toFixed(0) : rate >= 1 ? rate.toFixed(2) : rate.toFixed(4)}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              );
+            })()}
+            </MoreSection>
+
               </motion.div>
             )}
           </>

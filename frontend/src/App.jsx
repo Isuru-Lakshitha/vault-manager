@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { MotionConfig } from 'framer-motion';
 import { PageLoading, AppSplash } from './motion/RouteFeedback';
+import PullToRefresh from './motion/PullToRefresh';
 import { Toaster, toast } from 'react-hot-toast';
 import Sidebar, { NAV_ITEMS } from './components/Sidebar';
 import Login from './pages/Login';
@@ -203,9 +204,6 @@ function App() {
     window.addEventListener('vm:maintenance-mode-changed', onMaint);
     return () => window.removeEventListener('vm:maintenance-mode-changed', onMaint);
   }, []);
-  const [pullDist, setPullDist] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const pullStartYRef = useRef(null);
   const mainContentRef = useRef(null);
   const [isStealth, toggleStealth] = useStealthMode();
   const location = useLocation();
@@ -235,47 +233,15 @@ function App() {
     };
   }, []);
 
-  const handlePullStart = useCallback((e) => {
-    if (isRefreshing) return;
-    const scroller = mainContentRef.current;
-    const atTop = (!scroller || scroller.scrollTop <= 2) && window.scrollY <= 2;
-    if (atTop && e.touches?.length === 1) {
-      pullStartYRef.current = e.touches[0].clientY;
-    } else {
-      pullStartYRef.current = null;
+  const handlePullRefresh = useCallback(async () => {
+    try {
+      await prefetchAll();
+      window.dispatchEvent(new Event('vm:data-changed'));
+      toast.success('Up to date', { duration: 1500 });
+    } catch {
+      toast.error('Could not refresh — check your connection');
     }
-  }, [isRefreshing]);
-
-  const handlePullMove = useCallback((e) => {
-    if (pullStartYRef.current === null || isRefreshing) return;
-    const currentY = e.touches?.[0]?.clientY ?? pullStartYRef.current;
-    const dy = currentY - pullStartYRef.current;
-    if (dy > 8) {
-      const damped = Math.min(110, Math.round(dy * 0.45));
-      setPullDist(damped);
-    } else {
-      setPullDist(0);
-    }
-  }, [isRefreshing]);
-
-  const handlePullEnd = useCallback(async () => {
-    if (pullStartYRef.current === null) return;
-    pullStartYRef.current = null;
-    if (pullDist >= 62 && !isRefreshing) {
-      setIsRefreshing(true);
-      setPullDist(56);
-      try {
-        if (navigator.vibrate) navigator.vibrate(15);
-        await prefetchAll();
-        window.dispatchEvent(new Event('vm:data-changed'));
-        toast.success('Vault synced with cloud ✓', { duration: 2000 });
-      } catch {}
-      setIsRefreshing(false);
-      setPullDist(0);
-    } else {
-      setPullDist(0);
-    }
-  }, [pullDist, isRefreshing]);
+  }, []);
 
   // Only show Welcome to Vault Manager popup ONCE for a brand-new registered user's very 1st time
   useEffect(() => {
@@ -816,52 +782,8 @@ function App() {
         <main
           ref={mainContentRef}
           className="main-content"
-          onTouchStart={handlePullStart}
-          onTouchMove={handlePullMove}
-          onTouchEnd={handlePullEnd}
         >
-          {(pullDist > 12 || isRefreshing) && (
-            <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: isRefreshing ? 44 : Math.min(54, pullDist),
-              overflow: 'hidden',
-              transition: isRefreshing ? 'height 0.2s ease' : 'none',
-              marginBottom: '0.35rem',
-            }}>
-              <div style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                padding: '0.35rem 0.9rem',
-                borderRadius: 999,
-                background: 'rgba(30, 30, 52, 0.95)',
-                border: `1px solid ${pullDist >= 62 || isRefreshing ? 'rgba(74,222,128,0.45)' : 'rgba(255,255,255,0.1)'}`,
-                color: pullDist >= 62 || isRefreshing ? '#4ade80' : 'var(--text-secondary)',
-                fontFamily: 'Inter, sans-serif',
-                fontSize: '0.74rem',
-                fontWeight: 700,
-                boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
-              }}>
-                <span style={{
-                  display: 'inline-block',
-                  animation: isRefreshing ? 'spin 0.8s linear infinite' : 'none',
-                  transform: !isRefreshing && pullDist >= 62 ? 'rotate(180deg)' : 'none',
-                  transition: 'transform 0.2s ease',
-                }}>
-                  {isRefreshing ? '⟳' : '↓'}
-                </span>
-                <span>
-                  {isRefreshing
-                    ? 'Syncing vault with cloud...'
-                    : pullDist >= 62
-                    ? 'Release to sync cloud data'
-                    : 'Pull down to refresh'}
-                </span>
-              </div>
-            </div>
-          )}
+          <PullToRefresh scrollRef={mainContentRef} onRefresh={handlePullRefresh} />
           <ErrorBoundary>
             <AnimatedRoutes />
           </ErrorBoundary>
