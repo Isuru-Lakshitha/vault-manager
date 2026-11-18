@@ -259,3 +259,37 @@ body:not(.light-mode) .page-shell :is(.bento-item, .hud-panel, .ins-card, .txi-c
 .quiet-tools.is-chip > summary { min-height: 0; padding: 0.38rem 0.75rem; font-size: 0.76rem; border-radius: 8px; gap: 6px; }
 .quiet-tools.is-chip > summary::after { font-size: 0.85rem; line-height: 1; }
 .quiet-tools.is-chip .quiet-tools-panel { left: 0; right: auto; }
+
+/* Light-mode values for legacy tokens that only had dark definitions. */
+body.light-mode {
+  --bg-surface-hover: var(--mm-elevated, #f2f4f7);
+  --gradient-primary: linear-gradient(135deg, var(--mm-accent, #2f6fdf), color-mix(in srgb, var(--mm-accent, #2f6fdf) 70%, #7c3aed));
+}
+/* Hard-coded pale greys (written for dark surfaces) -> readable in light mode */
+body.light-mode :is(
+  [style*="color: rgb(203, 213, 225)"], [style*="color: rgb(226, 232, 240)"],
+  [style*="color: rgb(209, 213, 219)"], [style*="color: rgb(148, 163, 184)"],
+  [style*="color: rgb(156, 163, 175)"]
+) { color: var(--mm-text-2, #4b5563) !important; }
+/* Light blues/indigos written for dark surfaces -> accent (readable) in light mode */
+body.light-mode :is(
+  [style*="color: rgb(96, 165, 250)"], [style*="color: rgb(56, 189, 248)"],
+  [style*="color: rgb(129, 140, 248)"], [style*="color: rgb(147, 197, 253)"]
+) { color: var(--mm-accent, #2f6fdf) !important; }
+
+/* Aliases for token names components use but that were never defined.
+   Declared on body (same element as body.light-mode) so they resolve
+   against the active theme instead of freezing at :root's dark values. */
+body {
+  --mm-border-subtle: var(--mm-border-soft);
+  --mm-bg-surface: var(--mm-surface);
+  --mm-bg-elevated: var(--mm-elevated);
+  --mm-accent-soft: color-mix(in srgb, var(--mm-accent) 14%, transparent);
+  --mm-accent-text: color-mix(in srgb, var(--mm-accent) 72%, #fff);
+  --border-color: var(--mm-border);
+  --bg-primary: var(--mm-bg);
+  --neon-cyan: var(--mm-accent);
+  --neon-purple: #a78bfa;
+  --accent-gradient: var(--gradient-primary);
+}
+body.light-mode { --mm-accent-text: var(--mm-accent); }
