@@ -6,7 +6,7 @@ import { installGlobalErrorHandlers } from './utils/errorLogger'
 installGlobalErrorHandlers();
 
 // Build stamp: changing this automatically flushes stale service worker caches on client devices
-const BUILD_STAMP = '20261115_0920';
+const BUILD_STAMP = '20261118_2310';
 try {
   if (localStorage.getItem('vm_build_stamp') !== BUILD_STAMP) {
     localStorage.setItem('vm_build_stamp', BUILD_STAMP);

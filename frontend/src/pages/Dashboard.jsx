@@ -1,11 +1,11 @@
 import ToolMenu from '../components/ToolMenu';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useLiveData from '../utils/useLiveData';
 import { fetchAnalytics, fetchGoals, fetchBudgets, fetchBills, fetchRecurringTransactions, updateRecurringTransaction, fetchExchangeRates, fetchCreditCards, recordNetWorthSnapshot, fetchNetWorthHistory, deleteTransaction, getCache, getCategorySpendFromMap } from '../utils/api';
 import { todayYMD, toYMD } from '../utils/dates';
 import { auth } from '../utils/firebase';
-import { TrendingUp, TrendingDown, Landmark, Activity, Zap, X, ChevronUp, ChevronDown, ArrowRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, Landmark, Activity, Zap, X, ChevronUp, ChevronDown, ArrowRight, ArrowUpRight } from 'lucide-react';
 import PageWrapper from '../components/PageWrapper';
 import Modal from '../components/Modal';
 import TransactionPopup from '../components/TransactionPopup';
@@ -25,6 +25,9 @@ import TiltWrapper from '../components/TiltWrapper';
 import ParticleBackground from '../components/ParticleBackground';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
 import { motion } from 'framer-motion';
+import { spring } from '../motion/presets';
+import useTilt3D from '../motion/useTilt3D';
+import './dashboard.css';
 import { formatCurrency, getCurrencyLabel, getCurrency, convertCurrency, haptic } from '../utils/format';
 import getCategoryEmoji from '../utils/categoryEmoji';
 import toast from 'react-hot-toast';
@@ -134,6 +137,8 @@ const Dashboard = () => {
     return stored !== null ? stored === 'true' : true;
   });
   const [showAdvancedInsights, setShowAdvancedInsights] = useState(false);
+  const dashRef = useRef(null);
+  useTilt3D(dashRef);
 
   const toggleMinimalistView = (val) => {
     const next = typeof val === 'boolean' ? val : !isMinimalistView;
@@ -616,124 +621,38 @@ const Dashboard = () => {
 
   return (
     <PageWrapper>
-      <div>
+      <div className="dash" ref={dashRef}>
         {/* Header */}
-        <div className="page-header quiet-dashboard-header">
+        <header className="dash-header">
           <div>
-            <h1 className="glow-text text-cyan" style={{ margin: 0, fontSize: '2rem' }}>Dashboard</h1>
-            <p style={{ marginTop: 4, fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', color: 'var(--text-muted)' }}>Your financial overview · {now}</p>
+            <h1 className="dash-title">Dashboard</h1>
+            <p className="dash-subtitle">Your financial overview · Updated {now}</p>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            {/* View Mode Switcher Pill */}
-            <div style={{
-              display: 'inline-flex',
-              background: 'rgba(255, 255, 255, 0.05)',
-              padding: '3px',
-              borderRadius: 10,
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-            }}>
-              <button
-                type="button"
-                onClick={() => toggleMinimalistView(true)}
-                style={{
-                  background: isMinimalistView ? 'linear-gradient(135deg, #00f5ff, #0077ff)' : 'transparent',
-                  color: isMinimalistView ? '#0a0f1d' : 'var(--text-muted)',
-                  fontWeight: isMinimalistView ? 700 : 500,
-                  border: 'none',
-                  borderRadius: 7,
-                  padding: '0.35rem 0.75rem',
-                  fontSize: '0.74rem',
-                  cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
-                  transition: 'all 0.18s'
-                }}
-              >
-                Overview
-              </button>
-              <button
-                type="button"
-                onClick={() => toggleMinimalistView(false)}
-                style={{
-                  background: !isMinimalistView ? 'linear-gradient(135deg, #00f5ff, #0077ff)' : 'transparent',
-                  color: !isMinimalistView ? '#0a0f1d' : 'var(--text-muted)',
-                  fontWeight: !isMinimalistView ? 700 : 500,
-                  border: 'none',
-                  borderRadius: 7,
-                  padding: '0.35rem 0.75rem',
-                  fontSize: '0.74rem',
-                  cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
-                  transition: 'all 0.18s'
-                }}
-              >
-                Detailed
-              </button>
+          <div className="dash-actions">
+            <div className="dash-seg" role="group" aria-label="Dashboard view">
+              {[['Overview', true], ['Detailed', false]].map(([label, minimal]) => (
+                <button key={label} type="button" aria-pressed={isMinimalistView === minimal} onClick={() => toggleMinimalistView(minimal)}>
+                  {isMinimalistView === minimal && <motion.span layoutId="dash-seg-pill" className="dash-seg-pill" transition={spring.snappy} />}
+                  {label}
+                </button>
+              ))}
             </div>
-
             <ToolMenu>
-            <motion.button
-              className="btn header-secondary-tool"
-              onClick={() => setAchievementsOpen(true)}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              style={{
-                background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(245, 158, 11, 0.15))',
-                border: '1px solid rgba(251, 191, 36, 0.35)',
-                color: '#fbbf24',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
-            >
-              <span>🏆</span> Level {achievementData.currentRank.level} · {achievementData.totalXp} XP
-            </motion.button>
-            <motion.button
-              className="btn header-secondary-tool"
-              onClick={() => setShowStoryModal(true)}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              style={{
-                background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.2), rgba(99, 102, 241, 0.2))',
-                border: '1px solid rgba(167, 139, 250, 0.35)',
-                color: '#c4b5fd',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
-            >
-              <span>✨</span> Wrapped
-            </motion.button>
-            <motion.button
-              className="btn header-secondary-tool"
-              onClick={() => window.dispatchEvent(new Event('vm:open-ai-copilot'))}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.96 }}
-              style={{
-                background: 'linear-gradient(135deg, rgba(129, 140, 248, 0.2), rgba(167, 139, 250, 0.2))',
-                border: '1px solid rgba(129, 140, 248, 0.4)',
-                color: '#c4b5fd',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
-            >
-              <span>🧠</span> Co-Pilot
-            </motion.button>
+              <button type="button" className="btn header-secondary-tool dash-tool" onClick={() => setAchievementsOpen(true)}>
+                <span className="dash-tool-icon" aria-hidden="true">🏆</span> Level {achievementData.currentRank.level} · {achievementData.totalXp} XP
+              </button>
+              <button type="button" className="btn header-secondary-tool dash-tool" onClick={() => setShowStoryModal(true)}>
+                <span className="dash-tool-icon" aria-hidden="true">✨</span> Wrapped
+              </button>
+              <button type="button" className="btn header-secondary-tool dash-tool" onClick={() => window.dispatchEvent(new Event('vm:open-ai-copilot'))}>
+                <span className="dash-tool-icon" aria-hidden="true">🧠</span> Co-Pilot
+              </button>
             </ToolMenu>
-            <motion.button className="btn btn-secondary" onClick={loadData} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+            <button type="button" className="btn btn-secondary dash-tool dash-refresh" onClick={loadData}>
               <Zap size={15} /> Refresh
-            </motion.button>
+            </button>
           </div>
-        </div>
+        </header>
 
         {loading ? <SkeletonLoader rows={5} height={96} /> : (
           <>
@@ -802,160 +721,113 @@ const Dashboard = () => {
             {/* ── MINIMALIST FOCUS MODE (Default: Clean Hero, 3-Stat Pulse, Recent Activity, Collapsible Drawer) ── */}
             {isMinimalistView && (
               <>
-                {/* 1. Minimalist Hero Grid: Net Worth + Today's Safe-to-Spend */}
-                <div className="bento" style={{ marginBottom: '1.25rem' }}>
-                  {/* Net Worth Card */}
-                  <motion.div
-                    className="bento-item holographic-card neon-border"
+                {/* 1. Hero: 3D net worth card + today's safe-to-spend */}
+                <section className="dash-hero" aria-label="Net worth and daily allowance">
+                  <div
+                    className="dash-3d dash-nw"
+                    data-tilt
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Open net worth breakdown"
                     onClick={() => { haptic(); setShowNWBreakdown(true); }}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    style={{
-                      padding: '1.35rem 1.5rem',
-                      borderRadius: 16,
-                      cursor: 'pointer',
-                      background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.08) 0%, rgba(30, 30, 50, 0.6) 100%)',
-                      border: '1px solid rgba(0, 245, 255, 0.25)',
-                      position: 'relative',
-                    }}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowNWBreakdown(true); } }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '1.5px', color: 'var(--text-secondary)' }}>
-                        TOTAL NET WORTH
-                      </span>
-                      <Landmark size={18} className="text-cyan" />
+                    <div className="dash-3d-bg" aria-hidden="true">
+                      <div className="dash-nw-grid" />
+                      <div className="dash-nw-orb" />
+                      <div className="dash-nw-orb is-alt" />
                     </div>
-                    <div className="glow-text text-cyan" style={{ fontSize: '2.1rem', fontFamily: 'Inter, sans-serif', fontWeight: 800, marginBottom: '0.5rem' }}>
+                    <div className="dash-card-head z1">
+                      <span className="dash-eyebrow">Total net worth</span>
+                      <span className="dash-icon-chip"><Landmark size={18} /></span>
+                    </div>
+                    <div className="dash-nw-value dash-num z3">
                       <AnimatedCounter value={netWorth} formatter={formatCurrency} />
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', fontFamily: 'Inter, sans-serif' }}>
-                      <span style={{ color: 'var(--text-muted)' }}>
-                        Assets: <strong style={{ color: '#4ade80' }}>{formatCurrency(totalAssets)}</strong> · Debt: <strong style={{ color: '#f87171' }}>{formatCurrency(totalLiabilities)}</strong>
-                      </span>
-                      <span style={{ color: 'var(--cyan)', fontSize: '0.68rem', fontWeight: 600 }}>Tap for details ↗</span>
+                    <div className="dash-nw-split z2">
+                      <div className="dash-ratio" aria-hidden="true">
+                        <span style={{ flex: Math.max(totalAssets, 0) || 1, background: 'var(--dash-pos)' }} />
+                        {totalLiabilities > 0 && <span style={{ flex: totalLiabilities, background: 'var(--dash-neg)', animationDelay: '0.4s' }} />}
+                      </div>
+                      <div className="dash-nw-legend">
+                        <span><i className="dash-pos" />Assets <b className="dash-pos">{formatCurrency(totalAssets)}</b></span>
+                        <span><i className="dash-neg" />Debt <b className="dash-neg">{formatCurrency(totalLiabilities)}</b></span>
+                      </div>
                     </div>
-                  </motion.div>
+                    {netWorthTrend.length > 1 && (
+                      <div className="dash-nw-spark z1" aria-hidden="true">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={netWorthTrend} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
+                            <defs><linearGradient id="dashNwGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--dash-accent)" stopOpacity={0.35}/><stop offset="100%" stopColor="var(--dash-accent)" stopOpacity={0}/></linearGradient></defs>
+                            <Area type="monotone" dataKey="Net Worth" stroke="var(--dash-accent)" strokeWidth={2} fill="url(#dashNwGrad)" dot={false} isAnimationActive />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+                    )}
+                    <span className="dash-hint z1">View breakdown <ArrowRight size={13} /></span>
+                  </div>
 
-                  {/* Safe-to-Spend Today Card */}
-                  <motion.div
-                    className="bento-card bento-6 bento-item holographic-card quiet-overview-card"
-                    whileHover={{ scale: 1.01 }}
-                    style={{
-                      padding: '1.35rem 1.5rem',
-                      borderRadius: 16,
-                      background: 'linear-gradient(135deg, rgba(74, 222, 128, 0.08) 0%, rgba(30, 30, 50, 0.6) 100%)',
-                      border: '1px solid rgba(74, 222, 128, 0.25)',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      justifyContent: 'space-between'
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                        <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', fontWeight: 700, letterSpacing: '1.5px', color: '#4ade80' }}>
-                          TODAY&apos;S SAFE TO SPEND
+                  {(() => {
+                    const allowance = safeToSpendData?.dailyAllowance || 0;
+                    const daysLeft = safeToSpendData?.daysRemainingInMonth || 0;
+                    const today = new Date();
+                    const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+                    const R = 34, C = 2 * Math.PI * R;
+                    const frac = Math.min(1, Math.max(0, daysLeft / daysInMonth));
+                    const ok = allowance > 0;
+                    return (
+                      <div className="dash-3d dash-safe" data-tilt>
+                        <div className="dash-3d-bg" aria-hidden="true" />
+                        <div className="dash-card-head z1">
+                          <span className="dash-eyebrow">Today&apos;s safe to spend</span>
+                          <span className="dash-pill" style={{ '--tone': ok ? 'var(--dash-pos)' : 'var(--dash-neg)' }}>{ok ? '✓ On track' : '⚠ Caution'}</span>
+                        </div>
+                        <div className="z3">
+                          <div className={`dash-safe-value dash-num${ok ? '' : ' is-neg'}`}>
+                            <AnimatedCounter value={allowance} formatter={formatCurrency} />
+                          </div>
+                          <div className="dash-safe-meta">
+                            Free cash this month <b>{formatCurrency(safeToSpendData?.safeToSpend || 0)}</b>
+                          </div>
+                        </div>
+                        <div className="dash-safe-ring z2" aria-label={`${daysLeft} of ${daysInMonth} days left this month`}>
+                          <svg width="88" height="88" viewBox="0 0 88 88">
+                            <circle className="track" cx="44" cy="44" r={R} fill="none" strokeWidth="7" />
+                            <circle className="fill" cx="44" cy="44" r={R} fill="none" strokeWidth="7"
+                              strokeDasharray={C} strokeDashoffset={C * (1 - frac)} transform="rotate(-90 44 44)" />
+                            <text x="44" y="46" textAnchor="middle">{daysLeft}</text>
+                            <text className="sub" x="44" y="58" textAnchor="middle">DAYS LEFT</text>
+                          </svg>
+                        </div>
+                        <button type="button" onClick={() => navigate('/transactions')} className="btn btn-primary z1" style={{ padding: '0.45rem 0.95rem', fontSize: '0.78rem' }}>
+                          + Add transaction
+                        </button>
+                      </div>
+                    );
+                  })()}
+                </section>
+
+                {/* 2. Monthly cash flow KPIs */}
+                <section className="dash-kpis" aria-label="This month">
+                  {[
+                    { key: 'in', label: 'Income this month', value: `+${formatCurrency(monthlyIncome)}`, tone: 'var(--dash-pos)', Icon: TrendingUp, onClick: () => setSummaryPopup({ type: 'Income', title: 'This Month Income' }) },
+                    { key: 'out', label: 'Expenses this month', value: `-${formatCurrency(monthlyExpense)}`, tone: 'var(--dash-neg)', Icon: TrendingDown, onClick: () => setSummaryPopup({ type: 'Expense', title: 'This Month Expenses' }) },
+                    { key: 'net', label: `Net saved · ${savingsRate}%`, value: `${(monthlyIncome - monthlyExpense) >= 0 ? '+' : ''}${formatCurrency(monthlyIncome - monthlyExpense)}`, tone: (monthlyIncome - monthlyExpense) >= 0 ? 'var(--dash-accent)' : 'var(--dash-neg)', Icon: Activity },
+                  ].map(({ key, label, value, tone, Icon, onClick }) => {
+                    const Tag = onClick ? 'button' : 'div';
+                    return (
+                      <Tag key={key} {...(onClick ? { type: 'button', onClick: () => { haptic(); onClick(); } } : {})} className="dash-3d dash-kpi" data-tilt style={{ '--tone': tone }}>
+                        <span className="dash-3d-bg" aria-hidden="true" />
+                        <span className="dash-icon-chip z2"><Icon size={19} /></span>
+                        <span className="dash-kpi-body z1">
+                          <span className="dash-eyebrow">{label}</span>
+                          <span className="dash-kpi-value dash-num" style={{ display: 'block' }}>{value}</span>
                         </span>
-                        <span style={{
-                          fontSize: '0.65rem',
-                          fontWeight: 700,
-                          padding: '0.2rem 0.5rem',
-                          borderRadius: 20,
-                          background: (safeToSpendData?.dailyAllowance || 0) > 0 ? 'rgba(74,222,128,0.15)' : 'rgba(248,113,113,0.15)',
-                          color: (safeToSpendData?.dailyAllowance || 0) > 0 ? '#4ade80' : '#f87171',
-                          fontFamily: 'Inter, sans-serif'
-                        }}>
-                          {(safeToSpendData?.dailyAllowance || 0) > 0 ? '✓ Safe Allowance' : '⚠ Caution'}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '2.1rem', fontWeight: 800, color: '#4ade80', fontFamily: 'Inter, sans-serif', marginBottom: '0.35rem' }}>
-                        <AnimatedCounter value={safeToSpendData?.dailyAllowance || 0} formatter={formatCurrency} />
-                      </div>
-                      <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
-                        {safeToSpendData?.daysRemainingInMonth || 0} days remaining in month · Free cash: {formatCurrency(safeToSpendData?.safeToSpend || 0)}
-                      </div>
-                    </div>
-                    <div style={{ marginTop: '0.85rem', display: 'flex', gap: '0.5rem' }}>
-                      <button
-                        type="button"
-                        onClick={() => navigate('/transactions')}
-                        className="btn btn-primary"
-                        style={{ padding: '0.35rem 0.85rem', fontSize: '0.74rem', fontWeight: 700 }}
-                      >
-                        + Quick Add Transaction
-                      </button>
-                    </div>
-                  </motion.div>
-                </div>
-
-                {/* 2. Clean Monthly Cash Flow Strip (Income, Expense, Net) */}
-                <motion.div
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                    gap: '0.75rem',
-                    marginBottom: '1.25rem'
-                  }}
-                >
-                  <div
-                    onClick={() => { haptic(); setSummaryPopup({ type: 'Income', title: 'This Month Income' }); }}
-                    style={{
-                      background: 'rgba(74, 222, 128, 0.05)',
-                      border: '1px solid rgba(74, 222, 128, 0.2)',
-                      borderRadius: 14,
-                      padding: '1rem 1.15rem',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s'
-                    }}
-                    title="Tap for Income breakdown"
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                      <span>THIS MONTH INCOME</span>
-                      <span>↗</span>
-                    </div>
-                    <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#4ade80', fontFamily: 'Inter, sans-serif', marginTop: '0.25rem' }}>
-                      +{formatCurrency(monthlyIncome)}
-                    </div>
-                  </div>
-
-                  <div
-                    onClick={() => { haptic(); setSummaryPopup({ type: 'Expense', title: 'This Month Expenses' }); }}
-                    style={{
-                      background: 'rgba(248, 113, 113, 0.05)',
-                      border: '1px solid rgba(248, 113, 113, 0.2)',
-                      borderRadius: 14,
-                      padding: '1rem 1.15rem',
-                      cursor: 'pointer',
-                      transition: 'all 0.15s'
-                    }}
-                    title="Tap for Expense breakdown"
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                      <span>THIS MONTH EXPENSES</span>
-                      <span>↗</span>
-                    </div>
-                    <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#f87171', fontFamily: 'Inter, sans-serif', marginTop: '0.25rem' }}>
-                      -{formatCurrency(monthlyExpense)}
-                    </div>
-                  </div>
-
-                  <div
-                    style={{
-                      background: (monthlyIncome - monthlyExpense) >= 0 ? 'rgba(6, 182, 212, 0.05)' : 'rgba(248, 113, 113, 0.05)',
-                      border: `1px solid ${(monthlyIncome - monthlyExpense) >= 0 ? 'rgba(6, 182, 212, 0.25)' : 'rgba(248, 113, 113, 0.25)'}`,
-                      borderRadius: 14,
-                      padding: '1rem 1.15rem',
-                    }}
-                  >
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
-                      NET SAVED ({savingsRate}%)
-                    </div>
-                    <div style={{ fontSize: '1.35rem', fontWeight: 800, color: (monthlyIncome - monthlyExpense) >= 0 ? 'var(--cyan)' : '#f87171', fontFamily: 'Inter, sans-serif', marginTop: '0.25rem' }}>
-                      {(monthlyIncome - monthlyExpense) >= 0 ? '+' : ''}{formatCurrency(monthlyIncome - monthlyExpense)}
-                    </div>
-                  </div>
-                </motion.div>
+                        {onClick && <ArrowUpRight size={16} className="dash-kpi-arrow z1" aria-hidden="true" />}
+                      </Tag>
+                    );
+                  })}
+                </section>
 
                 {/* 2.5 Monthly Reminders Settlement Checklist (Paid vs. Due At-a-Glance) */}
                 {(() => {
@@ -1088,120 +960,58 @@ const Dashboard = () => {
                   );
                 })()}
 
-                {/* 3. Clean Recent Activity (Top 5) */}
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  style={{
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid rgba(255,255,255,0.06)',
-                    borderRadius: 16,
-                    padding: '1.25rem 1.5rem',
-                    marginBottom: '1.5rem'
-                  }}
-                >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                    <h3 style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '1.5px', fontSize: '0.76rem', margin: 0, color: 'var(--text-secondary)' }}>
-                      RECENT ACTIVITY
-                    </h3>
-                    <button
-                      type="button"
-                      onClick={() => navigate('/transactions')}
-                      style={{ background: 'none', border: 'none', color: 'var(--cyan)', fontFamily: 'Inter, sans-serif', fontSize: '0.74rem', cursor: 'pointer', fontWeight: 600 }}
-                    >
-                      VIEW ALL →
+                {/* 3. Recent activity (top 5) */}
+                <section className="dash-3d dash-panel" aria-label="Recent activity">
+                  <div className="dash-panel-head">
+                    <h3>Recent activity</h3>
+                    <button type="button" className="dash-link" onClick={() => navigate('/transactions')}>
+                      View all <ArrowRight size={13} />
                     </button>
                   </div>
-
                   {recentTxns.length === 0 ? (
-                    <p style={{ color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textAlign: 'center', padding: '1.5rem', fontSize: '0.8rem' }}>
-                      NO TRANSACTIONS YET
-                    </p>
+                    <div className="dash-empty">
+                      <span className="dash-icon-chip"><Activity size={18} /></span>
+                      No transactions yet — add one to see it here.
+                    </div>
                   ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-                      {recentTxns.slice(0, 5).map(tx => {
+                    <ul className="dash-tx-list">
+                      {recentTxns.slice(0, 5).map((tx, i) => {
                         const isIncome = tx.type === 'Income';
                         const isTransfer = tx.type === 'Transfer';
-                        const amtColor = isIncome ? '#4ade80' : isTransfer ? '#818cf8' : '#f87171';
-                        const amtSign = isIncome ? '+' : isTransfer ? '↔' : '-';
+                        const amtSign = isIncome ? '+' : isTransfer ? '↔ ' : '-';
                         return (
-                          <motion.div
-                            key={tx.id}
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.99 }}
-                            onClick={() => { haptic(); setPopupTx(tx); }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.75rem',
-                              padding: '0.65rem 0.85rem',
-                              borderRadius: 10,
-                              background: 'rgba(255,255,255,0.02)',
-                              border: '1px solid rgba(255,255,255,0.04)',
-                              cursor: 'pointer',
-                              transition: 'background 0.15s, border-color 0.15s'
-                            }}
-                          >
-                            <div style={{ width: 34, height: 34, borderRadius: 10, background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0 }}>
-                              {getCategoryEmoji(tx.category) || (isIncome ? '💰' : isTransfer ? '🔄' : '💸')}
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {tx.category || tx.type}
-                              </div>
-                              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                                {tx.date} {tx.notes ? `· ${tx.notes}` : ''}
-                              </div>
-                            </div>
-                            <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                              <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.88rem', color: amtColor }}>
+                          <li key={tx.id}>
+                            <button type="button" className="dash-tx" style={{ '--i': i }} onClick={() => { haptic(); setPopupTx(tx); }}>
+                              <span className="dash-tx-icon" aria-hidden="true">{getCategoryEmoji(tx.category) || (isIncome ? '💰' : isTransfer ? '🔄' : '💸')}</span>
+                              <span className="dash-tx-main">
+                                <span className="dash-tx-title" style={{ display: 'block' }}>{tx.category || tx.type}</span>
+                                <span className="dash-tx-sub" style={{ display: 'block' }}>{tx.date}{tx.notes ? ` · ${tx.notes}` : ''}</span>
+                              </span>
+                              <span className={`dash-tx-amt ${isIncome ? 'dash-pos' : isTransfer ? 'is-transfer' : 'dash-neg'}`}>
                                 {amtSign}{formatCurrency(tx.amount)}
-                              </div>
-                            </div>
-                          </motion.div>
+                              </span>
+                            </button>
+                          </li>
                         );
                       })}
-                    </div>
+                    </ul>
                   )}
-                </motion.div>
+                </section>
 
-                {/* 4. Collapsible Deep Financial Intelligence Accordion Bar */}
-                <div style={{ marginBottom: '1.5rem' }}>
-                  <button
-                    type="button"
-                    aria-expanded={showAdvancedInsights}
-                    aria-controls="dashboard-insights"
-                    onClick={() => {
-                      haptic();
-                      setShowAdvancedInsights(prev => !prev);
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '0.9rem 1.25rem',
-                      borderRadius: 14,
-                      background: showAdvancedInsights ? 'rgba(56, 189, 248, 0.1)' : 'rgba(255, 255, 255, 0.03)',
-                      border: `1px solid ${showAdvancedInsights ? 'rgba(56, 189, 248, 0.35)' : 'rgba(255, 255, 255, 0.08)'}`,
-                      color: showAdvancedInsights ? '#38bdf8' : 'var(--text-primary)',
-                      fontFamily: 'Inter, sans-serif',
-                      fontSize: '0.82rem',
-                      fontWeight: 700,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      gap: '0.5rem',
-                    }}
-                  >
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                      <span style={{ fontSize: '1.1rem' }}>💡</span>
-                      <span>More insights & planning</span>
-                    </span>
-                    <span style={{ fontSize: '0.75rem', color: showAdvancedInsights ? '#38bdf8' : 'var(--text-muted)', flexShrink: 0 }}>
-                      {showAdvancedInsights ? 'Hide' : 'Explore'}
-                    </span>
-                  </button>
-                </div>
+                {/* 4. Expand deeper insights */}
+                <button
+                  type="button"
+                  className="dash-3d dash-more"
+                  aria-expanded={showAdvancedInsights}
+                  aria-controls="dashboard-insights"
+                  onClick={() => { haptic(); setShowAdvancedInsights(prev => !prev); }}
+                >
+                  <span className="dash-more-label">
+                    <span className="dash-icon-chip" aria-hidden="true"><Zap size={17} /></span>
+                    More insights &amp; planning
+                  </span>
+                  <ChevronDown size={18} className="dash-more-chev" aria-hidden="true" />
+                </button>
               </>
             )}
 
@@ -1670,7 +1480,7 @@ const Dashboard = () => {
             <div className="bento bento-grid" style={{ marginBottom:'1.75rem' }}>
               {/* Net Worth — Hero 3D card */}
               <TiltWrapper className="bento-4">
-              <motion.div className="bento-card bento-item holographic-card neon-border"
+              <motion.div className="bento-card bento-item holographic-card neon-border dash-3d" data-tilt
                 onClick={() => setShowNWBreakdown(true)}
                 style={{ position:'relative', overflow:'hidden', cursor:'pointer', width:'100%', height:'100%' }}
                 initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} transition={{ delay:0.05 }}>
@@ -1679,7 +1489,7 @@ const Dashboard = () => {
                   <h3 className="text-cyan" style={{ fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.72rem', margin:0 }}>NET WORTH</h3>
                   <Landmark size={18} className="text-cyan" />
                 </div>
-                <div className="glow-text text-cyan" style={{ fontSize:'2rem', fontFamily:'Inter, sans-serif', fontWeight:700, marginBottom:'0.5rem' }}>
+                <div className="dash-num dash-kpi-figure" style={{ marginBottom:'0.5rem' }}>
                   <AnimatedCounter value={netWorth} formatter={formatCurrency} />
                 </div>
                 <div style={{ flex:1, minHeight:60 }}>
@@ -1698,12 +1508,12 @@ const Dashboard = () => {
               </TiltWrapper>
 
               {/* Total Assets */}
-              <motion.div className="bento-card bento-item bento-4 holographic-card" initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} transition={{ delay:0.1 }}>
+              <motion.div className="bento-card bento-item bento-4 holographic-card dash-3d" data-tilt initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} transition={{ delay:0.1 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.75rem' }}>
                   <h3 className="text-success" style={{ fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.72rem', margin:0 }}>TOTAL ASSETS</h3>
                   <TrendingUp size={18} className="text-success" />
                 </div>
-                <div className="hero-metric" style={{ fontSize:'2rem', marginBottom:'1rem' }}>
+                <div className="hero-metric dash-num dash-kpi-figure" style={{ marginBottom:'1rem' }}>
                   <AnimatedCounter value={totalAssets} formatter={formatCurrency} />
                 </div>
                 <div style={{ display:'flex', flexDirection:'column', gap:'0.35rem' }}>
@@ -1716,12 +1526,12 @@ const Dashboard = () => {
               </motion.div>
 
               {/* Liabilities */}
-              <motion.div className="bento-card bento-item bento-4 holographic-card" initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} transition={{ delay:0.15 }}>
+              <motion.div className="bento-card bento-item bento-4 holographic-card dash-3d" data-tilt initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} transition={{ delay:0.15 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.75rem' }}>
                   <h3 className="text-danger" style={{ fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.72rem', margin:0 }}>LIABILITIES</h3>
                   <TrendingDown size={18} className="text-danger" />
                 </div>
-                <div className="glow-text" style={{ fontSize:'2rem', fontFamily:'Inter, sans-serif', fontWeight:700, color:'var(--danger)', marginBottom:'1rem' }}>
+                <div className="dash-num dash-neg dash-kpi-figure" style={{ marginBottom:'1rem' }}>
                   <AnimatedCounter value={totalLiabilities} formatter={formatCurrency} />
                 </div>
                 <div style={{ display:'flex', flexDirection:'column', gap:'0.35rem' }}>
