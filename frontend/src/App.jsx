@@ -1,4 +1,5 @@
-import { applyAccent } from './utils/theme';
+import { applyAccent, applyTheme, setThemePref, resolveTheme } from './utils/theme';
+import { saveUserPrefs } from './utils/api';
 import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { MotionConfig } from 'framer-motion';
@@ -7,7 +8,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import Sidebar, { NAV_ITEMS } from './components/Sidebar';
 import Login from './pages/Login';
 import EmailVerification from './components/EmailVerification';
-import { Menu, Landmark, Plus, Eye, EyeOff, Cloud, Sparkles, Download } from 'lucide-react';
+import { Menu, Landmark, Plus, Eye, EyeOff, Cloud, Sparkles, Download, Sun, Moon } from 'lucide-react';
 import OfflineBanner from './components/OfflineBanner';
 import PrivacyShield from './components/PrivacyShield';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -122,6 +123,30 @@ const getPinLockTimeout = () => {
  // hard logout after 30 min always
 
 const LoadingSpinner = PageLoading;
+
+// Top-bar quick switch between dark and light (Settings also offers "System").
+const ThemeToggle = () => {
+  const [resolved, setResolved] = useState(() => resolveTheme());
+  useEffect(() => {
+    const sync = () => setResolved(resolveTheme());
+    window.addEventListener('vm:theme-changed', sync);
+    const mq = window.matchMedia?.('(prefers-color-scheme: light)');
+    mq?.addEventListener('change', sync);
+    return () => { window.removeEventListener('vm:theme-changed', sync); mq?.removeEventListener('change', sync); };
+  }, []);
+  const isDark = resolved === 'dark';
+  const toggle = () => {
+    const next = isDark ? 'light' : 'dark';
+    setThemePref(next);
+    const uid = auth.currentUser?.uid;
+    if (uid) Promise.resolve(saveUserPrefs(uid, { theme: next })).catch(() => {});
+  };
+  return (
+    <button className="menu-toggle theme-toggle" onClick={toggle} aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'} title={isDark ? 'Light theme' : 'Dark theme'}>
+      <span key={resolved} className="theme-toggle-icon">{isDark ? <Moon size={17} /> : <Sun size={17} />}</span>
+    </button>
+  );
+};
 
 const AnimatedRoutes = () => (
   <MotionConfig reducedMotion="user">
@@ -359,9 +384,7 @@ function App() {
 
   // Apply saved theme + accent color on mount
   useEffect(() => {
-    const saved = localStorage.getItem('vm_theme') || 'dark';
-    if (saved === 'light') document.body.classList.add('light-mode');
-    else document.body.classList.remove('light-mode');
+    applyTheme();
     // Apply accent color
     const accent = localStorage.getItem('vm_accent');
     if (accent) applyAccent(accent);
@@ -448,11 +471,7 @@ function App() {
           startSystemConfigSync();
           registerUserPresence(user).catch(() => {});
           fetchUserPrefs(user.uid).then(prefs => {
-            if (prefs?.theme) {
-              localStorage.setItem('vm_theme', prefs.theme);
-              if (prefs.theme === 'light') document.body.classList.add('light-mode');
-              else document.body.classList.remove('light-mode');
-            }
+            if (prefs?.theme) setThemePref(prefs.theme);
             if (prefs?.currency) localStorage.setItem('vm_currency', prefs.currency);
           }).catch(() => {});
           Promise.resolve(prefetchAll()).then(async () => {
@@ -666,6 +685,7 @@ function App() {
             <button className="menu-toggle" onClick={toggleStealth} aria-label="Privacy Mode" title={isStealth ? 'Reveal balances' : 'Hide balances'} style={{ color: isStealth ? '#fbbf24' : 'var(--text-secondary)' }}>
               {isStealth ? <EyeOff size={17} /> : <Eye size={17} />}
             </button>
+            <ThemeToggle />
             <button className="menu-toggle" onClick={() => setCurrencyConverterOpen(true)} aria-label="Currency Converter" title="Currency Converter">💱</button>
             <button className="menu-toggle" onClick={() => setAiCoPilotOpen(true)} aria-label="AI Co-Pilot" title="AI Financial Co-Pilot"><Sparkles size={17} /></button>
             <Suspense fallback={null}><AlertCenter /></Suspense>

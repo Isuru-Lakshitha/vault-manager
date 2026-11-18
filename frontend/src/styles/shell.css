@@ -113,3 +113,32 @@ summary:focus-visible,
 [style*="color: rgb(102, 102, 102)"] {
   color: var(--mm-text-2, #a6adb8) !important;
 }
+
+/* ---------- Theme controls ---------- */
+.theme-seg {
+  display: inline-flex; padding: 3px; gap: 2px; border-radius: 10px;
+  background: var(--mm-elevated, var(--bg-elevated)); border: 1px solid var(--mm-border, var(--border-glass));
+}
+.theme-seg button {
+  position: relative; isolation: isolate;
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .42rem .7rem; border: 0; border-radius: 7px; background: transparent; cursor: pointer;
+  color: var(--mm-text-2, var(--text-secondary)); font: 600 .75rem/1 Inter, system-ui, sans-serif;
+  transition: color .16s ease;
+}
+.theme-seg button[aria-checked='true'] { color: var(--mm-text, var(--text-primary)); }
+.theme-seg-pill {
+  position: absolute; inset: 0; z-index: -1; border-radius: 7px;
+  background: var(--mm-surface, var(--bg-surface)); border: 1px solid var(--mm-border, var(--border-glass));
+  box-shadow: 0 2px 6px -2px rgba(0,0,0,.35);
+}
+@media (max-width: 520px) { .theme-seg button span { display: none; } .theme-seg button { padding: .5rem .65rem; } }
+
+.theme-toggle-icon { display: inline-grid; animation: theme-spin-in .45s var(--ease-out-expo, ease) backwards; }
+@keyframes theme-spin-in { from { opacity: 0; rotate: -90deg; scale: .6; } to { opacity: 1; rotate: 0deg; scale: 1; } }
+@media (prefers-reduced-motion: reduce) { .theme-toggle-icon { animation: none; } }
+
+/* Smooth cross-fade of surfaces when the theme changes */
+body.theme-switching, body.theme-switching * {
+  transition: background-color .3s ease, border-color .3s ease, color .2s ease, fill .2s ease !important;
+}

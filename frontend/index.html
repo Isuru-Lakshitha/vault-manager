@@ -62,7 +62,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
     <!-- PWA: Theme matches app background -->
-    <meta name="theme-color" content="#1a1a2e" />
+    <meta name="theme-color" content="#0e1013" />
     <meta name="background-color" content="#1a1a2e" />
 
     <!-- App description for install dialog -->
@@ -123,6 +123,19 @@
     <title>Vault Manager</title>
   </head>
   <body>
+    <script>
+      // Apply the saved theme before first paint so there is no light/dark flash.
+      (function () {
+        try {
+          var p = localStorage.getItem('vm_theme') || 'dark';
+          var light = p === 'light' || (p === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches);
+          if (light) document.body.classList.add('light-mode');
+          document.documentElement.style.colorScheme = light ? 'light' : 'dark';
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute('content', light ? '#f6f7f9' : '#0e1013');
+        } catch (e) {}
+      })();
+    </script>
     <!-- Shown instantly before React hydrates — prevents blank white flash -->
     <div id="root"><div class="preload-spinner"></div></div>
     <script type="module" src="/src/main.jsx"></script>

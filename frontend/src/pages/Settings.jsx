@@ -1,8 +1,9 @@
 import { backupFingerprint, planBackupImport } from '../utils/backupPlan';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getThemePref, setThemePref } from '../utils/theme';
 import PageWrapper from '../components/PageWrapper';
-import { Sun, Moon, LogOut, Shield, Bell, Palette, Info, Lock, Unlock, Globe, Check, Key, Download, Upload, Fingerprint, List, Plus, Trash2, Zap, Wrench, ShieldCheck, Activity, Play, Crown, Smartphone, Sparkles } from 'lucide-react';
+import { Monitor, Sun, Moon, LogOut, Shield, Bell, Palette, Info, Lock, Unlock, Globe, Check, Key, Download, Upload, Fingerprint, List, Plus, Trash2, Zap, Wrench, ShieldCheck, Activity, Play, Crown, Smartphone, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { saveUserPrefs, fetchAccounts, fetchTransactions, fetchBudgets, fetchGoals, fetchLoans, fetchBills, fetchInvestments, getUserId, migrateDataAddUid, deleteTransaction, invalidateCache } from '../utils/api';
@@ -96,7 +97,12 @@ const hashPin = async (pin) => {
 
 const Settings = () => {
   const navigate = useNavigate();
-  const [theme, setTheme] = useState(() => localStorage.getItem('vm_theme') || 'dark');
+  const [theme, setTheme] = useState(getThemePref);
+  useEffect(() => {
+    const onTheme = (e) => setTheme(e.detail);
+    window.addEventListener('vm:theme-changed', onTheme);
+    return () => window.removeEventListener('vm:theme-changed', onTheme);
+  }, []);
   const [minimalistMode, setMinimalistMode] = useState(() => {
     const val = localStorage.getItem('vm_minimalist_view');
     return val !== null ? val === 'true' : true;
@@ -294,13 +300,10 @@ const Settings = () => {
     }
   };
 
-  const handleThemeToggle = async () => {
-    const next = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
-    localStorage.setItem('vm_theme', next);
-    if (next === 'light') document.body.classList.add('light-mode');
-    else document.body.classList.remove('light-mode');
-    toast.success(`Switched to ${next} mode`);
+  const handleThemeChange = async (next) => {
+    if (next === theme) return;
+    setTheme(setThemePref(next));
+    toast.success(next === 'system' ? 'Theme follows your device' : `Switched to ${next} theme`);
     await savePrefs({ theme: next });
   };
 
@@ -635,8 +638,15 @@ const Settings = () => {
 
           {/* APPEARANCE */}
           <details className="quiet-section settings-disclosure" open><summary>Appearance</summary><div className="quiet-section-content">
-          <SettingsRow icon={theme === 'dark' ? Moon : Sun} label={`${theme === 'dark' ? 'Dark' : 'Light'} Mode`} description={`Currently: ${theme} theme — synced across devices`} color="#818cf8">
-            <Toggle checked={theme === 'light'} onChange={handleThemeToggle} color="#818cf8" />
+          <SettingsRow icon={theme === 'light' ? Sun : theme === 'system' ? Monitor : Moon} label="Theme" description="Dark, light, or match your device — synced across devices" color="#818cf8">
+            <div className="theme-seg" role="radiogroup" aria-label="Theme">
+              {[['dark', Moon, 'Dark'], ['light', Sun, 'Light'], ['system', Monitor, 'System']].map(([value, Icon, label]) => (
+                <button key={value} type="button" role="radio" aria-checked={theme === value} onClick={() => handleThemeChange(value)}>
+                  {theme === value && <motion.span layoutId="theme-seg-pill" className="theme-seg-pill" transition={{ type: 'spring', stiffness: 520, damping: 38 }} />}
+                  <Icon size={14} /> <span>{label}</span>
+                </button>
+              ))}
+            </div>
           </SettingsRow>
           <SettingsRow
             icon={Sparkles}
