@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import useTilt3D from '../motion/useTilt3D';
+import './login.css';
 import { Link } from 'react-router-dom';
 import { auth } from '../utils/firebase';
 import {
@@ -9,7 +11,7 @@ import {
   getMultiFactorResolver,
   TotpMultiFactorGenerator,
 } from 'firebase/auth';
-import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Eye, EyeOff, ShieldCheck, Landmark, Cloud, TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { registerUserPresence } from '../utils/adminService';
 
@@ -22,6 +24,8 @@ function Login({ onLogin }) {
   const [isLoading, setIsLoading] = useState(false);
   const [mfaResolver, setMfaResolver] = useState(null);
   const [mfaCode, setMfaCode] = useState('');
+  const sceneRef = useRef(null);
+  useTilt3D(sceneRef, { max: 12 });
 
   const getPasswordStrength = (pwd) => {
     if (!pwd) return { score: 0, label: '', color: 'transparent' };
@@ -166,308 +170,146 @@ function Login({ onLogin }) {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1rem',
-      background: 'linear-gradient(135deg, var(--bg-void), var(--bg-deep), var(--bg-surface))',
-      fontFamily: "'Inter', sans-serif"
-    }}>
-      <div style={{
-        background: 'var(--bg-surface)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid var(--border-glass)',
-        borderRadius: '24px',
-        padding: '40px 36px',
-        width: '100%',
-        maxWidth: '420px',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-        color: 'var(--text-primary)',
-        animation: 'fadeIn 0.6s ease-out'
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <div style={{
-            width: '72px',
-            height: '72px',
-            background: 'var(--gradient-primary)',
-            borderRadius: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 20px',
-            boxShadow: '0 10px 20px rgba(129, 140, 248, 0.25)',
-            transform: 'none'
-          }}>
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-primary)', transform: 'none' }}>
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-            </svg>
+    <div className="login" ref={sceneRef}>
+      <div className="login-ambient" aria-hidden="true" />
+
+      {/* Brand side: floating 3D vault card */}
+      <aside className="login-brand" aria-hidden="true">
+        <div className="login-logo"><Landmark size={22} /> Vault Manager</div>
+        <div className="login-stage">
+          <div className="login-card3d" data-tilt>
+            <div className="login-card3d-bg"><span className="orb" /><span className="orb is-alt" /><span className="grid" /></div>
+            <div className="z1 login-card3d-top"><span>Net worth</span><Landmark size={18} /></div>
+            <div className="z3 login-card3d-value">Your money,<br />in one place</div>
+            <div className="z2 login-card3d-bars"><i style={{ '--w': '72%' }} /><i style={{ '--w': '46%' }} /><i style={{ '--w': '88%' }} /></div>
+            <div className="z1 login-card3d-foot"><span>Accounts · Budgets · Goals</span><ShieldCheck size={15} /></div>
           </div>
-          <h2 style={{ fontSize: '26px', fontWeight: 'bold', margin: '0 0 6px 0', letterSpacing: '-0.5px', fontFamily: 'Inter, sans-serif' }}>
-            {isSignUp ? 'Create Your Vault' : 'Welcome Back'}
-          </h2>
-          <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '14px' }}>
-            {isSignUp ? 'Setup your encrypted personal finance vault' : 'Enter your credentials to access your vault'}
-          </p>
         </div>
+        <ul className="login-points">
+          <li><ShieldCheck size={16} /> Two-factor sign-in &amp; encrypted backups</li>
+          <li><Cloud size={16} /> Syncs across your devices, works offline</li>
+          <li><TrendingUp size={16} /> Budgets, goals and forecasts that update live</li>
+        </ul>
+      </aside>
 
-        {mfaResolver ? (
-          <form onSubmit={handleMfaResolve} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 600 }}>
-                6-Digit Authenticator Code
-              </label>
-              <input
-                type="text"
-                inputMode="numeric"
-                maxLength={6}
-                value={mfaCode}
-                onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ''))}
-                placeholder="000000"
-                autoFocus
-                required
-                style={{
-                  width: '100%',
-                  padding: '14px 16px',
-                  background: 'var(--bg-deep)',
-                  border: '1px solid var(--border-glass)',
-                  borderRadius: '12px',
-                  color: 'var(--text-primary)',
-                  fontSize: '18px',
-                  letterSpacing: '4px',
-                  textAlign: 'center',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                }}
-              />
-            </div>
-            {error && (
-              <div style={{
-                background: 'rgba(239, 68, 68, 0.1)',
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#f87171',
-                padding: '12px',
-                borderRadius: '10px',
-                fontSize: '13px',
-                textAlign: 'center',
-              }}>
-                {error}
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={isLoading}
-              style={{
-                width: '100%',
-                padding: '15px',
-                background: 'var(--gradient-primary)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '12px',
-                fontSize: '15px',
-                fontWeight: 700,
-                cursor: isLoading ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {isLoading ? 'Verifying 2FA...' : 'Verify & Unlock Vault'}
-            </button>
-            <button
-              type="button"
-              onClick={() => { setMfaResolver(null); setMfaCode(''); setError(''); }}
-              style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '13px' }}
-            >
-              ← Back to Sign In
-            </button>
-          </form>
-        ) : (
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 600 }}>Username or Email</label>
-            <input 
-              type="text" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '14px 16px',
-                background: 'var(--bg-deep)',
-                border: '1px solid var(--border-glass)',
-                borderRadius: '12px',
-                color: 'var(--text-primary)',
-                fontSize: '15px',
-                outline: 'none',
-                transition: 'all 0.3s ease',
-                boxSizing: 'border-box'
-              }}
-              placeholder="e.g., Isuru or you@email.com"
-              required
-            />
+      {/* Form side */}
+      <main className="login-panel">
+        <div className="login-form-card">
+          <div className="login-head">
+            <span className="login-mark"><Landmark size={24} /></span>
+            <h1>{mfaResolver ? 'Two-step verification' : isSignUp ? 'Create your vault' : 'Welcome back'}</h1>
+            <p>{mfaResolver ? 'Enter the 6-digit code from your authenticator app' : isSignUp ? 'Set up your personal finance vault' : 'Sign in to continue to your vault'}</p>
           </div>
 
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <label style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', color: 'var(--text-secondary)', fontWeight: 600 }}>Password</label>
-              {!isSignUp && (
-                <button
-                  type="button"
-                  onClick={handleForgotPassword}
-                  style={{ background: 'none', border: 'none', color: '#818cf8', fontSize: '12px', cursor: 'pointer', padding: 0 }}
-                >
-                  Forgot password?
-                </button>
-              )}
-            </div>
-            <div style={{ position: 'relative' }}>
-              <input 
-                type={showPassword ? 'text' : 'password'} 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '14px 44px 14px 16px',
-                  background: 'var(--bg-deep)',
-                  border: '1px solid var(--border-glass)',
-                  borderRadius: '12px',
-                  color: 'var(--text-primary)',
-                  fontSize: '15px',
-                  outline: 'none',
-                  transition: 'all 0.3s ease',
-                  boxSizing: 'border-box'
-                }}
-                placeholder="Enter your password"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(s => !s)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                style={{
-                  position: 'absolute',
-                  right: '12px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--text-muted)',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          {mfaResolver ? (
+            <form onSubmit={handleMfaResolve} className="login-form" key="mfa">
+              <div className="login-field">
+                <label htmlFor="login-mfa">Authenticator code</label>
+                <input
+                  id="login-mfa"
+                  className="login-input login-input--code"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={mfaCode}
+                  onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, ''))}
+                  placeholder="000000"
+                  autoFocus
+                  required
+                />
+              </div>
+              {error && <div className="login-error" role="alert">{error}</div>}
+              <button type="submit" className="login-submit" disabled={isLoading}>
+                {isLoading ? <span className="login-spinner" aria-hidden="true" /> : null}
+                {isLoading ? 'Verifying…' : 'Verify & unlock'}
               </button>
-            </div>
-
-            {isSignUp && password.length > 0 && (
-              <div style={{ marginTop: '8px' }}>
-                <div style={{ display: 'flex', gap: '4px', height: '4px', marginBottom: '4px' }}>
-                  {[1, 2, 3, 4].map(n => (
-                    <div
-                      key={n}
-                      style={{
-                        flex: 1,
-                        borderRadius: '2px',
-                        background: n <= strength.score ? strength.color : 'rgba(255,255,255,0.08)',
-                        transition: 'background 0.25s',
-                      }}
-                    />
-                  ))}
-                </div>
-                <div style={{ fontSize: '11px', color: strength.color, textAlign: 'right', fontWeight: 600 }}>
-                  {strength.label}
-                </div>
+              <button type="button" className="login-link" onClick={() => { setMfaResolver(null); setMfaCode(''); setError(''); }}>
+                ← Back to sign in
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleSubmit} className="login-form" key={isSignUp ? 'up' : 'in'}>
+              <div className="login-field">
+                <label htmlFor="login-email">Username or email</label>
+                <input
+                  id="login-email"
+                  className="login-input"
+                  type="text"
+                  autoComplete="username"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="e.g., Isuru or you@email.com"
+                  required
+                />
               </div>
-            )}
-          </div>
 
-          {error && (
-            <div style={{
-              background: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#f87171',
-              padding: '12px',
-              borderRadius: '10px',
-              fontSize: '13px',
-              textAlign: 'center',
-              animation: 'shake 0.5s'
-            }}>
-              {error}
+              <div className="login-field">
+                <div className="login-field-row">
+                  <label htmlFor="login-password">Password</label>
+                  {!isSignUp && (
+                    <button type="button" className="login-link login-link--small" onClick={handleForgotPassword}>
+                      Forgot password?
+                    </button>
+                  )}
+                </div>
+                <div className="login-input-wrap">
+                  <input
+                    id="login-password"
+                    className="login-input"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="login-eye"
+                    onClick={() => setShowPassword(s => !s)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+
+                {isSignUp && password.length > 0 && (
+                  <div className="login-strength" aria-live="polite">
+                    <div className="login-strength-bars">
+                      {[1, 2, 3, 4].map(n => (
+                        <span key={n} style={{ background: n <= strength.score ? strength.color : undefined }} />
+                      ))}
+                    </div>
+                    <span style={{ color: strength.color }}>{strength.label}</span>
+                  </div>
+                )}
+              </div>
+
+              {error && <div className="login-error" role="alert">{error}</div>}
+
+              <button type="submit" className="login-submit" disabled={isLoading}>
+                {isLoading ? <span className="login-spinner" aria-hidden="true" /> : null}
+                {isLoading ? 'Signing in…' : (isSignUp ? 'Create account' : 'Sign in')}
+              </button>
+            </form>
+          )}
+
+          {!mfaResolver && (
+            <div className="login-switch">
+              {isSignUp ? 'Already have an account?' : 'New here?'}{' '}
+              <button type="button" className="login-link" onClick={() => { setIsSignUp(!isSignUp); setError(''); }}>
+                {isSignUp ? 'Sign in' : 'Create an account'}
+              </button>
             </div>
           )}
 
-          <button 
-            type="submit"
-            disabled={isLoading}
-            style={{
-              width: '100%',
-              padding: '15px',
-              background: 'var(--gradient-primary)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '12px',
-              fontSize: '15px',
-              fontWeight: 700,
-              fontFamily: 'Inter, sans-serif',
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              marginTop: '4px',
-              transition: 'all 0.3s ease',
-              boxShadow: isLoading ? 'none' : '0 10px 20px rgba(74, 222, 128, 0.2)',
-            }}
-          >
-            {isLoading ? 'Authenticating...' : (isSignUp ? 'Create Vault Account' : 'Unlock Vault')}
-          </button>
-        </form>
-        )}
-
-        <div style={{ textAlign: 'center', marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <button 
-            onClick={() => { setIsSignUp(!isSignUp); setError(''); }}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#a78bfa',
-              cursor: 'pointer',
-              fontSize: '13.5px',
-              textDecoration: 'underline'
-            }}
-          >
-            {isSignUp ? 'Already have an account? Sign In' : 'New here? Create an account'}
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px', fontSize: '11px', color: 'var(--text-muted)' }}>
-            <ShieldCheck size={13} color="#4ade80" /> Secure sign-in · Cloud sync · Offline viewing
-          </div>
-          <div>
-            <Link to="/privacy" style={{ color: 'var(--text-muted)', fontSize: '11.5px', textDecoration: 'underline' }}>
-              Privacy Policy &amp; Data Rights
-            </Link>
+          <div className="login-foot">
+            <span><ShieldCheck size={13} /> Secure sign-in · Cloud sync · Offline viewing</span>
+            <Link to="/privacy">Privacy policy &amp; data rights</Link>
           </div>
         </div>
-      </div>
-
-      <style>
-        {`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-          }
-          input:focus {
-            border-color: rgba(74, 222, 128, 0.4) !important;
-            box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.08);
-          }
-          button[type="submit"]:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 25px rgba(74, 222, 128, 0.3) !important;
-          }
-        `}
-      </style>
+      </main>
     </div>
   );
 }
