@@ -1,3 +1,4 @@
+import MoreSection from '../components/MoreSection';
 import { advanceBill } from '../utils/billSchedule';
 import { InsightBills } from '../components/InsightPanels';
 import { useState, useEffect } from 'react';
@@ -290,6 +291,7 @@ const Bills = () => {
           );
         })()}
 
+        <MoreSection title="Detected subscriptions" hint={`${detectedSubs.length} found`}>
         {/* Smart Subscription Pattern Detector */}
         {!loading && detectedSubs.length > 0 && (
           <motion.div
@@ -358,6 +360,7 @@ const Bills = () => {
           </motion.div>
         )}
 
+        </MoreSection>
         {loading ? <SkeletonLoader rows={4} height={90} /> : billsView === 'calendar' ? (() => {
           // Build calendar for current month
           const today = new Date();

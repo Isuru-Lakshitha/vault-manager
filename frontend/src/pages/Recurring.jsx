@@ -1,3 +1,4 @@
+import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useMemo } from 'react';
 import { InsightRecurring } from '../components/InsightPanels';
 import { useNavigate } from 'react-router-dom';
@@ -1854,6 +1855,7 @@ const Recurring = () => {
               </div>
             )}
 
+            <MoreSection title="Detected recurring payments" hint={`${detectedCandidates.length} found`}>
             {/* Smart Auto-Detected Recurring Candidates from Transaction Ledger */}
             <AnimatePresence>
               {detectedCandidates.length > 0 && (
@@ -1912,6 +1914,7 @@ const Recurring = () => {
               )}
             </AnimatePresence>
 
+            </MoreSection>
             {/* Expandable Safe-to-Spend & Goal Savings Planner */}
             <AnimatePresence>
               {showPlanner && (
@@ -1926,6 +1929,7 @@ const Recurring = () => {
               )}
             </AnimatePresence>
 
+            <MoreSection title="Quick-add presets">
             {/* Compact 1-Tap Quick Add Presets */}
             <div style={{
               marginBottom: '1.15rem',
@@ -1980,6 +1984,7 @@ const Recurring = () => {
               ))}
             </div>
 
+            </MoreSection>
             {/* Filter Tabs + View Mode Toggle + Sort Selector + Live Search */}
             {(rules.length > 0 || bills.length > 0) && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1rem' }}>

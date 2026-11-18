@@ -225,3 +225,37 @@ body:not(.light-mode) .page-shell :is(.bento-item, .hud-panel, .ins-card, .txi-c
 @media (prefers-reduced-motion: reduce) {
   .page-shell .is-tilting { transform: none !important; }
 }
+
+/* ---------- Decluttering: tool menus + collapsed "more" sections ---------- */
+.quiet-tools-panel {
+  box-shadow: var(--depth-2) !important;
+  border-color: var(--mm-border, var(--border-glass)) !important;
+  background: var(--mm-surface, var(--bg-surface)) !important;
+}
+.quiet-tools-panel > :is(.btn, button) {
+  width: 100%;
+  justify-content: flex-start !important;
+  gap: 0.6rem !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--mm-text, var(--text-primary)) !important;
+  font-size: 0.82rem !important;
+  font-weight: 550 !important;
+  text-align: left;
+}
+.quiet-tools-panel > :is(.btn, button):hover:not(:disabled) { background: var(--mm-elevated, var(--bg-elevated)) !important; translate: none !important; }
+.quiet-tools-panel .menu-sep { height: 1px; margin: 4px 2px; background: var(--mm-border-soft, var(--border-subtle)); }
+.quiet-tools-panel .menu-label { padding: 6px 10px 2px; font-size: 0.66rem; font-weight: 650; letter-spacing: 0.07em; text-transform: uppercase; color: var(--mm-text-3, var(--text-muted)); }
+
+.more-section { margin: 1rem 0 1.25rem; }
+.more-section > summary { display: flex; align-items: center; gap: 0.6rem; font-weight: 650 !important; color: var(--mm-text, var(--text-primary)) !important; }
+.more-section > summary span { margin-left: auto !important; font-weight: 500; color: var(--mm-text-3, var(--text-muted)) !important; }
+.more-section-body > :first-child { margin-top: 0 !important; }
+.more-section-body > :last-child { margin-bottom: 0 !important; }
+/* A "more" section whose content renders nothing hides itself. */
+.more-section:has(> .more-section-body:empty) { display: none; }
+/* ToolMenu rendered inline in a chip row */
+.quiet-tools.is-chip > summary { min-height: 0; padding: 0.38rem 0.75rem; font-size: 0.76rem; border-radius: 8px; gap: 6px; }
+.quiet-tools.is-chip > summary::after { font-size: 0.85rem; line-height: 1; }
+.quiet-tools.is-chip .quiet-tools-panel { left: 0; right: auto; }

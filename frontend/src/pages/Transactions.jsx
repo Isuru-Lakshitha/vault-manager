@@ -1,3 +1,4 @@
+import ToolMenu from '../components/ToolMenu';
 import { auditStatus, summarizePayments, isActivePayment, isEditableTransaction, accountMovement } from '../utils/ledgerReporting.js';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import useLiveData from '../utils/useLiveData';
@@ -1390,17 +1391,19 @@ const Transactions = () => {
                 <button type="button" className="tx-chip" onClick={() => setSelectedIds(prev => prev.size === visibleFiltered.length ? new Set() : new Set(visibleFiltered.map(t => t.id)))}>
                   {selectedIds.size && selectedIds.size === visibleFiltered.length ? 'Deselect all' : `Select all (${visibleFiltered.length})`}
                 </button>
-                <button type="button" className="tx-chip" onClick={handleExportCSV} title="Export filtered or selected rows to CSV with summary footer">
-                  ⬇ CSV {selectedIds.size > 0 ? `(${selectedIds.size})` : `(${filtered.length})`}
-                </button>
-                <button type="button" className="tx-chip" onClick={handleExportExcel} title="Export filtered or selected rows to Excel (.xlsx) with category summary sheet">
-                  ⬇ Excel
-                </button>
+                <ToolMenu label="Export" className="is-chip">
+                  <button type="button" className="btn" onClick={handleExportCSV} title="Export filtered or selected rows to CSV with summary footer">
+                    CSV {selectedIds.size > 0 ? `(${selectedIds.size} selected)` : `(${filtered.length} rows)`}
+                  </button>
+                  <button type="button" className="btn" onClick={handleExportExcel} title="Export filtered or selected rows to Excel (.xlsx) with category summary sheet">
+                    Excel workbook (.xlsx)
+                  </button>
+                </ToolMenu>
                 <span className="kbd-hint" title="Shortcuts"><kbd>N</kbd> new · <kbd>/</kbd> search</span>
               </div>
             </div>
 
-            <div className="tx-views" aria-label="Saved views">
+            {(savedViews.length > 0 || hasActiveFilters || savingView) && <div className="tx-views" aria-label="Saved views">
               {savedViews.map(v => (
                 <span key={v.id} className="tx-view">
                   <button type="button" onClick={() => applyView(v)} title="Apply view">{v.name}</button>
@@ -1416,7 +1419,7 @@ const Transactions = () => {
               ) : (
                 <button type="button" className="tx-chip" disabled={!hasActiveFilters} onClick={() => setSavingView(true)}>＋ Save view</button>
               )}
-            </div>
+            </div>}
 
             {/* Filter bar */}
             <div className="filter-scroll-row quiet-filter-row" style={{ marginBottom:'1.25rem', alignItems:'stretch' }}>

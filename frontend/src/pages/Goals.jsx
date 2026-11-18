@@ -1,3 +1,4 @@
+import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { InsightGoals } from '../components/InsightPanels';
 import useLiveData from '../utils/useLiveData';
@@ -658,6 +659,7 @@ const Goals = () => {
           </motion.div>
         )}
 
+        <MoreSection title="Spare-change round-ups" hint="Optional">
         {/* 1-Tap Spare-Change Round-Up Banner */}
         {!loading && goals.length > 0 && simulatedRoundUpTotal > 0 && (
           <motion.div
@@ -750,6 +752,7 @@ const Goals = () => {
           </motion.div>
         )}
 
+        </MoreSection>
         {/* Filter, Search & Sort Bar */}
         <div
           style={{

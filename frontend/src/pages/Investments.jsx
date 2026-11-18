@@ -1,3 +1,4 @@
+import MoreSection from '../components/MoreSection';
 import { useState, useEffect } from 'react';
 import { InsightInvestments } from '../components/InsightPanels';
 import useLiveData from '../utils/useLiveData';
@@ -481,6 +482,7 @@ const Investments = () => {
               </div>
             </div>
 
+            <MoreSection title="FIRE & compound growth projector" hint="Optional">
             {/* Compound Wealth & FIRE (Financial Independence) Projector */}
             {(() => {
               const months = Math.max(1, fireYears * 12);
@@ -606,6 +608,7 @@ const Investments = () => {
                 </div>
               );
             })()}
+            </MoreSection>
 
           </>
         )}

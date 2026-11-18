@@ -1,3 +1,4 @@
+import ToolMenu from '../components/ToolMenu';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useLiveData from '../utils/useLiveData';
@@ -416,14 +417,14 @@ const Analytics = () => {
         {data?.currencyEstimate && <p role="status">Amounts converted to {data.reportingCurrency} using Frankfurter reference rates dated {data.exchangeRateDate}. Historical totals are estimates at these rates.</p>}
         <div className="page-header">
           <div>
-            <h1 className="glow-text text-cyan" style={{ margin:0, fontSize:'2rem' }}>Analytics</h1>
+            <h1 style={{ margin:0 }}>Analytics</h1>
             <p style={{ color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.8rem', marginTop:4 }}>Financial overview &amp; insights</p>
           </div>
           <div className="filter-scroll-row" style={{ gap:'0.75rem' }}>
             {/* Month Picker */}
             {availableMonths.length > 0 && (
               <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:10, padding:'0.5rem 0.875rem' }}>
-                <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>📅</span>
+                <CalendarDays size={14} style={{ color:'var(--text-muted)' }} />
                 <select value={selectedMonth} onChange={e => { setSelectedMonth(e.target.value); setDrillCat(null); }}
                   style={{ background:'transparent', border:'none', boxShadow:'none', padding:0, fontSize:'0.82rem', color:'var(--text-primary)', cursor:'pointer', minWidth:110 }}>
                   {availableMonths.map(m => (
@@ -435,58 +436,32 @@ const Analytics = () => {
                 </select>
               </div>
             )}
-            <button
-              className="btn"
-              onClick={() => setShowStoryModal(true)}
-              disabled={!data}
-              style={{
-                background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.25), rgba(99, 102, 241, 0.25))',
-                border: '1px solid rgba(167, 139, 250, 0.45)',
-                color: '#c4b5fd',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.45rem',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                cursor: 'pointer'
-              }}
-            >
-              <Sparkles size={15} color="#c4b5fd" /> Money Wrapped
-            </button>
-            <button
-              className="btn btn-secondary"
-              onClick={() => window.dispatchEvent(new Event('vm:open-fire-planner'))}
-              title="Retirement & FIRE Wealth Simulator"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#fb923c', borderColor: 'rgba(251,146,60,0.3)' }}
-            >
-              <span>🔥</span> FIRE Planner
-            </button>
-            <button
-              className="btn btn-secondary"
-              onClick={() => window.dispatchEvent(new Event('vm:open-tax-suite'))}
-              title="Tax Optimization & Capital Gains Schedule"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#38bdf8', borderColor: 'rgba(56,189,248,0.3)' }}
-            >
-              <FileText size={16} /> 📑 Tax Suite
-            </button>
-            <button
-              className="btn btn-secondary"
-              onClick={handleExecutiveDossier}
-              disabled={!data || dossierLoading}
-              title="Download Institutional Executive Financial Statement (P&L Dossier)"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#4ade80', borderColor: 'rgba(74,222,128,0.3)' }}
-            >
-              <FileText size={16} /> {dossierLoading ? 'Generating...' : '📊 Executive Dossier'}
-            </button>
-            <button className="btn btn-secondary" onClick={handleExcelExport} disabled={!data}>
-              <Download size={16} /> Excel
-            </button>
-            <button className="btn btn-secondary" onClick={handlePDFExport} disabled={!data || pdfLoading}>
-              <FileText size={16} /> {pdfLoading ? 'Generating...' : 'PDF Report'}
-            </button>
-            <button className="btn btn-secondary" onClick={handleStatementExport} disabled={!data || statementLoading} title="Download official monthly statement">
-              <FileText size={16} /> {statementLoading ? 'Generating...' : 'Statement PDF'}
-            </button>
+            <ToolMenu label="Reports & tools">
+              <div className="menu-label">Export</div>
+              <button className="btn" onClick={handlePDFExport} disabled={!data || pdfLoading}>
+                <FileText size={16} /> {pdfLoading ? 'Generating…' : 'PDF report'}
+              </button>
+              <button className="btn" onClick={handleStatementExport} disabled={!data || statementLoading} title="Download official monthly statement">
+                <FileText size={16} /> {statementLoading ? 'Generating…' : 'Monthly statement (PDF)'}
+              </button>
+              <button className="btn" onClick={handleExecutiveDossier} disabled={!data || dossierLoading} title="Executive financial statement (P&L)">
+                <FileText size={16} /> {dossierLoading ? 'Generating…' : 'Executive dossier'}
+              </button>
+              <button className="btn" onClick={handleExcelExport} disabled={!data}>
+                <Download size={16} /> Excel workbook
+              </button>
+              <div className="menu-sep" />
+              <div className="menu-label">Planning</div>
+              <button className="btn" onClick={() => setShowStoryModal(true)} disabled={!data}>
+                <Sparkles size={16} /> Money Wrapped
+              </button>
+              <button className="btn" onClick={() => window.dispatchEvent(new Event('vm:open-fire-planner'))} title="Retirement & FIRE simulator">
+                <TrendingUp size={16} /> FIRE planner
+              </button>
+              <button className="btn" onClick={() => window.dispatchEvent(new Event('vm:open-tax-suite'))} title="Tax optimisation & capital gains">
+                <FileText size={16} /> Tax suite
+              </button>
+            </ToolMenu>
           </div>
         </div>
 

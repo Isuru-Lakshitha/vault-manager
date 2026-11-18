@@ -1,3 +1,4 @@
+import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useMemo } from 'react';
 import { InsightCreditCards } from '../components/InsightPanels';
 import useLiveData from '../utils/useLiveData';
@@ -292,7 +293,6 @@ const CreditCards = () => {
 
         {loading ? <SkeletonLoader rows={3} height={140}/> : (
           <>
-            <InsightCreditCards cards={cards} />
             {/* Summary strip */}
             {cards.length > 0 && (
               <div className="monthly-strip" style={{ marginBottom:'1.25rem' }}>
@@ -327,6 +327,8 @@ const CreditCards = () => {
               </div>
             )}
 
+            <MoreSection title="Card insights" hint="Utilisation, statements & best card to use">
+            <InsightCreditCards cards={cards} />
             {/* 🏆 Best Card to Swipe Today & Grace-Period Advisor */}
             {bestPick && (
               <motion.div
@@ -387,6 +389,7 @@ const CreditCards = () => {
               </motion.div>
             )}
 
+            </MoreSection>
             {/* Credit health alert */}
             {overallUtil >= 30 && cards.length > 0 && (
               <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }}
