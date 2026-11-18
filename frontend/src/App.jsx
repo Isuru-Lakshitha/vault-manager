@@ -1,15 +1,15 @@
-import { applyAccent, applyTheme, setThemePref, resolveTheme } from './utils/theme';
-import { saveUserPrefs } from './utils/api';
+import { applyAccent, applyTheme, setThemePref } from './utils/theme';
 import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { MotionConfig } from 'framer-motion';
 import { PageLoading, AppSplash } from './motion/RouteFeedback';
 import PullToRefresh from './motion/PullToRefresh';
+import ThemeToggle from './components/ThemeToggle';
 import { Toaster, toast } from 'react-hot-toast';
 import Sidebar, { NAV_ITEMS } from './components/Sidebar';
 import Login from './pages/Login';
 import EmailVerification from './components/EmailVerification';
-import { Menu, Landmark, Plus, Eye, EyeOff, Cloud, Sparkles, Download, Sun, Moon } from 'lucide-react';
+import { Menu, Landmark, Plus, Eye, EyeOff, Cloud, Sparkles, Download } from 'lucide-react';
 import OfflineBanner from './components/OfflineBanner';
 import PrivacyShield from './components/PrivacyShield';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -125,29 +125,6 @@ const getPinLockTimeout = () => {
 
 const LoadingSpinner = PageLoading;
 
-// Top-bar quick switch between dark and light (Settings also offers "System").
-const ThemeToggle = () => {
-  const [resolved, setResolved] = useState(() => resolveTheme());
-  useEffect(() => {
-    const sync = () => setResolved(resolveTheme());
-    window.addEventListener('vm:theme-changed', sync);
-    const mq = window.matchMedia?.('(prefers-color-scheme: light)');
-    mq?.addEventListener('change', sync);
-    return () => { window.removeEventListener('vm:theme-changed', sync); mq?.removeEventListener('change', sync); };
-  }, []);
-  const isDark = resolved === 'dark';
-  const toggle = () => {
-    const next = isDark ? 'light' : 'dark';
-    setThemePref(next);
-    const uid = auth.currentUser?.uid;
-    if (uid) Promise.resolve(saveUserPrefs(uid, { theme: next })).catch(() => {});
-  };
-  return (
-    <button className="menu-toggle theme-toggle" onClick={toggle} aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'} title={isDark ? 'Light theme' : 'Dark theme'}>
-      <span key={resolved} className="theme-toggle-icon">{isDark ? <Moon size={17} /> : <Sun size={17} />}</span>
-    </button>
-  );
-};
 
 const AnimatedRoutes = () => (
   <MotionConfig reducedMotion="user">
