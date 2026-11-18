@@ -1,3 +1,4 @@
+import { PageHeader, StatCard } from '../components/ui';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InsightBudgets } from '../components/InsightPanels';
@@ -277,13 +278,7 @@ const Budgets = () => {
   return (
     <PageWrapper>
       <div>
-        <div className="page-header">
-          <div>
-            <h1 className="glow-text text-cyan" style={{ fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>Budgets</h1>
-            <p style={{ color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', fontSize: '0.82rem', marginTop: 4 }}>
-              Monthly category limits, pacing, and 50/30/20 allocation
-            </p>
-          </div>
+        <PageHeader title="Budgets" subtitle="Monthly category limits, pacing, and 50/30/20 allocation">
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', gap: '0.25rem', background: 'rgba(255,255,255,0.04)', padding: '0.25rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
               <button
@@ -363,7 +358,7 @@ const Budgets = () => {
               </>
             )}
           </div>
-        </div>
+        </PageHeader>
 
         {/* View switching: 50/30/20 Rule Engine vs Category Cards */}
         {activeView === 'rule503020' ? (
@@ -462,34 +457,13 @@ const Budgets = () => {
             {!loading && visibleBudgets.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}
-            className="monthly-strip" style={{ marginBottom: '1.75rem' }}
+            className="monthly-strip stat-grid" style={{ marginBottom: '1.75rem' }}
           >
-            <div className="monthly-strip-item">
-              <div className="monthly-strip-label">Total Budgeted</div>
-              <div className="monthly-strip-value text-cyan">{formatCurrency(totalBudgeted)}</div>
-            </div>
-            <div className="monthly-strip-item">
-              <div className="monthly-strip-label">Total Spent</div>
-              <div className="monthly-strip-value" style={{ color: totalSpent > totalBudgeted ? 'var(--danger)' : 'var(--warning)' }}>{formatCurrency(totalSpent)}</div>
-            </div>
-            <div className="monthly-strip-item">
-              <div className="monthly-strip-label">Remaining</div>
-              <div className="monthly-strip-value" style={{ color: totalBudgeted - totalSpent >= 0 ? 'var(--success)' : 'var(--danger)' }}>
-                {totalBudgeted - totalSpent >= 0 ? '' : '-'}{formatCurrency(Math.abs(totalBudgeted - totalSpent))}
-              </div>
-            </div>
-            <div className="monthly-strip-item">
-              <div className="monthly-strip-label">Budgets Breached</div>
-              <div className="monthly-strip-value" style={{ color: overBudgetCount > 0 ? 'var(--danger)' : 'var(--success)' }}>
-                {overBudgetCount > 0 ? `⚠ ${overBudgetCount}` : '✓ None'}
-              </div>
-            </div>
-            <div className="monthly-strip-item">
-              <div className="monthly-strip-label">Days Left</div>
-              <div className="monthly-strip-value text-cyan">
-                {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate()}d
-              </div>
-            </div>
+            <StatCard label="Total budgeted" value={formatCurrency(totalBudgeted)} tone="accent" />
+            <StatCard label="Total spent" value={formatCurrency(totalSpent)} tone={totalSpent > totalBudgeted ? 'neg' : 'warn'} />
+            <StatCard label="Remaining" value={`${totalBudgeted - totalSpent >= 0 ? '' : '-'}${formatCurrency(Math.abs(totalBudgeted - totalSpent))}`} tone={totalBudgeted - totalSpent >= 0 ? 'pos' : 'neg'} />
+            <StatCard label="Over budget" value={overBudgetCount > 0 ? `${overBudgetCount} categor${overBudgetCount > 1 ? 'ies' : 'y'}` : 'None'} tone={overBudgetCount > 0 ? 'neg' : 'pos'} />
+            <StatCard label="Days left" value={`${new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate() - new Date().getDate()} days`} />
           </motion.div>
         )}
 

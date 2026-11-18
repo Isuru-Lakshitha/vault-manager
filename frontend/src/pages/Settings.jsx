@@ -1,3 +1,4 @@
+import { PageHeader } from '../components/ui';
 import { backupFingerprint, planBackupImport } from '../utils/backupPlan';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -550,12 +551,7 @@ const Settings = () => {
   return (
     <PageWrapper>
       <div>
-        <div className="page-header">
-          <div>
-            <h1 className="glow-text text-cyan" style={{ margin: 0, fontSize: '2rem' }}>Settings</h1>
-            <p style={{ color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', marginTop: 4 }}>SYSTEM CONFIGURATION{saving ? ' · SAVING...' : ''}</p>
-          </div>
-        </div>
+        <PageHeader title="Settings" subtitle={<>Preferences, security &amp; data{saving ? ' · Saving…' : ''}</>} />
 
         <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 680 }}>
 

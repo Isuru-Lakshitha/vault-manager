@@ -1,3 +1,4 @@
+import { PageHeader } from '../components/ui';
 import ToolMenu from '../components/ToolMenu';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -415,11 +416,7 @@ const Analytics = () => {
       <div>
         {loadError && <div role="alert" className="glass-panel" style={{ padding: 16, marginBottom: 16 }}>{loadError} <button className="btn btn-secondary" onClick={() => loadData()}>Retry</button></div>}
         {data?.currencyEstimate && <p role="status">Amounts converted to {data.reportingCurrency} using Frankfurter reference rates dated {data.exchangeRateDate}. Historical totals are estimates at these rates.</p>}
-        <div className="page-header">
-          <div>
-            <h1 style={{ margin:0 }}>Analytics</h1>
-            <p style={{ color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.8rem', marginTop:4 }}>Financial overview &amp; insights</p>
-          </div>
+        <PageHeader title="Analytics" subtitle="Financial overview & insights">
           <div className="filter-scroll-row" style={{ gap:'0.75rem' }}>
             {/* Month Picker */}
             {availableMonths.length > 0 && (
@@ -463,7 +460,7 @@ const Analytics = () => {
               </button>
             </ToolMenu>
           </div>
-        </div>
+        </PageHeader>
 
         {loading ? (
           <SkeletonLoader rows={6} height={120} />

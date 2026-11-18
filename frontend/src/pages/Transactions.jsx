@@ -1,3 +1,4 @@
+import { StatCard } from '../components/ui';
 import ToolMenu from '../components/ToolMenu';
 import { auditStatus, summarizePayments, isActivePayment, isEditableTransaction, accountMovement } from '../utils/ledgerReporting.js';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -1320,20 +1321,11 @@ const Transactions = () => {
         {activeTab === 'all' && (
           <>
             {/* Summary strip */}
-            <motion.div className="monthly-strip" initial={{opacity:0,y:-8}} animate={{opacity:1,y:0}} style={{ marginBottom:'1.25rem' }}>
-              <div className="monthly-strip-item">
-                <div className="monthly-strip-label">{stats.isAccountView ? 'INFLOW (IN)' : 'INCOME'}</div>
-                <div className="monthly-strip-value text-success">+{formatCurrency(stats.income)}</div>
-              </div>
-              <div className="monthly-strip-item">
-                <div className="monthly-strip-label">{stats.isAccountView ? 'OUTFLOW (OUT)' : 'EXPENSES'}</div>
-                <div className="monthly-strip-value text-danger">-{formatCurrency(stats.expense)}</div>
-              </div>
-              <div className="monthly-strip-item">
-                <div className="monthly-strip-label">{stats.isAccountView ? 'NET MOVEMENT' : 'NET'}</div>
-                <div className="monthly-strip-value" style={{ color:stats.net>=0?'var(--success)':'var(--danger)' }}>{stats.net>=0?'+':''}{formatCurrency(stats.net)}</div>
-              </div>
-              <div className="monthly-strip-item"><div className="monthly-strip-label">RECORDS</div><div className="monthly-strip-value text-cyan">{stats.count}</div></div>
+            <motion.div className="monthly-strip stat-grid" initial={{opacity:0,y:-8}} animate={{opacity:1,y:0}} style={{ marginBottom:'1.25rem' }}>
+              <StatCard label={stats.isAccountView ? 'Inflow' : 'Income'} value={`+${formatCurrency(stats.income)}`} tone="pos" />
+              <StatCard label={stats.isAccountView ? 'Outflow' : 'Expenses'} value={`-${formatCurrency(stats.expense)}`} tone="neg" />
+              <StatCard label={stats.isAccountView ? 'Net movement' : 'Net'} value={`${stats.net >= 0 ? '+' : ''}${formatCurrency(stats.net)}`} tone={stats.net >= 0 ? 'pos' : 'neg'} />
+              <StatCard label="Records" value={stats.count} tone="accent" />
               {/* Daily Spend Limit badge */}
               {(() => {
                 const limit = parseFloat(localStorage.getItem('vm_daily_limit') || '0');

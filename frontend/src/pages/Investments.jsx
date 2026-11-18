@@ -1,3 +1,4 @@
+import { PageHeader } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect } from 'react';
 import { InsightInvestments } from '../components/InsightPanels';
@@ -211,11 +212,7 @@ const Investments = () => {
   return (
     <PageWrapper>
       <div>
-        <div className="page-header">
-          <div>
-            <h1 className="glow-text text-cyan" style={{ margin:0, fontSize:'1.75rem', fontWeight:700, letterSpacing:'-0.02em' }}>Investments</h1>
-            <p style={{ color:'var(--text-secondary)', fontFamily:'Inter, sans-serif', fontSize:'0.82rem', marginTop:4 }}>Portfolio holdings, asset allocation, and compound growth</p>
-          </div>
+        <PageHeader title="Investments" subtitle="Portfolio holdings, asset allocation, and compound growth">
           <div style={{ display:'flex', gap:'0.65rem', alignItems:'center', flexWrap:'wrap' }}>
             {pricesUpdatedAt && <span style={{ fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>Updated {pricesUpdatedAt}</span>}
             <button className="btn btn-secondary" onClick={refreshPrices} disabled={priceRefreshing}
@@ -225,7 +222,7 @@ const Investments = () => {
             </button>
             <button className="btn btn-primary" onClick={openAdd}><Plus size={16}/> Add Investment</button>
           </div>
-        </div>
+        </PageHeader>
 
         {loading ? <SkeletonLoader rows={4} height={100} /> : (
           <>

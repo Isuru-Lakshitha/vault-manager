@@ -12,7 +12,7 @@ import useTilt3D from '../motion/useTilt3D';
  */
 const TILT_CARDS = [
   '.bento-item', '.hud-panel', '.ins-card', '.txi-card',
-  '.monthly-strip-item', '.acc-card', '.depth-tilt',
+  '.monthly-strip-item', '.acc-card', '.ui-card', '.depth-tilt',
 ].map(s => `${s}:not([data-tilt])`).join(', ');
 
 const PageWrapper = ({ children }) => {

@@ -1,3 +1,4 @@
+import { PageHeader, StatCard, StatGrid } from '../components/ui';
 import { InsightLoans } from '../components/InsightPanels';
 import { useState, useEffect } from 'react';
 import useLiveData from '../utils/useLiveData';
@@ -696,21 +697,17 @@ const Loans = () => {
   return (
     <PageWrapper>
       <div>
-        <div className="page-header">
-          <div>
-            <h1 className="glow-text text-cyan" style={{ margin:0, fontSize:'1.75rem', fontWeight:700, letterSpacing:'-0.02em' }}>Loans &amp; Liabilities</h1>
-            <p style={{ color:'var(--text-secondary)', fontFamily:'Inter, sans-serif', fontSize:'0.82rem', marginTop:4 }}>Principal tracking, accrued interest, and payoff schedules</p>
-          </div>
+        <PageHeader title="Loans & Liabilities" subtitle="Principal tracking, accrued interest, and payoff schedules">
           <button className="btn btn-primary" onClick={openAddModal}><Plus size={16}/> New Liability</button>
-        </div>
+        </PageHeader>
 
         {/* Summary strip */}
         {!loading && loans.length > 0 && (
-          <div className="monthly-strip" style={{ marginBottom:'1.5rem' }}>
-            <div className="monthly-strip-item"><div className="monthly-strip-label">Total Owed</div><div className="monthly-strip-value text-danger">{formatCurrency(totalOwed)}</div></div>
-            <div className="monthly-strip-item"><div className="monthly-strip-label">Total Interest</div><div className="monthly-strip-value text-warning">{formatCurrency(totalInterest)}</div></div>
-            <div className="monthly-strip-item"><div className="monthly-strip-label">Active Loans</div><div className="monthly-strip-value">{loans.filter(l=>l.status==='Active').length}</div></div>
-          </div>
+          <StatGrid>
+            <StatCard label="Total owed" value={formatCurrency(totalOwed)} tone="neg" />
+            <StatCard label="Total interest" value={formatCurrency(totalInterest)} tone="warn" />
+            <StatCard label="Active loans" value={loans.filter(l=>l.status==='Active').length} />
+          </StatGrid>
         )}
 
         {!loading && activeTab === 'loans' && <InsightLoans loans={loans} />}

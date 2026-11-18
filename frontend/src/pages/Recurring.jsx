@@ -1,3 +1,4 @@
+import { PageHeader } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useMemo } from 'react';
 import { InsightRecurring } from '../components/InsightPanels';
@@ -1516,13 +1517,7 @@ const Recurring = () => {
     <PageWrapper>
       <div>
         {/* Clean Minimalist Header */}
-        <div className="page-header" style={{ marginBottom: '1.15rem' }}>
-          <div>
-            <h1 style={{ margin: 0, fontSize: '1.65rem', fontWeight: 700 }}>Recurring & Monthly Reminders</h1>
-            <p style={{ color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', fontSize: '0.76rem', marginTop: 4 }}>
-              Reminder-only monthly commitments, variable bills & loan schedules — never auto-deducted
-            </p>
-          </div>
+        <PageHeader title="Recurring & Monthly Reminders" subtitle="Reminder-only monthly commitments, variable bills & loan schedules — never auto-deducted">
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
             <button
               type="button"
@@ -1578,7 +1573,7 @@ const Recurring = () => {
               </button>
             )}
           </div>
-        </div>
+        </PageHeader>
 
         {loading ? <SkeletonLoader rows={4} height={80} /> : (
           <>

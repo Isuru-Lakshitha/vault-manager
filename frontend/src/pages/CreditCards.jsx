@@ -1,3 +1,4 @@
+import { PageHeader, StatGrid, StatCard } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useMemo } from 'react';
 import { InsightCreditCards } from '../components/InsightPanels';
@@ -283,48 +284,22 @@ const CreditCards = () => {
     <PageWrapper>
       <div>
         {/* Header */}
-        <div className="page-header">
-          <div>
-            <h1 className="glow-text text-cyan" style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Credit Cards</h1>
-            <p style={{ color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', fontSize: '0.82rem', marginTop: 4 }}>Utilization tracking, statement cycles, and payoff projections</p>
-          </div>
+        <PageHeader title="Credit Cards" subtitle="Utilization tracking, statement cycles, and payoff projections">
           <button className="btn btn-primary" onClick={openAdd}><Plus size={16}/> Add Card</button>
-        </div>
+        </PageHeader>
 
         {loading ? <SkeletonLoader rows={3} height={140}/> : (
           <>
             {/* Summary strip */}
             {cards.length > 0 && (
-              <div className="monthly-strip" style={{ marginBottom:'1.25rem' }}>
-                <div className="monthly-strip-item">
-                  <div className="monthly-strip-label">Total Limit</div>
-                  <div className="monthly-strip-value text-cyan">{formatCurrency(totalLimit)}</div>
-                </div>
-                <div className="monthly-strip-item">
-                  <div className="monthly-strip-label">Total Owed</div>
-                  <div className="monthly-strip-value" style={{ color:'#f87171' }}>{formatCurrency(totalBalance)}</div>
-                </div>
-                <div className="monthly-strip-item">
-                  <div className="monthly-strip-label">Available Credit</div>
-                  <div className="monthly-strip-value" style={{ color:'#4ade80' }}>{formatCurrency(totalAvailable)}</div>
-                </div>
-                <div className="monthly-strip-item">
-                  <div className="monthly-strip-label">Overall Utilization</div>
-                  <div className="monthly-strip-value" style={{ color: overallUtil >= 70 ? '#f87171' : overallUtil >= 30 ? '#fbbf24' : '#4ade80' }}>
-                    {overallUtil.toFixed(1)}%
-                  </div>
-                </div>
-                <div className="monthly-strip-item">
-                  <div className="monthly-strip-label">Min Payments Due</div>
-                  <div className="monthly-strip-value" style={{ color:'#fbbf24' }}>{formatCurrency(parseFloat(totalMinPayment.toFixed(2)))}</div>
-                </div>
-                <div className="monthly-strip-item">
-                  <div className="monthly-strip-label">Due This Week</div>
-                  <div className="monthly-strip-value" style={{ color: dueThisWeek.length > 0 ? '#f87171' : '#4ade80' }}>
-                    {dueThisWeek.length > 0 ? `⚠ ${dueThisWeek.length}` : '✓ None'}
-                  </div>
-                </div>
-              </div>
+              <StatGrid className="cc-stats">
+                <StatCard label="Total limit" value={formatCurrency(totalLimit)} tone="accent" />
+                <StatCard label="Total owed" value={formatCurrency(totalBalance)} tone="neg" />
+                <StatCard label="Available credit" value={formatCurrency(totalAvailable)} tone="pos" />
+                <StatCard label="Overall utilisation" value={`${overallUtil.toFixed(1)}%`} tone={overallUtil >= 70 ? 'neg' : overallUtil >= 30 ? 'warn' : 'pos'} />
+                <StatCard label="Min payments due" value={formatCurrency(parseFloat(totalMinPayment.toFixed(2)))} tone="warn" />
+                <StatCard label="Due this week" value={dueThisWeek.length > 0 ? `${dueThisWeek.length} card${dueThisWeek.length > 1 ? 's' : ''}` : 'None'} tone={dueThisWeek.length > 0 ? 'neg' : 'pos'} />
+              </StatGrid>
             )}
 
             <MoreSection title="Card insights" hint="Utilisation, statements & best card to use">

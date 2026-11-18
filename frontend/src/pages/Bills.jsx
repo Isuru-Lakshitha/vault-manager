@@ -1,3 +1,4 @@
+import { PageHeader, StatGrid, StatCard } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { advanceBill } from '../utils/billSchedule';
 import { InsightBills } from '../components/InsightPanels';
@@ -198,11 +199,7 @@ const Bills = () => {
   return (
     <PageWrapper>
       <div>
-        <div className="page-header">
-          <div>
-            <h1 className="glow-text text-cyan" style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Bills &amp; Subscriptions</h1>
-            <p style={{ color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', fontSize: '0.82rem', marginTop: 4 }}>Upcoming due dates, subscription burn rate, and 1-tap payments</p>
-          </div>
+        <PageHeader title="Bills & Subscriptions" subtitle="Upcoming due dates, subscription burn rate, and 1-tap payments">
           <div style={{ display:'flex', gap:'0.5rem', alignItems:'center', flexWrap:'wrap' }}>
             <button
               type="button"
@@ -228,7 +225,7 @@ const Bills = () => {
             )}
             <button className="btn btn-primary" onClick={openAdd}><Plus size={16} /> Add Bill</button>
           </div>
-        </div>
+        </PageHeader>
 
         {!loading && <InsightBills bills={bills} />}
 
@@ -255,14 +252,14 @@ const Bills = () => {
 
           return (
             <>
-              <div className="monthly-strip" style={{ marginBottom:'1rem' }}>
-                <div className="monthly-strip-item"><div className="monthly-strip-label">Unpaid Total</div><div className="monthly-strip-value text-cyan">{formatCurrency(totalUpcoming)}</div></div>
-                <div className="monthly-strip-item"><div className="monthly-strip-label">Monthly ~</div><div className="monthly-strip-value" style={{ color:'#fbbf24' }}>{formatCurrency(parseFloat(monthlyCommit.toFixed(2)))}</div></div>
-                <div className="monthly-strip-item"><div className="monthly-strip-label">Annual Burn</div><div className="monthly-strip-value" style={{ color:'#818cf8' }}>{formatCurrency(parseFloat(yearlyCommit.toFixed(2)))}</div></div>
-                <div className="monthly-strip-item"><div className="monthly-strip-label">Daily Cost</div><div className="monthly-strip-value" style={{ color:'#f472b6' }}>{formatCurrency(parseFloat(dailyBurn.toFixed(2)))}/d</div></div>
-                <div className="monthly-strip-item"><div className="monthly-strip-label">Overdue</div><div className="monthly-strip-value" style={{ color: overdue > 0 ? 'var(--danger)' : 'var(--success)' }}>{overdue > 0 ? `${overdue} Overdue` : 'None'}</div></div>
-                <div className="monthly-strip-item"><div className="monthly-strip-label">Paid</div><div className="monthly-strip-value" style={{ color: paidCount === bills.length && bills.length > 0 ? 'var(--success)' : 'var(--text-primary)' }}>{paidCount} / {bills.length}</div></div>
-              </div>
+              <StatGrid>
+                <StatCard label="Unpaid total" value={formatCurrency(totalUpcoming)} tone="accent" />
+                <StatCard label="Monthly (approx.)" value={formatCurrency(parseFloat(monthlyCommit.toFixed(2)))} tone="warn" />
+                <StatCard label="Annual cost" value={formatCurrency(parseFloat(yearlyCommit.toFixed(2)))} />
+                <StatCard label="Daily cost" value={`${formatCurrency(parseFloat(dailyBurn.toFixed(2)))}/day`} />
+                <StatCard label="Overdue" value={overdue > 0 ? `${overdue} overdue` : 'None'} tone={overdue > 0 ? 'neg' : 'pos'} />
+                <StatCard label="Paid" value={`${paidCount} / ${bills.length}`} tone={paidCount === bills.length && bills.length > 0 ? 'pos' : 'neutral'} />
+              </StatGrid>
 
               {/* Subscription Burn-Rate & Opportunity Cost Summary */}
               <div style={{

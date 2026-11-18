@@ -293,3 +293,29 @@ body {
   --accent-gradient: var(--gradient-primary);
 }
 body.light-mode { --mm-accent-text: var(--mm-accent); }
+
+/* ---------- Shared UI components (components/ui) ---------- */
+.page-heading h1 { margin: 0; font-weight: 700; }
+.page-heading p { margin: 0.3rem 0 0; }
+.page-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+
+.stat-card[data-tone="accent"]  .monthly-strip-value { color: var(--mm-accent, #5b8def); }
+.stat-card[data-tone="pos"]     .monthly-strip-value { color: var(--mm-success, #3dbb84); }
+.stat-card[data-tone="neg"]     .monthly-strip-value { color: var(--mm-danger, #e5636b); }
+.stat-card[data-tone="warn"]    .monthly-strip-value { color: var(--mm-warning, #d9a441); }
+.stat-card[data-tone="neutral"] .monthly-strip-value { color: var(--mm-text, #e8eaed); }
+.stat-card .stat-sub { margin-top: 0.2rem; font-size: 0.72rem; color: var(--mm-text-3, #7d8590); }
+button.stat-card { font: inherit; color: inherit; cursor: pointer; width: 100%; }
+
+.page-shell .ui-card {
+  position: relative;
+  padding: 1.15rem 1.25rem;
+  border-radius: var(--depth-radius);
+  border: 1px solid var(--mm-border, var(--border-glass));
+  background-color: var(--mm-surface, var(--bg-surface));
+  box-shadow: var(--depth-1);
+  min-width: 0;
+}
+.ui-card-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.85rem; }
+.ui-card-head h3 { margin: 0; font-size: 0.95rem; font-weight: 650; color: var(--mm-text, #e8eaed); }
+.page-shell .stat-grid { margin-bottom: 1.25rem; }
