@@ -3,6 +3,7 @@ import { LayoutDashboard, CreditCard, ArrowRightLeft, Landmark, BarChart2, Targe
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import { spring } from '../motion/presets';
 import { getCache } from '../utils/api';
 import { auth } from '../utils/firebase';
 import { useStealthMode } from '../utils/format';
@@ -57,7 +58,7 @@ const Sidebar = ({ isOpen, onSearchOpen }) => {
             {label:'Reports & settings', paths:['/analytics','/settings']},
           ].map((group,index) => {
             const links=group.paths.map(path => NAV_ITEMS.find(item => item.path===path)).filter(Boolean).map(({path,icon:Icon,label,page}) => (
-              <NavLink key={path} to={path} className={({isActive}) => `workspace-link${isActive ? ' is-active' : ''}`} onMouseEnter={() => page().catch(() => {})}><Icon size={18} strokeWidth={1.8}/><span>{label}</span></NavLink>
+              <NavLink key={path} to={path} className={({isActive}) => `workspace-link${isActive ? ' is-active' : ''}`} onMouseEnter={() => page().catch(() => {})}>{({isActive}) => (<>{isActive && <motion.span layoutId="nav-indicator" className="nav-indicator" transition={spring.snappy} />}<Icon size={18} strokeWidth={1.8}/><span>{label}</span></>)}</NavLink>
             ));
             return index===1 ? <details key={group.label} className="quiet-nav-group" open={group.paths.includes(location.pathname)}><summary>{group.label}</summary>{links}</details> : <div key={group.label}><p className="workspace-section">{group.label}</p>{links}</div>;
           })}

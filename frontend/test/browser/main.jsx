@@ -9,10 +9,7 @@ import Settings from '../../src/pages/Settings';
 import QuickAdd from '../../src/components/QuickAdd';
 import InvoiceModal from '../../src/components/InvoiceModal';
 import OfflineBanner from '../../src/components/OfflineBanner';
-import '../../src/index.css';
-import '../../src/professional.css';
-import '../../src/minimal.css';
-import '../../src/shell.css';
+import '../../src/styles/index.css';
 export function Fixture() {
  const [quick,setQuick]=useState(false);
  const [invoices,setInvoices]=useState(false);

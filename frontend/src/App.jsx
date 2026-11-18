@@ -2,6 +2,7 @@ import { applyAccent } from './utils/theme';
 import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { MotionConfig } from 'framer-motion';
+import { PageLoading, AppSplash } from './motion/RouteFeedback';
 import { Toaster, toast } from 'react-hot-toast';
 import Sidebar, { NAV_ITEMS } from './components/Sidebar';
 import Login from './pages/Login';
@@ -120,11 +121,7 @@ const getPinLockTimeout = () => {
 };
  // hard logout after 30 min always
 
-const LoadingSpinner = () => (
-  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-    <div style={{ width: 40, height: 40, borderRadius: '50%', border: '2px solid rgba(74,222,128,0.15)', borderTop: '2px solid #4ade80', animation: 'spin 0.9s linear infinite' }} />
-  </div>
-);
+const LoadingSpinner = PageLoading;
 
 const AnimatedRoutes = () => (
   <MotionConfig reducedMotion="user">
@@ -553,11 +550,7 @@ function App() {
 
   if (isInitializing) {
     return (
-      <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', background:'var(--bg-void)', color:'white', gap:'1.5rem', fontFamily:'Inter, sans-serif' }}>
-        <div style={{ width:56, height:56, borderRadius:'50%', border:'2px solid rgba(74,222,128,0.15)', borderTop:'2px solid #4ade80', animation:'spin 0.9s linear infinite' }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-        <p style={{ color:'rgba(74,222,128,0.7)', fontFamily:'Inter, sans-serif', fontSize:'0.85rem', letterSpacing:'1px', fontWeight:500 }}>Loading...</p>
-      </div>
+      <AppSplash icon={<Landmark size={28} />} />
     );
   }
 
@@ -662,7 +655,7 @@ function App() {
       <div className="main-content-wrapper">
         <header className="shell-topbar">
           <div className="shell-crumb">
-            <h2>{pageTitle}</h2>
+            <h2><span key={pageTitle} className="shell-crumb-title">{pageTitle}</span></h2>
             <small>{new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}</small>
           </div>
           <div className="shell-actions">
@@ -686,7 +679,7 @@ function App() {
             <div style={{ width:32, height:32, borderRadius:10, background:'linear-gradient(135deg, #818cf8, #a78bfa)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
               <Landmark size={17} color="#fff" />
             </div>
-            <h2 style={{ fontFamily:'Inter, sans-serif', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{pageTitle}</h2>
+            <h2 style={{ fontFamily:'Inter, sans-serif', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}><span key={pageTitle} className="shell-crumb-title">{pageTitle}</span></h2>
           </div>
           <div className="mobile-header-actions" style={{ display:'flex', gap:'0.35rem', alignItems:'center', flexShrink:0 }}>
             {/* Install as Web App Pill (Visible on tablet/desktop if not in standalone mode) */}

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { formatCurrency } from '../utils/format';
 import getCategoryEmoji from '../utils/categoryEmoji';
-import '../insights-ui.css';
+import '../styles/insights.css';
 
 const ymd = (d) => String(d || '').slice(0, 10);
 const num = (v) => Number(v) || 0;

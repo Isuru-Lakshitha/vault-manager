@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "browser-harness", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "frontend", "run", "dev:test"], "port": 5177 }
+  ]
+}

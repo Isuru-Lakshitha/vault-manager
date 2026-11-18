@@ -20,7 +20,7 @@ import ReceiptImage from '../components/ReceiptImage';
 import SMSParserBox from '../components/SMSParserBox';
 import TransactionPopup from '../components/TransactionPopup';
 import TransactionInsights from '../components/TransactionInsights';
-import '../transactions-ui.css';
+import '../styles/transactions.css';
 import getCategoryEmoji from '../utils/categoryEmoji';
 import { getRememberedNotes, getFrequentTemplates } from '../utils/noteMemory';
 import toast from 'react-hot-toast';

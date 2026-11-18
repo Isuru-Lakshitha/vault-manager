@@ -1,8 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import './index.css'
-import './professional.css'
-import './minimal.css'
-import './shell.css'
+import './styles/index.css'
 import App from './App.jsx'
 import { installGlobalErrorHandlers } from './utils/errorLogger'
 

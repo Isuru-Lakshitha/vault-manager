@@ -84,7 +84,6 @@ input::placeholder,textarea::placeholder { color: var(--text-muted); opacity: 1;
 .bottom-nav,body.light-mode .bottom-nav,.mobile-header,body.light-mode .mobile-header { background: var(--bg-deep); border-color: var(--border-glass); box-shadow: none; }
 .bottom-nav-fab { animation: none; background: var(--gradient-primary); box-shadow: 0 4px 12px rgba(0,0,0,.18); }
 .bottom-nav-item.active,body.light-mode .bottom-nav-item.active .bottom-nav-label { color: var(--cyan); }
-.page-shell > div > *:not([style*="opacity"]):not(canvas),.bento-grid > *:not([style*="opacity"]) { animation: none; }
 @media (min-width: 901px) { .main-content { padding: 30px; } }
 @media (max-width: 1100px) and (min-width: 901px) { :root { --sidebar-width: 210px; } .main-content { padding: 22px; } }
 @media (prefers-reduced-motion: reduce) { html,.main-content { scroll-behavior: auto; } }

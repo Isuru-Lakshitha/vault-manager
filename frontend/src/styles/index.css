@@ -1,0 +1,15 @@
+/* ==========================================================================
+   Global stylesheet entry. Order matters — each layer refines the previous.
+     1. base               reset, tokens, core components
+     2. theme-professional flat professional surface treatment
+     3. theme-minimal      minimal palette (--mm-*) + light/dark refinements
+     4. shell              app shell: sidebar, top bar, fluid layout
+     5. motion             animation system (always last so it can opt back in)
+   Feature styles (insights, transactions, accounts) are imported by the
+   component that owns them.
+   ========================================================================== */
+@import './base.css';
+@import './theme-professional.css';
+@import './theme-minimal.css';
+@import './shell.css';
+@import './motion.css';

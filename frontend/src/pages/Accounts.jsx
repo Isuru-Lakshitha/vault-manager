@@ -4,11 +4,11 @@ import { reconcileAccount, isActivePayment, accountMovement, summarizeAccountHis
 import { useState, useEffect, useMemo } from 'react';
 import useLiveData from '../utils/useLiveData';
 import { setOpeningBalance, reconcileBalance, setAccountArchived, fetchAccounts, createAccount, updateAccount, deleteAccount, deleteTransaction, getCache, fetchTransactions, createTransaction, fetchExchangeRates } from '../utils/api';
-import { Plus, Edit2, Trash2, Wallet, Landmark, CreditCard, Smartphone, History, X, ArrowUpRight, ArrowDownRight, ArrowLeftRight, Scale } from 'lucide-react';
+import { Plus, Edit2, Trash2, Wallet, Landmark, CreditCard, Smartphone, History, X, ArrowUpRight, ArrowDownRight, ArrowLeftRight, Scale, Archive, ArchiveRestore, Search } from 'lucide-react';
 import getCategoryEmoji from '../utils/categoryEmoji';
 import PageWrapper from '../components/PageWrapper';
-import TiltWrapper from '../components/TiltWrapper';
 import Modal from '../components/Modal';
+import './accounts.css';
 import ConfirmDialog from '../components/ConfirmDialog';
 import FuturisticDropdown from '../components/FuturisticDropdown';
 import CurrencyInput from '../components/CurrencyInput';
@@ -16,21 +16,28 @@ import AnimatedCounter from '../components/AnimatedCounter';
 import SkeletonLoader from '../components/SkeletonLoader';
 import TransactionPopup from '../components/TransactionPopup';
 import toast from 'react-hot-toast';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { formatCurrency, getCurrency, convertCurrency, SUPPORTED_CURRENCIES, haptic } from '../utils/format';
 import { ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { todayYMD } from '../utils/dates';
 
 const ACCOUNT_CONFIG = {
-  Bank:          { gradient: 'linear-gradient(135deg, rgba(74,222,128,0.12), rgba(6,10,22,0.95))', borderColor: 'rgba(74,222,128,0.2)', icon: Landmark,   iconColor: '#4ade80' },
-  Cash:          { gradient: 'linear-gradient(135deg, rgba(16,185,129,0.12), rgba(6,10,22,0.95))', borderColor: 'rgba(16,185,129,0.2)', icon: Wallet,    iconColor: '#4ade80' },
-  'Mobile Wallet': { gradient: 'linear-gradient(135deg, rgba(167,139,250,0.12), rgba(6,10,22,0.95))', borderColor: 'rgba(167,139,250,0.2)', icon: Smartphone, iconColor: '#a78bfa' },
-  'Credit Card': { gradient: 'linear-gradient(135deg, rgba(244,63,94,0.12), rgba(6,10,22,0.95))', borderColor: 'rgba(244,63,94,0.2)', icon: CreditCard, iconColor: '#f87171' },
+  Bank:            { icon: Landmark,   accent: '#5b8def', iconColor: '#5b8def' },
+  Cash:            { icon: Wallet,     accent: '#3dbb84', iconColor: '#3dbb84' },
+  'Mobile Wallet': { icon: Smartphone, accent: '#a78bfa', iconColor: '#a78bfa' },
+  'Credit Card':   { icon: CreditCard, accent: '#e5636b', iconColor: '#e5636b' },
 };
+
+// Native sibling-index() stagger; otherwise fall back to an inline --sibling-index.
+const SUPPORTS_SIBLING_INDEX =
+  typeof CSS !== 'undefined' && typeof CSS.supports === 'function' &&
+  CSS.supports('animation-delay: calc(sibling-index() * 0.1s)');
 
 
 const Accounts = () => {
   const [showArchived, setShowArchived] = useState(false);
+  const [typeFilter, setTypeFilter] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
   const [accounts, setAccounts] = useState(() => getCache('accounts') || []);
   const [allTransactions, setAllTransactions] = useState(() => getCache('transactions') || []);
   const [loading, setLoading] = useState(() => !getCache('accounts'));
@@ -283,6 +290,50 @@ const Accounts = () => {
     return { totalBalance: Math.round(sum * 100) / 100, unconvertedAccounts: missing };
   }, [accounts, rates, baseCurrency]);
 
+  const visibleAccounts = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return accounts.filter(a =>
+      (showArchived || !a.archived) &&
+      (typeFilter === 'All' || a.type === typeFilter) &&
+      (!q || String(a.name || '').toLowerCase().includes(q))
+    );
+  }, [accounts, showArchived, typeFilter, searchQuery]);
+
+  const typeCounts = useMemo(() => {
+    const counts = { All: 0 };
+    accounts.forEach(a => {
+      if (!showArchived && a.archived) return;
+      counts.All += 1;
+      counts[a.type] = (counts[a.type] || 0) + 1;
+    });
+    return counts;
+  }, [accounts, showArchived]);
+
+  const typeMix = useMemo(() => {
+    const totals = {};
+    accounts.forEach(a => {
+      const v = convertCurrency(Number(a.balance) || 0, a.currency || baseCurrency, baseCurrency, rates);
+      if (!Number.isFinite(v)) return;
+      totals[a.type] = Math.round(((totals[a.type] ?? 0) + v) * 100) / 100;
+    });
+    const volume = Object.values(totals).reduce((s, v) => s + Math.abs(v), 0) || 1;
+    return Object.entries(totals)
+      .map(([type, value]) => ({ type, value, share: (Math.abs(value) / volume) * 100 }))
+      .sort((a, b) => b.share - a.share);
+  }, [accounts, rates, baseCurrency]);
+
+  const activeCount = accounts.filter(a => !a.archived).length;
+  const archivedCount = accounts.length - activeCount;
+  const filterTypes = ['All', ...Object.keys(ACCOUNT_CONFIG).filter(t => typeCounts[t])];
+
+  const toggleArchive = async (acc) => {
+    try {
+      await setAccountArchived(acc.id, !acc.archived);
+      setAccounts(current => current.map(a => a.id === acc.id ? { ...a, archived: !a.archived } : a));
+      toast.success(acc.archived ? 'Account restored' : 'Account archived');
+    } catch (error) { toast.error(error.message); }
+  };
+
   return (
     <PageWrapper>
       <div>
@@ -300,7 +351,7 @@ const Accounts = () => {
               className="btn btn-secondary"
               onClick={() => window.dispatchEvent(new Event('vm:open-bank-sync'))}
               title="Open Banking & Live Bank Feeds"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', padding: '0.55rem 0.85rem', color: '#818cf8', borderColor: 'rgba(129,140,248,0.3)' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', padding: '0.55rem 0.85rem' }}
             >
               <span>🏦</span> Bank Sync
             </button>
@@ -308,7 +359,7 @@ const Accounts = () => {
               className="btn btn-secondary"
               onClick={() => window.dispatchEvent(new Event('vm:open-cash-calendar'))}
               title="Interactive Cash Flow Calendar"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', padding: '0.55rem 0.85rem', color: '#38bdf8', borderColor: 'rgba(56,189,248,0.3)' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', padding: '0.55rem 0.85rem' }}
             >
               <span>📅</span> Calendar
             </button>
@@ -316,24 +367,15 @@ const Accounts = () => {
               className="btn btn-secondary"
               onClick={() => window.dispatchEvent(new Event('vm:open-invoices'))}
               title="Client Invoicing & Billing"
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', padding: '0.55rem 0.85rem', color: '#f472b6', borderColor: 'rgba(244,114,182,0.3)' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', padding: '0.55rem 0.85rem' }}
             >
               <span>💼</span> Invoices
             </button>
             <button
-              className="btn"
+              className="btn btn-secondary"
               onClick={() => window.dispatchEvent(new Event('vm:open-currency-converter'))}
               title="Global Currency Converter Hub"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontSize: '0.78rem',
-                padding: '0.55rem 0.85rem',
-                background: 'rgba(255,255,255,0.04)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                color: 'var(--text-secondary)'
-              }}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', padding: '0.55rem 0.85rem' }}
             >
               <span>💱</span> Converter
             </button>
@@ -344,222 +386,304 @@ const Accounts = () => {
           </div>
         </div>
 
-        {/* Total balance banner */}
-        {!loading && accounts.length > 0 && <InsightAccounts accounts={accounts} />}
+        {/* Summary hero: total + composition */}
         {!loading && accounts.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}
-            className="hud-panel"
-            style={{ padding: '1.25rem 1.75rem', marginBottom: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}
-          >
+          <section className="acc-hero" aria-label="Portfolio summary">
             <div>
-              <div style={{ fontSize: '0.72rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 4 }}>
-                Total Portfolio Value
-              </div>
-              <div className="glow-text text-cyan" style={{ fontSize: '2rem', fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>
+              <div className="acc-hero-label">Total portfolio value</div>
+              <div className="acc-hero-total">
                 <AnimatedCounter value={totalBalance} formatter={formatCurrency} />
               </div>
+              <div className="acc-hero-sub">
+                <span><b>{activeCount}</b> active</span>
+                {archivedCount > 0 && <span><b>{archivedCount}</b> archived</span>}
+                <span>Shown in <b>{baseCurrency}</b></span>
+              </div>
               {unconvertedAccounts.length > 0 && (
-                <div style={{ fontSize: '0.7rem', color: '#fbbf24', marginTop: 4 }}>
+                <div className="acc-hero-warn">
                   Excludes {unconvertedAccounts.join(', ')} (exchange rate unavailable)
                 </div>
               )}
             </div>
-            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-              {Object.entries(
-                accounts.reduce((acc, a) => {
-                  const accCur = a.currency || baseCurrency;
-                  const converted = convertCurrency(Number(a.balance) || 0, accCur, baseCurrency, rates);
-                  if (!Number.isFinite(converted)) return acc;
-                  acc[a.type] = Math.round(((acc[a.type] ?? 0) + converted) * 100) / 100;
-                  return acc;
-                }, {})
-              ).map(([type, bal]) => (
-                <div key={type} style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase' }}>{type}</div>
-                  <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9rem' }}>{formatCurrency(bal)}</div>
-                </div>
-              ))}
+            <div>
+              <div className="acc-mix-bar" role="img" aria-label={typeMix.map(m => `${m.type} ${m.share.toFixed(0)}%`).join(', ')}>
+                {typeMix.map((m, i) => (
+                  <span
+                    key={m.type}
+                    className="acc-mix-seg"
+                    style={{ flexGrow: Math.max(m.share, 1.5), '--acc-accent': (ACCOUNT_CONFIG[m.type] || ACCOUNT_CONFIG.Bank).accent, animationDelay: `${i * 90}ms` }}
+                  />
+                ))}
+              </div>
+              <div className="acc-mix-legend">
+                {typeMix.map(m => (
+                  <button
+                    key={m.type}
+                    type="button"
+                    className="acc-mix-item"
+                    aria-pressed={typeFilter === m.type}
+                    onClick={() => setTypeFilter(f => (f === m.type ? 'All' : m.type))}
+                    style={{ '--acc-accent': (ACCOUNT_CONFIG[m.type] || ACCOUNT_CONFIG.Bank).accent }}
+                  >
+                    <span className="acc-mix-name">{m.type}</span>
+                    <span className="acc-mix-value">{formatCurrency(m.value)}</span>
+                    <span className="acc-mix-pct">{m.share.toFixed(1)}% of portfolio</span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </motion.div>
+          </section>
         )}
 
-        <label style={{ display: 'flex', gap: 8, marginBottom: 16 }}><input type="checkbox" checked={showArchived} onChange={e => setShowArchived(e.target.checked)} /> Show archived accounts (balances remain in portfolio totals)</label>
-        <button className="btn btn-secondary" onClick={() => setShowReconciliation(value => !value)}>Reconcile ledger</button>
-        {showReconciliation && <section className="glass-panel" style={{padding:20,margin:'16px 0',overflowX:'auto'}}>
-          <h2>Ledger reconciliation</h2>
-          <p>Expected balance = saved opening balance + transaction movements. Older accounts without an opening balance are marked for review.</p>
-          <table style={{width:'100%'}}><thead><tr><th>Account</th><th>Opening</th><th>Expected</th><th>Recorded</th><th>Difference</th><th>Action</th></tr></thead><tbody>
-          {accounts.map(account => { const result = reconcileAccount(account, allTransactions); const money = value => formatCurrency(value, {currency:account.currency || 'LKR'}); return <tr key={account.id}>
-            <td>{account.name}</td><td>{result.known ? money(account.opening_balance) : 'Unknown'}</td><td>{result.known ? money(result.expected) : 'Opening balance needed'}</td><td>{money(account.balance)}</td><td>{result.known ? money(result.difference) : 'Review history'}</td>
-            <td>{!result.known && <button className="btn btn-secondary" onClick={() => { setBaselineAccount(account); setBaselineAmount(''); }}>Set opening balance</button>}<button className="btn btn-secondary" disabled={account.archived} onClick={() => openReconcile(account)}>Compare statement</button></td>
-          </tr>; })}</tbody></table>
-        </section>}
-        {/* Content */}
+        {/* Toolbar */}
+        {!loading && accounts.length > 0 && (
+          <div className="acc-toolbar">
+            <div className="acc-seg" role="group" aria-label="Filter by account type">
+              {filterTypes.map(t => (
+                <button
+                  key={t}
+                  type="button"
+                  className="acc-seg-btn"
+                  aria-pressed={typeFilter === t}
+                  onClick={() => { haptic(); setTypeFilter(t); }}
+                >
+                  {typeFilter === t && (
+                    <motion.span layoutId="acc-seg-pill" className="acc-seg-pill" transition={{ type: 'spring', stiffness: 420, damping: 34 }} />
+                  )}
+                  {t === 'All' ? 'All' : t}
+                  <span className="acc-seg-count">{typeCounts[t] || 0}</span>
+                </button>
+              ))}
+            </div>
+            <div className="acc-toolbar-spacer" />
+            {accounts.length > 3 && (
+              <label className="acc-search">
+                <Search size={14} aria-hidden="true" />
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Search accounts"
+                  aria-label="Search accounts"
+                />
+              </label>
+            )}
+            {archivedCount > 0 && (
+              <label className="acc-switch" title="Archived balances remain in portfolio totals">
+                <input type="checkbox" checked={showArchived} onChange={e => setShowArchived(e.target.checked)} />
+                Show archived
+              </label>
+            )}
+            <button
+              type="button"
+              className="btn btn-secondary acc-tool-btn"
+              aria-expanded={showReconciliation}
+              aria-controls="acc-recon-panel"
+              onClick={() => setShowReconciliation(value => !value)}
+            >
+              <Scale size={14} /> Reconcile ledger
+            </button>
+          </div>
+        )}
+
+        {/* Ledger reconciliation panel */}
+        <AnimatePresence initial={false}>
+          {showReconciliation && (
+            <motion.section
+              id="acc-recon-panel"
+              key="recon"
+              className="acc-recon"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="acc-recon-inner">
+                <h2>Ledger reconciliation</h2>
+                <p>Expected balance = saved opening balance + transaction movements. Older accounts without an opening balance are marked for review.</p>
+                <div className="acc-recon-scroll">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Account</th><th className="num">Opening</th><th className="num">Expected</th><th className="num">Recorded</th><th>Status</th><th className="num">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {accounts.map(account => {
+                        const result = reconcileAccount(account, allTransactions);
+                        const money = value => formatCurrency(value, { currency: account.currency || 'LKR' });
+                        const ok = result.known && Math.abs(result.difference || 0) < 0.01;
+                        return (
+                          <tr key={account.id}>
+                            <td>{account.name}</td>
+                            <td className="num">{result.known ? money(account.opening_balance) : '—'}</td>
+                            <td className="num">{result.known ? money(result.expected) : '—'}</td>
+                            <td className="num">{money(account.balance)}</td>
+                            <td>
+                              {ok ? <span className="acc-pill acc-pill--ok">✓ Verified</span>
+                                : !result.known ? <span className="acc-pill acc-pill--warn">Opening balance needed</span>
+                                : <span className="acc-pill acc-pill--bad">Drift {money(result.difference)}</span>}
+                            </td>
+                            <td>
+                              <div className="acc-recon-actions">
+                                {!result.known && <button className="btn btn-secondary" onClick={() => { setBaselineAccount(account); setBaselineAmount(''); }}>Set opening</button>}
+                                <button className="btn btn-secondary" disabled={account.archived} onClick={() => openReconcile(account)}>Compare statement</button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </motion.section>
+          )}
+        </AnimatePresence>
+
+        {/* Account cards */}
         {loading ? (
           <SkeletonLoader rows={3} height={200} />
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(300px, 100%), 1fr))', gap: '1.5rem' }}>
-            {accounts.filter(a => showArchived || !a.archived).map((acc, i) => {
-              const cfg = ACCOUNT_CONFIG[acc.type] || ACCOUNT_CONFIG.Bank;
-              const Icon = cfg.icon;
-              const recon = reconcileAccount(acc, allTransactions);
-              return (
-                <TiltWrapper key={acc.id}>
+          <motion.div layout className="acc-grid">
+            <AnimatePresence mode="popLayout" initial={false}>
+              {visibleAccounts.map((acc, i) => {
+                const cfg = ACCOUNT_CONFIG[acc.type] || ACCOUNT_CONFIG.Bank;
+                const Icon = cfg.icon;
+                const recon = reconcileAccount(acc, allTransactions);
+                const accCur = acc.currency || baseCurrency;
+                const spark = sparklineByAccount[acc.id] || [];
+                return (
                   <motion.div
-                    initial={{ opacity: 0, y: 28 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.08, type: 'spring', stiffness: 50, damping: 18 }}
-                    style={{
-                      background: cfg.gradient,
-                      border: `1px solid ${cfg.borderColor}`,
-                      borderRadius: 20,
-                      padding: '1.75rem',
-                      position: 'relative',
-                      overflow: 'hidden',
-                      minHeight: 200,
-                      display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
-                      transformStyle: 'preserve-3d',
-                      cursor: 'default',
-                    }}
+                    key={acc.id}
+                    layout
+                    className="acc-grid-item"
+                    exit={{ opacity: 0, scale: 0.94, transition: { duration: 0.18 } }}
+                    transition={{ layout: { type: 'spring', stiffness: 380, damping: 34 } }}
+                    style={SUPPORTS_SIBLING_INDEX ? undefined : { '--sibling-index': i + 1 }}
                   >
-                    {/* Glass sheen */}
-                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '55%', background: 'linear-gradient(180deg,rgba(255,255,255,0.04) 0%,transparent 100%)', pointerEvents: 'none', borderRadius: '20px 20px 0 0' }} />
-                    {/* Glow orb */}
-                    <div style={{ position: 'absolute', top: -40, right: -40, width: 140, height: 140, borderRadius: '50%', background: `radial-gradient(circle, ${cfg.iconColor}22 0%, transparent 70%)`, pointerEvents: 'none' }} />
-
-                    {/* Card top */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem', flexWrap: 'wrap' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', minWidth: 0 }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 12, background: `${cfg.iconColor}18`, border: `1px solid ${cfg.iconColor}40`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <Icon size={22} color={cfg.iconColor} />
-                        </div>
-                        <div>
-                          <div style={{ fontSize: '0.65rem', fontFamily: 'Inter, sans-serif', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 2 }}>
-                            {acc.type}{acc.archived ? ' · Archived' : ''}
+                    <article
+                      className={`acc-card${acc.archived ? ' is-archived' : ''}`}
+                      style={{ '--acc-accent': cfg.accent }}
+                      aria-label={`${acc.name} ${acc.type} account`}
+                    >
+                      <header className="acc-card-head">
+                        <div className="acc-card-icon"><Icon size={20} /></div>
+                        <div className="acc-card-title">
+                          <div className="acc-card-meta">
+                            {acc.type}
+                            {acc.currency && acc.currency !== baseCurrency && <span className="acc-chip">{acc.currency}</span>}
+                            {acc.archived && <span className="acc-chip">Archived</span>}
                           </div>
-                          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>{acc.name}</h3>
+                          <h3 className="acc-card-name" title={acc.name}>{acc.name}</h3>
                         </div>
-                      </div>
-                      <div style={{ display: 'flex', gap: '0.1rem', flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center', marginLeft: 'auto' }}>
-                        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="icon-btn" aria-label={`Reconcile ${acc.name}`} title="Reconcile / Adjust to Actual Balance" style={{ color: '#38bdf8' }} onClick={() => openReconcile(acc)}>
-                          <Scale size={14} />
-                        </motion.button>
-                        {accounts.length > 1 && (
-                          <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="icon-btn" aria-label={`Quick transfer from ${acc.name}`} title="Quick Transfer" onClick={() => openTransfer(acc)}>
-                            <ArrowLeftRight size={14} />
-                          </motion.button>
-                        )}
-                        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="icon-btn" aria-label={`View history for ${acc.name}`} title="View History" onClick={() => openHistory(acc)}>
-                          <History size={14} />
-                        </motion.button>
-                        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="icon-btn" aria-label={`Edit ${acc.name}`} title="Edit Account" onClick={() => openEditModal(acc)}>
-                          <Edit2 size={14} />
-                        </motion.button>
-                        <button type="button" className="btn btn-secondary" style={{ padding: '0.3rem 0.6rem', fontSize: '0.7rem' }} onClick={async () => {
-                          try { await setAccountArchived(acc.id, !acc.archived); setAccounts(current => current.map(a => a.id === acc.id ? { ...a, archived: !a.archived } : a)); toast.success(acc.archived ? 'Account restored' : 'Account archived'); } catch (error) { toast.error(error.message); }
-                        }}>{acc.archived ? 'Restore' : 'Archive'}</button>
-                        <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="icon-btn" aria-label={`Delete ${acc.name}`} title="Delete Account" style={{ color: 'var(--danger)' }} onClick={() => handleDelete(acc.id)}>
-                          <Trash2 size={14} />
-                        </motion.button>
-                      </div>
-                    </div>
+                      </header>
 
-                    {/* Balance */}
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                        <span style={{ fontSize: '0.65rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
-                          CURRENT BALANCE
-                        </span>
+                      <div className="acc-card-body">
+                        <div className="acc-card-label">Current balance</div>
+                        <div className={`acc-card-balance${acc.balance < 0 ? ' is-negative' : ''}`}>
+                          <AnimatedCounter value={acc.balance} formatter={v => formatCurrency(v, { currency: accCur })} />
+                        </div>
                         {acc.currency && acc.currency !== baseCurrency && (
-                          <span style={{ fontSize: '0.65rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, color: 'var(--text-secondary)', background: 'rgba(255,255,255,0.06)', padding: '0.15rem 0.45rem', borderRadius: 6 }}>
-                            {acc.currency}
-                          </span>
-                        )}
-                      </div>
-                      <div className="glow-text" style={{ fontSize: '1.85rem', fontWeight: 650, fontFamily: 'Inter, sans-serif', color: acc.balance < 0 ? 'var(--danger)' : 'var(--text-primary)' }}>
-                        <AnimatedCounter
-                          value={acc.balance}
-                          formatter={v => formatCurrency(v, { currency: acc.currency || baseCurrency })}
-                        />
-                      </div>
-                      {acc.currency && acc.currency !== baseCurrency && (
-                        <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', marginTop: '0.2rem' }}>
-                          ≈ {formatCurrency(convertCurrency(acc.balance, acc.currency, baseCurrency, rates), { currency: baseCurrency })}
-                        </div>
-                      )}
-                      {/* Live Ledger Reconciliation Status Pill */}
-                      <div style={{ marginTop: '0.55rem', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                        {recon.known && Math.abs(recon.difference || 0) < 0.01 ? (
-                          <span style={{ fontSize: '0.68rem', fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#4ade80', background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.25)', borderRadius: 999, padding: '0.15rem 0.55rem' }}>
-                            ✓ Ledger Verified
-                          </span>
-                        ) : !recon.known ? (
-                          <button
-                            type="button"
-                            onClick={() => { setBaselineAccount(acc); setBaselineAmount(''); }}
-                            style={{ fontSize: '0.68rem', fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#fbbf24', background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.28)', borderRadius: 999, padding: '0.15rem 0.55rem', cursor: 'pointer' }}
-                          >
-                            ⚠️ Set Opening Baseline
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => openReconcile(acc)}
-                            style={{ fontSize: '0.68rem', fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#f87171', background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 999, padding: '0.15rem 0.55rem', cursor: 'pointer' }}
-                          >
-                            ⚠️ Drift: {formatCurrency(recon.difference, { currency: acc.currency || baseCurrency })}
-                          </button>
-                        )}
-                      </div>
-                      {/* Cashback badge for credit cards */}
-                      {acc.type === 'Credit Card' && acc.cashback_rate > 0 && (
-                        <div style={{ marginTop: '0.5rem', display:'flex', alignItems:'center', gap:'0.5rem' }}>
-                          <div style={{ fontSize: '0.7rem', background:'rgba(251,191,36,0.12)', border:'1px solid rgba(251,191,36,0.3)', borderRadius:20, padding:'0.2rem 0.6rem', color:'#fbbf24', fontFamily:'Inter, sans-serif' }}>
-                            🎁 {acc.cashback_rate}% cashback
+                          <div className="acc-card-approx">
+                            ≈ {formatCurrency(convertCurrency(acc.balance, acc.currency, baseCurrency, rates), { currency: baseCurrency })}
                           </div>
-                          {acc.rewards_earned > 0 && (
-                            <div style={{ fontSize: '0.7rem', color:'#4ade80', fontFamily:'Inter, sans-serif' }}>
-                              Earned: {formatCurrency(acc.rewards_earned, { currency: acc.currency || baseCurrency })}
-                            </div>
+                        )}
+                        <div className="acc-card-badges">
+                          {recon.known && Math.abs(recon.difference || 0) < 0.01 ? (
+                            <span className="acc-pill acc-pill--ok">✓ Ledger verified</span>
+                          ) : !recon.known ? (
+                            <button type="button" className="acc-pill acc-pill--warn" onClick={() => { setBaselineAccount(acc); setBaselineAmount(''); }}>
+                              Set opening baseline
+                            </button>
+                          ) : (
+                            <button type="button" className="acc-pill acc-pill--bad" onClick={() => openReconcile(acc)}>
+                              Drift {formatCurrency(recon.difference, { currency: accCur })}
+                            </button>
+                          )}
+                          {acc.type === 'Credit Card' && acc.cashback_rate > 0 && (
+                            <span className="acc-pill acc-pill--warn">🎁 {acc.cashback_rate}% cashback</span>
+                          )}
+                          {acc.type === 'Credit Card' && acc.rewards_earned > 0 && (
+                            <span className="acc-pill acc-pill--ok">Earned {formatCurrency(acc.rewards_earned, { currency: accCur })}</span>
                           )}
                         </div>
-                      )}
-                    </div>
-
-                    {/* Balance history sparkline */}
-                    {(sparklineByAccount[acc.id]?.length >= 2) && (
-                      <div style={{ position:'absolute', bottom:0, left:0, right:0, height:60, opacity:0.4, pointerEvents:'none', borderRadius:'0 0 20px 20px', overflow:'hidden' }}>
-                        <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart data={sparklineByAccount[acc.id]} margin={{ top:0, right:0, left:0, bottom:0 }}>
-                            <defs>
-                              <linearGradient id={`sg-${acc.id}`} x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor={cfg.iconColor} stopOpacity={0.5}/>
-                                <stop offset="95%" stopColor={cfg.iconColor} stopOpacity={0}/>
-                              </linearGradient>
-                            </defs>
-                            <Area type="monotone" dataKey="balance" stroke={cfg.iconColor} strokeWidth={1.5} fill={`url(#sg-${acc.id})`} dot={false} isAnimationActive={false}/>
-                          </AreaChart>
-                        </ResponsiveContainer>
                       </div>
-                    )}
 
+                      {spark.length >= 2 ? (
+                        <div className="acc-card-spark" aria-hidden="true">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={spark} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
+                              <defs>
+                                <linearGradient id={`sg-${acc.id}`} x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor={cfg.accent} stopOpacity={0.35} />
+                                  <stop offset="95%" stopColor={cfg.accent} stopOpacity={0} />
+                                </linearGradient>
+                              </defs>
+                              <Area type="monotone" dataKey="balance" stroke={cfg.accent} strokeWidth={1.5} fill={`url(#sg-${acc.id})`} dot={false} isAnimationActive animationDuration={900} animationBegin={150 + i * 60} />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </div>
+                      ) : (
+                        <div className="acc-card-spark acc-card-spark--empty" />
+                      )}
+
+                      <footer className="acc-card-actions">
+                        <button type="button" className="acc-act acc-act--primary" onClick={() => openHistory(acc)} aria-label={`View history for ${acc.name}`} title="View history">
+                          <History size={15} /><span className="acc-act-label">History</span>
+                        </button>
+                        {accounts.length > 1 && !acc.archived && (
+                          <button type="button" className="acc-act" onClick={() => openTransfer(acc)} aria-label={`Quick transfer from ${acc.name}`} title="Quick transfer">
+                            <ArrowLeftRight size={15} /><span className="acc-act-label">Transfer</span>
+                          </button>
+                        )}
+                        <span className="acc-act-sep" />
+                        <button type="button" className="acc-act acc-act--icon" disabled={acc.archived} onClick={() => openReconcile(acc)} aria-label={`Reconcile ${acc.name}`} title="Reconcile to statement balance">
+                          <Scale size={15} />
+                        </button>
+                        <button type="button" className="acc-act acc-act--icon" onClick={() => openEditModal(acc)} aria-label={`Edit ${acc.name}`} title="Edit account">
+                          <Edit2 size={15} />
+                        </button>
+                        <button type="button" className="acc-act acc-act--icon" onClick={() => toggleArchive(acc)} aria-label={`${acc.archived ? 'Restore' : 'Archive'} ${acc.name}`} title={acc.archived ? 'Restore account' : 'Archive account'}>
+                          {acc.archived ? <ArchiveRestore size={15} /> : <Archive size={15} />}
+                        </button>
+                        <button type="button" className="acc-act acc-act--icon acc-act--danger" onClick={() => handleDelete(acc.id)} aria-label={`Delete ${acc.name}`} title="Delete account">
+                          <Trash2 size={15} />
+                        </button>
+                      </footer>
+                    </article>
                   </motion.div>
-                </TiltWrapper>
-              );
-            })}
+                );
+              })}
+            </AnimatePresence>
 
             {accounts.length === 0 && (
-              <div className="hud-panel col-span-12" style={{ textAlign: 'center', padding: '3.5rem', gridColumn: '1 / -1' }}>
-                <Landmark size={48} style={{ opacity: 0.2, marginBottom: '1rem' }} />
-                <p style={{ fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)' }}>
-                  NO ACCOUNTS DETECTED. INITIALIZE A NEW ASSET REPOSITORY.
-                </p>
+              <div className="acc-empty">
+                <div className="acc-empty-icon"><Landmark size={26} /></div>
+                <h3>No accounts yet</h3>
+                <p>Add your bank accounts, cash wallet, mobile wallets and cards to start tracking balances.</p>
+                <button className="btn btn-primary" onClick={openAddModal} style={{ marginTop: '0.4rem' }}>
+                  <Plus size={16} /> Add your first account
+                </button>
               </div>
             )}
-          </div>
+            {accounts.length > 0 && visibleAccounts.length === 0 && (
+              <div className="acc-empty">
+                <div className="acc-empty-icon"><Search size={24} /></div>
+                <h3>No matching accounts</h3>
+                <p>Try a different filter or search term.</p>
+                <button className="btn btn-secondary" onClick={() => { setTypeFilter('All'); setSearchQuery(''); }}>Clear filters</button>
+              </div>
+            )}
+          </motion.div>
         )}
       </div>
+
+      {!loading && accounts.length > 0 && (
+        <div className="acc-section">
+          <InsightAccounts accounts={accounts} />
+        </div>
+      )}
 
       {/* Spending by Account */}
       {!loading && accounts.length > 1 && allTransactions.length > 0 && (() => {
@@ -575,32 +699,33 @@ const Accounts = () => {
             const cur = a.currency || baseCurrency;
             const spend = parseFloat((spendMap[String(a.id)] || 0).toFixed(2));
             const baseSpend = cur === baseCurrency ? spend : (convertCurrency(spend, cur, baseCurrency, rates) ?? spend);
-            return { id: a.id, currency: cur, name: a.name, spend, baseSpend };
+            return { id: a.id, type: a.type, currency: cur, name: a.name, spend, baseSpend };
           })
           .filter(r => r.spend > 0)
           .sort((a, b) => b.baseSpend - a.baseSpend);
         if (rows.length === 0) return null;
         const maxByCurrency = Object.fromEntries(rows.map(row => [row.currency, Math.max(...rows.filter(r => r.currency === row.currency).map(r => r.spend))]));
         return (
-          <div className="heavy-section-deferred"
-            style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16, padding:'1.25rem 1.5rem', marginTop:'1.5rem' }}>
-            <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.7rem', letterSpacing:'2px', color:'var(--text-secondary)', marginBottom:'1rem' }}>💳 SPENDING BY ACCOUNT (ALL TIME)</div>
-            <p>Amounts use each account’s currency. Bar lengths compare accounts within the same currency.</p>
-            <div style={{ display:'flex', flexDirection:'column', gap:'0.6rem' }}>
-              {rows.map((r, i) => (
-                <div key={r.id}>
-                  <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.2rem' }}>
-                    <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.8rem', color:'var(--text-primary)' }}>{r.name}</span>
-                    <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.8rem', fontWeight:600, color:'#f87171' }}>{formatCurrency(r.spend, {currency:r.currency})}</span>
-                  </div>
-                  <div style={{ height:6, borderRadius:3, background:'rgba(255,255,255,0.05)', overflow:'hidden' }}>
-                    <motion.div initial={{ width:0 }} animate={{ width:`${(r.spend/maxByCurrency[r.currency])*100}%` }} transition={{ duration:0.8, delay:0.05*i, ease:'easeOut' }}
-                      style={{ height:'100%', borderRadius:3, background:`hsl(${220+i*30},70%,65%)`, boxShadow:`0 0 6px hsl(${220+i*30},70%,65%)40` }}/>
-                  </div>
-                </div>
-              ))}
+          <section className="acc-section acc-spend heavy-section-deferred" aria-label="Spending by account">
+            <div className="acc-spend-head">
+              <h3>Spending by account</h3>
+              <small>All time · bars compare accounts in the same currency</small>
             </div>
-          </div>
+            {rows.map((r, i) => (
+              <div key={r.id} className="acc-spend-row">
+                <div className="acc-spend-top">
+                  <span>{r.name}</span>
+                  <b>{formatCurrency(r.spend, { currency: r.currency })}</b>
+                </div>
+                <div className="acc-spend-track">
+                  <div
+                    className="acc-spend-fill"
+                    style={{ width: `${(r.spend / maxByCurrency[r.currency]) * 100}%`, '--i': i, '--acc-accent': (ACCOUNT_CONFIG[r.type] || ACCOUNT_CONFIG.Bank).accent }}
+                  />
+                </div>
+              </div>
+            ))}
+          </section>
         );
       })()}
 
