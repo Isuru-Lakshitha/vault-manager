@@ -2,7 +2,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// One stamp per build (YYYYMMDD_HHMM, UTC) — read by src/main.jsx.
+const BUILD_STAMP = new Date().toISOString().replace(/[-:]/g, '').replace('T', '_').slice(0, 13);
+
 export default defineConfig({
+  define: {
+    'import.meta.env.VITE_BUILD_STAMP': JSON.stringify(BUILD_STAMP),
+  },
   plugins: [
     react(),
     VitePWA({

@@ -505,7 +505,7 @@ const Accounts = () => {
                   <table>
                     <thead>
                       <tr>
-                        <th>Account</th><th className="num">Opening</th><th className="num">Expected</th><th className="num">Recorded</th><th>Status</th><th className="num">Action</th>
+                        <th>Account</th><th className="num">Opening</th><th className="num">Expected</th><th className="num">Recorded</th><th className="num">Difference</th><th>Status</th><th className="num">Action</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -519,14 +519,15 @@ const Accounts = () => {
                             <td className="num">{result.known ? money(account.opening_balance) : '—'}</td>
                             <td className="num">{result.known ? money(result.expected) : '—'}</td>
                             <td className="num">{money(account.balance)}</td>
+                            <td className={`num${result.known && !ok ? ' acc-diff-bad' : ''}`}>{result.known ? money(result.difference) : '—'}</td>
                             <td>
                               {ok ? <span className="acc-pill acc-pill--ok">✓ Verified</span>
                                 : !result.known ? <span className="acc-pill acc-pill--warn">Opening balance needed</span>
-                                : <span className="acc-pill acc-pill--bad">Drift {money(result.difference)}</span>}
+                                : <span className="acc-pill acc-pill--bad">Needs review</span>}
                             </td>
                             <td>
                               <div className="acc-recon-actions">
-                                {!result.known && <button className="btn btn-secondary" onClick={() => { setBaselineAccount(account); setBaselineAmount(''); }}>Set opening</button>}
+                                {!result.known && <button className="btn btn-secondary" onClick={() => { setBaselineAccount(account); setBaselineAmount(''); }}>Set opening balance</button>}
                                 <button className="btn btn-secondary" disabled={account.archived} onClick={() => openReconcile(account)}>Compare statement</button>
                               </div>
                             </td>

@@ -525,3 +525,4 @@ button.acc-pill { cursor: pointer; }
   .acc-card:focus-within { translate: none; }
   .acc-card:hover .acc-card-icon { rotate: none; scale: none; }
 }
+.acc-recon td.acc-diff-bad { color: var(--danger); font-weight: 600; }

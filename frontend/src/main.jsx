@@ -5,8 +5,9 @@ import { installGlobalErrorHandlers } from './utils/errorLogger'
 
 installGlobalErrorHandlers();
 
-// Build stamp: changing this automatically flushes stale service worker caches on client devices
-const BUILD_STAMP = '20261118_2350';
+// Build stamp: generated at build time (vite.config.js). A new value on each
+// deploy flushes stale service-worker caches on client devices.
+const BUILD_STAMP = import.meta.env.VITE_BUILD_STAMP || 'dev';
 try {
   if (localStorage.getItem('vm_build_stamp') !== BUILD_STAMP) {
     localStorage.setItem('vm_build_stamp', BUILD_STAMP);

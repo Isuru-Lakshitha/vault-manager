@@ -1393,7 +1393,7 @@ const Transactions = () => {
                 </button>
                 <ToolMenu label="Export" className="is-chip">
                   <button type="button" className="btn" onClick={handleExportCSV} title="Export filtered or selected rows to CSV with summary footer">
-                    CSV {selectedIds.size > 0 ? `(${selectedIds.size} selected)` : `(${filtered.length} rows)`}
+                    CSV {selectedIds.size > 0 ? `· selected rows (${selectedIds.size})` : `· all rows (${filtered.length})`}
                   </button>
                   <button type="button" className="btn" onClick={handleExportExcel} title="Export filtered or selected rows to Excel (.xlsx) with category summary sheet">
                     Excel workbook (.xlsx)
