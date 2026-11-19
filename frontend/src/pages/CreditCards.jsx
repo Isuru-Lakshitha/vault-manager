@@ -1,3 +1,4 @@
+import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader, StatGrid, StatCard } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useMemo } from 'react';
@@ -203,10 +204,18 @@ const CreditCards = () => {
     } catch { toast.error('Failed to save card'); }
   };
 
-  const doDelete = async () => {
-    try { await deleteCreditCard(confirm.id); toast.success('Card removed'); load(); }
-    catch (error) { toast.error(error.message || 'Failed to delete'); }
-    finally { setConfirm({ open: false, id: null }); }
+  const doDelete = () => {
+    const id = confirm.id;
+    const item = cards.find(x => String(x.id) === String(id));
+    setConfirm({ open: false, id: null });
+    removeItemWithUndo({
+      key: `card:${id}`,
+      label: itemLabel(item, 'Card deleted'),
+      setItems: setCards,
+      id,
+      commit: () => deleteCreditCard(id),
+      onCommitted: () => load(),
+    });
   };
 
   const openPay = (card) => {

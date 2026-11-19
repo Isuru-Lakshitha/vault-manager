@@ -1,3 +1,4 @@
+import { removeItemWithUndo } from '../components/undoToast';
 import ToolMenu from '../components/ToolMenu';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -2053,15 +2054,16 @@ const Dashboard = () => {
         onEdit={() => {
           navigate('/transactions');
         }}
-        onDelete={async (tx) => {
-          try {
-            await deleteTransaction(tx.id);
-            setPopupTx(null);
-            loadData(true);
-            toast.success('Transaction deleted');
-          } catch {
-  toast.error('Failed to delete transaction');
-}
+        onDelete={(tx) => {
+          setPopupTx(null);
+          removeItemWithUndo({
+            key: `txn:${tx.id}`,
+            label: 'Transaction deleted',
+            setItems: setTransactions,
+            id: tx.id,
+            commit: () => deleteTransaction(tx.id),
+            onCommitted: () => loadData(true),
+          });
         }}
       />
 

@@ -1,3 +1,4 @@
+import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useMemo } from 'react';
@@ -716,16 +717,18 @@ const Recurring = () => {
     }
   };
 
-  const doDelete = async () => {
-    try {
-      await deleteRecurringTransaction(confirm.id);
-      toast.success('Reminder deleted');
-      load(true);
-    } catch (err) {
-      toast.error(err?.message || 'Failed to delete');
-    } finally {
-      setConfirm({ open: false, id: null });
-    }
+  const doDelete = () => {
+    const id = confirm.id;
+    const item = rules.find(x => String(x.id) === String(id));
+    setConfirm({ open: false, id: null });
+    removeItemWithUndo({
+      key: `rule:${id}`,
+      label: itemLabel(item, 'Reminder deleted'),
+      setItems: setRules,
+      id,
+      commit: () => deleteRecurringTransaction(id),
+      onCommitted: () => load(true),
+    });
   };
 
   const activeRules = rules.filter(r => !r.paused);

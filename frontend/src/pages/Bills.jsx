@@ -1,3 +1,4 @@
+import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader, StatGrid, StatCard } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { advanceBill } from '../utils/billSchedule';
@@ -168,10 +169,18 @@ const Bills = () => {
     } catch { toast.error('Failed to update bill'); }
   };
 
-  const doDelete = async () => {
-    try { await deleteBill(confirm.id); toast.success('Bill removed'); load(); }
-    catch { toast.error('Failed to delete'); }
-    finally { setConfirm({ open: false, id: null }); }
+  const doDelete = () => {
+    const id = confirm.id;
+    const item = bills.find(x => String(x.id) === String(id));
+    setConfirm({ open: false, id: null });
+    removeItemWithUndo({
+      key: `bill:${id}`,
+      label: itemLabel(item, 'Bill deleted'),
+      setItems: setBills,
+      id,
+      commit: () => deleteBill(id),
+      onCommitted: () => load(),
+    });
   };
 
   const totalUpcoming = bills.filter(b => !b.paid).reduce((s, b) => s + b.amount, 0);

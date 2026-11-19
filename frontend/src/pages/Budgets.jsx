@@ -1,3 +1,4 @@
+import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader, StatCard } from '../components/ui';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -254,16 +255,18 @@ const Budgets = () => {
     }
   };
 
-  const doDelete = async () => {
-    try {
-      await deleteBudget(confirm.id);
-      toast.success('Budget deleted');
-      loadData();
-    } catch {
-      toast.error('Failed to delete budget');
-    } finally {
-      setConfirm({ open: false, id: null });
-    }
+  const doDelete = () => {
+    const id = confirm.id;
+    const item = budgets.find(x => String(x.id) === String(id));
+    setConfirm({ open: false, id: null });
+    removeItemWithUndo({
+      key: `budget:${id}`,
+      label: itemLabel(item, 'Budget deleted'),
+      setItems: setBudgets,
+      id,
+      commit: () => deleteBudget(id),
+      onCommitted: () => loadData(),
+    });
   };
 
   // Filter budgets by selectedMonth ('all' or 'YYYY-MM')

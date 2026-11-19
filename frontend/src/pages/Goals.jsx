@@ -1,3 +1,4 @@
+import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { InsightGoals } from '../components/InsightPanels';
@@ -433,17 +434,18 @@ const Goals = () => {
     openDeductModal(goal, numAmount);
   };
 
-  const doDelete = async () => {
-    try {
-      await deleteGoal(confirm.id);
-      toast.success('Goal deleted');
-      haptic();
-      loadData();
-    } catch (error) {
-      toast.error(error.message || 'Failed to delete goal');
-    } finally {
-      setConfirm({ open: false, id: null });
-    }
+  const doDelete = () => {
+    const id = confirm.id;
+    const item = goals.find(x => String(x.id) === String(id));
+    setConfirm({ open: false, id: null });
+    removeItemWithUndo({
+      key: `goal:${id}`,
+      label: itemLabel(item, 'Goal deleted'),
+      setItems: setGoals,
+      id,
+      commit: () => deleteGoal(id),
+      onCommitted: () => loadData(),
+    });
   };
 
   // Top Summary KPIs (Current Right Now + Target + Total Daily Calculation)

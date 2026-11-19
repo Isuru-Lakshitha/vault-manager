@@ -1,3 +1,4 @@
+import { deleteWithUndo, removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { StatCard } from '../components/ui';
 import ToolMenu from '../components/ToolMenu';
 import { auditStatus, summarizePayments, isActivePayment, isEditableTransaction, accountMovement } from '../utils/ledgerReporting.js';
@@ -549,38 +550,42 @@ const Transactions = () => {
 
 
   /* ── delete ── */
-  const doConfirmDelete = async () => {
+  const doConfirmDelete = () => {
     const deleteId = confirm.id;
     const deleteType = confirm.type;
-    // Optimistic: remove from UI immediately before network call
-    if (deleteType === 'txn') {
-      setTransactions(prev => prev.filter(t => String(t.id) !== String(deleteId)));
-    } else {
-      setRecurringRules(prev => prev.filter(r => String(r.id) !== String(deleteId)));
-    }
     setConfirm({ open: false, id: null, type: 'txn' });
-    try {
-      if (deleteType === 'txn') {
-        try {
-          await deleteTransaction(deleteId);
-        } catch (firstErr) {
-          if (firstErr?.message?.includes('changed') || firstErr?.message?.includes('fee')) {
-            invalidateCache('transactions');
+    if (deleteType === 'txn') {
+      removeItemWithUndo({
+        key: `txn:${deleteId}`,
+        label: 'Transaction deleted',
+        setItems: setTransactions,
+        id: deleteId,
+        commit: async () => {
+          try {
             await deleteTransaction(deleteId);
-          } else {
-            throw firstErr;
+          } catch (firstErr) {
+            if (firstErr?.message?.includes('changed') || firstErr?.message?.includes('fee')) {
+              invalidateCache('transactions');
+              await deleteTransaction(deleteId);
+            } else {
+              throw firstErr;
+            }
           }
-        }
-        toast.success('Deleted & balances corrected');
-        const freshAcc = getCache('accounts');
-        if (freshAcc) setAccounts([...freshAcc]);
-      } else {
-        await deleteRecurringTransaction(deleteId);
-        toast.success('Recurring rule removed');
-      }
-    } catch (err) {
-      toast.error(err?.message || 'Failed to delete');
-      loadData(); // revert on error
+        },
+        onCommitted: () => {
+          const freshAcc = getCache('accounts');
+          if (freshAcc) setAccounts([...freshAcc]);
+        },
+      });
+    } else {
+      const rule = recurringRules.find(r => String(r.id) === String(deleteId));
+      removeItemWithUndo({
+        key: `rule:${deleteId}`,
+        label: itemLabel(rule, 'Recurring rule deleted'),
+        setItems: setRecurringRules,
+        id: deleteId,
+        commit: () => deleteRecurringTransaction(deleteId),
+      });
     }
   };
 
@@ -599,23 +604,25 @@ const Transactions = () => {
       toast.error('Selected rows are protected audit/fee records and cannot be deleted');
       return;
     }
-    setTransactions(prev => prev.filter(t => !deletable.includes(t.id)));
-    // Delete one at a time: each delete corrects shared account balances atomically,
-    // so running them in parallel causes contention and partial failures.
-    let done = 0;
-    const failed = [];
-    for (const id of deletable) {
-      try {
-        await deleteTransaction(id);
-        done++;
-      } catch (err) {
-        failed.push(err?.message || 'unknown error');
-      }
-    }
-    if (done) toast.success(`${done} transaction${done > 1 ? 's' : ''} deleted & balances corrected`);
     if (protectedIds.length) toast(`Skipped ${protectedIds.length} protected record${protectedIds.length > 1 ? 's' : ''} (fees / reversals / invoices)`, { icon: 'ℹ️' });
-    if (failed.length) toast.error(`${failed.length} could not be deleted: ${failed[0]}`);
-    loadData(true);
+    const n = deletable.length;
+    let snapshot = null;
+    deleteWithUndo({
+      key: `txn-bulk:${deletable.join(',')}`,
+      label: `${n} transaction${n > 1 ? 's' : ''} deleted`,
+      hide: () => setTransactions(prev => { snapshot = prev; return prev.filter(t => !deletable.includes(t.id)); }),
+      restore: () => { if (snapshot) setTransactions(snapshot); },
+      // Delete one at a time: each delete corrects shared account balances atomically,
+      // so running them in parallel causes contention and partial failures.
+      commit: async () => {
+        const failed = [];
+        for (const id of deletable) {
+          try { await deleteTransaction(id); } catch (err) { failed.push(err?.message || 'unknown error'); }
+        }
+        if (failed.length) toast.error(`${failed.length} could not be deleted: ${failed[0]}`);
+      },
+      onCommitted: () => loadData(true),
+    });
   };
 
   const handleApplyRecurring = async () => {

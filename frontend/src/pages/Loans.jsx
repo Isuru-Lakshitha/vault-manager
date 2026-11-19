@@ -1,3 +1,4 @@
+import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader, StatCard, StatGrid } from '../components/ui';
 import { InsightLoans } from '../components/InsightPanels';
 import { useState, useEffect } from 'react';
@@ -135,10 +136,15 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
     }
   };
 
-  const handleDeleteIou = async (id) => {
-    setIous(prev => prev.filter(x => x.id !== id));
-    await deleteIou(id);
-    toast.success('IOU removed');
+  const handleDeleteIou = (id) => {
+    const item = ious.find(x => String(x.id) === String(id));
+    removeItemWithUndo({
+      key: `iou:${id}`,
+      label: item?.person ? `IOU with ${item.person} deleted` : 'IOU deleted',
+      setItems: setIous,
+      id,
+      commit: () => deleteIou(id),
+    });
   };
 
   const handleShareReminder = (item) => {
@@ -635,10 +641,18 @@ const Loans = () => {
     // Always open the manual Payment Modal so the user can choose which account to deduct from and adjust the amount
     openPaymentModal(loan, amount ? parseFloat(amount.toFixed(2)) : null);
   };
-  const doDelete = async () => {
-    try { await deleteLoan(confirm.id); toast.success('Loan deleted'); loadData(); }
-    catch (error) { toast.error(error.message || 'Failed to delete loan'); }
-    finally { setConfirm({ open:false, id:null }); }
+  const doDelete = () => {
+    const id = confirm.id;
+    const item = loans.find(x => String(x.id) === String(id));
+    setConfirm({ open: false, id: null });
+    removeItemWithUndo({
+      key: `loan:${id}`,
+      label: itemLabel(item, 'Loan deleted'),
+      setItems: setLoans,
+      id,
+      commit: () => deleteLoan(id),
+      onCommitted: () => loadData(),
+    });
   };
   const handleCreateSubmit = async (e) => {
     e.preventDefault();

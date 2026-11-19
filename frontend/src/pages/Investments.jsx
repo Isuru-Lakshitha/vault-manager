@@ -1,3 +1,4 @@
+import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect } from 'react';
@@ -133,10 +134,18 @@ const Investments = () => {
     } catch { toast.error('Failed to save'); }
   };
 
-  const doDelete = async () => {
-    try { await deleteInvestment(confirm.id); toast.success('Investment removed'); load(); }
-    catch { toast.error('Failed to delete'); }
-    finally { setConfirm({ open:false, id:null }); }
+  const doDelete = () => {
+    const id = confirm.id;
+    const item = investments.find(x => String(x.id) === String(id));
+    setConfirm({ open: false, id: null });
+    removeItemWithUndo({
+      key: `investment:${id}`,
+      label: itemLabel(item, 'Investment deleted'),
+      setItems: setInvestments,
+      id,
+      commit: () => deleteInvestment(id),
+      onCommitted: () => load(),
+    });
   };
 
   // Live price refresh via CoinGecko (free, no API key)

@@ -1,3 +1,4 @@
+import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import ToolMenu from '../components/ToolMenu';
 import { InsightAccounts } from '../components/InsightPanels';
 import { reconcileAccount, isActivePayment, accountMovement, summarizeAccountHistory } from '../utils/ledgerReporting.js';
@@ -220,21 +221,21 @@ const Accounts = () => {
     setTxHistory(filterAndSortAccountHistory(allTransactions, viewAcc.id));
   }, [accounts, allTransactions, viewAcc]);
 
-  const doDelete = async () => {
+  const doDelete = () => {
     const deleteId = confirm.id;
-    // Optimistic: remove from UI immediately
-    setAccounts(prev => prev.filter(a => String(a.id) !== String(deleteId)));
+    const item = accounts.find(a => String(a.id) === String(deleteId));
     setConfirm({ open: false, id: null });
-    try {
-      await deleteAccount(deleteId);
-      toast.success('Account deleted');
-      // Sync from cache to ensure consistency
-      const fresh = getCache('accounts');
-      if (fresh) setAccounts([...fresh]);
-    } catch (err) {
-      toast.error(err?.message || 'Failed to delete account');
-      loadAccounts(); // revert on error
-    }
+    removeItemWithUndo({
+      key: `account:${deleteId}`,
+      label: itemLabel(item, 'Account deleted'),
+      setItems: setAccounts,
+      id: deleteId,
+      commit: () => deleteAccount(deleteId),
+      onCommitted: () => {
+        const fresh = getCache('accounts');
+        if (fresh) setAccounts([...fresh]);
+      },
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -1072,14 +1073,16 @@ const Accounts = () => {
         onClose={() => setPopupTx(null)}
         transaction={popupTx}
         accounts={accounts}
-        onDelete={async (tx) => {
-          try {
-            await deleteTransaction(tx.id);
-            toast.success('Transaction deleted');
-            loadAccounts(true);
-          } catch (err) {
-            toast.error(err?.message || 'Failed to delete transaction');
-          }
+        onDelete={(tx) => {
+          setPopupTx(null);
+          removeItemWithUndo({
+            key: `txn:${tx.id}`,
+            label: 'Transaction deleted',
+            setItems: setAllTransactions,
+            id: tx.id,
+            commit: () => deleteTransaction(tx.id),
+            onCommitted: () => loadAccounts(true),
+          });
         }}
       />
     </PageWrapper>

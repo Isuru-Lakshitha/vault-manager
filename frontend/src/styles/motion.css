@@ -323,3 +323,25 @@ summary::marker, summary::-webkit-details-marker { transition: rotate var(--dur-
   .is-pulling > :not(.ptr-indicator) { transform: none; }
   .ptr-indicator.is-refreshing svg:first-child { animation-duration: 1.6s; }
 }
+
+/* ---------- Undo toast (components/undoToast.jsx) ---------- */
+.undo-toast-wrap { padding: 0 !important; overflow: hidden; }
+.undo-toast { position: relative; display: flex; align-items: center; gap: 1rem; padding: 0.7rem 0.6rem 0.75rem 0.95rem; min-width: min(320px, 82vw); font-size: 0.86rem; }
+.undo-toast-label { flex: 1; font-weight: 550; }
+.undo-toast-btn {
+  border: 0; border-radius: 8px; padding: 0.4rem 0.8rem; cursor: pointer;
+  font: 700 0.82rem Inter, system-ui, sans-serif; letter-spacing: 0.01em;
+  color: var(--mm-accent, #5b8def);
+  background: color-mix(in srgb, var(--mm-accent, #5b8def) 14%, transparent);
+  transition: background-color var(--dur-fast) ease, scale var(--dur-instant) ease-out;
+}
+.undo-toast-btn:hover { background: color-mix(in srgb, var(--mm-accent, #5b8def) 24%, transparent); }
+.undo-toast-btn:active { scale: 0.95; }
+.undo-toast-timer {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: var(--mm-accent, #5b8def);
+  transform-origin: left center;
+  animation: undo-countdown linear forwards;
+}
+@keyframes undo-countdown { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+@media (prefers-reduced-motion: reduce) { .undo-toast-timer { animation: none; opacity: 0.5; } }
