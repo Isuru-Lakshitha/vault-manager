@@ -20,6 +20,7 @@ import HealthScoreGauge from '../components/HealthScoreGauge';
 import EmergencyRunwayCard from '../components/EmergencyRunwayCard';
 import SafeToSpendCard from '../components/SafeToSpendCard';
 import GettingStarted from '../components/GettingStarted';
+import MonthClosePrompt from '../components/MonthClosePrompt';
 import MonthlyStoryModal from '../components/MonthlyStoryModal';
 import AchievementsModal from '../components/AchievementsModal';
 import { evaluateAchievements } from '../utils/achievements';
@@ -644,6 +645,9 @@ const Dashboard = () => {
               <button type="button" className="btn header-secondary-tool dash-tool" onClick={() => setAchievementsOpen(true)}>
                 <span className="dash-tool-icon" aria-hidden="true">🏆</span> Level {achievementData.currentRank.level} · {achievementData.totalXp} XP
               </button>
+              <button type="button" className="btn header-secondary-tool dash-tool" onClick={() => window.dispatchEvent(new Event('vm:open-month-close'))}>
+                <span className="dash-tool-icon" aria-hidden="true">📅</span> Close last month
+              </button>
               <button type="button" className="btn header-secondary-tool dash-tool" onClick={() => setShowStoryModal(true)}>
                 <span className="dash-tool-icon" aria-hidden="true">✨</span> Wrapped
               </button>
@@ -691,6 +695,7 @@ const Dashboard = () => {
             )}
 
             <GettingStarted accounts={accounts} transactions={transactions} budgets={budgets} />
+            <MonthClosePrompt accounts={accounts} transactions={transactions} budgets={budgets} />
 
             {summaryCard}
 
