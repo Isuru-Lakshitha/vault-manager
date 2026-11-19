@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PullToRefresh from '../../src/motion/PullToRefresh';
+import { initLiquidGlass } from '../../src/motion/liquidGlass';
+initLiquidGlass();
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';

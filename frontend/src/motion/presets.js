@@ -7,6 +7,8 @@ export const spring = {
   snappy: { type: 'spring', stiffness: 520, damping: 38, mass: 0.7 },
   smooth: { type: 'spring', stiffness: 340, damping: 32 },
   gentle: { type: 'spring', stiffness: 220, damping: 28 },
+  // Underdamped: overshoots and settles like a drop of liquid.
+  liquid: { type: 'spring', stiffness: 420, damping: 22, mass: 0.9 },
 };
 
 export const ease = {

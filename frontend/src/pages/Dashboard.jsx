@@ -634,7 +634,7 @@ const Dashboard = () => {
             <div className="dash-seg" role="group" aria-label="Dashboard view">
               {[['Overview', true], ['Detailed', false]].map(([label, minimal]) => (
                 <button key={label} type="button" aria-pressed={isMinimalistView === minimal} onClick={() => toggleMinimalistView(minimal)}>
-                  {isMinimalistView === minimal && <motion.span layoutId="dash-seg-pill" className="dash-seg-pill" transition={spring.snappy} />}
+                  {isMinimalistView === minimal && <motion.span layoutId="dash-seg-pill" className="dash-seg-pill" transition={spring.liquid} />}
                   {label}
                 </button>
               ))}

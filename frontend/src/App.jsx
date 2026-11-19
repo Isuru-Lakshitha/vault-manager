@@ -817,7 +817,8 @@ function App() {
         position={isMobile ? 'top-center' : 'bottom-right'}
         containerStyle={isMobile ? { top: 'calc(env(safe-area-inset-top, 0px) + 0.75rem)' } : { bottom: '1rem', right: '1rem' }}
         toastOptions={{
-          style: { background:'var(--mm-surface)', color:'var(--mm-text)', border:'1px solid var(--mm-border)', fontFamily:'Inter, sans-serif', fontSize:'0.875rem', borderRadius:'14px', boxShadow:'var(--depth-2)', maxWidth: 'min(420px, calc(100vw - 2rem))' },
+          className: 'lg-toast',
+          style: { fontFamily:'Inter, sans-serif', fontSize:'0.875rem', maxWidth: 'min(420px, calc(100vw - 2rem))' },
           success: { iconTheme:{ primary:'var(--mm-success)', secondary:'var(--mm-surface)' } },
           error:   { iconTheme:{ primary:'var(--mm-danger)', secondary:'var(--mm-surface)' } },
         }}

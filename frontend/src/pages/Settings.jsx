@@ -638,7 +638,7 @@ const Settings = () => {
             <div className="theme-seg" role="radiogroup" aria-label="Theme">
               {[['dark', Moon, 'Dark'], ['light', Sun, 'Light'], ['system', Monitor, 'System']].map(([value, Icon, label]) => (
                 <button key={value} type="button" role="radio" aria-checked={theme === value} onClick={() => handleThemeChange(value)}>
-                  {theme === value && <motion.span layoutId="theme-seg-pill" className="theme-seg-pill" transition={{ type: 'spring', stiffness: 520, damping: 38 }} />}
+                  {theme === value && <motion.span layoutId="theme-seg-pill" className="theme-seg-pill" transition={{ type: 'spring', stiffness: 420, damping: 22, mass: 0.9 }} />}
                   <Icon size={14} /> <span>{label}</span>
                 </button>
               ))}

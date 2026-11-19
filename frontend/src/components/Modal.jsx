@@ -8,15 +8,20 @@ const backdropVariants = {
   visible: { opacity: 1 },
 };
 
+// Liquid Glass: dialogs open like a droplet — they swell past full size,
+// sharpen from a soft blur and settle, while the corners tighten.
 const modalVariants = {
-  hidden: { opacity: 0, scale: 0.94, y: 20 },
+  hidden: { opacity: 0, scale: 0.86, y: 18, filter: 'blur(10px)', borderRadius: 44 },
   visible: {
-    opacity: 1, scale: 1, y: 0,
-    transition: { type: 'spring', damping: 28, stiffness: 380, mass: 0.8 }
+    opacity: 1, scale: 1, y: 0, filter: 'blur(0px)', borderRadius: 28,
+    transition: { type: 'spring', stiffness: 360, damping: 24, mass: 0.9, filter: { duration: 0.25 }, opacity: { duration: 0.2 } },
+    // Drop the filter once settled: a lingering filter would re-anchor
+    // position:fixed children (dropdowns) to the panel and clip them.
+    transitionEnd: { filter: 'none' },
   },
   exit: {
-    opacity: 0, scale: 0.94, y: 16,
-    transition: { duration: 0.18, ease: 'easeIn' }
+    opacity: 0, scale: 0.92, y: 10, filter: 'blur(8px)',
+    transition: { duration: 0.2, ease: [0.4, 0, 1, 1] }
   }
 };
 
@@ -87,7 +92,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
             style={{
               position: 'absolute',
               inset: 0,
-              background: 'rgba(0, 0, 0, 0.72)',
+              background: 'var(--lg-scrim, rgba(0, 0, 0, 0.5))',
               backdropFilter: 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)',
             }}
@@ -128,14 +133,6 @@ const Modal = ({ isOpen, onClose, title, children }) => {
               overflow: 'hidden',
             }}
           >
-            {/* Top gradient accent line */}
-            <div style={{
-              position: 'absolute', top: 0, left: '15%', right: '15%', height: 2,
-              background: 'linear-gradient(90deg, transparent, #4ade80, #818cf8, transparent)',
-              borderRadius: '0 0 4px 4px',
-              zIndex: 2,
-            }} />
-
             {/* Mobile drag handle bar (only this bar triggers drag-to-dismiss) */}
             {isMobile && (
               <div

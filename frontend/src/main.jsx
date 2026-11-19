@@ -2,8 +2,10 @@ import { createRoot } from 'react-dom/client'
 import './styles/index.css'
 import App from './App.jsx'
 import { installGlobalErrorHandlers } from './utils/errorLogger'
+import { initLiquidGlass } from './motion/liquidGlass'
 
 installGlobalErrorHandlers();
+initLiquidGlass();
 
 // Build stamp: generated at build time (vite.config.js). A new value on each
 // deploy flushes stale service-worker caches on client devices.

@@ -1,0 +1,232 @@
+/* ==========================================================================
+   Liquid Glass — Apple-style glass material + fluid motion
+   The navigation & control layer floats above content as glass:
+     • translucent tint over a saturated backdrop blur
+     • specular rim light (bright top/left edge, faint bottom/right)
+     • soft top sheen, and on Chromium real lensing via an SVG
+       displacement filter (html.lg-lens, see motion/liquidGlass.js)
+     • light bloom that follows the pointer/finger (.lg-interactive)
+     • spring easing everywhere (CSS linear() spring curve)
+   Content cards stay solid for legibility, as in Apple's guidance.
+   Loaded after depth.css; `html body` prefixes win over older overrides.
+   ========================================================================== */
+
+/* ---------- Tokens ---------- */
+:root {
+  --lg-blur: 22px;
+  --lg-blur-thick: 34px;
+  --lg-sat: 190%;
+  --lg-tint: rgba(24, 27, 34, 0.42);
+  --lg-tint-thick: rgba(22, 25, 32, 0.68);
+  --lg-rim: rgba(255, 255, 255, 0.30);
+  --lg-rim-soft: rgba(255, 255, 255, 0.07);
+  --lg-edge: rgba(255, 255, 255, 0.10);
+  --lg-sheen: rgba(255, 255, 255, 0.12);
+  --lg-bloom: rgba(255, 255, 255, 0.16);
+  --lg-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.22);
+  --lg-scrim: rgba(4, 6, 10, 0.46);
+
+  /* Spring curves (bouncy + soft). Fallback below for older engines. */
+  --lg-spring: linear(0, 0.0063, 0.0255 1.6%, 0.1032 3.4%, 0.2349 5.4%, 0.4253 7.8%, 0.8155 12.5%, 0.9407 14.4%, 1.0369 16.3%, 1.1033 18.2%, 1.1427 20.1%, 1.1576 21.9%, 1.1509 24%, 1.1282 26.1%, 1.0479 31.4%, 1.0065 35.2%, 0.9838 39.1%, 0.9762 42.7%, 0.978 46.6%, 0.9935 56.2%, 1.0015 64.8%, 1.0026 73.4%, 1);
+  --lg-spring-soft: linear(0, 0.0284, 0.1049 3.7%, 0.2229 5.8%, 0.5245 10.3%, 0.7616 14.3%, 0.9127 18.1%, 1.0072 22%, 1.0483 25.6%, 1.0611 29%, 1.0578 32.2%, 1.0193 41.8%, 1.0028 50.4%, 0.9982 60.4%, 1);
+}
+@supports not (transition-timing-function: linear(0, 1)) {
+  :root { --lg-spring: cubic-bezier(0.34, 1.56, 0.64, 1); --lg-spring-soft: cubic-bezier(0.22, 1.2, 0.36, 1); }
+}
+body.light-mode {
+  --lg-tint: rgba(255, 255, 255, 0.52);
+  --lg-tint-thick: rgba(255, 255, 255, 0.74);
+  --lg-rim: rgba(255, 255, 255, 0.95);
+  --lg-rim-soft: rgba(17, 24, 39, 0.06);
+  --lg-edge: rgba(17, 24, 39, 0.08);
+  --lg-sheen: rgba(255, 255, 255, 0.55);
+  --lg-bloom: rgba(255, 255, 255, 0.7);
+  --lg-shadow: 0 12px 30px -14px rgba(17, 24, 39, 0.28), 0 2px 6px rgba(17, 24, 39, 0.06);
+  --lg-scrim: rgba(17, 24, 39, 0.22);
+}
+
+/* ---------- The material ---------- */
+html body :is(
+  .bottom-nav, .shell-topbar, .mobile-header, .sidebar,
+  .quiet-tools-panel, .dash-seg, .theme-seg, .ptr-indicator, .lg-toast, .lg-glass
+) {
+  background:
+    linear-gradient(180deg, var(--lg-sheen) 0%, transparent 42%),
+    var(--lg-tint) !important;
+  -webkit-backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important;
+  backdrop-filter: blur(var(--lg-blur)) saturate(var(--lg-sat)) !important;
+  border: 1px solid var(--lg-edge) !important;
+  box-shadow:
+    inset 0 1px 0 var(--lg-rim),
+    inset 1px 0 0 var(--lg-rim-soft),
+    inset -1px 0 0 var(--lg-rim-soft),
+    inset 0 -1px 0 var(--lg-rim-soft),
+    var(--lg-shadow) !important;
+}
+/* Thicker glass for surfaces that hold content (dialogs, menus). */
+html body :is(.modal-panel, .modal-sheet) {
+  background:
+    linear-gradient(180deg, var(--lg-sheen) 0%, transparent 30%),
+    var(--lg-tint-thick) !important;
+  -webkit-backdrop-filter: blur(var(--lg-blur-thick)) saturate(var(--lg-sat)) !important;
+  backdrop-filter: blur(var(--lg-blur-thick)) saturate(var(--lg-sat)) !important;
+  border: 1px solid var(--lg-edge) !important;
+  box-shadow:
+    inset 0 1px 0 var(--lg-rim),
+    inset 0 -1px 0 var(--lg-rim-soft),
+    0 40px 90px -30px rgba(0, 0, 0, 0.75) !important;
+}
+html body .quiet-tools-panel { background: linear-gradient(180deg, var(--lg-sheen) 0%, transparent 35%), var(--lg-tint-thick) !important; }
+
+/* Real lensing on Chromium: the backdrop bends like it's seen through glass. */
+html.lg-lens body :is(.bottom-nav, .bottom-nav-fab, .ptr-indicator, .dash-seg, .theme-seg) {
+  backdrop-filter: url(#lg-distort) blur(var(--lg-blur)) saturate(var(--lg-sat)) !important;
+}
+
+/* ---------- Light bloom that follows the pointer ---------- */
+:is(.lg-interactive, .bottom-nav-item, .bottom-nav-fab, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button) { position: relative; isolation: isolate; }
+:is(.lg-interactive, .bottom-nav-item, .bottom-nav-fab, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button)::after {
+  content: '';
+  position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(120px circle at var(--gx, 50%) var(--gy, 50%), var(--lg-bloom), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+:is(.lg-interactive, .bottom-nav-item, .bottom-nav-fab, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button):is(:hover, :active)::after { opacity: 1; }
+
+/* Liquid press: controls swell slightly and spring back. */
+:is(.lg-interactive, .bottom-nav-item, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button) { transition: scale 0.5s var(--lg-spring), background-color 0.2s ease, color 0.2s ease !important; }
+:is(.lg-interactive, .bottom-nav-item, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button):active { scale: 1.06 !important; transition-duration: 0.18s !important; }
+
+/* ---------- Floating tab bar (mobile) ---------- */
+@media (max-width: 900px) {
+  html body .bottom-nav {
+    border-radius: 30px !important;
+    left: 12px !important; right: 12px !important;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+    height: 64px !important;
+    transition:
+      left 0.6s var(--lg-spring-soft), right 0.6s var(--lg-spring-soft),
+      height 0.6s var(--lg-spring-soft), border-radius 0.6s var(--lg-spring-soft),
+      translate 0.6s var(--lg-spring-soft) !important;
+  }
+  /* Minimise while scrolling down; spring back on scroll up. */
+  html.lg-scroll-down body .bottom-nav {
+    left: 18% !important; right: 18% !important;
+    height: 52px !important;
+    translate: 0 4px;
+  }
+  .bottom-nav-label { transition: opacity 0.25s ease, max-height 0.4s var(--lg-spring-soft); max-height: 14px; overflow: hidden; }
+  html.lg-scroll-down .bottom-nav-label { opacity: 0; max-height: 0; }
+  html.lg-scroll-down .bottom-nav-inner { height: 50px !important; }
+  html.lg-scroll-down .bottom-nav-fab { scale: 0.86; }
+}
+
+/* Active tab: a glass lens that slides like a drop of liquid. */
+html body .bottom-nav-pill {
+  background:
+    linear-gradient(180deg, var(--lg-sheen), transparent 60%),
+    color-mix(in srgb, var(--mm-accent, #5b8def) 22%, transparent) !important;
+  box-shadow:
+    inset 0 1px 0 var(--lg-rim),
+    inset 0 -1px 0 var(--lg-rim-soft),
+    0 4px 14px -6px color-mix(in srgb, var(--mm-accent, #5b8def) 70%, transparent) !important;
+  border-radius: 999px !important;
+}
+
+/* Centre button: tinted glass drop. */
+html body .bottom-nav-fab {
+  background:
+    radial-gradient(120% 90% at 30% 20%, rgba(255,255,255,0.45), transparent 45%),
+    color-mix(in srgb, var(--mm-accent, #5b8def) 82%, transparent) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  backdrop-filter: blur(12px) saturate(180%);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.55),
+    inset 0 -2px 4px rgba(0,0,0,0.18),
+    0 10px 24px -8px color-mix(in srgb, var(--mm-accent, #5b8def) 80%, transparent) !important;
+  transition: scale 0.55s var(--lg-spring), box-shadow 0.3s ease !important;
+}
+html body .bottom-nav-fab:active { scale: 1.12; }
+
+/* ---------- Top bars: transparent until content slides beneath ---------- */
+html body :is(.shell-topbar, .mobile-header) {
+  transition: background-color 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease, backdrop-filter 0.35s ease !important;
+}
+html:not(.lg-scrolled) body .shell-topbar {
+  background: transparent !important;
+  -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+html body .shell-topbar { border-width: 0 0 1px 0 !important; }
+html body .mobile-header { border-width: 0 0 1px 0 !important; }
+html body .sidebar { border-width: 0 1px 0 0 !important; }
+
+/* ---------- Segmented controls: glass track + liquid pill ---------- */
+html body :is(.dash-seg, .theme-seg) { border-radius: 999px !important; padding: 4px !important; }
+html body :is(.dash-seg, .theme-seg) button { border-radius: 999px !important; }
+html body :is(.dash-seg-pill, .theme-seg-pill) {
+  border-radius: 999px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.45),
+    inset 0 -1px 0 rgba(0,0,0,0.12),
+    0 6px 16px -8px color-mix(in srgb, var(--mm-accent, #5b8def) 80%, transparent) !important;
+}
+html body .theme-seg-pill {
+  background: linear-gradient(180deg, var(--lg-sheen), transparent 70%), var(--lg-tint-thick) !important;
+}
+
+/* ---------- Menus & dialogs open like a droplet ---------- */
+html body .quiet-tools-panel { border-radius: 18px !important; transform-origin: top right; }
+.quiet-tools[open] > .quiet-tools-panel { animation: lg-pop 0.55s var(--lg-spring) both; }
+.quiet-tools.is-chip[open] > .quiet-tools-panel { transform-origin: top left; }
+@keyframes lg-pop {
+  from { opacity: 0; scale: 0.82; filter: blur(6px); border-radius: 32px; }
+  40%  { opacity: 1; filter: blur(0); }
+  to   { opacity: 1; scale: 1; filter: blur(0); border-radius: 18px; }
+}
+html body .modal-panel { border-radius: 28px !important; }
+@media (max-width: 680px) { html body .modal-sheet { border-radius: 28px 28px 0 0 !important; } }
+
+/* Toasts: glass capsules */
+html body .lg-toast { border-radius: 18px !important; color: var(--mm-text) !important; }
+
+/* Pull-to-refresh ring: glass bubble */
+html body .ptr-indicator.is-armed {
+  background: radial-gradient(120% 90% at 30% 20%, rgba(255,255,255,0.45), transparent 45%), color-mix(in srgb, var(--mm-accent, #5b8def) 85%, transparent) !important;
+}
+
+/* Small glass controls in headers */
+html body :is(.menu-toggle, .shell-search) {
+  background: linear-gradient(180deg, var(--lg-sheen), transparent 60%), var(--lg-tint) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  backdrop-filter: blur(14px) saturate(170%);
+  border: 1px solid var(--lg-edge) !important;
+  box-shadow: inset 0 1px 0 var(--lg-rim) !important;
+  border-radius: 999px !important;
+}
+html body .shell-search { padding-inline: 0.9rem !important; }
+
+/* Page entrance gains a soft focus-in (desktop only; cheap on mobile). */
+@media (hover: hover) and (pointer: fine) {
+  .page-enter { animation: lg-focus-in 0.45s var(--ease-out-expo, ease) backwards; }
+}
+@keyframes lg-focus-in { from { opacity: 0; filter: blur(6px); } to { opacity: 1; filter: blur(0); } }
+
+/* ---------- Accessibility ---------- */
+@media (prefers-reduced-transparency: reduce) {
+  html body :is(.bottom-nav, .shell-topbar, .mobile-header, .sidebar, .quiet-tools-panel, .dash-seg, .theme-seg,
+    .ptr-indicator, .lg-toast, .lg-glass, .modal-panel, .modal-sheet, .menu-toggle, .shell-search) {
+    background: var(--mm-surface, #16191e) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.lg-interactive, .bottom-nav-item, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button, .bottom-nav-fab):active { scale: none !important; }
+  .quiet-tools[open] > .quiet-tools-panel, .page-enter { animation: none !important; }
+  html body .bottom-nav, .bottom-nav-label { transition: none !important; }
+}
