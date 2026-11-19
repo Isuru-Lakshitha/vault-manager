@@ -7,6 +7,7 @@ import PullToRefresh from './motion/PullToRefresh';
 import ThemeToggle from './components/ThemeToggle';
 import { Toaster, toast } from 'react-hot-toast';
 import Sidebar, { NAV_ITEMS } from './components/Sidebar';
+import BillsHubTabs from './components/BillsHubTabs';
 import Login from './pages/Login';
 import EmailVerification from './components/EmailVerification';
 import { Menu, Landmark, Plus, Eye, EyeOff, Cloud, Sparkles, Download } from 'lucide-react';
@@ -139,10 +140,10 @@ const AnimatedRoutes = () => (
         <Route path="/budgets"      element={<Budgets />} />
         <Route path="/goals"        element={<Goals />} />
         <Route path="/settings"     element={<Settings />} />
-        <Route path="/bills"        element={<Bills />} />
+        <Route path="/bills"        element={<BillsHubTabs><Bills /></BillsHubTabs>} />
         <Route path="/investments"  element={<Investments />} />
         <Route path="/credit-cards" element={<CreditCards />} />
-        <Route path="/recurring"    element={<Recurring />} />
+        <Route path="/recurring"    element={<BillsHubTabs><Recurring /></BillsHubTabs>} />
         <Route path="/admin"        element={<AdminPanel />} />
         <Route path="/privacy"      element={<Privacy />} />
       </Routes>
@@ -270,7 +271,7 @@ function App() {
   }, []);
 
   // Mobile header shows the current page name
-  const pageTitle = NAV_ITEMS.find(i => location.pathname.startsWith(i.path))?.label || 'Vault Manager';
+  const pageTitle = NAV_ITEMS.find(i => [i.path, ...(i.also || [])].some(p => location.pathname.startsWith(p)))?.label || 'Vault Manager';
 
   // Bottom-nav FAB → Quick Add; More sheet → Search; Currency Hub; FinTech Tools
   useEffect(() => {

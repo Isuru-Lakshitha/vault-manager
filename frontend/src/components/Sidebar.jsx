@@ -1,5 +1,5 @@
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, CreditCard, ArrowRightLeft, Landmark, BarChart2, Target, Wallet, Settings, LogOut, Receipt, TrendingUp, BadgeDollarSign, RefreshCw, MoreHorizontal, Search, X, Eye, EyeOff, Plus, Crown, Smartphone, ChevronLeft } from 'lucide-react';
+import { LayoutDashboard, CreditCard, ArrowRightLeft, Landmark, BarChart2, Target, Wallet, Settings, LogOut, Receipt, TrendingUp, BadgeDollarSign, MoreHorizontal, Search, X, Eye, EyeOff, Plus, Crown, Smartphone, ChevronLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
@@ -14,11 +14,11 @@ const NAV_ITEMS = [
   { path: '/dashboard',    icon: LayoutDashboard,  label: 'Dashboard',    page: () => import('../pages/Dashboard')    },
   { path: '/accounts',     icon: CreditCard,        label: 'Accounts',     page: () => import('../pages/Accounts')     },
   { path: '/transactions', icon: ArrowRightLeft,    label: 'Transactions', page: () => import('../pages/Transactions') },
-  { path: '/recurring',    icon: RefreshCw,         label: 'Recurring',    page: () => import('../pages/Recurring')    },
+  // One entry for both: /recurring is a tab of the same page (components/BillsHubTabs).
+  { path: '/bills', also: ['/recurring'], icon: Receipt, label: 'Bills & Recurring', page: () => Promise.all([import('../pages/Bills'), import('../pages/Recurring')]) },
   { path: '/loans',        icon: Landmark,          label: 'Loans',        page: () => import('../pages/Loans')        },
   { path: '/budgets',      icon: Target,            label: 'Budgets',      page: () => import('../pages/Budgets')      },
   { path: '/goals',        icon: Wallet,            label: 'Goals',        page: () => import('../pages/Goals')        },
-  { path: '/bills',        icon: Receipt,           label: 'Bills',        page: () => import('../pages/Bills')        },
   { path: '/investments',  icon: TrendingUp,        label: 'Investments',  page: () => import('../pages/Investments')  },
   { path: '/credit-cards', icon: BadgeDollarSign,   label: 'Credit Cards', page: () => import('../pages/CreditCards') },
   { path: '/analytics',    icon: BarChart2,         label: 'Analytics',    page: () => import('../pages/Analytics')   },
@@ -53,13 +53,14 @@ const Sidebar = ({ isOpen, onSearchOpen }) => {
         </button>
         <nav className="workspace-nav" aria-label="Main navigation">
           {[
-            {label:'Everyday', paths:['/dashboard','/accounts','/transactions','/bills','/recurring']},
+            {label:'Everyday', paths:['/dashboard','/accounts','/transactions','/bills']},
             {label:'Planning & credit', paths:['/budgets','/goals','/loans','/credit-cards','/investments']},
             {label:'Reports & settings', paths:['/analytics','/settings']},
           ].map((group,index) => {
-            const links=group.paths.map(path => NAV_ITEMS.find(item => item.path===path)).filter(Boolean).map(({path,icon:Icon,label,page}) => (
-              <NavLink key={path} to={path} className={({isActive}) => `workspace-link${isActive ? ' is-active' : ''}`} onMouseEnter={() => page().catch(() => {})}>{({isActive}) => (<>{isActive && <motion.span layoutId="nav-indicator" className="nav-indicator" transition={spring.liquid} />}<Icon size={18} strokeWidth={1.8}/><span>{label}</span></>)}</NavLink>
-            ));
+            const links=group.paths.map(path => NAV_ITEMS.find(item => item.path===path)).filter(Boolean).map(({path,also,icon:Icon,label,page}) => {
+              const on = (isActive) => isActive || !!also?.includes(location.pathname);
+              return <NavLink key={path} to={path} className={({isActive}) => `workspace-link${on(isActive) ? ' is-active' : ''}`} onMouseEnter={() => page().catch(() => {})}>{({isActive}) => (<>{on(isActive) && <motion.span layoutId="nav-indicator" className="nav-indicator" transition={spring.liquid} />}<Icon size={18} strokeWidth={1.8}/><span>{label}</span></>)}</NavLink>;
+            });
             return index===1 ? <details key={group.label} className="quiet-nav-group" open={group.paths.includes(location.pathname)}><summary>{group.label}</summary>{links}</details> : <div key={group.label}><p className="workspace-section">{group.label}</p>{links}</div>;
           })}
           {isSuperAdmin(auth.currentUser) && <NavLink to="/admin" className="workspace-link"><Crown size={18} /><span>Administration</span></NavLink>}
@@ -283,8 +284,8 @@ const MoreSheet = ({ open, onClose, badges }) => {
 
               {/* Page grid */}
               <div style={{ display:'grid', gridTemplateColumns:'repeat(3, minmax(0, 1fr))', gap:'0.6rem' }}>
-                {NAV_ITEMS.map(({ path, icon: Icon, label }) => {
-                  const active = location.pathname === path;
+                {NAV_ITEMS.map(({ path, also, icon: Icon, label }) => {
+                  const active = location.pathname === path || !!also?.includes(location.pathname);
                   const c = TILE_COLORS[path] || '#4ade80';
                   return (
                     <NavLink key={path} to={path} onClick={onClose}

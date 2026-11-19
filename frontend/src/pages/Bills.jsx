@@ -4,10 +4,9 @@ import MoreSection from '../components/MoreSection';
 import { advanceBill } from '../utils/billSchedule';
 import { InsightBills } from '../components/InsightPanels';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import useLiveData from '../utils/useLiveData';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, Bell, CheckCircle, Edit2, Zap, RefreshCw } from 'lucide-react';
+import { Plus, Trash2, Bell, CheckCircle, Edit2, Zap } from 'lucide-react';
 import PageWrapper from '../components/PageWrapper';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -38,7 +37,6 @@ const FREQUENCIES = ['Once', 'Weekly', 'Monthly', 'Yearly'];
 const CATEGORIES = ['Rent/Housing', 'Utilities', 'Insurance', 'Subscriptions', 'Loan EMI', 'Phone/Internet', 'Groceries', 'Education', 'Other'];
 
 const Bills = () => {
-  const navigate = useNavigate();
   const [bills, setBills] = useState(() => getCache('bills') || []);
   const [loading, setLoading] = useState(() => !getCache('bills'));
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -210,14 +208,6 @@ const Bills = () => {
       <div>
         <PageHeader title="Bills & Subscriptions" subtitle="Upcoming due dates, subscription burn rate, and 1-tap payments">
           <div style={{ display:'flex', gap:'0.5rem', alignItems:'center', flexWrap:'wrap' }}>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => navigate('/recurring')}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.76rem', padding: '0.42rem 0.85rem' }}
-            >
-              <RefreshCw size={14} /> Monthly Reminders
-            </button>
             {['list','calendar'].map(v => (
               <button key={v} onClick={() => setBillsView(v)}
                 style={{ padding:'0.42rem 0.9rem', borderRadius:8, cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.76rem', fontWeight: 600,

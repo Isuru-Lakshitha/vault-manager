@@ -17,7 +17,6 @@ import {
   Landmark,
   ChevronDown,
   ChevronUp,
-  Bell,
   Calendar,
   CheckCircle2,
   Clock,
@@ -1369,15 +1368,6 @@ const Recurring = () => {
         {/* Clean Minimalist Header */}
         <PageHeader title="Recurring & Monthly Reminders" subtitle="Reminder-only monthly commitments, variable bills & loan schedules — never auto-deducted">
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => navigate('/bills')}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.76rem' }}
-              title="Open scheduled bills, subscription detector & burn-rate audit"
-            >
-              <Bell size={14} /> Bills & Subscriptions {unpaidBills.length > 0 ? `(${unpaidBills.length})` : ''}
-            </button>
             {cycleStats.unpaidCount > 0 && (
               <button
                 type="button"

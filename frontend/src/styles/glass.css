@@ -48,7 +48,7 @@ body.light-mode {
 /* ---------- The material ---------- */
 html body :is(
   .bottom-nav, .shell-topbar, .mobile-header, .sidebar,
-  .quiet-tools-panel, .dash-seg, .theme-seg, .ptr-indicator, .lg-toast, .lg-glass
+  .quiet-tools-panel, .dash-seg, .theme-seg, .hub-seg, .ptr-indicator, .lg-toast, .lg-glass
 ) {
   background:
     linear-gradient(180deg, var(--lg-sheen) 0%, transparent 42%),
@@ -79,13 +79,13 @@ html body :is(.modal-panel, .modal-sheet) {
 html body .quiet-tools-panel { background: linear-gradient(180deg, var(--lg-sheen) 0%, transparent 35%), var(--lg-tint-thick) !important; }
 
 /* Real lensing on Chromium: the backdrop bends like it's seen through glass. */
-html.lg-lens body :is(.bottom-nav, .bottom-nav-fab, .ptr-indicator, .dash-seg, .theme-seg) {
+html.lg-lens body :is(.bottom-nav, .bottom-nav-fab, .ptr-indicator, .dash-seg, .theme-seg, .hub-seg) {
   backdrop-filter: url(#lg-distort) blur(var(--lg-blur)) saturate(var(--lg-sat)) !important;
 }
 
 /* ---------- Light bloom that follows the pointer ---------- */
-:is(.lg-interactive, .bottom-nav-item, .bottom-nav-fab, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button) { position: relative; isolation: isolate; }
-:is(.lg-interactive, .bottom-nav-item, .bottom-nav-fab, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button)::after {
+:is(.lg-interactive, .bottom-nav-item, .bottom-nav-fab, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button, .hub-seg button) { position: relative; isolation: isolate; }
+:is(.lg-interactive, .bottom-nav-item, .bottom-nav-fab, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button, .hub-seg button)::after {
   content: '';
   position: absolute; inset: 0; z-index: -1;
   border-radius: inherit;
@@ -94,11 +94,11 @@ html.lg-lens body :is(.bottom-nav, .bottom-nav-fab, .ptr-indicator, .dash-seg, .
   transition: opacity 0.35s ease;
   pointer-events: none;
 }
-:is(.lg-interactive, .bottom-nav-item, .bottom-nav-fab, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button):is(:hover, :active)::after { opacity: 1; }
+:is(.lg-interactive, .bottom-nav-item, .bottom-nav-fab, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button, .hub-seg button):is(:hover, :active)::after { opacity: 1; }
 
 /* Liquid press: controls swell slightly and spring back. */
-:is(.lg-interactive, .bottom-nav-item, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button) { transition: scale 0.5s var(--lg-spring), background-color 0.2s ease, color 0.2s ease !important; }
-:is(.lg-interactive, .bottom-nav-item, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button):active { scale: 1.06 !important; transition-duration: 0.18s !important; }
+:is(.lg-interactive, .bottom-nav-item, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button, .hub-seg button) { transition: scale 0.5s var(--lg-spring), background-color 0.2s ease, color 0.2s ease !important; }
+:is(.lg-interactive, .bottom-nav-item, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button, .hub-seg button):active { scale: 1.06 !important; transition-duration: 0.18s !important; }
 
 /* ---------- Floating tab bar (mobile) ---------- */
 @media (max-width: 900px) {
@@ -166,9 +166,9 @@ html body .mobile-header { border-width: 0 0 1px 0 !important; }
 html body .sidebar { border-width: 0 1px 0 0 !important; }
 
 /* ---------- Segmented controls: glass track + liquid pill ---------- */
-html body :is(.dash-seg, .theme-seg) { border-radius: 999px !important; padding: 4px !important; }
-html body :is(.dash-seg, .theme-seg) button { border-radius: 999px !important; }
-html body :is(.dash-seg-pill, .theme-seg-pill) {
+html body :is(.dash-seg, .theme-seg, .hub-seg) { border-radius: 999px !important; padding: 4px !important; }
+html body :is(.dash-seg, .theme-seg, .hub-seg) button { border-radius: 999px !important; }
+html body :is(.dash-seg-pill, .theme-seg-pill, .hub-seg-pill) {
   border-radius: 999px !important;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.45),
@@ -226,7 +226,7 @@ html body .shell-search { padding-inline: 0.9rem !important; }
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  :is(.lg-interactive, .bottom-nav-item, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button, .bottom-nav-fab):active { scale: none !important; }
+  :is(.lg-interactive, .bottom-nav-item, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button, .hub-seg button, .bottom-nav-fab):active { scale: none !important; }
   .quiet-tools[open] > .quiet-tools-panel, .page-enter { animation: none !important; }
   html body .bottom-nav, .bottom-nav-label { transition: none !important; }
 }
@@ -247,4 +247,21 @@ html.lg-title .mobile-title-brand { opacity: 0; translate: 0 -0.6em; }
 html.lg-title .mobile-title-page { opacity: 1; translate: 0 0; }
 @media (prefers-reduced-motion: reduce) {
   .mobile-title > span { transition: none; translate: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Bills & Recurring tab switch (components/BillsHubTabs)
+   -------------------------------------------------------------------------- */
+.hub-seg-row { display: flex; justify-content: center; margin: 0 0 1rem; }
+.hub-seg { display: inline-flex; padding: 4px; border: 1px solid var(--mm-border); background: var(--mm-surface); }
+.hub-seg button {
+  position: relative; isolation: isolate; border: 0; background: transparent; cursor: pointer;
+  color: var(--mm-text-2); font: 600 0.82rem/1 Inter, system-ui, sans-serif; padding: 0.6rem 1.25rem; min-width: 7.5rem;
+}
+.hub-seg button[aria-selected='true'] { color: #fff; }
+.hub-seg-pill { position: absolute; inset: 0; z-index: -1; background: var(--mm-accent, #5b8def); }
+@media (max-width: 640px) {
+  .hub-seg-row { justify-content: stretch; }
+  .hub-seg { flex: 1; }
+  .hub-seg button { flex: 1; min-width: 0; }
 }
