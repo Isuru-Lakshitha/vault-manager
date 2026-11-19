@@ -319,3 +319,32 @@ button.stat-card { font: inherit; color: inherit; cursor: pointer; width: 100%; 
 .ui-card-head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.85rem; }
 .ui-card-head h3 { margin: 0; font-size: 0.95rem; font-weight: 650; color: var(--mm-text, #e8eaed); }
 .page-shell .stat-grid { margin-bottom: 1.25rem; }
+
+/* --------------------------------------------------------------------------
+   Inline notice banner (one-off prompts on a page, e.g. data cleanup)
+   -------------------------------------------------------------------------- */
+.ui-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 0 0 1rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid var(--mm-border, rgba(255, 255, 255, 0.08));
+  background: var(--mm-surface, rgba(255, 255, 255, 0.04));
+  font-family: Inter, sans-serif;
+}
+.ui-banner strong { display: block; font-size: 0.88rem; color: var(--mm-text, inherit); }
+.ui-banner p { margin: 0.2rem 0 0; font-size: 0.78rem; color: var(--mm-text-2, var(--text-secondary)); }
+.ui-banner-warn {
+  border-color: color-mix(in srgb, var(--mm-warning, #fbbf24) 40%, transparent);
+  background: color-mix(in srgb, var(--mm-warning, #fbbf24) 9%, var(--mm-surface, transparent));
+}
+.ui-banner-info {
+  border-color: color-mix(in srgb, var(--mm-accent, #818cf8) 40%, transparent);
+  background: color-mix(in srgb, var(--mm-accent, #818cf8) 9%, var(--mm-surface, transparent));
+}
+.ui-banner-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+.ui-banner-actions .btn { font-size: 0.8rem; padding: 0.45rem 0.9rem; }

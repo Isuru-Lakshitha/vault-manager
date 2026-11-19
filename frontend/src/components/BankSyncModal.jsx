@@ -8,7 +8,7 @@ import { formatCurrency, haptic } from '../utils/format';
 import { parseAnyBankFile } from '../utils/bankFileParser';
 import toast from 'react-hot-toast';
 import { todayYMD } from '../utils/dates';
-import { FEED_SOURCE, importableEntries } from '../utils/bankFeedImport';
+import { FEED_SOURCE, importableEntries, DEMO_FEED as MOCK_INCOMING_FEED } from '../utils/bankFeedImport';
 
 // Demo-only sample data. Never written to the ledger (see utils/bankFeedImport).
 const MOCK_BANKS = [
@@ -17,43 +17,6 @@ const MOCK_BANKS = [
   { id: 'hsbc', name: 'HSBC Premier', type: 'Savings ····· 8320', icon: '🏦', status: 'Sample', balance: 14890.00 },
 ];
 
-const MOCK_INCOMING_FEED = [
-  {
-    notes: 'Whole Foods Market',
-    amount: 54.30,
-    type: 'Expense',
-    category: '🍔 Food',
-    status: 'cleared',
-  },
-  {
-    notes: 'Uber Technologies Inc',
-    amount: 19.50,
-    type: 'Expense',
-    category: 'Transport',
-    status: 'cleared',
-  },
-  {
-    notes: 'Apple Store Digital Services',
-    amount: 9.99,
-    type: 'Expense',
-    category: 'Bills',
-    status: 'cleared',
-  },
-  {
-    notes: 'Chevron Fuel Station #402',
-    amount: 42.00,
-    type: 'Expense',
-    category: 'Transport',
-    status: 'pending',
-  },
-  {
-    notes: 'Client Consulting Retainer',
-    amount: 1500.00,
-    type: 'Income',
-    category: 'Salary',
-    status: 'cleared',
-  },
-];
 
 export default function BankSyncModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('upload'); // 'upload' | 'sandbox'

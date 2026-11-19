@@ -1,4 +1,5 @@
 import { deleteWithUndo, removeItemWithUndo, itemLabel } from '../components/undoToast';
+import { findDemoFeedLeftovers } from '../utils/bankFeedImport';
 import { StatCard } from '../components/ui';
 import ToolMenu from '../components/ToolMenu';
 import { auditStatus, summarizePayments, isActivePayment, isEditableTransaction, accountMovement } from '../utils/ledgerReporting.js';
@@ -606,10 +607,15 @@ const Transactions = () => {
     }
     if (protectedIds.length) toast(`Skipped ${protectedIds.length} protected record${protectedIds.length > 1 ? 's' : ''} (fees / reversals / invoices)`, { icon: 'ℹ️' });
     const n = deletable.length;
+    deleteManyWithUndo(deletable, `${n} transaction${n > 1 ? 's' : ''} deleted`);
+  };
+
+  // Hide rows now, delete them after the Undo window.
+  const deleteManyWithUndo = (deletable, label) => {
     let snapshot = null;
     deleteWithUndo({
       key: `txn-bulk:${deletable.join(',')}`,
-      label: `${n} transaction${n > 1 ? 's' : ''} deleted`,
+      label,
       hide: () => setTransactions(prev => { snapshot = prev; return prev.filter(t => !deletable.includes(t.id)); }),
       restore: () => { if (snapshot) setTransactions(snapshot); },
       // Delete one at a time: each delete corrects shared account balances atomically,
@@ -623,6 +629,23 @@ const Transactions = () => {
       },
       onCommitted: () => loadData(true),
     });
+  };
+
+  // Rows the old Bank Sync demo wrote into real accounts (see bankFeedImport).
+  const [demoLeftoversDismissed, setDemoLeftoversDismissed] = useState(() => {
+    try { return localStorage.getItem('vm_demo_leftovers_kept') === '1'; } catch { return false; }
+  });
+  const demoLeftovers = useMemo(
+    () => (demoLeftoversDismissed ? [] : findDemoFeedLeftovers(transactions)),
+    [transactions, demoLeftoversDismissed],
+  );
+  const removeDemoLeftovers = () => {
+    const n = demoLeftovers.length;
+    deleteManyWithUndo(demoLeftovers.map(t => t.id), `${n} sample row${n > 1 ? 's' : ''} removed`);
+  };
+  const keepDemoLeftovers = () => {
+    try { localStorage.setItem('vm_demo_leftovers_kept', '1'); } catch { /* private mode */ }
+    setDemoLeftoversDismissed(true);
   };
 
   const handleApplyRecurring = async () => {
@@ -1128,6 +1151,19 @@ const Transactions = () => {
             </button>
           </div>
         </div>
+
+        {demoLeftovers.length > 0 && (
+          <div className="ui-banner ui-banner-warn" role="status">
+            <div>
+              <strong>{demoLeftovers.length} sample row{demoLeftovers.length > 1 ? 's' : ''} from the old Bank Sync demo</strong>
+              <p>{demoLeftovers.map(t => t.notes).join(', ')}. These aren't your transactions and they changed your balances.</p>
+            </div>
+            <div className="ui-banner-actions">
+              <button type="button" className="btn btn-primary" onClick={removeDemoLeftovers}>Remove them</button>
+              <button type="button" className="btn btn-secondary" onClick={keepDemoLeftovers}>Keep</button>
+            </div>
+          </div>
+        )}
 
         {templates.length > 0 && <details className="quiet-section"><summary>Quick templates ({templates.length})</summary><div className="quiet-section-content">
         {/* ── Quick Templates ── */}
