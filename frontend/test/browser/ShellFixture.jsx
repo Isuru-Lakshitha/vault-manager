@@ -17,7 +17,7 @@ export default function ShellFixture() {
           <div className="shell-actions"><ThemeToggle /></div>
         </header>
         <header className="mobile-header">
-          <h2>Dashboard</h2>
+          <h2 className="mobile-title"><span className="mobile-title-brand">Vault Manager</span><span className="mobile-title-page" aria-hidden="true">Dashboard</span></h2>
           <div className="mobile-header-actions"><ThemeToggle /></div>
         </header>
         <main ref={mainRef} className="main-content">

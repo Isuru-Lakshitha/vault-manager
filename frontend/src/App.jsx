@@ -323,7 +323,12 @@ function App() {
   }, []);
 
   // Scroll to top on page change (mobile users otherwise land mid-page)
-  useEffect(() => { window.scrollTo(0, 0); document.querySelector('.main-content')?.scrollTo?.(0, 0); }, [location.pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.querySelector('.main-content')?.scrollTo?.(0, 0);
+    // A new page starts with the full-size tab bar and a clear top bar.
+    document.documentElement.classList.remove('lg-scroll-down', 'lg-scrolled', 'lg-title');
+  }, [location.pathname]);
 
   // Apply saved theme + accent color on mount
   useEffect(() => {
@@ -642,7 +647,12 @@ function App() {
             <div style={{ width:32, height:32, borderRadius:10, background:'linear-gradient(135deg, #818cf8, #a78bfa)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
               <Landmark size={17} color="#fff" />
             </div>
-            <h2 style={{ fontFamily:'Inter, sans-serif', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}><span key={pageTitle} className="shell-crumb-title">{pageTitle}</span></h2>
+            {/* iOS large-title pattern: the page's own heading carries the name;
+                the bar shows it only once that heading scrolls away. */}
+            <h2 className="mobile-title" style={{ fontFamily:'Inter, sans-serif', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+              <span className="mobile-title-brand">Vault Manager</span>
+              <span key={pageTitle} className="mobile-title-page" aria-hidden="true">{pageTitle}</span>
+            </h2>
           </div>
           <div className="mobile-header-actions" style={{ display:'flex', gap:'0.35rem', alignItems:'center', flexShrink:0 }}>
             {/* Install as Web App Pill (Visible on tablet/desktop if not in standalone mode) */}

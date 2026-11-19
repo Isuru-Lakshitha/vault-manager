@@ -86,6 +86,8 @@ function setupScrollState() {
     if (t && t.nodeType === 1 && !t.classList.contains('main-content')) return; // inner scrollers (tables, chips)
     const y = read(t);
     root.classList.toggle('lg-scrolled', y > 8);
+    // Past the page's large heading → the bar takes over the title.
+    root.classList.toggle('lg-title', y > 56);
     if (Math.abs(y - lastY) > 6) {
       root.classList.toggle('lg-scroll-down', y > lastY && y > 64);
       lastY = y;
@@ -93,7 +95,8 @@ function setupScrollState() {
   };
   // Capture phase catches scrolls of .main-content as well as the window.
   document.addEventListener('scroll', onScroll, { passive: true, capture: true });
-  // Any route change starts with the tab bar expanded.
+  // Route changes reset the state from App (router navigations don't fire
+  // popstate); popstate still covers Back/Forward.
   window.addEventListener('popstate', () => root.classList.remove('lg-scroll-down'));
 }
 

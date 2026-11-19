@@ -230,3 +230,21 @@ html body .shell-search { padding-inline: 0.9rem !important; }
   .quiet-tools[open] > .quiet-tools-panel, .page-enter { animation: none !important; }
   html body .bottom-nav, .bottom-nav-label { transition: none !important; }
 }
+
+/* --------------------------------------------------------------------------
+   Mobile large title: brand while the page heading is on screen, then the
+   page name slides up into the bar (no duplicate titles).
+   -------------------------------------------------------------------------- */
+.mobile-title { display: grid; min-width: 0; }
+.mobile-title > span {
+  grid-area: 1 / 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity 0.28s var(--lg-spring-soft, ease), translate 0.4s var(--lg-spring-soft, ease);
+}
+.mobile-title-page { opacity: 0; translate: 0 0.6em; }
+html.lg-title .mobile-title-brand { opacity: 0; translate: 0 -0.6em; }
+html.lg-title .mobile-title-page { opacity: 1; translate: 0 0; }
+@media (prefers-reduced-motion: reduce) {
+  .mobile-title > span { transition: none; translate: none; }
+}
