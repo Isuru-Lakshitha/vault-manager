@@ -935,7 +935,7 @@ const Settings = () => {
                 { title: 'Tax & Capital Gains', desc: 'Deductions, brackets & PDF schedule', icon: '📑', event: 'vm:open-tax-suite', color: '#4ade80' },
                 { title: 'Split & Settle', desc: 'Household tabs & debt minimization', icon: '👥', event: 'vm:open-split-settle', color: '#ec4899' },
                 { title: 'Invoices & Billing', desc: 'Client billing & 1-click ledger sync', icon: '💼', event: 'vm:open-invoices', color: '#38bdf8' },
-                { title: 'Live Bank Sync', desc: 'Open Banking simulation & hash audit', icon: '🏦', event: 'vm:open-bank-sync', color: '#a78bfa' },
+                { title: 'Import bank statement', desc: 'OFX / QFX / QIF files, with a demo preview', icon: '🏦', event: 'vm:open-bank-sync', color: '#a78bfa' },
                 { title: 'Security Audit Trail', desc: 'Access logs & cryptographic events', icon: '🛡️', event: 'vm:open-security-audit', color: '#4ade80' },
                 { title: 'Setup Wizard', desc: 'Re-run first-time onboarding', icon: '✨', event: 'vm:open-onboarding', color: '#f472b6' },
               ].map((tool, idx) => (

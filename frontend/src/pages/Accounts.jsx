@@ -350,10 +350,10 @@ const Accounts = () => {
             <button
               className="btn btn-secondary"
               onClick={() => window.dispatchEvent(new Event('vm:open-bank-sync'))}
-              title="Open Banking & Live Bank Feeds"
+              title="Import a bank statement (OFX / QFX / QIF)"
               style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem', padding: '0.55rem 0.85rem' }}
             >
-              <span>🏦</span> Bank Sync
+              <span>🏦</span> Import statement
             </button>
             <button
               className="btn btn-secondary"

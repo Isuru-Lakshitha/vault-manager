@@ -1081,7 +1081,7 @@ const Transactions = () => {
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
-                    <RefreshCw size={14} color="#818cf8" /> Live Bank Sync
+                    <RefreshCw size={14} color="#818cf8" /> Import bank statement
                   </button>
                   <div style={{ height: 1, background: 'rgba(255,255,255,0.08)', margin: '4px 0' }} />
                   <button

@@ -263,7 +263,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
                     { label: 'Tax & Gains', icon: '📑', event: 'vm:open-tax-suite', color: '#38bdf8', bg: 'rgba(56,189,248,0.12)' },
                     { label: 'Split & Settle', icon: '👥', event: 'vm:open-split-settle', color: '#fbbf24', bg: 'rgba(251,191,36,0.12)' },
                     { label: 'Invoices', icon: '💼', event: 'vm:open-invoices', color: '#f472b6', bg: 'rgba(244,114,182,0.12)' },
-                    { label: 'Bank Sync', icon: '🏦', event: 'vm:open-bank-sync', color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
+                    { label: 'Import statement', icon: '🏦', event: 'vm:open-bank-sync', color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },
                   ].map(tool => (
                     <button
                       key={tool.label}

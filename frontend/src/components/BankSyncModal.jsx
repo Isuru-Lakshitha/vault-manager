@@ -8,11 +8,13 @@ import { formatCurrency, haptic } from '../utils/format';
 import { parseAnyBankFile } from '../utils/bankFileParser';
 import toast from 'react-hot-toast';
 import { todayYMD } from '../utils/dates';
+import { FEED_SOURCE, importableEntries } from '../utils/bankFeedImport';
 
+// Demo-only sample data. Never written to the ledger (see utils/bankFeedImport).
 const MOCK_BANKS = [
-  { id: 'chase', name: 'Chase Bank', type: 'Checking ····· 4821', icon: '🏛️', status: 'Connected', balance: 5420.50 },
-  { id: 'revolut', name: 'Revolut Global', type: 'Vault Card ····· 1904', icon: '💳', status: 'Connected', balance: 1250.00 },
-  { id: 'hsbc', name: 'HSBC Premier', type: 'Savings ····· 8320', icon: '🏦', status: 'Connected', balance: 14890.00 },
+  { id: 'chase', name: 'Chase Bank', type: 'Checking ····· 4821', icon: '🏛️', status: 'Sample', balance: 5420.50 },
+  { id: 'revolut', name: 'Revolut Global', type: 'Vault Card ····· 1904', icon: '💳', status: 'Sample', balance: 1250.00 },
+  { id: 'hsbc', name: 'HSBC Premier', type: 'Savings ····· 8320', icon: '🏦', status: 'Sample', balance: 14890.00 },
 ];
 
 const MOCK_INCOMING_FEED = [
@@ -57,11 +59,11 @@ export default function BankSyncModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState('upload'); // 'upload' | 'sandbox'
   const [syncing, setSyncing] = useState(false);
   const [syncedFeed, setSyncedFeed] = useState(null);
+  const [feedSource, setFeedSource] = useState(null); // FEED_SOURCE.STATEMENT | FEED_SOURCE.DEMO
   const [accounts, setAccounts] = useState([]);
   const [selectedAccountId, setSelectedAccountId] = useState('');
   const [existingTxs, setExistingTxs] = useState([]);
   const [rules, setRules] = useState([]);
-  const [lastSyncTime, setLastSyncTime] = useState(() => localStorage.getItem('vm_last_bank_sync') || 'Just now');
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -73,6 +75,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
         setRules(r || DEFAULT_RULES);
       });
       setSyncedFeed(null);
+      setFeedSource(null);
     }
   }, [isOpen]);
 
@@ -119,7 +122,8 @@ export default function BankSyncModal({ isOpen, onClose }) {
         });
 
         setSyncedFeed(processedItems);
-        toast.success(`Parsed ${processedItems.length} transactions from ${file.name} (${result.format})!`);
+        setFeedSource(FEED_SOURCE.STATEMENT);
+        toast.success(`Parsed ${processedItems.length} transactions from ${file.name} (${result.format})`);
         haptic();
       } catch (err) {
         console.error(err);
@@ -129,7 +133,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
     reader.readAsText(file);
   };
 
-  // Run Bank Sync Simulation
+  // Demo preview: shows how parsed rows look using sample data. Preview only.
   const handleTriggerSync = async () => {
     setSyncing(true);
     haptic();
@@ -162,12 +166,10 @@ export default function BankSyncModal({ isOpen, onClose }) {
         };
       });
 
-      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      localStorage.setItem('vm_last_bank_sync', `Today, ${timeStr}`);
-      setLastSyncTime(`Today, ${timeStr}`);
       setSyncedFeed(processedItems);
+      setFeedSource(FEED_SOURCE.DEMO);
       setSyncing(false);
-      toast.success('Live bank feeds synced! 🏦');
+      toast('Loaded sample transactions — preview only, nothing is saved', { icon: 'ℹ️' });
       haptic();
     }, 900);
   };
@@ -175,7 +177,11 @@ export default function BankSyncModal({ isOpen, onClose }) {
   // Import New Bank Transactions
   const handleImportFeed = async () => {
     if (!syncedFeed) return;
-    const toImport = syncedFeed.filter(f => !f.isDuplicate);
+    if (feedSource !== FEED_SOURCE.STATEMENT) {
+      toast.error('Sample data can’t be imported. Upload a statement file from your bank instead.');
+      return;
+    }
+    const toImport = importableEntries(syncedFeed, feedSource);
     if (toImport.length === 0) {
       toast('All transactions already imported or marked duplicates', { icon: 'ℹ️' });
       return;
@@ -185,9 +191,10 @@ export default function BankSyncModal({ isOpen, onClose }) {
       for (const entry of toImport) {
         await createTransaction(entry.item);
       }
-      toast.success(`Imported ${toImport.length} transactions into ledger! ⚡`);
+      toast.success(`Imported ${toImport.length} transactions`);
       haptic();
       setSyncedFeed(null);
+      setFeedSource(null);
       onClose();
     } catch {
   toast.error('Failed to import feed transactions');
@@ -195,7 +202,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="🏦 Bank Feeds & Statement Hub" maxWidth="780px">
+    <Modal isOpen={isOpen} onClose={onClose} title="Import bank statement" maxWidth="780px">
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', color: 'var(--text-primary)' }}>
 
         {/* Tab Selector */}
@@ -218,7 +225,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
               transition: 'all 0.15s ease'
             }}
           >
-            <Upload size={15} /> Real Bank Statement (OFX / QFX / QIF)
+            <Upload size={15} /> Statement file (OFX / QFX / QIF)
           </button>
           <button
             type="button"
@@ -238,7 +245,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
               transition: 'all 0.15s ease'
             }}
           >
-            <Zap size={15} /> Live Sandbox Simulation
+            <Zap size={15} /> Demo preview
           </button>
         </div>
 
@@ -342,11 +349,11 @@ export default function BankSyncModal({ isOpen, onClose }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.03)', padding: '0.75rem 1rem', borderRadius: 12, flexWrap: 'wrap', gap: '0.5rem' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                  <ShieldCheck size={16} color="#4ade80" />
-                  <span>Open Banking Sandbox Feed Active</span>
+                  <ShieldCheck size={16} color="var(--warning)" />
+                  <span>Demo preview — sample data, not your bank</span>
                 </div>
                 <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', marginTop: 2 }}>
-                  Last synchronized: <strong style={{ color: '#cbd5e1' }}>{lastSyncTime}</strong>
+                  No bank is connected. This shows how imported rows look; nothing is saved to your accounts.
                 </div>
               </div>
 
@@ -362,7 +369,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
                 }}
               >
                 <RefreshCw size={14} className={syncing ? 'animate-spin' : ''} />
-                {syncing ? 'Fetching Live Feeds...' : '⚡ Sync Feeds Now'}
+                {syncing ? 'Loading sample…' : 'Load sample feed'}
               </button>
             </div>
 
@@ -416,7 +423,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ fontWeight: 600, fontSize: '0.88rem', color: '#818cf8', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <Zap size={16} /> Parsed Transactions ({syncedFeed.length} detected)
+                <Zap size={16} /> {feedSource === FEED_SOURCE.DEMO ? 'Sample transactions' : 'Parsed transactions'} ({syncedFeed.length})
               </div>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
                 Evaluated against active Automation Rules
@@ -473,14 +480,21 @@ export default function BankSyncModal({ isOpen, onClose }) {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.25rem' }}>
-              <button onClick={() => setSyncedFeed(null)} className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}>Dismiss</button>
-              <button
-                onClick={handleImportFeed}
-                className="btn btn-primary"
-                style={{ fontSize: '0.8rem', padding: '0.4rem 1.1rem', background: 'linear-gradient(135deg, #4ade80, #22c55e)', color: '#0f172a', fontWeight: 600, border: 'none' }}
-              >
-                Import {syncedFeed.filter(f => !f.isDuplicate).length} New Transactions
-              </button>
+              {feedSource === FEED_SOURCE.DEMO && (
+                <span role="note" style={{ marginRight: 'auto', alignSelf: 'center', fontSize: '0.76rem', color: 'var(--warning)' }}>
+                  Preview only — sample data can’t be imported.
+                </span>
+              )}
+              <button onClick={() => { setSyncedFeed(null); setFeedSource(null); }} className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}>Dismiss</button>
+              {feedSource === FEED_SOURCE.STATEMENT && (
+                <button
+                  onClick={handleImportFeed}
+                  className="btn btn-primary"
+                  style={{ fontSize: '0.8rem', padding: '0.4rem 1.1rem', fontWeight: 600 }}
+                >
+                  Import {importableEntries(syncedFeed, feedSource).length} new transactions
+                </button>
+              )}
             </div>
           </motion.div>
         )}
