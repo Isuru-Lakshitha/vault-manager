@@ -19,6 +19,7 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import HealthScoreGauge from '../components/HealthScoreGauge';
 import EmergencyRunwayCard from '../components/EmergencyRunwayCard';
 import SafeToSpendCard from '../components/SafeToSpendCard';
+import GettingStarted from '../components/GettingStarted';
 import MonthlyStoryModal from '../components/MonthlyStoryModal';
 import AchievementsModal from '../components/AchievementsModal';
 import { evaluateAchievements } from '../utils/achievements';
@@ -688,6 +689,8 @@ const Dashboard = () => {
                 </div>
               </motion.div>
             )}
+
+            <GettingStarted accounts={accounts} transactions={transactions} budgets={budgets} />
 
             {summaryCard}
 

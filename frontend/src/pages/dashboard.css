@@ -430,3 +430,46 @@ button.dash-3d, .dash-3d[role='button'] { cursor: pointer; text-align: left; fon
 .dash .more-section { margin-top: var(--dash-gap); }
 /* A titled group with nothing to show hides its heading too. */
 .dash-group:not(:has(> :not(.dash-section-title):not(:empty))) { display: none; }
+
+/* ── Get started checklist ─────────────────────────────────────────────── */
+.getting-started {
+  margin: 0 0 1.25rem;
+  padding: 1.1rem 1.2rem 0.9rem;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--mm-accent, #818cf8) 30%, var(--mm-border, transparent));
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--mm-accent, #818cf8) 14%, transparent), transparent 60%),
+    var(--mm-surface, rgba(255, 255, 255, 0.04));
+  box-shadow: var(--depth-2, none);
+  font-family: Inter, sans-serif;
+}
+.gs-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.gs-head h2 { margin: 0; font-size: 1.05rem; color: var(--mm-text); }
+.gs-head p { margin: 0.15rem 0 0; font-size: 0.78rem; color: var(--mm-text-2); }
+.gs-close {
+  display: grid; place-items: center; width: 30px; height: 30px; border-radius: 10px;
+  border: 1px solid var(--mm-border, transparent); background: transparent; color: var(--mm-text-2); cursor: pointer;
+}
+.gs-close:hover { color: var(--mm-text); }
+.gs-bar { height: 5px; margin: 0.85rem 0 0.4rem; border-radius: 99px; background: var(--mm-border-soft, rgba(255, 255, 255, 0.06)); overflow: hidden; }
+.gs-bar span { display: block; height: 100%; border-radius: inherit; background: var(--mm-accent, #818cf8); }
+.gs-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.25rem 0.75rem; }
+.gs-steps button {
+  width: 100%; display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 0.5rem;
+  border: 0; border-radius: 12px; background: transparent; color: inherit; text-align: left; cursor: pointer;
+  font: inherit; transition: background 0.2s;
+}
+.gs-steps button:not(:disabled):hover { background: var(--mm-surface-2, rgba(255, 255, 255, 0.05)); }
+.gs-steps button:disabled { cursor: default; }
+.gs-check {
+  flex-shrink: 0; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%;
+  border: 1.5px solid var(--mm-border-strong, rgba(255, 255, 255, 0.22)); color: #fff;
+  transition: background 0.3s, border-color 0.3s;
+}
+.is-done .gs-check { background: var(--mm-success, #4ade80); border-color: var(--mm-success, #4ade80); }
+.is-next .gs-check { border-color: var(--mm-accent, #818cf8); box-shadow: 0 0 0 4px color-mix(in srgb, var(--mm-accent, #818cf8) 18%, transparent); }
+.gs-text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.gs-text strong { font-size: 0.86rem; font-weight: 600; color: var(--mm-text); }
+.is-done .gs-text strong { color: var(--mm-text-2); text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--mm-text-2) 50%, transparent); }
+.gs-text small { font-size: 0.74rem; color: var(--mm-text-2); }
+.gs-go { color: var(--mm-text-2); flex-shrink: 0; }
