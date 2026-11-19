@@ -243,3 +243,19 @@ export function snoozeAlert(state, id, days = 1, now = Date.now()) {
 export function filterVisible(alerts, state, now = Date.now()) {
   return alerts.filter(a => !state.dismissed[a.id] && !(state.snoozed[a.id] > now));
 }
+
+// ── Budget threshold announcements ─────────────────────────────────────
+// Each crossing (80%, 100%) is announced once per category per month.
+export const BUDGET_ANNOUNCED_KEY = 'vm_budget_alerts_announced';
+
+/** Budget alerts not announced yet, plus the id list to store afterwards. */
+export function budgetAnnouncements({ budgets, transactions, now = new Date(), announced = [] } = {}) {
+  const month = monthKey(now);
+  // Keep only this month's ids so the stored list never grows.
+  const kept = (announced || []).filter((id) => typeof id === 'string' && (id.endsWith(`-${month}-80`) || id.endsWith(`-${month}-100`)));
+  const seen = new Set(kept);
+  const fresh = computeBudgetAlerts({ budgets, transactions, now }).filter((a) => !seen.has(a.id));
+  // Announcing 100% also covers 80% for that category.
+  const ids = [...kept, ...fresh.flatMap((a) => (a.id.endsWith('-100') ? [a.id, a.id.replace(/-100$/, '-80')] : [a.id]))];
+  return { fresh, announced: [...new Set(ids)] };
+}

@@ -8,6 +8,7 @@ import ThemeToggle from './components/ThemeToggle';
 import { Toaster, toast } from 'react-hot-toast';
 import Sidebar, { NAV_ITEMS } from './components/Sidebar';
 import BillsHubTabs from './components/BillsHubTabs';
+import BudgetWatcher from './components/BudgetWatcher';
 import Login from './pages/Login';
 import EmailVerification from './components/EmailVerification';
 import { Menu, Landmark, Plus, Eye, EyeOff, Cloud, Sparkles, Download } from 'lucide-react';
@@ -20,7 +21,7 @@ import QuickAdd from './components/QuickAdd';
 import PWAUpdateBanner from './components/PWAUpdateBanner';
 import { useStealthMode } from './utils/format';
 import { auth } from './utils/firebase';
-import { fetchUserPrefs, prefetchAll, startLiveSync, stopLiveSync, invalidateCache, fetchBills, fetchBudgets, fetchTransactions } from './utils/api';
+import { fetchUserPrefs, prefetchAll, startLiveSync, stopLiveSync, invalidateCache, fetchBills } from './utils/api';
 import { getMaintenanceMode, isSuperAdmin, startSystemConfigSync, stopSystemConfigSync, registerUserPresence } from './utils/adminService';
 import { checkFinancialTriggers } from './utils/notificationService';
 import { getSessionTimeoutMinutes } from './utils/sessionTimeout';
@@ -425,12 +426,8 @@ function App() {
           }).catch(() => {});
           Promise.resolve(prefetchAll()).then(async () => {
             try {
-              const [bills, budgets, transactions] = await Promise.all([
-                fetchBills().catch(() => []),
-                fetchBudgets().catch(() => []),
-                fetchTransactions().catch(() => [])
-              ]);
-              checkFinancialTriggers({ bills, budgets, transactions });
+              const bills = await fetchBills().catch(() => []);
+              checkFinancialTriggers({ bills });
             } catch {}
           }).catch(() => {});
         } catch {}
@@ -617,6 +614,7 @@ function App() {
     <div className="app-container">
       <PWAUpdateBanner />
       <OfflineBanner />
+      <BudgetWatcher />
       <PrivacyShield />
       <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)} />
       <Sidebar isOpen={isSidebarOpen} onSearchOpen={() => setSearchOpen(true)} />

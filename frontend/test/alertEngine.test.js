@@ -177,3 +177,33 @@ test('computeBackupAlert builds local-date IDs rather than shifting across UTC d
   const [alert] = computeBackupAlert({ lastBackupTs: stale, everyDays: 7, now: localNow });
   assert.equal(alert.id, `backup-${expectedLocal}`);
 });
+
+import { budgetAnnouncements } from '../src/utils/alertEngine.js';
+
+test('budget crossings are announced once per level per month', () => {
+  const now = new Date(2026, 10, 19);
+  const budgets = [{ id: 'b', category: 'Food', amount: 100, month: '2026-11' }];
+  const spend = (amt) => [{ type: 'Expense', category: '🍔 Food', amount: amt, date: '2026-11-03' }];
+
+  const first = budgetAnnouncements({ budgets, transactions: spend(85), now });
+  assert.deepEqual(first.fresh.map(a => a.type), ['warning']);
+
+  const again = budgetAnnouncements({ budgets, transactions: spend(90), now, announced: first.announced });
+  assert.equal(again.fresh.length, 0);
+
+  const over = budgetAnnouncements({ budgets, transactions: spend(120), now, announced: again.announced });
+  assert.deepEqual(over.fresh.map(a => a.type), ['danger']);
+
+  const after = budgetAnnouncements({ budgets, transactions: spend(130), now, announced: over.announced });
+  assert.equal(after.fresh.length, 0);
+});
+
+test('jumping straight past 100% announces once and old months are pruned', () => {
+  const now = new Date(2026, 10, 19);
+  const budgets = [{ id: 'b', category: 'Fun', amount: 50, month: '2026-11' }];
+  const tx = [{ type: 'Expense', category: 'Fun', amount: 70, date: '2026-11-02' }];
+  const r = budgetAnnouncements({ budgets, transactions: tx, now, announced: ['budget-food-2026-10-80'] });
+  assert.equal(r.fresh.length, 1);
+  assert.ok(!r.announced.some(id => id.includes('2026-10')));
+  assert.equal(budgetAnnouncements({ budgets, transactions: tx, now, announced: r.announced }).fresh.length, 0);
+});

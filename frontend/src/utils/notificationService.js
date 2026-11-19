@@ -66,7 +66,7 @@ export const sendNotification = async (title, options = {}) => {
  * Evaluates user financial state and sends smart contextual reminders
  * Guaranteed to never spam: each alert has a cooldown key in localStorage
  */
-export const checkFinancialTriggers = async ({ bills = [], budgets = [], transactions = [] }) => {
+export const checkFinancialTriggers = async ({ bills = [] }) => {
   if (getNotificationPermission() !== 'granted') return;
   const now = new Date();
   const todayStr = toYMD(now);
@@ -91,32 +91,7 @@ export const checkFinancialTriggers = async ({ bills = [], budgets = [], transac
     }
   }
 
-  // 2. Check Over-Budget Categories (> 90% or > 100%)
-  const currentMonth = todayStr.substring(0, 7); // YYYY-MM
-  const monthExpenses = transactions.filter(t => t.type === 'Expense' && (t.date || '').startsWith(currentMonth));
-  
-  for (const budget of budgets) {
-    if (budget.month && budget.month !== currentMonth) continue;
-    const spent = monthExpenses
-      .filter(t => (t.category || '').toLowerCase() === (budget.category || '').toLowerCase())
-      .reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
+  // Budget thresholds are announced by components/BudgetWatcher (shared
+  // logic with the Alert Center in utils/alertEngine).
 
-    const limit = parseFloat(budget.amount) || 0;
-    if (limit <= 0) continue;
-
-    const pct = (spent / limit) * 100;
-    if (pct >= 90) {
-      const alertKey = `vm_notif_budget_${budget.id}_${currentMonth}_${pct >= 100 ? '100' : '90'}`;
-      if (!localStorage.getItem(alertKey)) {
-        sendNotification(
-          pct >= 100 ? `🚨 Budget Exceeded: ${budget.category}` : `⚠️ Budget Warning: ${budget.category}`,
-          {
-            body: `You've spent ${pct.toFixed(0)}% of your ${budget.category} budget this month.`,
-            tag: `budget-${budget.id}`
-          }
-        );
-        localStorage.setItem(alertKey, '1');
-      }
-    }
-  }
 };
