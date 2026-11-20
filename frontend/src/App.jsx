@@ -620,6 +620,7 @@ function App() {
       <OfflineBanner />
       <BudgetWatcher />
       <PrivacyShield />
+      <a href="#main-content" className="skip-link">Skip to content</a>
       <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)} />
       <Sidebar isOpen={isSidebarOpen} onSearchOpen={() => setSearchOpen(true)} />
       <div className="main-content-wrapper">
@@ -769,7 +770,7 @@ function App() {
             </button>
           </div>
         </header>
-        <main
+        <main id="main-content" tabIndex={-1}
           ref={mainContentRef}
           className="main-content"
         >

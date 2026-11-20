@@ -740,7 +740,7 @@ const Dashboard = () => {
                     data-tilt
                     role="button"
                     tabIndex={0}
-                    aria-label="Open net worth breakdown"
+                    title="Open net worth breakdown"
                     onClick={() => { haptic(); setShowNWBreakdown(true); }}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowNWBreakdown(true); } }}
                   >
@@ -802,7 +802,7 @@ const Dashboard = () => {
                             Free cash this month <b>{formatCurrency(safeToSpendData?.safeToSpend || 0)}</b>
                           </div>
                         </div>
-                        <div className="dash-safe-ring z2" aria-label={`${daysLeft} of ${daysInMonth} days left this month`}>
+                        <div className="dash-safe-ring z2" role="img" aria-label={`${daysLeft} of ${daysInMonth} days left this month`}>
                           <svg width="88" height="88" viewBox="0 0 88 88">
                             <circle className="track" cx="44" cy="44" r={R} fill="none" strokeWidth="7" />
                             <circle className="fill" cx="44" cy="44" r={R} fill="none" strokeWidth="7"

@@ -44,7 +44,7 @@ const Sidebar = ({ isOpen, onSearchOpen }) => {
         <button className="sidebar-collapse-btn" onClick={() => setCollapsed(c => !c)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-pressed={collapsed}>
           <ChevronLeft size={14} />
         </button>
-        <NavLink to="/dashboard" className="workspace-brand" aria-label="Vault Manager home">
+        <NavLink to="/dashboard" className="workspace-brand" title="Dashboard">
           <span className="workspace-brand-icon"><Landmark size={22} /></span>
           <span><strong>Vault Manager</strong><small>Personal finance</small></span>
         </NavLink>
@@ -393,7 +393,7 @@ const BottomNav = () => {
           <button
             onClick={() => { tap(); setMoreOpen(true); }}
             className={`bottom-nav-item ${inMore || moreOpen ? 'active' : ''}`}
-            aria-label="All sections"
+            title="All sections"
           >
             <div className="bottom-nav-icon-wrap">
               <MoreHorizontal size={20} strokeWidth={inMore || moreOpen ? 2.3 : 1.8} />

@@ -265,3 +265,68 @@ html.lg-title .mobile-title-page { opacity: 1; translate: 0 0; }
   .hub-seg { flex: 1; }
   .hub-seg button { flex: 1; min-width: 0; }
 }
+
+/* --------------------------------------------------------------------------
+   Accessibility: contrast for filled controls (WCAG AA, 4.5:1 for text).
+   White on the dark-theme accent (#5b8def) was 3.2:1 and on danger 3.6:1.
+   The "strong" fills are mixed from the live accent, so a custom accent
+   colour stays readable too. Declared on body so light mode can override.
+   -------------------------------------------------------------------------- */
+body {
+  --mm-accent-strong: color-mix(in srgb, var(--mm-accent) 76%, #000);
+  --mm-danger-strong: color-mix(in srgb, var(--mm-danger) 74%, #000);
+  --mm-text-3: #8a929e;           /* muted text: 5.5:1 on cards (was 4.4:1) */
+  --text-muted: var(--mm-text-3);
+  --mm-danger: #ee7078;           /* red text passes 4.5:1 on red tints */
+}
+body.light-mode {
+  /* Slightly deeper hues so coloured text passes 4.5:1 even on tinted
+     buttons (was 3.6-4.3:1). */
+  --mm-accent: var(--accent, #2559c4);
+  --mm-success: #0e7049;
+  --mm-danger: #b53131;
+  --mm-warning: #855508;
+  --accent-primary: var(--mm-accent);
+  --mm-accent-strong: color-mix(in srgb, var(--mm-accent) 88%, #000);
+  --mm-danger-strong: var(--mm-danger);
+  --mm-text-3: #5f6672;
+  --text-muted: var(--mm-text-3);
+}
+html body :is(.btn-primary, .btn-primary:hover, .shell-primary) { background: var(--mm-accent-strong) !important; }
+html body :is(.btn-danger, .btn-danger:hover) { background: var(--mm-danger-strong) !important; color: #fff !important; }
+html body :is(.dash-seg-pill, .theme-seg-pill, .hub-seg-pill, .bottom-nav-pill.is-solid) { background-color: var(--mm-accent-strong) !important; }
+html body .bottom-nav-fab { background-color: var(--mm-accent-strong); }
+
+/* Visible keyboard focus everywhere (mouse clicks don't show it). */
+:where(a, button, input, select, textarea, summary, [role="button"], [role="switch"], [tabindex]):focus-visible {
+  outline: 2px solid var(--mm-accent, #5b8def) !important;
+  outline-offset: 2px !important;
+}
+
+/* Skip link: first Tab stop, jumps past navigation to the page content. */
+.skip-link {
+  position: fixed; left: 12px; top: -60px; z-index: 10000;
+  padding: 0.6rem 1rem; border-radius: 10px;
+  background: var(--mm-accent-strong); color: #fff; font: 600 0.85rem Inter, sans-serif; text-decoration: none;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 12px; }
+
+/* Hand-typed greys (#555-#888) in inline styles across older pages fall
+   below 4.5:1 on cards. Route them to the muted token, which passes in both
+   themes. (Inline colours are serialised as rgb(), hence these matchers.) */
+html body :is([style*="color: rgb(136, 136, 136)"], [style*="color: rgb(119, 119, 119)"], [style*="color: rgb(102, 102, 102)"], [style*="color: rgb(85, 85, 85)"]) {
+  color: var(--mm-text-3) !important;
+}
+html body.light-mode :is([style*="color: rgb(170, 170, 170)"], [style*="color: rgb(153, 153, 153)"], [style*="color: rgb(187, 187, 187)"]) {
+  color: var(--mm-text-2) !important;
+}
+
+/* Light mode: faint black tints meant for dark cards (10-35%) turn into
+   muddy grey patches; use the light raised surface instead. Backdrops use
+   higher opacities and are unaffected. */
+html body.light-mode :is([style*="background: rgba(0, 0, 0, 0.1"], [style*="background: rgba(0, 0, 0, 0.2"], [style*="background: rgba(0, 0, 0, 0.3"]):not([style*="position: fixed"]) {
+  background: var(--mm-surface-2, #f3f5f8) !important;
+}
+/* Inline dark-theme accent blue → the theme's accent in light mode. */
+html body.light-mode [style*="color: rgb(91, 141, 239)"] { color: var(--mm-accent) !important; }

@@ -375,7 +375,7 @@ const Investments = () => {
             {/* Holdings list */}
             <div className="hud-panel" style={{ padding:'0.75rem' }}>
               <div style={{ overflowX:'auto' }}>
-                <table style={{ width:'100%', borderCollapse:'collapse', fontFamily:'Inter, sans-serif', fontSize:'0.82rem' }}>
+                <table tabIndex={0} aria-label="Holdings" style={{ width:'100%', borderCollapse:'collapse', fontFamily:'Inter, sans-serif', fontSize:'0.82rem' }}>
                   <thead><tr style={{ borderBottom:'1px solid rgba(74,222,128,0.15)' }}>
                     {['Name','Type','Qty','Buy Price','Current Price','Value','P&L','CAGR',''].map(h => (
                       <th key={h} style={{ textAlign:'left', padding:'0.6rem 1rem', color:'var(--text-muted)', fontWeight:600, fontSize:'0.7rem', letterSpacing:'1px' }}>{h}</th>
@@ -532,6 +532,7 @@ const Investments = () => {
                           inputMode="decimal"
                           min="0"
                           step="1000"
+                          aria-label="Monthly investment"
                           value={fireMonthly}
                           onChange={e => setFireMonthly(parseFloat(e.target.value) || 0)}
                           style={{ width: '100%' }}
@@ -547,6 +548,7 @@ const Investments = () => {
                           type="range"
                           min="2"
                           max="30"
+                          aria-label="Expected annual return (percent)"
                           step="0.5"
                           value={fireRate}
                           onChange={e => setFireRate(parseFloat(e.target.value))}
@@ -563,6 +565,7 @@ const Investments = () => {
                           type="range"
                           min="1"
                           max="35"
+                          aria-label="Time horizon (years)"
                           step="1"
                           value={fireYears}
                           onChange={e => setFireYears(parseInt(e.target.value, 10))}

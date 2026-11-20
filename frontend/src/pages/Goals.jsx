@@ -822,6 +822,7 @@ const Goals = () => {
             </div>
 
             <select
+              aria-label="Sort goals"
               value={sortBy}
               onChange={e => setSortBy(e.target.value)}
               style={{
@@ -1553,6 +1554,7 @@ const Goals = () => {
                 Priority Level
               </label>
               <select
+                aria-label="Priority level"
                 value={formData.priority}
                 onChange={e => setFormData({ ...formData, priority: e.target.value })}
                 style={{ width: '100%', fontSize: '0.9rem', padding: '0.65rem' }}

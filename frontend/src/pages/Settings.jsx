@@ -79,8 +79,12 @@ const SettingsRow = ({ icon: Icon, label, description, children, color = '#4ade8
   </motion.div>
 );
 
-const Toggle = ({ checked, onChange, color = '#818cf8' }) => (
+const Toggle = ({ checked, onChange, color = '#818cf8', label }) => (
   <button
+    type="button"
+    role="switch"
+    aria-checked={!!checked}
+    aria-label={label}
     onClick={onChange}
     style={{ width: 48, height: 26, borderRadius: 13, background: checked ? color : 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', boxShadow: checked ? `0 0 12px ${color}66` : 'none' }}
   >
@@ -637,7 +641,7 @@ const Settings = () => {
           <SettingsRow icon={theme === 'light' ? Sun : theme === 'system' ? Monitor : Moon} label="Theme" description="Dark, light, or match your device — synced across devices" color="#818cf8">
             <div className="theme-seg" role="radiogroup" aria-label="Theme">
               {[['dark', Moon, 'Dark'], ['light', Sun, 'Light'], ['system', Monitor, 'System']].map(([value, Icon, label]) => (
-                <button key={value} type="button" role="radio" aria-checked={theme === value} onClick={() => handleThemeChange(value)}>
+                <button key={value} type="button" role="radio" aria-label={label} aria-checked={theme === value} onClick={() => handleThemeChange(value)}>
                   {theme === value && <motion.span layoutId="theme-seg-pill" className="theme-seg-pill" transition={{ type: 'spring', stiffness: 420, damping: 22, mass: 0.9 }} />}
                   <Icon size={14} /> <span>{label}</span>
                 </button>
@@ -651,6 +655,7 @@ const Settings = () => {
             color="#00f5ff"
           >
             <Toggle
+              label="Minimalist Focus Mode"
               checked={minimalistMode}
               onChange={() => {
                 const next = !minimalistMode;
@@ -743,12 +748,10 @@ const Settings = () => {
                 <button
                   type="button"
                   onClick={() => triggerInstallPrompt()}
+                  className="btn btn-primary"
                   style={{
                     padding: '0.6rem 1.25rem',
                     borderRadius: 10,
-                    background: 'linear-gradient(135deg, #4ade80, #22c55e)',
-                    border: 'none',
-                    color: '#0d1b2a',
                     fontWeight: 800,
                     fontSize: '0.84rem',
                     cursor: 'pointer',
@@ -756,7 +759,6 @@ const Settings = () => {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.45rem',
-                    boxShadow: '0 4px 16px rgba(74,222,128,0.3)',
                     flexShrink: 0,
                   }}
                 >
@@ -785,7 +787,7 @@ const Settings = () => {
                   <div style={{ fontSize: '0.78rem', color: '#555', fontFamily: 'Inter, sans-serif' }}>PIN screen shown after this period of inactivity</div>
                 </div>
               </div>
-              <select value={localStorage.getItem('vm_lock_timeout') || '5'}
+              <select aria-label="Auto-lock after" value={localStorage.getItem('vm_lock_timeout') || '5'}
                 onChange={e => {
                   localStorage.setItem('vm_lock_timeout', e.target.value);
                   const lbl = e.target.value === '0' ? 'Immediate' : e.target.value === '-1' ? 'Never' : `${e.target.value} min`;
@@ -995,14 +997,14 @@ const Settings = () => {
               {customCategories.map((c, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                    <button onClick={() => moveCategory(i, -1)} style={{ background:'none', border:'none', color:'#666', cursor:'pointer', padding:0, lineHeight:0 }} disabled={i===0}>▲</button>
-                    <button onClick={() => moveCategory(i, 1)} style={{ background:'none', border:'none', color:'#666', cursor:'pointer', padding:0, lineHeight:0 }} disabled={i===customCategories.length-1}>▼</button>
+                    <button type="button" aria-label={`Move ${c.name} up`} onClick={() => moveCategory(i, -1)} style={{ background:'none', border:'none', color:'#666', cursor:'pointer', padding:0, lineHeight:0 }} disabled={i===0}>▲</button>
+                    <button type="button" aria-label={`Move ${c.name} down`} onClick={() => moveCategory(i, 1)} style={{ background:'none', border:'none', color:'#666', cursor:'pointer', padding:0, lineHeight:0 }} disabled={i===customCategories.length-1}>▼</button>
                   </div>
                   <div style={{ fontSize: '1.2rem' }}>{c.emoji}</div>
                   <div style={{ flex: 1, fontSize: '0.85rem' }}>{c.name}</div>
                   <div style={{ width: 12, height: 12, borderRadius: '50%', background: c.color }} />
                   <button onClick={() => { setEditingCategory(i); setCatForm(c); setShowCategoryModal(true); }} style={{ background:'none', border:'none', color:'#a78bfa', cursor:'pointer', padding: '0.3rem' }}>Edit</button>
-                  <button onClick={() => handleDeleteCategory(i)} style={{ background:'none', border:'none', color:'#f87171', cursor:'pointer', padding: '0.3rem' }}><Trash2 size={14}/></button>
+                  <button type="button" aria-label={`Delete category ${c.name}`} onClick={() => handleDeleteCategory(i)} style={{ background:'none', border:'none', color:'#f87171', cursor:'pointer', padding: '0.3rem' }}><Trash2 size={14}/></button>
                 </div>
               ))}
             </div>
@@ -1012,7 +1014,7 @@ const Settings = () => {
           </div></details>
           <details className="quiet-section settings-disclosure"><summary>Financial alerts</summary><div className="quiet-section-content">
           <SettingsRow icon={Bell} label="Smart Financial Alerts" description="Native browser & PWA notifications for due bills and budgets" color="#fbbf24">
-            <Toggle checked={notifications} onChange={handleNotifToggle} color="#fbbf24" />
+            <Toggle label="Smart Financial Alerts" checked={notifications} onChange={handleNotifToggle} color="#fbbf24" />
           </SettingsRow>
           {notifications && (
             <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
@@ -1091,7 +1093,7 @@ const Settings = () => {
           <TotpMfaPanel />
 
           <SettingsRow icon={ShieldCheck} label="Multitasking Privacy Shield" description="Blur screen when switching apps on mobile or backgrounding tabs" color="#4ade80">
-            <Toggle checked={privacyShield} onChange={handlePrivacyShieldToggle} color="#4ade80" />
+            <Toggle label="Multitasking Privacy Shield" checked={privacyShield} onChange={handlePrivacyShieldToggle} color="#4ade80" />
           </SettingsRow>
 
           <SettingsRow icon={pinEnabled ? Lock : Unlock} label="PIN Lock" description={pinEnabled ? 'PIN is active — protects on inactivity' : 'Set a 4-digit PIN for quick unlock'} color="#a78bfa">
@@ -1131,7 +1133,7 @@ const Settings = () => {
             <>
               <SectionHeader label="BIOMETRIC UNLOCK" />
               <SettingsRow icon={Fingerprint} label="Fingerprint / Face ID" description="Unlock faster using device biometrics" color="#4ade80">
-                <Toggle checked={biometricEnabled} onChange={handleBiometricToggle} color="#4ade80" />
+                <Toggle label="Fingerprint / Face ID" checked={biometricEnabled} onChange={handleBiometricToggle} color="#4ade80" />
               </SettingsRow>
             </>
           )}
