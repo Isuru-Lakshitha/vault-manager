@@ -61,7 +61,10 @@ test('dashboard shows the get started checklist with real progress', async ({ pa
   await page.goto('/test/browser/dashboard');
   const card = page.getByRole('region', { name: 'Get started' });
   await expect(card).toBeVisible();
-  await expect(card).toContainText('2 of 4 done');
+  await expect(card).toContainText('2 of 5 done');
+  await card.getByRole('button', { name: /Choose your currency/ }).click();
+  await page.getByRole('dialog', { name: 'Your currency' }).getByRole('button', { name: /^USD/ }).click();
+  await expect(card).toContainText('3 of 5 done');
   await card.getByRole('button', { name: 'Hide get started' }).click();
   await expect(card).toBeHidden();
 });

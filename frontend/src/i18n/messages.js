@@ -10,6 +10,10 @@ export const LANGUAGES = [
 
 export const MESSAGES = {
   en: {
+    'gs.currency.title': 'Choose your currency',
+    'gs.currency.hint': 'Totals and reports use it.',
+    'cur.title': 'Your currency',
+    'cur.desc': 'Used for totals, budgets and reports. Accounts can still hold other currencies.',
     'nav.dashboard': 'Dashboard',
     'nav.accounts': 'Accounts',
     'nav.transactions': 'Transactions',
@@ -63,6 +67,10 @@ export const MESSAGES = {
   },
 
   si: {
+    'gs.currency.title': 'ඔබේ මුදල් ඒකකය තෝරන්න',
+    'gs.currency.hint': 'එකතුව සහ වාර්තා සඳහා එය භාවිතා වේ.',
+    'cur.title': 'ඔබේ මුදල් ඒකකය',
+    'cur.desc': 'එකතුව, අයවැය සහ වාර්තා සඳහා භාවිතා වේ. ගිණුම්වල වෙනත් මුදල් ඒකක තිබිය හැක.',
     'nav.dashboard': 'උපකරණ පුවරුව',
     'nav.accounts': 'ගිණුම්',
     'nav.transactions': 'ගනුදෙනු',
@@ -116,6 +124,10 @@ export const MESSAGES = {
   },
 
   ta: {
+    'gs.currency.title': 'உங்கள் நாணயத்தைத் தேர்ந்தெடுக்கவும்',
+    'gs.currency.hint': 'மொத்தங்களும் அறிக்கைகளும் இதைப் பயன்படுத்தும்.',
+    'cur.title': 'உங்கள் நாணயம்',
+    'cur.desc': 'மொத்தங்கள், பட்ஜெட்கள் மற்றும் அறிக்கைகளுக்குப் பயன்படும். கணக்குகளில் வேறு நாணயங்களும் இருக்கலாம்.',
     'nav.dashboard': 'முகப்புப் பலகை',
     'nav.accounts': 'கணக்குகள்',
     'nav.transactions': 'பரிவர்த்தனைகள்',

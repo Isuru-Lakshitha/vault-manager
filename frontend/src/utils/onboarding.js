@@ -3,6 +3,7 @@
  * the card ticks itself off as they use the app and never needs saving.
  */
 export const SETUP_STEPS = Object.freeze([
+  { id: 'currency', title: 'Choose your currency', hint: 'Totals and reports use it.', event: 'vm:open-currency-picker' },
   { id: 'account', title: 'Add an account', hint: 'Bank, cash or wallet — where your money lives.', to: '/accounts' },
   { id: 'balance', title: 'Set its current balance', hint: 'So your net worth starts from the right number.', to: '/accounts' },
   { id: 'transaction', title: 'Record a transaction', hint: 'Anything you spent or earned today.', event: 'vm:quick-add' },
@@ -11,9 +12,11 @@ export const SETUP_STEPS = Object.freeze([
 
 const num = (v) => Number.parseFloat(v) || 0;
 
-export function setupProgress({ accounts = [], transactions = [], budgets = [] } = {}) {
+export function setupProgress({ accounts = [], transactions = [], budgets = [], currencyChosen = false } = {}) {
   const live = (accounts || []).filter((a) => a && !a.archived);
   const done = {
+    // Anyone already recording transactions has effectively chosen one.
+    currency: !!currencyChosen || (transactions || []).length > 0,
     account: live.length > 0,
     balance: live.some((a) => num(a.balance) !== 0 || num(a.opening_balance) !== 0),
     transaction: (transactions || []).length > 0,

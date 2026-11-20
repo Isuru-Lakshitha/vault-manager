@@ -5,6 +5,7 @@ import { Check, ChevronRight, X } from 'lucide-react';
 import { setupProgress } from '../utils/onboarding';
 import { spring } from '../motion/presets';
 import { useT } from '../i18n';
+import CurrencyPickerModal, { CURRENCY_CHOSEN_KEY } from './CurrencyPickerModal';
 
 const HIDE_KEY = 'vm_getting_started_hidden';
 
@@ -18,7 +19,11 @@ export default function GettingStarted({ accounts, transactions, budgets }) {
   const [hidden, setHidden] = useState(() => {
     try { return localStorage.getItem(HIDE_KEY) === '1'; } catch { return false; }
   });
-  const { steps, completed, total, finished } = setupProgress({ accounts, transactions, budgets });
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [currencyChosen, setCurrencyChosen] = useState(() => {
+    try { return localStorage.getItem(CURRENCY_CHOSEN_KEY) === '1'; } catch { return false; }
+  });
+  const { steps, completed, total, finished } = setupProgress({ accounts, transactions, budgets, currencyChosen });
   const show = !hidden && !finished;
 
   const hide = () => {
@@ -26,12 +31,15 @@ export default function GettingStarted({ accounts, transactions, budgets }) {
     setHidden(true);
   };
   const go = (step) => {
-    if (step.event) window.dispatchEvent(new Event(step.event));
+    if (step.id === 'currency') setPickerOpen(true);
+    else if (step.event) window.dispatchEvent(new Event(step.event));
     else if (step.to) navigate(step.to);
   };
   const next = steps.find((s) => !s.done);
 
   return (
+    <>
+    <CurrencyPickerModal isOpen={pickerOpen} onClose={() => setPickerOpen(false)} onChosen={() => setCurrencyChosen(true)} />
     <AnimatePresence initial={false}>
       {show && (
         <motion.section
@@ -71,5 +79,6 @@ export default function GettingStarted({ accounts, transactions, budgets }) {
         </motion.section>
       )}
     </AnimatePresence>
+    </>
   );
 }

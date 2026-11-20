@@ -247,7 +247,8 @@ function App() {
         localStorage.setItem('vm_onboarded_' + uid, 'true');
         localStorage.setItem('vm_onboarded', 'true');
         localStorage.setItem('vm_never_show_onboarding', 'true');
-        setOnboardingOpen(true);
+        // New users are guided by the Dashboard's Get started checklist (which
+        // includes choosing a currency); the setup wizard stays in Settings.
       } else {
         // Ensure existing users are marked as onboarded so the popup never appears
         localStorage.setItem('vm_onboarded_' + uid, 'true');

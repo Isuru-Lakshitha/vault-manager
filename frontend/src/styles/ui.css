@@ -93,3 +93,15 @@ html[data-lang='si'] body { font-family: Inter, 'Noto Sans Sinhala', 'Sinhala MN
 html[data-lang='ta'] body { font-family: Inter, 'Noto Sans Tamil', 'Tamil Sangam MN', 'Latha', system-ui, sans-serif; }
 html:is([data-lang='si'], [data-lang='ta']) :is(.workspace-link span, .bottom-nav-label, .page-header h1, .dash-title, .gs-text) { line-height: 1.35; }
 html:is([data-lang='si'], [data-lang='ta']) .bottom-nav-label { font-size: 0.62rem; letter-spacing: 0; }
+
+/* Currency picker */
+.cur-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.5rem; }
+.cur-option {
+  position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 0.15rem; text-align: left;
+  padding: 0.7rem 0.8rem; border-radius: 12px; cursor: pointer; font-family: Inter, sans-serif;
+  border: 1px solid var(--mm-border); background: var(--mm-surface); color: var(--mm-text);
+}
+.cur-option small { color: var(--mm-text-2); font-size: 0.74rem; }
+.cur-option:hover { border-color: color-mix(in srgb, var(--mm-accent) 50%, var(--mm-border)); }
+.cur-option.is-active { border-color: var(--mm-accent); background: color-mix(in srgb, var(--mm-accent) 10%, var(--mm-surface)); }
+.cur-check { position: absolute; top: 0.6rem; right: 0.6rem; color: var(--mm-accent); }
