@@ -24,7 +24,7 @@
     "node": ">=20 <25"
   },
   "dependencies": {
-    "firebase": "^12.16.0",
+    "firebase": "^13.4.0",
     "framer-motion": "^12.43.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
