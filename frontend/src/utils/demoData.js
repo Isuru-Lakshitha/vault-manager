@@ -1,4 +1,9 @@
-import { createAccount, createTransaction, createBill, createGoal, createLoan, fetchAccounts } from './api';
+import {
+  createAccount, createTransaction, createBill, createGoal, createLoan,
+  fetchAccounts, fetchTransactions, fetchBills, fetchGoals, fetchLoans,
+  deleteTransaction, deleteBill, deleteGoal, deleteLoan, deleteAccount, invalidateCache,
+} from './api';
+import { demoRecords } from './demoRecords';
 
 export const DEMO_DATASET = {
   accounts: [
@@ -43,47 +48,70 @@ function getFutureDate(daysAhead) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+const DEMO_PRIMARY = 'Apex Premier Checking';
+
 /**
- * Loads the institutional demo sandbox dataset into the user's account
+ * Adds the demo dataset alongside the user's data. Every record is tagged
+ * is_demo, and demo transactions only ever touch demo accounts, so real
+ * balances never change and removeDemoPortfolio() can take it all back out.
  */
 export async function loadDemoPortfolio() {
-  await fetchAccounts();
   const createdAccMap = {};
-
-  // 1. Create Accounts
   for (const acc of DEMO_DATASET.accounts) {
     const created = await createAccount(acc);
     if (created && created.id) createdAccMap[acc.name] = created.id;
   }
+  const demoAccountId = createdAccMap[DEMO_PRIMARY];
+  if (!demoAccountId) throw new Error('Could not create the demo accounts');
 
-  // Get primary account ID
-  const freshAccounts = await fetchAccounts();
-  const primaryId = freshAccounts[0]?.id || '';
-
-  // 2. Create Bills
-  for (const bill of DEMO_DATASET.bills) {
-    await createBill(bill).catch(() => {});
-  }
-
-  // 3. Create Goals
-  for (const goal of DEMO_DATASET.goals) {
-    await createGoal(goal).catch(() => {});
-  }
-
-  // 4. Create Loans
-  for (const loan of DEMO_DATASET.loans) {
-    await createLoan(loan).catch(() => {});
-  }
-
-  // 5. Create Transactions
+  for (const bill of DEMO_DATASET.bills) await createBill(bill).catch(() => {});
+  for (const goal of DEMO_DATASET.goals) await createGoal(goal).catch(() => {});
+  for (const loan of DEMO_DATASET.loans) await createLoan(loan).catch(() => {});
   for (const tx of DEMO_DATASET.transactions) {
     await createTransaction({
       ...tx,
-      from_account_id: primaryId,
-      to_account_id: tx.type === 'Income' ? primaryId : ''
+      from_account_id: tx.type === 'Income' ? '' : demoAccountId,
+      to_account_id: tx.type === 'Income' ? demoAccountId : '',
     }).catch(() => {});
   }
-
-  localStorage.setItem('vm_demo_loaded', 'true');
+  try { localStorage.setItem('vm_demo_loaded', 'true'); } catch { /* private mode */ }
+  window.dispatchEvent(new Event('vm:data-changed'));
   return true;
+}
+
+/** Whether any demo record is present (used to offer removal). */
+export async function hasDemoData() {
+  const [accounts, transactions] = await Promise.all([fetchAccounts(), fetchTransactions()]);
+  return demoRecords({ accounts, transactions }).total > 0;
+}
+
+/**
+ * Removes every is_demo record. Transactions go first (each delete reverses
+ * its balance change, which also repairs real accounts touched by older
+ * versions of the demo), then bills, goals, loans and finally the accounts.
+ * Returns what was removed and what had to be kept.
+ */
+export async function removeDemoPortfolio() {
+  const [accounts, transactions, bills, goals, loans] = await Promise.all([
+    fetchAccounts(), fetchTransactions(), fetchBills(), fetchGoals(), fetchLoans(),
+  ]);
+  const demo = demoRecords({ accounts, transactions, bills, goals, loans });
+  const kept = [];
+  let removed = 0;
+  const run = async (items, del, label) => {
+    for (const item of items) {
+      try { await del(item.id); removed += 1; }
+      catch (err) { kept.push(`${label} "${item.name || item.loan_name || item.notes || item.id}": ${err?.message || 'failed'}`); }
+    }
+  };
+  await run(demo.transactions, deleteTransaction, 'Transaction');
+  invalidateCache('transactions', 'accounts', 'analytics');
+  await run(demo.bills, deleteBill, 'Bill');
+  await run(demo.goals, deleteGoal, 'Goal');
+  await run(demo.loans, deleteLoan, 'Loan');
+  await run(demo.accounts, deleteAccount, 'Account');
+  invalidateCache();
+  try { localStorage.removeItem('vm_demo_loaded'); } catch { /* private mode */ }
+  window.dispatchEvent(new Event('vm:data-changed'));
+  return { removed, kept };
 }

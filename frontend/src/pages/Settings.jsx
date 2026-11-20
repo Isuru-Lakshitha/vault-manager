@@ -8,7 +8,7 @@ import { Monitor, Sun, Moon, LogOut, Shield, Bell, Palette, Info, Lock, Unlock, 
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { saveUserPrefs, fetchAccounts, fetchTransactions, fetchBudgets, fetchGoals, fetchLoans, fetchBills, fetchInvestments, getUserId, migrateDataAddUid, deleteTransaction, invalidateCache } from '../utils/api';
-import { loadDemoPortfolio } from '../utils/demoData';
+import { loadDemoPortfolio, removeDemoPortfolio } from '../utils/demoData';
 import { db, auth } from '../utils/firebase';
 import { runTransaction, doc, collection, query, where, getDocs } from 'firebase/firestore';
 import Modal from '../components/Modal';
@@ -1139,7 +1139,24 @@ const Settings = () => {
           {/* DATA MANAGEMENT */}
           </div></details>
           <details className="quiet-section settings-disclosure"><summary>Backup & data management</summary><div className="quiet-section-content">
-          <SettingsRow icon={Play} label="Demo Sandbox Portfolio" description="Populate realistic accounts, bills, and transactions for testing" color="#818cf8">
+          <SettingsRow icon={Play} label="Demo Sandbox Portfolio" description="Adds sample accounts, bills and transactions next to yours (your balances aren't touched). Remove them in one tap." color="#818cf8">
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={async () => {
+                const toastId = toast.loading('Removing demo data...');
+                try {
+                  const { removed, kept } = await removeDemoPortfolio();
+                  if (kept.length) toast.error(`Removed ${removed}. Kept ${kept.length}: ${kept[0]}`, { id: toastId, duration: 8000 });
+                  else toast.success(removed ? `Demo data removed (${removed} records)` : 'No demo data found', { id: toastId });
+                } catch (err) {
+                  toast.error(err?.message || 'Could not remove demo data', { id: toastId });
+                }
+              }}
+              style={{ padding: '0.4rem 1rem', borderRadius: 8, border: '1px solid var(--mm-border)', background: 'transparent', color: 'var(--mm-text-2)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}
+            >
+              Remove demo data
+            </button>
             <button
               onClick={async () => {
                 const toastId = toast.loading('Loading demo portfolio...');
@@ -1155,6 +1172,7 @@ const Settings = () => {
             >
               Load Demo
             </button>
+            </div>
           </SettingsRow>
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
             style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)', padding: '1.1rem 1.5rem', marginBottom: '0.5rem' }}

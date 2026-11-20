@@ -20,6 +20,7 @@ import EmergencyRunwayCard from '../components/EmergencyRunwayCard';
 import SafeToSpendCard from '../components/SafeToSpendCard';
 import GettingStarted from '../components/GettingStarted';
 import MonthClosePrompt from '../components/MonthClosePrompt';
+import DemoDataBanner from '../components/DemoDataBanner';
 import SummaryBreakdownModal from './dashboard/SummaryBreakdownModal';
 import MonthlyStoryModal from '../components/MonthlyStoryModal';
 import AchievementsModal from '../components/AchievementsModal';
@@ -694,6 +695,7 @@ const Dashboard = () => {
               </motion.div>
             )}
 
+            <DemoDataBanner accounts={accounts} transactions={transactions} />
             <GettingStarted accounts={accounts} transactions={transactions} budgets={budgets} />
             <MonthClosePrompt accounts={accounts} transactions={transactions} budgets={budgets} />
 
