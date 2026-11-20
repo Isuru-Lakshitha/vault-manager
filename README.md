@@ -157,6 +157,18 @@ docs/BACKUP.md       Backup and restore runbook
 - The Firebase *web* config isn't a secret: it ships inside the app's JavaScript to every visitor. Your data is protected by **Authentication plus `firestore.rules`**, so always deploy the rules.
 - To report a security issue, please open a private security advisory on GitHub instead of a public issue.
 
+## Production setup (one-time, in your own accounts)
+
+These need your Google/Firebase accounts, so they aren't automated:
+
+| What | Where | Then |
+|------|-------|------|
+| **App Check** (blocks scripts reusing the public config) | Firebase console → App Check | Put `VITE_APPCHECK_SITE_KEY` in `frontend/.env`, deploy, enforce after a day (details below) |
+| **Google Drive backup** (Settings → Backup) | Google Cloud console → APIs & Services: enable the *Google Drive API*, create an *OAuth client ID* (Web application) with your site and `http://localhost:5173` as JavaScript origins | Put `VITE_GOOGLE_CLIENT_ID` in `frontend/.env` and deploy |
+| **Custom domain** (e.g. `vaultmanager.lk`) | Buy the domain, then Firebase console → Hosting → *Add custom domain* | Add the DNS records Firebase shows; HTTPS is issued automatically. Add the domain to App Check and the OAuth client origins too |
+
+Shared household access is designed but not built: see [docs/HOUSEHOLD.md](docs/HOUSEHOLD.md).
+
 ### Turn on App Check (recommended for production)
 
 App Check makes Firebase accept requests only from your real app, so nobody can reuse the public web config from a script.
