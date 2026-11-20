@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "test": "node --test test/*test.js",
     "test:rules": "node --test test/rules.emulator.mjs",
+    "test:rules:emulator": "cd .. && npx --yes firebase-tools emulators:exec --only firestore --project demo-money-manager \"npm --prefix frontend run test:rules\"",
     "verify": "npm test && npm run lint && npm run build",
     "verify:full": "npm run verify && npm run test:browser",
     "deploy:preview": "npm run verify:full && npx firebase-tools hosting:channel:deploy preview --expires 7d",

@@ -94,6 +94,7 @@ Then open http://127.0.0.1:5177/test/browser/dashboard (or `/accounts`, `/transa
 | `npm run lint` | Static analysis with oxlint |
 | `npm run build` | Production build into `frontend/dist` |
 | `npm run test:browser` | Playwright browser tests, desktop and mobile (first run: `npx playwright install chromium`) |
+| `npm run test:rules:emulator` | Firestore security-rule tests against a local emulator (needs Java 21+; never touches production) |
 | `npm run verify` | Unit tests + lint + build |
 | `npm run verify:full` | `verify` + browser tests (runs automatically before every deploy) |
 
