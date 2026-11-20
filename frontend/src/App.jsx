@@ -52,9 +52,12 @@ const lazyWithRetry = (importFn) =>
     }
   });
 
-const dashboardChunkPromise = import('./pages/Dashboard');
+// Fetched as soon as sign-in is confirmed (not on the sign-in screen, where
+// its charts library would only slow the first paint).
+let dashboardChunkPromise = null;
+const importDashboard = () => (dashboardChunkPromise ??= import('./pages/Dashboard'));
 const pageImporters = {
-  Dashboard: () => dashboardChunkPromise,
+  Dashboard: importDashboard,
   Accounts: () => import('./pages/Accounts'),
   Transactions: () => import('./pages/Transactions'),
   Loans: () => import('./pages/Loans'),
@@ -416,6 +419,7 @@ function App() {
         setIsInitializing(false);
         resetTimer();
         try {
+          importDashboard().catch(() => {});
           preloadAllRouteChunks();
           startLiveSync(user.uid);
           startSystemConfigSync();

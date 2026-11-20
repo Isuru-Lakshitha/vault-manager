@@ -1,6 +1,7 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "browser-harness", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "frontend", "run", "dev:test"], "port": 5177 }
+    { "name": "browser-harness", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "frontend", "run", "dev:test"], "port": 5177 },
+    { "name": "prod-preview", "runtimeExecutable": "npm", "runtimeArgs": ["--prefix", "frontend", "run", "preview", "--", "--port", "4179", "--strictPort"], "port": 4179 }
   ]
 }

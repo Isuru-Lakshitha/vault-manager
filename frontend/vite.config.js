@@ -188,23 +188,24 @@ export default defineConfig({
     },
     rolldownOptions: {
       output: {
-        // Aggressive code splitting for faster initial load
-        manualChunks: (id) => {
-          if (!id.includes('node_modules')) return;
-          // Firebase split by service
-          if (id.includes('firebase/firestore'))  return 'firebase-firestore';
-          if (id.includes('firebase/auth'))        return 'firebase-auth';
-          if (id.includes('firebase/storage'))     return 'firebase-storage';
-          if (id.includes('@firebase') || id.includes('firebase/app')) return 'firebase-core';
-          // Charts (only loaded on analytics page)
-          if (id.includes('recharts') || id.includes('d3-') || id.includes('victory')) return 'charts';
-          // Animation (framer)
-          if (id.includes('framer-motion'))        return 'motion';
-          // Heavy export libs — only load when user exports
-          if (id.includes('xlsx'))                 return 'xlsx';
-          if (id.includes('jspdf') || id.includes('html2canvas') || id.includes('dompurify')) return 'export';
-          // Everything else
-          return 'vendor';
+        // Code splitting with explicit priorities. Higher priority claims a
+        // module first, so shared runtime (React, react-is, the bundler's
+        // dynamic-import preload helper) always lands in 'vendor' instead of
+        // being pulled into a lazy feature chunk (charts, PDF export) and
+        // dragging that whole chunk into the first page load.
+        codeSplitting: {
+          groups: [
+            { name: 'vendor', priority: 100, test: (id) => id.includes('vite/preload-helper') || id.includes('commonjsHelpers') || /[\\/]node_modules[\\/](react|react-dom|react-is|scheduler|react-router|react-router-dom|lucide-react|react-hot-toast|goober)[\\/]/.test(id) },
+            { name: 'firebase-firestore', priority: 90, test: /[\\/]node_modules[\\/](@firebase[\\/]firestore|firebase[\\/]firestore)/ },
+            { name: 'firebase-auth', priority: 90, test: /[\\/]node_modules[\\/](@firebase[\\/]auth|firebase[\\/]auth)/ },
+            { name: 'firebase-storage', priority: 90, test: /[\\/]node_modules[\\/](@firebase[\\/]storage|firebase[\\/]storage)/ },
+            { name: 'firebase-core', priority: 80, test: /[\\/]node_modules[\\/](@firebase|firebase)[\\/]/ },
+            { name: 'motion', priority: 70, test: /[\\/]node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/ },
+            // Feature-only libraries: loaded when the feature is opened.
+            { name: 'charts', priority: 50, test: /[\\/]node_modules[\\/](recharts|d3-[^/\\]+|victory[^/\\]*|decimal\.js-light|eventemitter3|@reduxjs|redux|reselect|immer|use-sync-external-store|es-toolkit)[\\/]/ },
+            { name: 'xlsx', priority: 50, test: /[\\/]node_modules[\\/]xlsx[\\/]/ },
+            { name: 'export', priority: 50, test: /[\\/]node_modules[\\/](jspdf|html2canvas|dompurify|canvg|fflate|core-js|raf|rgbcolor|stackblur-canvas|svg-pathdata|performance-now|@babel[\\/]runtime|regenerator-runtime)[\\/]/ },
+          ],
         },
       },
     },
