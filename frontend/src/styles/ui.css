@@ -105,3 +105,9 @@ html:is([data-lang='si'], [data-lang='ta']) .bottom-nav-label { font-size: 0.62r
 .cur-option:hover { border-color: color-mix(in srgb, var(--mm-accent) 50%, var(--mm-border)); }
 .cur-option.is-active { border-color: var(--mm-accent); background: color-mix(in srgb, var(--mm-accent) 10%, var(--mm-surface)); }
 .cur-check { position: absolute; top: 0.6rem; right: 0.6rem; color: var(--mm-accent); }
+
+/* Pinch-zoom is allowed (accessibility). Keep form text at 16px on phones so
+   iOS doesn't auto-zoom into a field on focus. */
+@media (max-width: 900px) {
+  html body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) { font-size: max(16px, 1em) !important; }
+}
