@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { PageHeader, Segmented } from '../components/ui';
 import ToolMenu from '../components/ToolMenu';
 import { useState, useEffect } from 'react';
@@ -187,6 +188,7 @@ const buildTagData = (transactions) => {
 };
 
 const Analytics = () => {
+  const t = useT();
   const navigate = useNavigate();
   const [data, setData] = useState(() => getCache('analytics') || null);
   const [loadError, setLoadError] = useState('');
@@ -416,7 +418,7 @@ const Analytics = () => {
       <div>
         {loadError && <div role="alert" className="glass-panel" style={{ padding: 16, marginBottom: 16 }}>{loadError} <button className="btn btn-secondary" onClick={() => loadData()}>Retry</button></div>}
         {data?.currencyEstimate && <p role="status">Amounts converted to {data.reportingCurrency} using Frankfurter reference rates dated {data.exchangeRateDate}. Historical totals are estimates at these rates.</p>}
-        <PageHeader title="Analytics" subtitle="Financial overview & insights">
+        <PageHeader title={t('nav.analytics')} subtitle="Financial overview & insights">
           <div className="filter-scroll-row" style={{ gap:'0.75rem' }}>
             {/* Month Picker */}
             {availableMonths.length > 0 && (

@@ -1,10 +1,11 @@
-import { PageHeader } from '../components/ui';
+import { useT, useLang, setLang, LANGUAGES } from '../i18n';
+import { PageHeader, Segmented } from '../components/ui';
 import { backupFingerprint, planBackupImport } from '../utils/backupPlan';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getThemePref, setThemePref } from '../utils/theme';
 import PageWrapper from '../components/PageWrapper';
-import { Monitor, Sun, Moon, LogOut, Shield, Bell, Palette, Info, Lock, Unlock, Globe, Check, Key, Download, Upload, Fingerprint, List, Plus, Trash2, Zap, Wrench, ShieldCheck, Activity, Play, Crown, Smartphone, Sparkles } from 'lucide-react';
+import { Monitor, Sun, Moon, LogOut, Shield, Bell, Palette, Info, Lock, Unlock, Globe, Check, Key, Download, Upload, Fingerprint, List, Plus, Trash2, Zap, Wrench, ShieldCheck, Activity, Play, Crown, Smartphone, Sparkles, Languages } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { saveUserPrefs, fetchAccounts, fetchTransactions, fetchBudgets, fetchGoals, fetchLoans, fetchBills, fetchInvestments, getUserId, migrateDataAddUid, deleteTransaction, invalidateCache } from '../utils/api';
@@ -101,6 +102,8 @@ const hashPin = async (pin) => {
 };
 
 const Settings = () => {
+  const t = useT();
+  const lang = useLang();
   const navigate = useNavigate();
   const [theme, setTheme] = useState(getThemePref);
   useEffect(() => {
@@ -555,7 +558,7 @@ const Settings = () => {
   return (
     <PageWrapper>
       <div>
-        <PageHeader title="Settings" subtitle={<>Preferences, security &amp; data{saving ? ' · Saving…' : ''}</>} />
+        <PageHeader title={t('nav.settings')} subtitle={<>Preferences, security &amp; data{saving ? ' · Saving…' : ''}</>} />
 
         <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 680 }}>
 
@@ -638,6 +641,18 @@ const Settings = () => {
 
           {/* APPEARANCE */}
           <details className="quiet-section settings-disclosure" open><summary>Appearance</summary><div className="quiet-section-content">
+          <SettingsRow icon={Languages} label={t('settings.language')} description={t('settings.languageDesc')} color="#818cf8">
+            <Segmented
+              label={t('settings.language')}
+              size="sm"
+              value={lang}
+              onChange={(code) => {
+                setLang(code);
+                getUserId().then((uid) => uid && saveUserPrefs(uid, { lang: code })).catch(() => {});
+              }}
+              options={LANGUAGES.map((l) => ({ value: l.code, label: l.label }))}
+            />
+          </SettingsRow>
           <SettingsRow icon={theme === 'light' ? Sun : theme === 'system' ? Monitor : Moon} label="Theme" description="Dark, light, or match your device — synced across devices" color="#818cf8">
             <div className="theme-seg" role="radiogroup" aria-label="Theme">
               {[['dark', Moon, 'Dark'], ['light', Sun, 'Light'], ['system', Monitor, 'System']].map(([value, Icon, label]) => (

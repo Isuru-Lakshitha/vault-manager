@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader, StatGrid, StatCard, Button, EmptyState } from '../components/ui';
 import MoreSection from '../components/MoreSection';
@@ -141,6 +142,7 @@ const UtilizationRing = ({ used, limit, color }) => {
 const defaultForm = { name: '', bank: '', last4: '', network: 'Visa', credit_limit: 0, balance: 0, apr: 0, statement_date: '', due_date: '', min_payment_pct: 2, color: CARD_COLORS[0] };
 
 const CreditCards = () => {
+  const t = useT();
   const [cards, setCards] = useState(() => getCache('credit_cards') || []);
   const [accounts, setAccounts] = useState(() => getCache('accounts') || []);
   const [loading, setLoading] = useState(() => !getCache('credit_cards'));
@@ -293,7 +295,7 @@ const CreditCards = () => {
     <PageWrapper>
       <div>
         {/* Header */}
-        <PageHeader title="Credit Cards" subtitle="Utilization tracking, statement cycles, and payoff projections">
+        <PageHeader title={t('nav.creditCards')} subtitle="Utilization tracking, statement cycles, and payoff projections">
           <button className="btn btn-primary" onClick={openAdd}><Plus size={16}/> Add Card</button>
         </PageHeader>
 

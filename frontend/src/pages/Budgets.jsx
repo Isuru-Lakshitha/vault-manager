@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader, StatCard, Segmented, Button, EmptyState } from '../components/ui';
 import { useState, useEffect } from 'react';
@@ -54,6 +55,7 @@ const ProgressRing = ({ progress, color, size = 90 }) => {
 
 
 const Budgets = () => {
+  const t = useT();
   const navigate = useNavigate();
   const currentMonthKey = todayYMD().slice(0, 7);
   const [budgets, setBudgets] = useState(() => getCache('budgets') || []);
@@ -281,7 +283,7 @@ const Budgets = () => {
   return (
     <PageWrapper>
       <div>
-        <PageHeader title="Budgets" subtitle="Monthly category limits, pacing, and 50/30/20 allocation">
+        <PageHeader title={t('nav.budgets')} subtitle="Monthly category limits, pacing, and 50/30/20 allocation">
           <Segmented
             label="Budget view"
             value={activeView}

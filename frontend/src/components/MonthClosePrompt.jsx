@@ -5,6 +5,7 @@ import { fetchUserPrefs, getUserId, saveUserPrefs } from '../utils/api';
 import { previousMonth, monthLabel, shouldOfferClose } from '../utils/monthClose';
 import { localClosedMonths, mergeClosedMonths, rememberClosedMonth } from '../utils/closedMonths';
 import { spring } from '../motion/presets';
+import { useT, useLang } from '../i18n';
 
 const MonthCloseModal = lazy(() => import('./MonthCloseModal'));
 
@@ -15,6 +16,8 @@ const MonthCloseModal = lazy(() => import('./MonthCloseModal'));
  */
 export default function MonthClosePrompt({ accounts, transactions, budgets }) {
   const month = previousMonth();
+  const t = useT();
+  const lang = useLang();
   const [closed, setClosed] = useState(localClosedMonths);
   const [open, setOpen] = useState(false);
   const [target, setTarget] = useState(month);
@@ -53,12 +56,12 @@ export default function MonthClosePrompt({ accounts, transactions, budgets }) {
           >
             <CalendarCheck size={22} className="month-close-icon" aria-hidden="true" />
             <div style={{ flex: 1, minWidth: 180 }}>
-              <strong>{monthLabel(month)} is over</strong>
-              <p>Check balances and review the month. It takes about two minutes.</p>
+              <strong>{t('mc.over', { month: monthLabel(month, lang) })}</strong>
+              <p>{t('mc.body')}</p>
             </div>
             <div className="ui-banner-actions">
-              <button type="button" className="btn btn-secondary" onClick={skip}>Skip</button>
-              <button type="button" className="btn btn-primary" onClick={() => { setTarget(month); setOpen(true); }}>Close month</button>
+              <button type="button" className="btn btn-secondary" onClick={skip}>{t('common.skip')}</button>
+              <button type="button" className="btn btn-primary" onClick={() => { setTarget(month); setOpen(true); }}>{t('mc.close')}</button>
             </div>
           </motion.div>
         )}

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Check, ChevronRight, X } from 'lucide-react';
 import { setupProgress } from '../utils/onboarding';
 import { spring } from '../motion/presets';
+import { useT } from '../i18n';
 
 const HIDE_KEY = 'vm_getting_started_hidden';
 
@@ -13,6 +14,7 @@ const HIDE_KEY = 'vm_getting_started_hidden';
  */
 export default function GettingStarted({ accounts, transactions, budgets }) {
   const navigate = useNavigate();
+  const t = useT();
   const [hidden, setHidden] = useState(() => {
     try { return localStorage.getItem(HIDE_KEY) === '1'; } catch { return false; }
   });
@@ -34,7 +36,7 @@ export default function GettingStarted({ accounts, transactions, budgets }) {
       {show && (
         <motion.section
           className="getting-started"
-          aria-label="Get started"
+          aria-label={t('gs.title')}
           initial={{ opacity: 0, y: -8, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: -8, scale: 0.98 }}
@@ -42,10 +44,10 @@ export default function GettingStarted({ accounts, transactions, budgets }) {
         >
           <header className="gs-head">
             <div>
-              <h2>Get started</h2>
-              <p>{completed} of {total} done · takes about two minutes</p>
+              <h2>{t('gs.title')}</h2>
+              <p>{t('gs.progress', { done: completed, total })}</p>
             </div>
-            <button type="button" className="gs-close" onClick={hide} aria-label="Hide get started">
+            <button type="button" className="gs-close" onClick={hide} aria-label={t('gs.hide')}>
               <X size={16} />
             </button>
           </header>
@@ -55,11 +57,11 @@ export default function GettingStarted({ accounts, transactions, budgets }) {
           <ol className="gs-steps">
             {steps.map((s) => (
               <li key={s.id} className={s.done ? 'is-done' : s === next ? 'is-next' : ''}>
-                <button type="button" onClick={() => go(s)} disabled={s.done} aria-label={s.done ? `${s.title} (done)` : undefined}>
+                <button type="button" onClick={() => go(s)} disabled={s.done} aria-label={s.done ? `${t(`gs.${s.id}.title`)} ✓` : undefined}>
                   <span className="gs-check" aria-hidden="true">{s.done && <Check size={13} strokeWidth={3} />}</span>
                   <span className="gs-text">
-                    <strong>{s.title}</strong>
-                    {!s.done && <small>{s.hint}</small>}
+                    <strong>{t(`gs.${s.id}.title`)}</strong>
+                    {!s.done && <small>{t(`gs.${s.id}.hint`)}</small>}
                   </span>
                   {!s.done && <ChevronRight size={16} className="gs-go" aria-hidden="true" />}
                 </button>

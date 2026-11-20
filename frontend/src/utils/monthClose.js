@@ -19,10 +19,11 @@ export function previousMonth(date = new Date()) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`;
 }
 
-export function monthLabel(month) {
+export function monthLabel(month, lang) {
   const [y, m] = String(month).split('-').map(Number);
   if (!y || !m) return String(month);
-  return new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  const locale = lang === 'si' ? 'si-LK' : lang === 'ta' ? 'ta-LK' : undefined;
+  return new Date(y, m - 1, 1).toLocaleDateString(locale, { month: 'long', year: 'numeric' });
 }
 
 const cents = (v) => Math.round((Number.parseFloat(v) || 0) * 100);

@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader, Button, EmptyState } from '../components/ui';
 import LoanReminderModal from './recurring/LoanReminderModal';
@@ -70,6 +71,7 @@ import RuleFormModal from './recurring/RuleFormModal';
 import { QUICK_PRESETS, freqLabel, getRuleEffectiveAmount, freqMonthly, getRuleUrgency, defaultForm } from './recurring/model';
 
 const Recurring = () => {
+  const t = useT();
   const navigate = useNavigate();
   const [rules, setRules] = useState(() => getCache('recurring') || []);
   const [accounts, setAccounts] = useState(() => getCache('accounts') || []);
@@ -1366,7 +1368,7 @@ const Recurring = () => {
     <PageWrapper>
       <div>
         {/* Clean Minimalist Header */}
-        <PageHeader title="Recurring & Monthly Reminders" subtitle="Reminder-only monthly commitments, variable bills & loan schedules — never auto-deducted">
+        <PageHeader title={t('page.recurring')} subtitle="Reminder-only monthly commitments, variable bills & loan schedules — never auto-deducted">
           {cycleStats.unpaidCount > 0 && (
             <Button icon={CheckCircle2} onClick={handleMarkAllStartNextMonth} title="Mark all current month reminders as paid without deducting from any account">Mark all paid</Button>
           )}

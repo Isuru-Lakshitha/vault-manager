@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { removeItemWithUndo } from '../components/undoToast';
 import ToolMenu from '../components/ToolMenu';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -98,6 +99,7 @@ const readCachedDashboard = () => {
 };
 
 const Dashboard = () => {
+  const t = useT();
   const initialCache = useMemo(() => readCachedDashboard(), []);
   const [accounts, setAccounts] = useState(() => initialCache?.anl?.accounts || []);
   const [loans, setLoans] = useState(() => initialCache?.anl?.loans || []);
@@ -630,7 +632,7 @@ const Dashboard = () => {
         {/* Header */}
         <header className="dash-header">
           <div>
-            <h1 className="dash-title">Dashboard</h1>
+            <h1 className="dash-title">{t('nav.dashboard')}</h1>
             <p className="dash-subtitle">Your financial overview · Updated {now}</p>
           </div>
           <div className="dash-actions">

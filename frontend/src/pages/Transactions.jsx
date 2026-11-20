@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { deleteWithUndo, removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { findDemoFeedLeftovers } from '../utils/bankFeedImport';
 import { toCSV } from '../utils/csv';
@@ -102,6 +103,7 @@ const Highlight = ({ text, query }) => {
 
 /* ─── Transactions page ────────────────────────────────────────── */
 const Transactions = () => {
+  const t = useT();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [transactions, setTransactions] = useState(() => getCache('transactions') || []);
@@ -1025,7 +1027,7 @@ const Transactions = () => {
         {/* ── Header ── */}
         <div className="page-header">
           <div>
-            <h1 className="glow-text text-cyan" style={{ margin:0, fontSize:'2rem' }}>Transactions</h1>
+            <h1 className="glow-text text-cyan" style={{ margin:0, fontSize:'2rem' }}>{t('nav.transactions')}</h1>
             <p className="ui-page-sub">{filtered.length} {filtered.length === 1 ? 'record' : 'records'} · totals below</p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', position: 'relative' }}>

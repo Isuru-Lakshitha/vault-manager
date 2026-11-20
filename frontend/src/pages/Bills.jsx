@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader, StatGrid, StatCard, Segmented, Button, EmptyState } from '../components/ui';
 import MoreSection from '../components/MoreSection';
@@ -37,6 +38,7 @@ const FREQUENCIES = ['Once', 'Weekly', 'Monthly', 'Yearly'];
 const CATEGORIES = ['Rent/Housing', 'Utilities', 'Insurance', 'Subscriptions', 'Loan EMI', 'Phone/Internet', 'Groceries', 'Education', 'Other'];
 
 const Bills = () => {
+  const t = useT();
   const [bills, setBills] = useState(() => getCache('bills') || []);
   const [loading, setLoading] = useState(() => !getCache('bills'));
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -206,7 +208,7 @@ const Bills = () => {
   return (
     <PageWrapper>
       <div>
-        <PageHeader title="Bills & Subscriptions" subtitle="Upcoming due dates, subscription burn rate, and 1-tap payments">
+        <PageHeader title={t('page.bills')} subtitle="Upcoming due dates, subscription burn rate, and 1-tap payments">
           <Segmented
             label="Bills view"
             value={billsView}

@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import ToolMenu from '../components/ToolMenu';
 import { InsightAccounts } from '../components/InsightPanels';
@@ -36,6 +37,7 @@ const SUPPORTS_SIBLING_INDEX =
 
 
 const Accounts = () => {
+  const t = useT();
   const [showArchived, setShowArchived] = useState(false);
   const [typeFilter, setTypeFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -341,7 +343,7 @@ const Accounts = () => {
         {/* Header */}
         <div className="page-header">
           <div>
-            <h1 className="glow-text text-cyan" style={{ fontSize: '2rem' }}>Accounts</h1>
+            <h1 className="glow-text text-cyan" style={{ fontSize: '2rem' }}>{t('nav.accounts')}</h1>
             <p style={{ color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', marginTop: 4 }}>
               Balances and account activity
             </p>

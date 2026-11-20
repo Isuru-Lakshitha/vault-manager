@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader, Button } from '../components/ui';
 import MoreSection from '../components/MoreSection';
@@ -33,6 +34,7 @@ const CustomTooltip = ({ active, payload }) => {
 };
 
 const Investments = () => {
+  const t = useT();
   const [investments, setInvestments] = useState(() => getCache('investments') || []);
   const [accounts, setAccounts] = useState(() => getCache('accounts') || []);
   const [loading, setLoading] = useState(() => !getCache('investments'));
@@ -221,7 +223,7 @@ const Investments = () => {
   return (
     <PageWrapper>
       <div>
-        <PageHeader title="Investments" subtitle="Portfolio holdings, asset allocation, and compound growth">
+        <PageHeader title={t('nav.investments')} subtitle="Portfolio holdings, asset allocation, and compound growth">
           {pricesUpdatedAt && <span className="ui-header-note">Updated {pricesUpdatedAt}</span>}
           <Button icon={RefreshCw} loading={priceRefreshing} onClick={refreshPrices}>{priceRefreshing ? 'Refreshing…' : 'Refresh prices'}</Button>
           <Button variant="primary" icon={Plus} onClick={openAdd}>Add investment</Button>

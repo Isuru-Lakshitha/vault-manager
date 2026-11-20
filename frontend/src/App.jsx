@@ -9,6 +9,7 @@ import { Toaster, toast } from 'react-hot-toast';
 import Sidebar, { NAV_ITEMS } from './components/Sidebar';
 import BillsHubTabs from './components/BillsHubTabs';
 import BudgetWatcher from './components/BudgetWatcher';
+import { useT, setLang } from './i18n';
 import Login from './pages/Login';
 import EmailVerification from './components/EmailVerification';
 import { Menu, Landmark, Plus, Eye, EyeOff, Cloud, Sparkles, Download } from 'lucide-react';
@@ -189,6 +190,7 @@ function App() {
   const mainContentRef = useRef(null);
   const [isStealth, toggleStealth] = useStealthMode();
   const location = useLocation();
+  const t = useT();
   const logoutTimerRef = useRef(null);
   const pinTimerRef = useRef(null);
 
@@ -275,7 +277,8 @@ function App() {
   }, []);
 
   // Mobile header shows the current page name
-  const pageTitle = NAV_ITEMS.find(i => [i.path, ...(i.also || [])].some(p => location.pathname.startsWith(p)))?.label || 'Vault Manager';
+  const navItem = NAV_ITEMS.find(i => [i.path, ...(i.also || [])].some(p => location.pathname.startsWith(p)));
+  const pageTitle = navItem ? t(navItem.labelKey) : 'Vault Manager';
 
   // Bottom-nav FAB → Quick Add; More sheet → Search; Currency Hub; FinTech Tools
   useEffect(() => {
@@ -427,6 +430,7 @@ function App() {
           fetchUserPrefs(user.uid).then(prefs => {
             if (prefs?.theme) setThemePref(prefs.theme);
             if (prefs?.currency) localStorage.setItem('vm_currency', prefs.currency);
+            if (prefs?.lang) setLang(prefs.lang);
           }).catch(() => {});
           Promise.resolve(prefetchAll()).then(async () => {
             try {
@@ -620,7 +624,7 @@ function App() {
       <OfflineBanner />
       <BudgetWatcher />
       <PrivacyShield />
-      <a href="#main-content" className="skip-link">Skip to content</a>
+      <a href="#main-content" className="skip-link">{t('shell.skip')}</a>
       <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)} />
       <Sidebar isOpen={isSidebarOpen} onSearchOpen={() => setSearchOpen(true)} />
       <div className="main-content-wrapper">
@@ -632,7 +636,7 @@ function App() {
           <div className="shell-actions">
             <button className="shell-search" onClick={() => setSearchOpen(true)} aria-label="Search">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <span>Search…</span><kbd>⌘ K</kbd>
+              <span>{t('shell.search')}…</span><kbd>⌘ K</kbd>
             </button>
             <button className="menu-toggle" onClick={toggleStealth} aria-label="Privacy Mode" title={isStealth ? 'Reveal balances' : 'Hide balances'} style={{ color: isStealth ? '#fbbf24' : 'var(--text-secondary)' }}>
               {isStealth ? <EyeOff size={17} /> : <Eye size={17} />}
@@ -642,7 +646,7 @@ function App() {
             <button className="menu-toggle" onClick={() => setAiCoPilotOpen(true)} aria-label="Money Assistant" title="Money Assistant · quick answers from your data"><Sparkles size={17} /></button>
             <Suspense fallback={null}><AlertCenter /></Suspense>
             <button className="shell-primary" onClick={() => window.dispatchEvent(new Event('vm:quick-add'))}>
-              <Plus size={15} strokeWidth={2.6} /> Quick Add
+              <Plus size={15} strokeWidth={2.6} /> {t('shell.quickAdd')}
             </button>
           </div>
         </header>

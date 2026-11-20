@@ -65,3 +65,15 @@ test('dashboard shows the get started checklist with real progress', async ({ pa
   await card.getByRole('button', { name: 'Hide get started' }).click();
   await expect(card).toBeHidden();
 });
+
+test('language switch: Settings changes menus and headings to Sinhala, then Tamil', async ({ page }) => {
+  await page.goto('/test/browser/settings');
+  const picker = page.getByRole('tablist', { name: 'Language' });
+  await picker.getByRole('tab', { name: 'සිංහල' }).click();
+  await expect(page.locator('main h1').first()).toHaveText('සැකසුම්');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'si');
+  await page.getByRole('tablist', { name: 'භාෂාව' }).getByRole('tab', { name: 'தமிழ்' }).click();
+  await expect(page.locator('main h1').first()).toHaveText('அமைப்புகள்');
+  await page.getByRole('tablist', { name: 'மொழி' }).getByRole('tab', { name: 'English' }).click();
+  await expect(page.locator('main h1').first()).toHaveText('Settings');
+});

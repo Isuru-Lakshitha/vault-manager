@@ -1,4 +1,5 @@
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { useT } from '../i18n';
 import { LayoutDashboard, CreditCard, ArrowRightLeft, Landmark, BarChart2, Target, Wallet, Settings, LogOut, Receipt, TrendingUp, BadgeDollarSign, MoreHorizontal, Search, X, Eye, EyeOff, Plus, Crown, Smartphone, ChevronLeft } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -11,21 +12,22 @@ import { isSuperAdmin } from '../utils/adminService';
 import { isStandalone, triggerInstallPrompt } from '../utils/pwaInstall';
 
 const NAV_ITEMS = [
-  { path: '/dashboard',    icon: LayoutDashboard,  label: 'Dashboard',    page: () => import('../pages/Dashboard')    },
-  { path: '/accounts',     icon: CreditCard,        label: 'Accounts',     page: () => import('../pages/Accounts')     },
-  { path: '/transactions', icon: ArrowRightLeft,    label: 'Transactions', page: () => import('../pages/Transactions') },
+  { path: '/dashboard',    icon: LayoutDashboard,  label: 'Dashboard', labelKey: 'nav.dashboard',    page: () => import('../pages/Dashboard')    },
+  { path: '/accounts',     icon: CreditCard,        label: 'Accounts', labelKey: 'nav.accounts',     page: () => import('../pages/Accounts')     },
+  { path: '/transactions', icon: ArrowRightLeft,    label: 'Transactions', labelKey: 'nav.transactions', page: () => import('../pages/Transactions') },
   // One entry for both: /recurring is a tab of the same page (components/BillsHubTabs).
-  { path: '/bills', also: ['/recurring'], icon: Receipt, label: 'Bills & Recurring', page: () => Promise.all([import('../pages/Bills'), import('../pages/Recurring')]) },
-  { path: '/loans',        icon: Landmark,          label: 'Loans',        page: () => import('../pages/Loans')        },
-  { path: '/budgets',      icon: Target,            label: 'Budgets',      page: () => import('../pages/Budgets')      },
-  { path: '/goals',        icon: Wallet,            label: 'Goals',        page: () => import('../pages/Goals')        },
-  { path: '/investments',  icon: TrendingUp,        label: 'Investments',  page: () => import('../pages/Investments')  },
-  { path: '/credit-cards', icon: BadgeDollarSign,   label: 'Credit Cards', page: () => import('../pages/CreditCards') },
-  { path: '/analytics',    icon: BarChart2,         label: 'Analytics',    page: () => import('../pages/Analytics')   },
-  { path: '/settings',     icon: Settings,          label: 'Settings',     page: () => import('../pages/Settings')    },
+  { path: '/bills', also: ['/recurring'], icon: Receipt, label: 'Bills & Recurring', labelKey: 'nav.bills', page: () => Promise.all([import('../pages/Bills'), import('../pages/Recurring')]) },
+  { path: '/loans',        icon: Landmark,          label: 'Loans', labelKey: 'nav.loans',        page: () => import('../pages/Loans')        },
+  { path: '/budgets',      icon: Target,            label: 'Budgets', labelKey: 'nav.budgets',      page: () => import('../pages/Budgets')      },
+  { path: '/goals',        icon: Wallet,            label: 'Goals', labelKey: 'nav.goals',        page: () => import('../pages/Goals')        },
+  { path: '/investments',  icon: TrendingUp,        label: 'Investments', labelKey: 'nav.investments',  page: () => import('../pages/Investments')  },
+  { path: '/credit-cards', icon: BadgeDollarSign,   label: 'Credit Cards', labelKey: 'nav.creditCards', page: () => import('../pages/CreditCards') },
+  { path: '/analytics',    icon: BarChart2,         label: 'Analytics', labelKey: 'nav.analytics',    page: () => import('../pages/Analytics')   },
+  { path: '/settings',     icon: Settings,          label: 'Settings', labelKey: 'nav.settings',     page: () => import('../pages/Settings')    },
 ];
 
 const Sidebar = ({ isOpen, onSearchOpen }) => {
+  const t = useT();
   const navigate = useNavigate();
   const location = useLocation();
   const [isStealth, toggleStealth] = useStealthMode();
@@ -46,30 +48,30 @@ const Sidebar = ({ isOpen, onSearchOpen }) => {
         </button>
         <NavLink to="/dashboard" className="workspace-brand" title="Dashboard">
           <span className="workspace-brand-icon"><Landmark size={22} /></span>
-          <span><strong>Vault Manager</strong><small>Personal finance</small></span>
+          <span><strong>Vault Manager</strong><small>{t('shell.personalFinance')}</small></span>
         </NavLink>
         <button className="workspace-search" onClick={onSearchOpen}>
-          <Search size={17} /><span>Search</span><kbd>⌘ K</kbd>
+          <Search size={17} /><span>{t('shell.search')}</span><kbd>⌘ K</kbd>
         </button>
         <nav className="workspace-nav" aria-label="Main navigation">
           {[
-            {label:'Everyday', paths:['/dashboard','/accounts','/transactions','/bills']},
-            {label:'Planning & credit', paths:['/budgets','/goals','/loans','/credit-cards','/investments']},
-            {label:'Reports & settings', paths:['/analytics','/settings']},
+            {label:'group.everyday', paths:['/dashboard','/accounts','/transactions','/bills']},
+            {label:'group.planning', paths:['/budgets','/goals','/loans','/credit-cards','/investments']},
+            {label:'group.reports', paths:['/analytics','/settings']},
           ].map((group,index) => {
-            const links=group.paths.map(path => NAV_ITEMS.find(item => item.path===path)).filter(Boolean).map(({path,also,icon:Icon,label,page}) => {
+            const links=group.paths.map(path => NAV_ITEMS.find(item => item.path===path)).filter(Boolean).map(({path,also,icon:Icon,labelKey,page}) => {
               const on = (isActive) => isActive || !!also?.includes(location.pathname);
-              return <NavLink key={path} to={path} className={({isActive}) => `workspace-link${on(isActive) ? ' is-active' : ''}`} onMouseEnter={() => page().catch(() => {})}>{({isActive}) => (<>{on(isActive) && <motion.span layoutId="nav-indicator" className="nav-indicator" transition={spring.liquid} />}<Icon size={18} strokeWidth={1.8}/><span>{label}</span></>)}</NavLink>;
+              return <NavLink key={path} to={path} className={({isActive}) => `workspace-link${on(isActive) ? ' is-active' : ''}`} onMouseEnter={() => page().catch(() => {})}>{({isActive}) => (<>{on(isActive) && <motion.span layoutId="nav-indicator" className="nav-indicator" transition={spring.liquid} />}<Icon size={18} strokeWidth={1.8}/><span>{t(labelKey)}</span></>)}</NavLink>;
             });
-            return index===1 ? <details key={group.label} className="quiet-nav-group" open={group.paths.includes(location.pathname)}><summary>{group.label}</summary>{links}</details> : <div key={group.label}><p className="workspace-section">{group.label}</p>{links}</div>;
+            return index===1 ? <details key={group.label} className="quiet-nav-group" open={group.paths.includes(location.pathname)}><summary>{t(group.label)}</summary>{links}</details> : <div key={group.label}><p className="workspace-section">{t(group.label)}</p>{links}</div>;
           })}
           {isSuperAdmin(auth.currentUser) && <NavLink to="/admin" className="workspace-link"><Crown size={18} /><span>Administration</span></NavLink>}
         </nav>
         <div className="workspace-footer">
           <button className="workspace-link" onClick={toggleStealth} aria-pressed={isStealth}>
-            {isStealth ? <EyeOff size={18} /> : <Eye size={18} />}<span>{isStealth ? 'Show balances' : 'Hide balances'}</span>
+            {isStealth ? <EyeOff size={18} /> : <Eye size={18} />}<span>{isStealth ? t('shell.showBalances') : t('shell.hideBalances')}</span>
           </button>
-          <button className="workspace-link" onClick={handleLogout}><LogOut size={18} /><span>Sign out</span></button>
+          <button className="workspace-link" onClick={handleLogout}><LogOut size={18} /><span>{t('shell.signOut')}</span></button>
         </div>
       </aside>
       <BottomNav />
@@ -79,9 +81,9 @@ const Sidebar = ({ isOpen, onSearchOpen }) => {
 
 // ─── MOBILE NAVIGATION ───────────────────────────────────────────────
 const BOTTOM_ITEMS = [
-  { path: '/dashboard',    icon: LayoutDashboard, label: 'Home',      badgeKey: null },
-  { path: '/transactions', icon: ArrowRightLeft,  label: 'Txns',      badgeKey: null },
-  { path: '/analytics',    icon: BarChart2,       label: 'Analytics', badgeKey: null },
+  { path: '/dashboard',    icon: LayoutDashboard, label: 'Home',      labelKey: 'nav.home', badgeKey: null },
+  { path: '/transactions', icon: ArrowRightLeft,  label: 'Txns',      labelKey: 'nav.txns', badgeKey: null },
+  { path: '/analytics',    icon: BarChart2,       label: 'Analytics', labelKey: 'nav.analytics', badgeKey: null },
 ];
 
 // Accent per page for the "More" sheet tiles
@@ -96,6 +98,7 @@ const Badge = ({ n }) => n > 0 ? (
 ) : null;
 
 const MoreSheet = ({ open, onClose, badges }) => {
+  const t = useT();
   const dragControls = useDragControls();
   const location = useLocation();
   const navigate = useNavigate();
@@ -284,7 +287,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
 
               {/* Page grid */}
               <div style={{ display:'grid', gridTemplateColumns:'repeat(3, minmax(0, 1fr))', gap:'0.6rem' }}>
-                {NAV_ITEMS.map(({ path, also, icon: Icon, label }) => {
+                {NAV_ITEMS.map(({ path, also, icon: Icon, labelKey }) => {
                   const active = location.pathname === path || !!also?.includes(location.pathname);
                   const c = TILE_COLORS[path] || '#4ade80';
                   return (
@@ -294,7 +297,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
                         <Icon size={20} color={c} />
                         {path === '/bills' && <Badge n={badges.bills} />}
                       </div>
-                      <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.74rem', fontWeight:600, color: active ? c : '#c8c8d8', textAlign:'center', lineHeight:1.15 }}>{label}</span>
+                      <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.74rem', fontWeight:600, color: active ? c : '#c8c8d8', textAlign:'center', lineHeight:1.15 }}>{t(labelKey)}</span>
                     </NavLink>
                   );
                 })}
@@ -302,7 +305,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
 
               <button onClick={logout}
                 style={{ width:'100%', marginTop:'1rem', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem', padding:'0.8rem', borderRadius:14, background:'rgba(248,113,113,0.08)', border:'1px solid rgba(248,113,113,0.2)', color:'#f87171', fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:'0.88rem', cursor:'pointer' }}>
-                <LogOut size={16} /> Sign out
+                <LogOut size={16} /> {t('shell.signOut')}
               </button>
             </div>
           </motion.div>
@@ -314,6 +317,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
 };
 
 const BottomNav = () => {
+  const t = useT();
   const location = useLocation();
   const [badges, setBadges] = useState({});
   const [moreOpen, setMoreOpen] = useState(false);
@@ -346,7 +350,7 @@ const BottomNav = () => {
   const tap = () => { try { navigator.vibrate?.(10); } catch {} };
   const inMore = !BOTTOM_ITEMS.some(i => i.path === location.pathname);
 
-  const Item = ({ path, icon: Icon, label, badgeKey }) => (
+  const Item = ({ path, icon: Icon, labelKey, badgeKey }) => (
     <NavLink to={path} onClick={tap} className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}>
       {({ isActive }) => (
         <>
@@ -367,7 +371,7 @@ const BottomNav = () => {
             </motion.span>
             {badgeKey && <Badge n={badges[badgeKey]} />}
           </div>
-          <span className="bottom-nav-label">{label}</span>
+          <span className="bottom-nav-label">{t(labelKey)}</span>
         </>
       )}
     </NavLink>
@@ -399,7 +403,7 @@ const BottomNav = () => {
               <MoreHorizontal size={20} strokeWidth={inMore || moreOpen ? 2.3 : 1.8} />
               {badges.bills > 0 && <Badge n={badges.bills} />}
             </div>
-            <span className="bottom-nav-label">More</span>
+            <span className="bottom-nav-label">{t('nav.more')}</span>
           </button>
         </div>
       </nav>

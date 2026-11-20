@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { Button, EmptyState } from '../components/ui';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import MoreSection from '../components/MoreSection';
@@ -149,6 +150,7 @@ const calculateGoalStats = (goal) => {
 };
 
 const Goals = () => {
+  const t = useT();
   const [goals, setGoals] = useState(() => getCache('goals') || []);
   const [accounts, setAccounts] = useState(() => getCache('accounts') || []);
   const [loading, setLoading] = useState(() => !getCache('goals'));
@@ -557,9 +559,7 @@ const Goals = () => {
         <div className="page-header" style={{ marginBottom: '1.25rem' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <h1 className="glow-text text-cyan" style={{ margin: 0, fontSize: '1.85rem', fontWeight: 800 }}>
-                Goals & Targets
-              </h1>
+              <h1 className="glow-text text-cyan" style={{ margin: 0, fontSize: '1.85rem', fontWeight: 800 }}>{t('nav.goals')}</h1>
             </div>
             <p style={{ color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', fontSize: '0.8rem', marginTop: 4 }}>
               Track what you have right now, your end goal date, daily targets, and easily deposit or deduct funds.

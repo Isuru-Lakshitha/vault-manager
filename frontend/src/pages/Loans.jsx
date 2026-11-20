@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader, StatCard, StatGrid } from '../components/ui';
 import { InsightLoans } from '../components/InsightPanels';
@@ -524,6 +525,7 @@ const EmiTab = () => {
 };
 
 const Loans = () => {
+  const t = useT();
   const [loans, setLoans] = useState(() => getCache('loans') || []);
   const [accounts, setAccounts] = useState(() => getCache('accounts') || []);
   const [transactions, setTransactions] = useState(() => getCache('transactions') || []);
@@ -711,7 +713,7 @@ const Loans = () => {
   return (
     <PageWrapper>
       <div>
-        <PageHeader title="Loans & Liabilities" subtitle="Principal tracking, accrued interest, and payoff schedules">
+        <PageHeader title={t('nav.loans')} subtitle="Principal tracking, accrued interest, and payoff schedules">
           <button className="btn btn-primary" onClick={openAddModal}><Plus size={16}/> New Liability</button>
         </PageHeader>
 
