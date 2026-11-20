@@ -21,6 +21,13 @@ frontend/users.json
 **/*-firebase-adminsdk-*.json
 backend/money_manager.sqlite
 backend/uploads/
+*.sqlite
+*.pem
+*.key
+*.p12
+.claude/settings.local.json
+firebase-debug.log
+firestore-debug.log
 
 # OS / editor
 .DS_Store
