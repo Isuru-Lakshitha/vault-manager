@@ -128,6 +128,15 @@ docs/BACKUP.md       Backup and restore runbook
 - The Firebase *web* config isn't a secret: it ships inside the app's JavaScript to every visitor. Your data is protected by **Authentication plus `firestore.rules`**, so always deploy the rules.
 - To report a security issue, please open a private security advisory on GitHub instead of a public issue.
 
+### Turn on App Check (recommended for production)
+
+App Check makes Firebase accept requests only from your real app, so nobody can reuse the public web config from a script.
+
+1. Firebase console → **App Check** → **Apps** → your web app → **reCAPTCHA v3**. Create a reCAPTCHA v3 key at [google.com/recaptcha/admin](https://www.google.com/recaptcha/admin) for your domains (include `localhost` for development) and paste in the secret key.
+2. Put the **site key** in `frontend/.env` as `VITE_APPCHECK_SITE_KEY=…`, then rebuild and deploy.
+3. For local development, open the app with `npm run dev`. The browser console prints an **App Check debug token**; add it under App Check → Apps → ⋮ → **Manage debug tokens**.
+4. Watch **App Check → APIs → Cloud Firestore** for a day or two. Once nearly all requests show as verified, click **Enforce** (and do the same for Storage and Authentication).
+
 ## Tech stack
 
 React 19 · Vite 8 · Firebase (Auth, Firestore, Hosting) · framer-motion · Recharts · lucide-react · vite-plugin-pwa · Playwright · oxlint

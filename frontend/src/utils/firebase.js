@@ -1,4 +1,5 @@
 import { initializeApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore";
 import { initializeAuth, getAuth, browserLocalPersistence, indexedDBLocalPersistence } from "firebase/auth";
 import { getStorage } from "firebase/storage";
@@ -31,6 +32,21 @@ if (missing.length) {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// App Check: proves requests come from this app, not a script reusing the
+// public web config. Enabled when VITE_APPCHECK_SITE_KEY (a reCAPTCHA v3
+// site key registered in Firebase → App Check) is set. In `npm run dev` a
+// debug token is used instead; register it in the console once (it is
+// printed in the browser console).
+const appCheckKey = import.meta.env?.VITE_APPCHECK_SITE_KEY;
+if (appCheckKey && typeof window !== 'undefined') {
+  if (import.meta.env.DEV) self.FIREBASE_APPCHECK_DEBUG_TOKEN = import.meta.env.VITE_APPCHECK_DEBUG_TOKEN || true;
+  try {
+    initializeAppCheck(app, { provider: new ReCaptchaV3Provider(appCheckKey), isTokenAutoRefreshEnabled: true });
+  } catch (err) {
+    console.warn('App Check not started', err);
+  }
+}
 
 // Firestore with full offline persistence — works offline in PWA
 const db = initializeFirestore(app, {
