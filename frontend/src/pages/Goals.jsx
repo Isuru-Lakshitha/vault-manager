@@ -1,3 +1,4 @@
+import { Button, EmptyState } from '../components/ui';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -847,26 +848,14 @@ const Goals = () => {
         {loading ? (
           <SkeletonLoader rows={3} height={220} />
         ) : filteredGoals.length === 0 ? (
-          <div
-            style={{
-              padding: '3rem 1.5rem',
-              textAlign: 'center',
-              background: 'rgba(37, 37, 64, 0.3)',
-              borderRadius: 16,
-              border: '1px dashed rgba(255, 255, 255, 0.08)',
-              marginTop: '1rem'
-            }}
-          >
-            <Wallet size={36} color="var(--text-muted)" style={{ margin: '0 auto 0.75rem' }} />
-            <h3 style={{ margin: '0 0 0.5rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-primary)', fontSize: '1.1rem' }}>
-              No goals found
-            </h3>
-            <p style={{ margin: '0 0 1.25rem', color: 'var(--text-secondary)', fontSize: '0.82rem' }}>
-              {searchQuery ? 'No goals match your search filter.' : 'Create your first goal to start tracking.'}
-            </p>
-            <button className="btn btn-primary" onClick={openAddModal}>
-              <Plus size={16} /> Create Goal
-            </button>
+          <div className="bento-item" style={{ marginTop: '1rem' }}>
+            <EmptyState
+              icon={Wallet}
+              title={searchQuery ? 'No matching goals' : 'No goals yet'}
+              action={searchQuery ? null : <Button variant="primary" icon={Plus} onClick={openAddModal}>Create a goal</Button>}
+            >
+              {searchQuery ? 'Try a different search.' : 'Save towards something: an emergency fund, a trip, a new laptop.'}
+            </EmptyState>
           </div>
         ) : (
           <div

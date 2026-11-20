@@ -1,0 +1,87 @@
+/* ==========================================================================
+   UI kit (components/ui). Loaded last so shared components look the same on
+   every page regardless of older page styles. Tokens only, no raw colours.
+   ========================================================================== */
+
+/* ---------- Buttons ---------- */
+.ui-btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; white-space: nowrap; }
+.ui-btn-sm { font-size: 0.76rem !important; padding: 0.38rem 0.75rem !important; }
+.ui-btn.is-loading { opacity: 0.7; cursor: progress; }
+html body .btn-ghost { background: transparent !important; border: 1px solid transparent !important; color: var(--mm-text-2) !important; box-shadow: none !important; }
+html body .btn-ghost:hover { background: var(--mm-surface-2, rgba(127, 127, 127, 0.08)) !important; color: var(--mm-text) !important; }
+
+/* ---------- Segmented control ---------- */
+.ui-seg {
+  display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px;
+  border: 1px solid var(--mm-border); background: var(--mm-surface);
+  max-width: 100%; overflow-x: auto; scrollbar-width: none;
+}
+.ui-seg::-webkit-scrollbar { display: none; }
+.ui-seg button {
+  position: relative; isolation: isolate; flex: 0 0 auto;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  border: 0; background: transparent; cursor: pointer; border-radius: 999px;
+  color: var(--mm-text-2); font: 600 0.8rem/1 Inter, system-ui, sans-serif;
+  padding: 0.55rem 1rem; transition: color 0.2s ease;
+}
+.ui-seg-sm button { font-size: 0.74rem; padding: 0.42rem 0.8rem; }
+.ui-seg button:hover { color: var(--mm-text); }
+.ui-seg button[aria-selected='true'] { color: #fff; }
+.ui-seg-pill {
+  position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+  background: var(--mm-accent-strong, var(--mm-accent));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 6px 16px -8px color-mix(in srgb, var(--mm-accent) 80%, transparent);
+}
+.ui-seg-count {
+  min-width: 1.4em; padding: 0.1em 0.45em; border-radius: 999px; font-size: 0.7em; font-weight: 700;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}
+
+/* ---------- Badge ---------- */
+.ui-badge {
+  display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.18rem 0.55rem; border-radius: 999px;
+  font: 700 0.7rem/1.4 Inter, system-ui, sans-serif; letter-spacing: 0.01em;
+  color: var(--mm-text-2); background: color-mix(in srgb, var(--mm-text-2) 12%, transparent);
+}
+.ui-badge[data-tone='accent'] { color: var(--mm-accent); background: color-mix(in srgb, var(--mm-accent) 14%, transparent); }
+.ui-badge[data-tone='pos'] { color: var(--mm-success); background: color-mix(in srgb, var(--mm-success) 14%, transparent); }
+.ui-badge[data-tone='neg'] { color: var(--mm-danger); background: color-mix(in srgb, var(--mm-danger) 14%, transparent); }
+.ui-badge[data-tone='warn'] { color: var(--mm-warning); background: color-mix(in srgb, var(--mm-warning) 16%, transparent); }
+
+/* ---------- Empty state ---------- */
+.ui-empty { display: grid; justify-items: center; gap: 0.5rem; text-align: center; padding: 2.5rem 1.25rem; font-family: Inter, sans-serif; }
+.ui-empty-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 16px; color: var(--mm-accent); background: color-mix(in srgb, var(--mm-accent) 12%, transparent); }
+.ui-empty h3 { margin: 0.25rem 0 0; font-size: 1rem; color: var(--mm-text); }
+.ui-empty p { margin: 0; max-width: 38ch; font-size: 0.84rem; line-height: 1.5; color: var(--mm-text-2); }
+.ui-empty-action { margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+
+/* ---------- Stat strip: fit the cards on one row when there's room ---------- */
+@media (min-width: 641px) {
+  html body .page-shell .monthly-strip { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)) !important; }
+}
+
+/* ---------- Keyboard shortcut hint ---------- */
+.kbd-hint { display: inline-flex; align-items: center; gap: 0.3rem; font: 500 0.72rem/1 Inter, sans-serif; color: var(--mm-text-3); white-space: nowrap; }
+.kbd-hint kbd {
+  display: inline-grid; place-items: center; min-width: 1.5em; padding: 0.15em 0.4em; border-radius: 5px;
+  font: 600 0.68rem/1.2 'JetBrains Mono', ui-monospace, monospace; color: var(--mm-text-2);
+  border: 1px solid var(--mm-border); background: var(--mm-surface); box-shadow: 0 1px 0 var(--mm-border);
+}
+
+/* ---------- Page header actions on phones ----------
+   Wrapper divs dissolve into one tidy two-column grid; a segmented control
+   gets its own row, the primary action spans the last row. */
+@media (max-width: 640px) {
+  html body .page-header .page-actions { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; width: 100%; }
+  html body .page-header .page-actions > div:not(.ui-seg):not(.quiet-tools):not([class*='menu']) { display: contents !important; }
+  html body .page-header .page-actions :is(.btn, .ui-btn) { width: 100%; min-width: 0; justify-content: center; overflow: hidden; text-overflow: ellipsis; }
+  html body .page-header .page-actions .ui-seg { grid-column: 1 / -1; width: 100%; }
+  html body .page-header .page-actions .ui-seg button { flex: 1 1 0; justify-content: center; }
+  html body .page-header .page-actions .btn-primary { grid-column: 1 / -1; order: 99; }
+}
+
+.ui-header-note { font: 500 0.74rem Inter, sans-serif; color: var(--mm-text-3); white-space: nowrap; }
+@media (max-width: 640px) { html body .page-header .page-actions .ui-header-note { grid-column: 1 / -1; } }
+.ui-tabs-row { display: flex; align-items: center; gap: 0.75rem; margin: 0 0 1.25rem; }
+@media (max-width: 640px) { .ui-tabs-row .ui-seg { width: 100%; } .ui-tabs-row .ui-seg button { flex: 1 1 0; justify-content: center; } }
+.ui-page-sub { margin: 0.25rem 0 0; font: 500 0.82rem Inter, sans-serif; color: var(--mm-text-2); }

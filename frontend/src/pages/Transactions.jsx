@@ -4,7 +4,7 @@ import { toCSV } from '../utils/csv';
 import RecurringRulesTab from './transactions/RecurringRulesTab';
 import { TYPE_COLOR, TYPE_BG } from './transactions/constants';
 import { transactionCurrency } from '../utils/reportingCurrency';
-import { StatCard } from '../components/ui';
+import { StatCard, Segmented, Button } from '../components/ui';
 import ToolMenu from '../components/ToolMenu';
 import { auditStatus, summarizePayments, isActivePayment, isEditableTransaction, accountMovement } from '../utils/ledgerReporting.js';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
@@ -1026,14 +1026,7 @@ const Transactions = () => {
         <div className="page-header">
           <div>
             <h1 className="glow-text text-cyan" style={{ margin:0, fontSize:'2rem' }}>Transactions</h1>
-            <div style={{ display:'flex', gap:'1rem', marginTop:4, flexWrap:'wrap' }}>
-              <span style={{ color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.78rem' }}>{filtered.length} records</span>
-              {stats.income > 0 && <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', color:'#4ade80' }}>+{formatCurrency(stats.income)}</span>}
-              {stats.expense > 0 && <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', color:'#f87171' }}>-{formatCurrency(stats.expense)}</span>}
-              {filtered.length > 0 && <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', color: stats.net >= 0 ? '#4ade80' : '#f87171', fontWeight:600 }}>
-                net {stats.net >= 0 ? '+' : ''}{formatCurrency(stats.net)}
-              </span>}
-            </div>
+            <p className="ui-page-sub">{filtered.length} {filtered.length === 1 ? 'record' : 'records'} · totals below</p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', position: 'relative' }}>
             {/* Tools & Export Dropdown */}
@@ -1134,9 +1127,7 @@ const Transactions = () => {
             </div>
 
             {/* Primary Action */}
-            <button className="btn btn-primary" onClick={openAddModal} style={{ padding: '0.5rem 1rem', fontSize: '0.84rem' }}>
-              <Plus size={16} /> New Transaction
-            </button>
+            <Button variant="primary" icon={Plus} onClick={openAddModal}>New transaction</Button>
           </div>
         </div>
 
@@ -1210,14 +1201,16 @@ const Transactions = () => {
         </AnimatePresence>
 
         {/* ── Tabs ── */}
-        <div style={{ display:'flex', gap:'0.375rem', marginBottom:'1.25rem', borderBottom:'1px solid rgba(255,255,255,0.06)', paddingBottom:'0.75rem' }}>
-          {[['all','All Transactions'],['recurring','🔄 Recurring Rules']].map(([id,label])=>(
-            <button key={id} onClick={()=>setActiveTab(id)}
-              style={{ padding:'0.45rem 1.25rem', background:'none', border:'none', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.78rem', letterSpacing:'0.5px',
-                color: activeTab===id ? '#4ade80' : 'var(--text-secondary)', borderBottom: activeTab===id ? '2px solid #4ade80' : '2px solid transparent',
-                transition:'all 0.18s', paddingBottom:'0.75rem', marginBottom:'-0.75rem' }}>{label}
-            </button>
-          ))}
+        <div className="ui-tabs-row">
+          <Segmented
+            label="Transactions view"
+            value={activeTab}
+            onChange={setActiveTab}
+            options={[
+              { value: 'all', label: 'All transactions' },
+              { value: 'recurring', label: 'Recurring rules', count: recurringRules.length },
+            ]}
+          />
         </div>
 
         {/* ── Recurring Rules tab ── */}

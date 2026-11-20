@@ -6,7 +6,8 @@
      4. shell              app shell: sidebar, top bar, fluid layout
      4b. depth             dark 3D surfaces, pointer tilt, mobile layout
      5. motion             animation system
-     6. glass              Liquid Glass material + spring motion (last)
+     6. glass              Liquid Glass material + spring motion
+     7. ui                 shared UI kit (components/ui), last so it wins
    Feature styles (insights, transactions, accounts) are imported by the
    component that owns them.
    ========================================================================== */
@@ -17,3 +18,4 @@
 @import './depth.css';
 @import './motion.css';
 @import './glass.css';
+@import './ui.css';

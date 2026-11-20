@@ -1,4 +1,4 @@
-import { PageHeader } from '../components/ui';
+import { PageHeader, Segmented } from '../components/ui';
 import ToolMenu from '../components/ToolMenu';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -479,56 +479,20 @@ const Analytics = () => {
 
             {/* Grouped Analytics Navigation */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '1.5rem' }}>
-              <div className="filter-scroll-row" style={{ gap: '0.45rem', alignItems: 'center' }}>
-                {TAB_GROUPS.map(group => {
-                  const isActiveGroup = !showAllTabs && activeGroup.id === group.id;
-                  return (
-                    <button
-                      key={group.id}
-                      onClick={() => {
-                        setShowAllTabs(false);
-                        if (!group.tabs.some(t => t.id === activeTab)) {
-                          setActiveTab(group.tabs[0].id);
-                        }
-                      }}
-                      style={{
-                        padding: '0.5rem 0.95rem',
-                        fontFamily: 'Inter, sans-serif',
-                        fontSize: '0.78rem',
-                        fontWeight: isActiveGroup ? 600 : 500,
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        border: isActiveGroup
-                          ? '1px solid var(--accent-primary, #4ade80)'
-                          : '1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))',
-                        background: isActiveGroup ? 'var(--bg-surface-hover)' : 'var(--bg-surface)',
-                        color: isActiveGroup ? 'var(--text-primary)' : 'var(--text-secondary)',
-                      }}
-                    >
-                      {group.label}
-                    </button>
-                  );
-                })}
-                <button
-                  onClick={() => setShowAllTabs(v => !v)}
-                  style={{
-                    marginLeft: 'auto',
-                    padding: '0.45rem 0.85rem',
-                    fontFamily: 'Inter, sans-serif',
-                    fontSize: '0.72rem',
-                    fontWeight: 500,
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    border: showAllTabs
-                      ? '1px solid var(--accent-primary, #4ade80)'
-                      : '1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))',
-                    background: showAllTabs ? 'var(--bg-surface-hover)' : 'transparent',
-                    color: showAllTabs ? 'var(--text-primary)' : 'var(--text-muted)',
-                  }}
-                >
-                  {showAllTabs ? 'Grouped View' : 'All Views (12)'}
-                </button>
-              </div>
+              <Segmented
+                label="Analytics sections"
+                value={showAllTabs ? 'all' : activeGroup.id}
+                onChange={(v) => {
+                  if (v === 'all') { setShowAllTabs(true); return; }
+                  setShowAllTabs(false);
+                  const group = TAB_GROUPS.find(g => g.id === v);
+                  if (group && !group.tabs.some(t => t.id === activeTab)) setActiveTab(group.tabs[0].id);
+                }}
+                options={[
+                  ...TAB_GROUPS.map(g => ({ value: g.id, label: g.label })),
+                  { value: 'all', label: 'All views', count: TAB_GROUPS.reduce((n, g) => n + g.tabs.length, 0) },
+                ]}
+              />
 
               <div className="filter-scroll-row" style={{ gap: '0.4rem' }}>
                 {visibleTabs.map(tab => (

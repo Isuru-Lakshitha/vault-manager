@@ -1,12 +1,12 @@
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
-import { PageHeader, StatCard } from '../components/ui';
+import { PageHeader, StatCard, Segmented, Button, EmptyState } from '../components/ui';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InsightBudgets } from '../components/InsightPanels';
 import useLiveData from '../utils/useLiveData';
 import { fetchBudgets, createBudget, updateBudget, deleteBudget, fetchAnalytics, getCategorySpendFromMap, getCache } from '../utils/api';
 import { todayYMD } from '../utils/dates';
-import { Plus, Target, Edit2, Trash2, AlertTriangle, ShieldCheck, Activity, RefreshCw } from 'lucide-react';
+import { Plus, Target, Edit2, Trash2, AlertTriangle, ShieldCheck, Activity, RefreshCw, Sparkles } from 'lucide-react';
 import getCategoryEmoji from '../utils/categoryEmoji';
 import PageWrapper from '../components/PageWrapper';
 import Modal from '../components/Modal';
@@ -282,64 +282,25 @@ const Budgets = () => {
     <PageWrapper>
       <div>
         <PageHeader title="Budgets" subtitle="Monthly category limits, pacing, and 50/30/20 allocation">
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', gap: '0.25rem', background: 'rgba(255,255,255,0.04)', padding: '0.25rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
-              <button
-                type="button"
-                onClick={() => setActiveView('categories')}
-                style={{
-                  padding: '0.45rem 0.9rem',
-                  borderRadius: 8,
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  background: activeView === 'categories' ? 'rgba(74,222,128,0.2)' : 'transparent',
-                  color: activeView === 'categories' ? '#4ade80' : 'var(--text-muted)'
-                }}
-              >
-                📁 Categories ({budgets.length})
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveView('rule503020')}
-                style={{
-                  padding: '0.45rem 0.9rem',
-                  borderRadius: 8,
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  background: activeView === 'rule503020' ? 'linear-gradient(135deg, rgba(56,189,248,0.25), rgba(129,140,248,0.25))' : 'transparent',
-                  color: activeView === 'rule503020' ? '#38bdf8' : 'var(--text-muted)'
-                }}
-              >
-                🎯 50/30/20 Rule
-              </button>
-            </div>
-            {activeView === 'categories' && (
-              <>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  disabled={copyingBudgets}
-                  onClick={handleCopyPreviousMonth}
-                  title="Carry over last month's budgets (or auto-create from spending)"
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-                >
-                  <RefreshCw size={14} style={{ color: '#818cf8' }} />
-                  <span>{copyingBudgets ? 'Copying…' : 'Carry Over Last Month'}</span>
-                </button>
-                {visibleBudgets.some(b => {
-                  const avg = getThreeMonthAvg(b.category);
-                  return avg > 0 && b.amount > 0 && Math.abs(b.amount - avg) / b.amount >= 0.15;
-                }) && (
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={async () => {
+          <Segmented
+            label="Budget view"
+            value={activeView}
+            onChange={setActiveView}
+            options={[
+              { value: 'categories', label: 'Categories', count: budgets.length },
+              { value: 'rule503020', label: '50/30/20 rule' },
+            ]}
+          />
+          {activeView === 'categories' && (
+            <>
+              <Button icon={RefreshCw} disabled={copyingBudgets} onClick={handleCopyPreviousMonth} title="Carry over last month's budgets (or auto-create from spending)">
+                {copyingBudgets ? 'Copying…' : 'Carry over last month'}
+              </Button>
+              {visibleBudgets.some(b => {
+                const avg = getThreeMonthAvg(b.category);
+                return avg > 0 && b.amount > 0 && Math.abs(b.amount - avg) / b.amount >= 0.15;
+              }) && (
+                <Button icon={Sparkles} title="Set each budget to its 3-month average spend" onClick={async () => {
                       const targets = visibleBudgets.filter(b => {
                         const avg = getThreeMonthAvg(b.category);
                         return avg > 0 && b.amount > 0 && Math.abs(b.amount - avg) / b.amount >= 0.15;
@@ -351,16 +312,13 @@ const Budgets = () => {
                       } catch {
                         toast.error('Failed to tune budgets');
                       }
-                    }}
-                    style={{ fontSize: '0.75rem', color: '#38bdf8', borderColor: 'rgba(56,189,248,0.35)' }}
-                  >
-                    ✨ Tune All to 3-Mo Avg
-                  </button>
-                )}
-                <button className="btn btn-primary" onClick={openAddModal}><Plus size={16} /> New Budget</button>
-              </>
-            )}
-          </div>
+                    }}>
+                  Tune to 3-month average
+                </Button>
+              )}
+              <Button variant="primary" icon={Plus} onClick={openAddModal}>New budget</Button>
+            </>
+          )}
         </PageHeader>
 
         {/* View switching: 50/30/20 Rule Engine vs Category Cards */}
@@ -724,19 +682,17 @@ const Budgets = () => {
             })}
 
             {budgets.length === 0 && (
-              <div className="bento-item col-span-12" style={{ alignItems: 'center', justifyContent: 'center', padding: '3.5rem', textAlign: 'center', gap: '0.75rem' }}>
-                <Target size={48} style={{ opacity: 0.2, marginBottom: '0.5rem' }} />
-                <p style={{ fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', margin: 0 }}>NO BUDGET ALLOCATIONS DEFINED</p>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={handleCopyPreviousMonth}
-                  disabled={copyingBudgets}
-                  style={{ marginTop: '0.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}
+              <div className="bento-item col-span-12">
+                <EmptyState
+                  icon={Target}
+                  title="No budgets yet"
+                  action={<>
+                    <Button icon={Sparkles} loading={copyingBudgets} onClick={handleCopyPreviousMonth}>{copyingBudgets ? 'Creating…' : 'Create from my spending'}</Button>
+                    <Button variant="primary" icon={Plus} onClick={openAddModal}>New budget</Button>
+                  </>}
                 >
-                  <RefreshCw size={14} color="#4ade80" />
-                  <span>{copyingBudgets ? 'Creating…' : '✨ 1-Tap Auto-Create Budgets from Spending'}</span>
-                </button>
+                  Set a monthly limit per category and you'll get a heads-up at 80% and 100%.
+                </EmptyState>
               </div>
             )}
           </div>

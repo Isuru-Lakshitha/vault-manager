@@ -1,5 +1,5 @@
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
-import { PageHeader } from '../components/ui';
+import { PageHeader, Button, EmptyState } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useMemo } from 'react';
 import { InsightRecurring } from '../components/InsightPanels';
@@ -1367,52 +1367,17 @@ const Recurring = () => {
       <div>
         {/* Clean Minimalist Header */}
         <PageHeader title="Recurring & Monthly Reminders" subtitle="Reminder-only monthly commitments, variable bills & loan schedules — never auto-deducted">
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-            {cycleStats.unpaidCount > 0 && (
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={handleMarkAllStartNextMonth}
-                style={{ fontSize: '0.75rem', borderColor: 'rgba(16, 185, 129, 0.35)', color: '#34d399' }}
-                title="Mark all current month reminders as paid without deducting from any account"
-              >
-                ✓ Mark All Paid This Month
-              </button>
-            )}
-            {cycleStats.paidCount > 0 && (
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={handleResetMonthCycle}
-                style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
-                title="Reset all reminders to Unpaid / Due for this month"
-              >
-                <RotateCcw size={13} /> Reset Cycle
-              </button>
-            )}
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => openAddLoanModal()}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.78rem' }}
-            >
-              <Landmark size={14} /> Track Loan
-            </button>
-            <button className="btn btn-primary" onClick={() => openAdd()} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-              <Plus size={15} /> Add Reminder
-            </button>
-            {rules.length > 0 && (
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setClearAllConfirm(true)}
-                style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}
-                title="Remove all recurring rules"
-              >
-                <Trash2 size={13} /> Clear All
-              </button>
-            )}
-          </div>
+          {cycleStats.unpaidCount > 0 && (
+            <Button icon={CheckCircle2} onClick={handleMarkAllStartNextMonth} title="Mark all current month reminders as paid without deducting from any account">Mark all paid</Button>
+          )}
+          {cycleStats.paidCount > 0 && (
+            <Button icon={RotateCcw} onClick={handleResetMonthCycle} title="Reset all reminders to Unpaid / Due for this month">Reset cycle</Button>
+          )}
+          <Button icon={Landmark} onClick={() => openAddLoanModal()}>Track loan</Button>
+          {rules.length > 0 && (
+            <Button variant="ghost" icon={Trash2} onClick={() => setClearAllConfirm(true)} title="Remove all recurring rules">Clear all</Button>
+          )}
+          <Button variant="primary" icon={Plus} onClick={() => openAdd()}>Add reminder</Button>
         </PageHeader>
 
         {loading ? <SkeletonLoader rows={4} height={80} /> : (
@@ -2002,31 +1967,17 @@ const Recurring = () => {
 
             {/* Empty state */}
             {rules.length === 0 && bills.length === 0 && (
-              <div className="bento-item col-span-12" style={{ alignItems: 'center', justifyContent: 'center', padding: '3rem 2rem', textAlign: 'center', flexDirection: 'column', gap: '1rem' }}>
-                <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(91,141,239,0.1)', border: '1px solid rgba(91,141,239,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <RefreshCw size={22} style={{ color: 'var(--mm-accent, #5b8def)' }} />
-                </div>
-                <div>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)', margin: '0 0 0.3rem' }}>
-                    No Monthly Reminders Added Yet
-                  </p>
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.78rem', color: 'var(--text-muted)', margin: 0, maxWidth: 460 }}>
-                    Add recurring monthly bills (Electricity, Internet, Rent) or link an active loan to track monthly payments and reserve cash in your Daily Safe-to-Spend.
-                  </p>
-                </div>
-                <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => openAddLoanModal()}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}
-                  >
-                    <Landmark size={15} /> Track Loan Payment
-                  </button>
-                  <button className="btn btn-primary" onClick={() => openAdd()}>
-                    <Plus size={15} /> Add Monthly Reminder
-                  </button>
-                </div>
+              <div className="bento-item col-span-12">
+                <EmptyState
+                  icon={RefreshCw}
+                  title="No monthly reminders yet"
+                  action={<>
+                    <Button icon={Landmark} onClick={() => openAddLoanModal()}>Track a loan payment</Button>
+                    <Button variant="primary" icon={Plus} onClick={() => openAdd()}>Add a reminder</Button>
+                  </>}
+                >
+                  Add monthly bills like electricity, internet or rent, or link a loan. They're set aside in your safe-to-spend.
+                </EmptyState>
               </div>
             )}
 

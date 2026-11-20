@@ -1,5 +1,5 @@
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
-import { PageHeader, StatGrid, StatCard } from '../components/ui';
+import { PageHeader, StatGrid, StatCard, Button, EmptyState } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useMemo } from 'react';
 import { InsightCreditCards } from '../components/InsightPanels';
@@ -392,10 +392,10 @@ const CreditCards = () => {
 
             {/* Empty state */}
             {cards.length === 0 && (
-              <div className="bento-item col-span-12" style={{ alignItems:'center', justifyContent:'center', padding:'4rem', textAlign:'center', flexDirection:'column', gap:'1rem' }}>
-                <CreditCard size={56} style={{ opacity:0.15 }}/>
-                <p style={{ fontFamily:'Inter, sans-serif', color:'var(--text-muted)', margin:0 }}>NO CREDIT CARDS YET. ADD YOUR FIRST CARD.</p>
-                <button className="btn btn-primary" onClick={openAdd}><Plus size={15}/> Add Card</button>
+              <div className="bento-item col-span-12">
+                <EmptyState icon={CreditCard} title="No credit cards yet" action={<Button variant="primary" icon={Plus} onClick={openAdd}>Add a card</Button>}>
+                  Track balances, due dates and utilisation so you never pay interest by accident.
+                </EmptyState>
               </div>
             )}
 

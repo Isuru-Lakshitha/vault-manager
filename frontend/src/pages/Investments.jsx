@@ -1,5 +1,5 @@
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
-import { PageHeader } from '../components/ui';
+import { PageHeader, Button } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect } from 'react';
 import { InsightInvestments } from '../components/InsightPanels';
@@ -222,15 +222,9 @@ const Investments = () => {
     <PageWrapper>
       <div>
         <PageHeader title="Investments" subtitle="Portfolio holdings, asset allocation, and compound growth">
-          <div style={{ display:'flex', gap:'0.65rem', alignItems:'center', flexWrap:'wrap' }}>
-            {pricesUpdatedAt && <span style={{ fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>Updated {pricesUpdatedAt}</span>}
-            <button className="btn btn-secondary" onClick={refreshPrices} disabled={priceRefreshing}
-              style={{ display:'flex', alignItems:'center', gap:'0.4rem' }}>
-              <RefreshCw size={15} style={{ animation: priceRefreshing ? 'spin 1s linear infinite' : 'none' }}/>
-              {priceRefreshing ? 'Refreshing…' : 'Refresh Prices'}
-            </button>
-            <button className="btn btn-primary" onClick={openAdd}><Plus size={16}/> Add Investment</button>
-          </div>
+          {pricesUpdatedAt && <span className="ui-header-note">Updated {pricesUpdatedAt}</span>}
+          <Button icon={RefreshCw} loading={priceRefreshing} onClick={refreshPrices}>{priceRefreshing ? 'Refreshing…' : 'Refresh prices'}</Button>
+          <Button variant="primary" icon={Plus} onClick={openAdd}>Add investment</Button>
         </PageHeader>
 
         {loading ? <SkeletonLoader rows={4} height={100} /> : (

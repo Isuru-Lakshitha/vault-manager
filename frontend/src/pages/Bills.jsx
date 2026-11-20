@@ -1,5 +1,5 @@
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
-import { PageHeader, StatGrid, StatCard } from '../components/ui';
+import { PageHeader, StatGrid, StatCard, Segmented, Button, EmptyState } from '../components/ui';
 import MoreSection from '../components/MoreSection';
 import { advanceBill } from '../utils/billSchedule';
 import { InsightBills } from '../components/InsightPanels';
@@ -207,23 +207,14 @@ const Bills = () => {
     <PageWrapper>
       <div>
         <PageHeader title="Bills & Subscriptions" subtitle="Upcoming due dates, subscription burn rate, and 1-tap payments">
-          <div style={{ display:'flex', gap:'0.5rem', alignItems:'center', flexWrap:'wrap' }}>
-            {['list','calendar'].map(v => (
-              <button key={v} onClick={() => setBillsView(v)}
-                style={{ padding:'0.42rem 0.9rem', borderRadius:8, cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.76rem', fontWeight: 600,
-                  background: billsView===v ? 'var(--mm-accent-soft, rgba(59,130,246,0.14))' : 'rgba(255,255,255,0.03)',
-                  color: billsView===v ? 'var(--mm-accent-text, #60a5fa)' : 'var(--text-secondary)',
-                  border: billsView===v ? '1px solid rgba(59,130,246,0.35)' : '1px solid rgba(255,255,255,0.08)' }}>
-                {v === 'list' ? 'List View' : 'Calendar'}
-              </button>
-            ))}
-            {bills.some(b => !b.paid) && (
-              <button className="btn btn-secondary" onClick={markAllPaid} style={{ fontSize:'0.76rem', padding:'0.42rem 0.85rem' }}>
-                Mark All Paid
-              </button>
-            )}
-            <button className="btn btn-primary" onClick={openAdd}><Plus size={16} /> Add Bill</button>
-          </div>
+          <Segmented
+            label="Bills view"
+            value={billsView}
+            onChange={setBillsView}
+            options={[{ value: 'list', label: 'List' }, { value: 'calendar', label: 'Calendar' }]}
+          />
+          {bills.some(b => !b.paid) && <Button icon={CheckCircle} onClick={markAllPaid}>Mark all paid</Button>}
+          <Button variant="primary" icon={Plus} onClick={openAdd}>Add bill</Button>
         </PageHeader>
 
         {!loading && <InsightBills bills={bills} />}
@@ -453,9 +444,10 @@ const Bills = () => {
               </div>
             )}
             {bills.length === 0 && (
-              <div className="bento-item col-span-12" style={{ alignItems:'center', justifyContent:'center', padding:'3.5rem', textAlign:'center' }}>
-                <Bell size={48} style={{ opacity:0.2, marginBottom:'1rem' }} />
-                <p style={{ fontFamily:'Inter, sans-serif', color:'var(--text-muted)' }}>NO BILLS YET. ADD YOUR RECURRING PAYMENTS.</p>
+              <div className="bento-item col-span-12">
+                <EmptyState icon={Bell} title="No bills yet" action={<Button variant="primary" icon={Plus} onClick={openAdd}>Add your first bill</Button>}>
+                  Add rent, utilities and subscriptions to see what's due and pay them in one tap.
+                </EmptyState>
               </div>
             )}
             {bills

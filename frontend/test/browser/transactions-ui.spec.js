@@ -41,7 +41,7 @@ test('transactions type tabs, keyboard shortcuts, compact toggle, bulk edit, and
   await page.getByRole('button', { name: '＋ Save view' }).click();
   await page.getByLabel('View name').fill('Only Expenses');
   await page.getByRole('button', { name: 'Save', exact: true }).click();
-  await page.getByRole('tab', { name: /^All/ }).click();
+  await page.getByRole('tab', { name: /^All\s*\d/ }).click();
   await page.getByRole('button', { name: 'Only Expenses', exact: true }).click();
   await expect(page.getByRole('tab', { name: /^Expense/ })).toHaveAttribute('aria-selected', 'true');
   await page.getByRole('button', { name: 'Delete view Only Expenses' }).click();
