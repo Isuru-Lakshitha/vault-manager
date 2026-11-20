@@ -1,5 +1,7 @@
 import { deleteWithUndo, removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { findDemoFeedLeftovers } from '../utils/bankFeedImport';
+import { toCSV } from '../utils/csv';
+import { transactionCurrency } from '../utils/reportingCurrency';
 import { StatCard } from '../components/ui';
 import ToolMenu from '../components/ToolMenu';
 import { auditStatus, summarizePayments, isActivePayment, isEditableTransaction, accountMovement } from '../utils/ledgerReporting.js';
@@ -32,7 +34,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { haptic } from '../utils/format';
 import { auth } from '../utils/firebase';
 import { detectRecurring } from '../utils/recurringDetect.js';
-import { formatCurrency, getCurrencyLabel } from '../utils/format';
+import { formatCurrency, getCurrencyLabel, getCurrency } from '../utils/format';
 import { toYMD, todayYMD } from '../utils/dates';
 import { getLastAccountId, rememberAccountId } from '../utils/lastAccount';
 
@@ -944,21 +946,18 @@ const Transactions = () => {
     const sourceRows = selectedIds.size > 0 ? filtered.filter(tx => selectedIds.has(tx.id)) : filtered;
     if (!sourceRows.length) { toast.error('No transactions to export'); return; }
     const sumStats = summarizePayments(sourceRows);
-    const rows = [
-      ['Date', 'Type', 'Category', 'Amount', 'Fee', 'From', 'To', 'Notes'].join(','),
+    const rows = toCSV([
+      ['Date', 'Type', 'Category', 'Amount', 'Currency', 'Fee', 'From', 'To', 'Notes'],
       ...sourceRows.map(tx => [
-        tx.date, tx.type,
-        `"${(tx.category||'').replace(/"/g,'')}"`,
-        tx.amount, tx.fee_amount||0,
-        `"${getAccountName(tx.from_account_id)}"`,
-        `"${getAccountName(tx.to_account_id)}"`,
-        `"${(tx.notes||'').replace(/"/g,'')}"`
-      ].join(',')),
-      '',
-      ['SUMMARY', `Records: ${sourceRows.length}`, `Income: ${sumStats.income}`, `Expense: ${sumStats.expense}`, `Net: ${sumStats.net}`, '', '', ''].join(','),
-    ].join('\n');
+        tx.date, tx.type, tx.category || '',
+        Number(tx.amount) || 0, transactionCurrency(tx, accounts, getCurrency()), Number(tx.fee_amount) || 0,
+        getAccountName(tx.from_account_id), getAccountName(tx.to_account_id), tx.notes || '',
+      ]),
+      [],
+      ['SUMMARY', `Records: ${sourceRows.length}`, `Income: ${sumStats.income}`, `Expense: ${sumStats.expense}`, `Net: ${sumStats.net}`],
+    ]);
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([rows], { type: 'text/csv' }));
+    a.href = URL.createObjectURL(new Blob([rows], { type: 'text/csv;charset=utf-8' }));
     a.download = `transactions_${dateFrom ? `${dateFrom}_to_${dateTo||'now'}` : todayYMD()}.csv`;
     a.click();
     toast.success(`Exported ${sourceRows.length} transaction${sourceRows.length === 1 ? '' : 's'} to CSV!`);
