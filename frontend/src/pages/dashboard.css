@@ -381,6 +381,9 @@ button.dash-3d, .dash-3d[role='button'] { cursor: pointer; text-align: left; fon
   .dash-actions { width: 100%; }
   .dash-seg { flex: 1; }
   .dash-seg button { flex: 1; padding-block: 0.6rem; }
+  /* Phones refresh with pull-to-refresh; the button only crowded the toolbar. */
+  .dash-refresh { display: none !important; }
+  .dash-actions { flex-wrap: nowrap; }
   .dash-kpis { grid-template-columns: 1fr; gap: 0.6rem; }
   .dash-kpi { padding: 0.85rem 1rem; }
   .dash-safe { grid-template-columns: 1fr auto; }

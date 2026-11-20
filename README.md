@@ -1,8 +1,35 @@
 # Vault Manager
 
+[![CI](https://github.com/Isuru-Lakshitha/vault-manager/actions/workflows/ci.yml/badge.svg)](https://github.com/Isuru-Lakshitha/vault-manager/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![React 19](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-Firestore%20%2B%20Auth-ffca28?logo=firebase&logoColor=black)
+![PWA](https://img.shields.io/badge/PWA-installable%20%C2%B7%20offline-5a0fc8)
+
 A personal finance app for tracking accounts, transactions, budgets, bills, loans, goals, credit cards and investments. It's a React progressive web app (installable on phones, works offline) backed by Firebase Authentication and Cloud Firestore.
 
+**Live app:** https://money-manager-isuru.web.app (create a free account; your data is private to you)
+
 **Features:** multi-currency accounts and transfers · undoable deletes · budgets with 80% / 100% alerts · bills & recurring rules · monthly close (reconcile balances, review the month) · loans and IOUs · goals · credit cards · investments · bank statement import (OFX / QFX / QIF) and CSV import/export · encrypted backups · PIN lock and privacy mode · light and dark themes.
+
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/dashboard-desktop.png" alt="Dashboard in dark mode: net worth, safe-to-spend, monthly income and expenses, recent activity" width="100%">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/dashboard-phone.png" alt="Dashboard on a phone with the floating glass tab bar" width="32%">
+  &nbsp;
+  <img src="docs/screenshots/budgets-phone.png" alt="Budgets on a phone: categories closest to their limit" width="32%">
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/transactions-desktop.png" alt="Transactions: totals, daily cash flow, top spending and filters" width="49%">
+  <img src="docs/screenshots/dashboard-light.png" alt="Dashboard in light mode" width="49%">
+</p>
+
+<sub>Screenshots use the built-in demo data. Regenerate them with `npm run screenshots` (see below).</sub>
 
 ---
 
@@ -95,6 +122,7 @@ Then open http://127.0.0.1:5177/test/browser/dashboard (or `/accounts`, `/transa
 | `npm run build` | Production build into `frontend/dist` |
 | `npm run test:browser` | Playwright browser tests, desktop and mobile (first run: `npx playwright install chromium`) |
 | `npm run test:rules:emulator` | Firestore security-rule tests against a local emulator (needs Java 21+; never touches production) |
+| `npm run screenshots` | Regenerate `docs/screenshots/` from the test harness (run `npm run dev:test` first) |
 | `npm run verify` | Unit tests + lint + build |
 | `npm run verify:full` | `verify` + browser tests (runs automatically before every deploy) |
 

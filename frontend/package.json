@@ -16,7 +16,8 @@
     "deploy:preview": "npm run verify:full && npx firebase-tools hosting:channel:deploy preview --expires 7d",
     "deploy:live": "npm run verify:full && npx firebase-tools deploy --only firestore:rules,hosting",
     "dev:test": "vite --config vite.browser.config.js",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "engines": {
     "node": ">=20 <25"
