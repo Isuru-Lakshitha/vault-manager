@@ -198,7 +198,7 @@ const InstallPrompt = () => {
                 </div>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                    <h3 style={{ margin: 0, fontFamily: 'Inter, sans-serif', fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                       Install Vault Manager App
                     </h3>
                     <span style={{
@@ -206,14 +206,13 @@ const InstallPrompt = () => {
                       padding: '2px 6px',
                       borderRadius: 6,
                       background: 'rgba(74, 222, 128, 0.16)',
-                      color: '#4ade80',
+                      color: 'var(--mm-success)',
                       fontWeight: 700,
-                      fontFamily: 'Inter, sans-serif',
                     }}>
                       100% FREE
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', marginTop: 2, fontFamily: 'Inter, sans-serif' }}>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', marginTop: 2 }}>
                     {isIOS()
                       ? (isSafari() ? 'iPhone / iPad Home Screen Web App' : 'Open in Safari for iPhone Home Screen App')
                       : (isAndroid() ? 'Android Full-Screen Web App' : 'Install Full-Screen Web App')}
@@ -268,7 +267,7 @@ const InstallPrompt = () => {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
                     <span style={{ fontSize: '0.92rem' }}>{b.icon}</span>
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <span style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {b.title}
                     </span>
                   </div>
@@ -295,7 +294,6 @@ const InstallPrompt = () => {
                   background: 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)',
                   border: 'none',
                   color: '#081420',
-                  fontFamily: 'Inter, sans-serif',
                   fontSize: '0.92rem',
                   fontWeight: 800,
                   cursor: 'pointer',
@@ -314,7 +312,7 @@ const InstallPrompt = () => {
             {/* 2. iOS Safari Step-by-Step Visual Layout */}
             {isIOS() && isSafari() && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem', marginBottom: '0.85rem' }}>
-                <div style={{ fontSize: '0.75rem', color: '#c4b5fd', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
+                <div style={{ fontSize: '0.75rem', color: '#c4b5fd', fontWeight: 600 }}>
                   How to install on your iPhone / iPad in 3 quick taps:
                 </div>
                 {[
@@ -364,7 +362,7 @@ const InstallPrompt = () => {
                       {s.icon}
                     </div>
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.8rem', color: 'var(--text-primary)' }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.8rem', color: 'var(--text-primary)' }}>
                         Step {s.step}: {s.title}
                       </div>
                       <div style={{ fontSize: '0.71rem', color: 'var(--text-secondary)', lineHeight: 1.35, marginTop: 1 }}>
@@ -380,7 +378,7 @@ const InstallPrompt = () => {
             {isIOS() && !isSafari() && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', marginBottom: '0.85rem' }}>
                 <div style={{ padding: '0.75rem', borderRadius: 12, background: 'rgba(251, 191, 36, 0.1)', border: '1px solid rgba(251, 191, 36, 0.3)' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.8rem', color: '#fbbf24', fontFamily: 'Inter, sans-serif' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.8rem', color: 'var(--mm-warning)' }}>
                     ⚠️ Open in Safari to Install on iPhone
                   </div>
                   <div style={{ fontSize: '0.72rem', color: '#d1d5db', marginTop: 3, lineHeight: 1.4 }}>
@@ -397,7 +395,6 @@ const InstallPrompt = () => {
                     background: 'linear-gradient(135deg, #4ade80, #22c55e)',
                     border: 'none',
                     color: '#0a1628',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 800,
                     fontSize: '0.85rem',
                     cursor: 'pointer',
@@ -416,7 +413,7 @@ const InstallPrompt = () => {
             {/* 4. Android / Other Browsers Step-by-Step Guide */}
             {!isIOS() && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '0.85rem' }}>
-                <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
+                <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
                   {hasNativePrompt ? 'Or install via your browser menu:' : 'Install in 3 quick taps from your browser menu:'}
                 </div>
                 {[
@@ -442,10 +439,9 @@ const InstallPrompt = () => {
                         height: 26,
                         borderRadius: 7,
                         background: 'rgba(74, 222, 128, 0.16)',
-                        color: '#4ade80',
+                        color: 'var(--mm-success)',
                         fontWeight: 800,
                         fontSize: '0.76rem',
-                        fontFamily: 'Inter, sans-serif',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -455,7 +451,7 @@ const InstallPrompt = () => {
                       {s.step}
                     </div>
                     <div style={{ minWidth: 0, flex: 1 }}>
-                      <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.79rem', color: 'var(--text-primary)' }}>
+                      <div style={{ fontWeight: 700, fontSize: '0.79rem', color: 'var(--text-primary)' }}>
                         {s.title}
                       </div>
                       <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', lineHeight: 1.3 }}>
@@ -486,9 +482,9 @@ const InstallPrompt = () => {
                 type="checkbox"
                 checked={dontShowChecked}
                 onChange={(e) => setDontShowChecked(e.target.checked)}
-                style={{ width: 16, height: 16, accentColor: '#4ade80', cursor: 'pointer', margin: 0 }}
+                style={{ width: 16, height: 16, accentColor: 'var(--mm-success)', cursor: 'pointer', margin: 0 }}
               />
-              <span style={{ fontSize: '0.76rem', color: dontShowChecked ? '#fca5a5' : '#cbd5e1', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
+              <span style={{ fontSize: '0.76rem', color: dontShowChecked ? '#fca5a5' : '#cbd5e1', fontWeight: 600 }}>
                 Don&apos;t show this install popup again
               </span>
             </label>
@@ -504,7 +500,6 @@ const InstallPrompt = () => {
                   background: 'rgba(255, 255, 255, 0.06)',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
                   color: '#e2e8f0',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 700,
                   fontSize: '0.79rem',
                   cursor: 'pointer',
@@ -526,8 +521,7 @@ const InstallPrompt = () => {
                   borderRadius: 11,
                   background: 'rgba(248, 113, 113, 0.12)',
                   border: '1px solid rgba(248, 113, 113, 0.3)',
-                  color: '#f87171',
-                  fontFamily: 'Inter, sans-serif',
+                  color: 'var(--mm-danger)',
                   fontWeight: 700,
                   fontSize: '0.79rem',
                   cursor: 'pointer',

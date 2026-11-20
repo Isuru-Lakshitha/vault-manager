@@ -139,9 +139,7 @@ export default function AdminPanel() {
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: 'center',
-          padding: '2rem',
-          fontFamily: 'Inter, sans-serif'
-        }}>
+          padding: '2rem' }}>
           <div style={{
             width: 80,
             height: 80,
@@ -172,7 +170,6 @@ export default function AdminPanel() {
               color: 'var(--bg-void)',
               fontWeight: 700,
               cursor: 'pointer',
-              fontFamily: 'Inter, sans-serif',
               boxShadow: '0 4px 20px rgba(74,222,128,0.25)'
             }}
           >
@@ -331,7 +328,7 @@ export default function AdminPanel() {
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                <h1 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                <h1 style={{ margin: 0, fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                   Super Admin Command Center
                 </h1>
                 <span style={{
@@ -366,12 +363,10 @@ export default function AdminPanel() {
                 borderRadius: 10,
                 background: 'rgba(255,255,255,0.04)',
                 border: '1px solid rgba(255,255,255,0.1)',
-                color: '#ddd',
+                color: 'var(--mm-text-2)',
                 fontSize: '0.8rem',
                 fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif'
-              }}
+                cursor: 'pointer' }}
             >
               <RefreshCw size={14} className={loading ? 'spin' : ''} /> Refresh
             </button>
@@ -388,9 +383,7 @@ export default function AdminPanel() {
                 color: '#818cf8',
                 fontSize: '0.8rem',
                 fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif'
-              }}
+                cursor: 'pointer' }}
             >
               <Download size={14} /> Master Dump
             </button>
@@ -404,12 +397,10 @@ export default function AdminPanel() {
                 borderRadius: 10,
                 background: 'rgba(248,113,113,0.12)',
                 border: '1px solid rgba(248,113,113,0.25)',
-                color: '#f87171',
+                color: 'var(--mm-danger)',
                 fontSize: '0.8rem',
                 fontWeight: 600,
-                cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif'
-              }}
+                cursor: 'pointer' }}
             >
               <Trash2 size={14} /> Flush Cache
             </button>
@@ -440,7 +431,7 @@ export default function AdminPanel() {
             <button
               onClick={handleClearBroadcast}
               disabled={busy}
-              style={{ background: 'transparent', border: 'none', color: '#aaa', cursor: busy ? 'not-allowed' : 'pointer', fontSize: '0.75rem', textDecoration: 'underline', opacity: busy ? 0.6 : 1 }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--mm-text-2)', cursor: busy ? 'not-allowed' : 'pointer', fontSize: '0.75rem', textDecoration: 'underline', opacity: busy ? 0.6 : 1 }}
             >
               Clear Banner
             </button>
@@ -471,11 +462,10 @@ export default function AdminPanel() {
                 borderRadius: 12,
                 border: activeTab === tab.id ? '1px solid rgba(234, 179, 8, 0.4)' : '1px solid transparent',
                 background: activeTab === tab.id ? 'rgba(234, 179, 8, 0.12)' : 'transparent',
-                color: activeTab === tab.id ? '#eab308' : '#888',
+                color: activeTab === tab.id ? '#eab308' : 'var(--mm-text-3)',
                 fontWeight: 700,
                 fontSize: '0.82rem',
                 cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif',
                 whiteSpace: 'nowrap',
                 transition: 'all 0.15s ease'
               }}
@@ -494,52 +484,52 @@ export default function AdminPanel() {
               
               <div style={{ padding: '1.25rem', borderRadius: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: 600, textTransform: 'uppercase' }}>Registered Accounts</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--mm-text-3)', fontWeight: 600, textTransform: 'uppercase' }}>Registered Accounts</span>
                   <Users size={18} color="#818cf8" />
                 </div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                   {users.length} Users
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#4ade80', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--mm-success)', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
                   <CheckCircle2 size={12} /> {users.filter(u => u.role === 'Super Admin').length} Super Admin · {users.filter(u => u.role !== 'Super Admin').length} Members
                 </div>
               </div>
 
               <div style={{ padding: '1.25rem', borderRadius: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: 600, textTransform: 'uppercase' }}>Firestore Latency</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--mm-text-3)', fontWeight: 600, textTransform: 'uppercase' }}>Firestore Latency</span>
                   <Activity size={18} color="#4ade80" />
                 </div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: !health ? '#888' : health.firestoreStatus !== 'Connected' ? '#f87171' : health.latencyMs < 150 ? '#4ade80' : '#fbbf24', fontFamily: 'Inter, sans-serif' }}>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: !health ? 'var(--mm-text-3)' : health.firestoreStatus !== 'Connected' ? 'var(--mm-danger)' : health.latencyMs < 150 ? 'var(--mm-success)' : 'var(--mm-warning)' }}>
                   {health ? `${health.latencyMs} ms` : 'Testing...'}
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#888', marginTop: 4 }}>
-                  Status: <strong style={{ color: health?.firestoreStatus === 'Connected' ? '#4ade80' : '#f87171' }}>{health?.firestoreStatus || 'Checking…'}</strong>
+                <div style={{ fontSize: '0.72rem', color: 'var(--mm-text-3)', marginTop: 4 }}>
+                  Status: <strong style={{ color: health?.firestoreStatus === 'Connected' ? 'var(--mm-success)' : 'var(--mm-danger)' }}>{health?.firestoreStatus || 'Checking…'}</strong>
                 </div>
               </div>
 
               <div style={{ padding: '1.25rem', borderRadius: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: 600, textTransform: 'uppercase' }}>Your Vault Records</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--mm-text-3)', fontWeight: 600, textTransform: 'uppercase' }}>Your Vault Records</span>
                   <Database size={18} color="#38bdf8" />
                 </div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#38bdf8', fontFamily: 'Inter, sans-serif' }}>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#38bdf8' }}>
                   {stats ? stats.transactionsCount + stats.accountsCount + stats.budgetsCount + stats.goalsCount + stats.loansCount + stats.billsCount + stats.investmentsCount : '...'} docs
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#888', marginTop: 4 }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--mm-text-3)', marginTop: 4 }}>
                   Admin account only · other vaults are private
                 </div>
               </div>
 
               <div style={{ padding: '1.25rem', borderRadius: 16, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                  <span style={{ fontSize: '0.75rem', color: '#888', fontWeight: 600, textTransform: 'uppercase' }}>Security Posture</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--mm-text-3)', fontWeight: 600, textTransform: 'uppercase' }}>Security Posture</span>
                   <ShieldCheck size={18} color="#eab308" />
                 </div>
-                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#eab308', fontFamily: 'Inter, sans-serif' }}>
+                <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#eab308' }}>
                   100% Enforced
                 </div>
-                <div style={{ fontSize: '0.72rem', color: '#888', marginTop: 4 }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--mm-text-3)', marginTop: 4 }}>
                   Zero Public Buckets · Isolated UIDs
                 </div>
               </div>
@@ -554,13 +544,13 @@ export default function AdminPanel() {
               padding: '1.25rem',
               marginBottom: '1.5rem'
             }}>
-              <h3 style={{ margin: '0 0 1rem', fontSize: '0.95rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif', letterSpacing: 0.5 }}>
+              <h3 style={{ margin: '0 0 1rem', fontSize: '0.95rem', color: 'var(--text-primary)', letterSpacing: 0.5 }}>
                 Your Vault — Collection Document Matrix
               </h3>
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
                   <thead>
-                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', color: '#888' }}>
+                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', color: 'var(--mm-text-3)' }}>
                       <th style={{ padding: '0.6rem 0.75rem' }}>Collection Path</th>
                       <th style={{ padding: '0.6rem 0.75rem' }}>Document Count</th>
                       <th style={{ padding: '0.6rem 0.75rem' }}>Security Rule Scope</th>
@@ -579,13 +569,13 @@ export default function AdminPanel() {
                     ].map(row => (
                       <tr key={row.path} style={{ borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
                         <td style={{ padding: '0.75rem', fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'monospace' }}>{row.path}</td>
-                        <td style={{ padding: '0.75rem', color: '#4ade80', fontWeight: 700 }}>{row.count} records</td>
-                        <td style={{ padding: '0.75rem', color: '#888' }}>
-                          <span style={{ padding: '2px 6px', borderRadius: 4, background: 'rgba(74,222,128,0.1)', color: '#4ade80', fontSize: '0.72rem' }}>
+                        <td style={{ padding: '0.75rem', color: 'var(--mm-success)', fontWeight: 700 }}>{row.count} records</td>
+                        <td style={{ padding: '0.75rem', color: 'var(--mm-text-3)' }}>
+                          <span style={{ padding: '2px 6px', borderRadius: 4, background: 'rgba(74,222,128,0.1)', color: 'var(--mm-success)', fontSize: '0.72rem' }}>
                             {row.scope}
                           </span>
                         </td>
-                        <td style={{ padding: '0.75rem', color: '#aaa' }}>{row.state}</td>
+                        <td style={{ padding: '0.75rem', color: 'var(--mm-text-2)' }}>{row.state}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -628,10 +618,10 @@ export default function AdminPanel() {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
                   Registered Users & Permissions ({users.length})
                 </h3>
-                <p style={{ margin: '3px 0 0', color: '#888', fontSize: '0.78rem' }}>
+                <p style={{ margin: '3px 0 0', color: 'var(--mm-text-3)', fontSize: '0.78rem' }}>
                   Real accounts appear here automatically after they sign in. Financial data stays private to each user.
                 </p>
               </div>
@@ -645,19 +635,17 @@ export default function AdminPanel() {
                   borderRadius: 10,
                   background: 'rgba(255,255,255,0.04)',
                   border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#ddd',
+                  color: 'var(--mm-text-2)',
                   fontWeight: 700,
                   fontSize: '0.82rem',
-                  cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif'
-                }}
+                  cursor: 'pointer' }}
               >
                 <RefreshCw size={15} /> Reload Directory
               </button>
             </div>
 
             {usersError && (
-              <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: 10, background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', color: '#f87171', fontSize: '0.8rem' }}>
+              <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', borderRadius: 10, background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', color: 'var(--mm-danger)', fontSize: '0.8rem' }}>
                 {usersError}
               </div>
             )}
@@ -671,7 +659,7 @@ export default function AdminPanel() {
               <div style={{ overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.82rem' }}>
                   <thead>
-                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', color: '#888', background: 'rgba(255,255,255,0.01)' }}>
+                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', color: 'var(--mm-text-3)', background: 'rgba(255,255,255,0.01)' }}>
                       <th style={{ padding: '0.75rem 1rem' }}>User Email</th>
                       <th style={{ padding: '0.75rem 1rem' }}>Role</th>
                       <th style={{ padding: '0.75rem 1rem' }}>Status</th>
@@ -682,7 +670,7 @@ export default function AdminPanel() {
                   </thead>
                   <tbody>
                     {users.length === 0 && !usersError && (
-                      <tr><td colSpan={6} style={{ padding: '1.5rem', textAlign: 'center', color: '#888' }}>No directory entries yet. Users are added when they sign in.</td></tr>
+                      <tr><td colSpan={6} style={{ padding: '1.5rem', textAlign: 'center', color: 'var(--mm-text-3)' }}>No directory entries yet. Users are added when they sign in.</td></tr>
                     )}
                     {users.map(u => {
                       const isOwner = u.role === 'Super Admin';
@@ -708,20 +696,20 @@ export default function AdminPanel() {
                             </span>
                           </td>
                           <td style={{ padding: '0.9rem 1rem' }}>
-                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: u.verified_by_admin ? '#38bdf8' : '#4ade80' }}>
-                              <span style={{ width: 6, height: 6, borderRadius: '50%', background: u.verified_by_admin ? '#38bdf8' : '#4ade80' }} />
+                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: u.verified_by_admin ? '#38bdf8' : 'var(--mm-success)' }}>
+                              <span style={{ width: 6, height: 6, borderRadius: '50%', background: u.verified_by_admin ? '#38bdf8' : 'var(--mm-success)' }} />
                               {u.status || 'Active'}{u.verified_by_admin ? ' · Reviewed' : ''}
                             </span>
                           </td>
-                          <td style={{ padding: '0.9rem 1rem', color: '#888' }}>
+                          <td style={{ padding: '0.9rem 1rem', color: 'var(--mm-text-3)' }}>
                             {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}
                           </td>
-                          <td style={{ padding: '0.9rem 1rem', color: '#aaa', fontSize: '0.75rem' }}>
+                          <td style={{ padding: '0.9rem 1rem', color: 'var(--mm-text-2)', fontSize: '0.75rem' }}>
                             {u.lastActive ? new Date(u.lastActive).toLocaleString() : '—'}
                           </td>
                           <td style={{ padding: '0.9rem 1rem', textAlign: 'right' }}>
                             {isOwner ? (
-                              <span style={{ color: '#666', fontSize: '0.72rem', fontStyle: 'italic' }}>Protected Owner</span>
+                              <span style={{ color: 'var(--mm-text-3)', fontSize: '0.72rem', fontStyle: 'italic' }}>Protected Owner</span>
                             ) : (
                               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.4rem', flexWrap: 'nowrap' }}>
                                 <button
@@ -764,7 +752,7 @@ export default function AdminPanel() {
                                     borderRadius: 6,
                                     background: 'rgba(248, 113, 113, 0.1)',
                                     border: '1px solid rgba(248, 113, 113, 0.2)',
-                                    color: '#f87171',
+                                    color: 'var(--mm-danger)',
                                     cursor: 'pointer',
                                     fontSize: '0.72rem'
                                   }}
@@ -829,10 +817,10 @@ export default function AdminPanel() {
                 border: '1px solid rgba(255,255,255,0.06)',
                 padding: '1.5rem'
               }}>
-                <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                <h3 style={{ margin: '0 0 0.5rem', fontSize: '1.1rem', color: 'var(--text-primary)' }}>
                   Compose Global In-App Announcement
                 </h3>
-                <p style={{ margin: '0 0 1.25rem', color: '#888', fontSize: '0.78rem' }}>
+                <p style={{ margin: '0 0 1.25rem', color: 'var(--mm-text-3)', fontSize: '0.78rem' }}>
                   This message will render prominently on the Dashboard of every user across desktop and mobile.
                 </p>
 
@@ -886,7 +874,6 @@ export default function AdminPanel() {
                         border: '1px solid rgba(255,255,255,0.1)',
                         color: 'var(--text-primary)',
                         fontSize: '0.85rem',
-                        fontFamily: 'Inter, sans-serif',
                         resize: 'vertical'
                       }}
                     />
@@ -904,7 +891,6 @@ export default function AdminPanel() {
                       fontWeight: 800,
                       fontSize: '0.88rem',
                       cursor: busy ? 'not-allowed' : 'pointer',
-                      fontFamily: 'Inter, sans-serif',
                       opacity: busy ? 0.7 : 1
                     }}
                   >
@@ -924,7 +910,7 @@ export default function AdminPanel() {
                 justifyContent: 'space-between'
               }}>
                 <div>
-                  <h4 style={{ margin: '0 0 1rem', fontSize: '0.85rem', color: '#888', textTransform: 'uppercase', letterSpacing: 1 }}>
+                  <h4 style={{ margin: '0 0 1rem', fontSize: '0.85rem', color: 'var(--mm-text-3)', textTransform: 'uppercase', letterSpacing: 1 }}>
                     Live User Screen Preview
                   </h4>
                   <div style={{
@@ -945,7 +931,7 @@ export default function AdminPanel() {
 
                 {announcement && (
                   <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                    <div style={{ fontSize: '0.75rem', color: '#888', marginBottom: 6 }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--mm-text-3)', marginBottom: 6 }}>
                       Currently Live: <strong>{announcement.message}</strong> (Level: {announcement.level})
                     </div>
                     <button
@@ -956,7 +942,7 @@ export default function AdminPanel() {
                         borderRadius: 8,
                         background: 'rgba(248, 113, 113, 0.15)',
                         border: '1px solid rgba(248, 113, 113, 0.3)',
-                        color: '#f87171',
+                        color: 'var(--mm-danger)',
                         fontSize: '0.75rem',
                         fontWeight: 700,
                         cursor: busy ? 'not-allowed' : 'pointer',
@@ -988,7 +974,7 @@ export default function AdminPanel() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                     {maintenance.active ? <Lock size={20} color="#f87171" /> : <Unlock size={20} color="#4ade80" />}
-                    <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
                       Maintenance Mode Lock
                     </h3>
                   </div>
@@ -996,14 +982,14 @@ export default function AdminPanel() {
                     padding: '2px 8px',
                     borderRadius: 20,
                     background: maintenance.active ? 'rgba(248, 113, 113, 0.2)' : 'rgba(74, 222, 128, 0.2)',
-                    color: maintenance.active ? '#f87171' : '#4ade80',
+                    color: maintenance.active ? 'var(--mm-danger)' : 'var(--mm-success)',
                     fontSize: '0.72rem',
                     fontWeight: 700
                   }}>
                     {maintenance.active ? 'ACTIVE LOCK' : 'NORMAL (ONLINE)'}
                   </span>
                 </div>
-                <p style={{ margin: '0 0 1rem', color: '#888', fontSize: '0.78rem' }}>
+                <p style={{ margin: '0 0 1rem', color: 'var(--mm-text-3)', fontSize: '0.78rem' }}>
                   When enabled, non-admin members are greeted by an elegant maintenance message, while <code>{SUPER_ADMIN_EMAIL}</code> retains full operational access.
                 </p>
 
@@ -1040,7 +1026,6 @@ export default function AdminPanel() {
                     fontWeight: 800,
                     fontSize: '0.85rem',
                     cursor: busy ? 'not-allowed' : 'pointer',
-                    fontFamily: 'Inter, sans-serif',
                     opacity: busy ? 0.7 : 1
                   }}
                 >
@@ -1058,13 +1043,13 @@ export default function AdminPanel() {
                 flexDirection: 'column',
                 gap: '1rem'
               }}>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
                   Master System Operations
                 </h3>
 
                 <div style={{ padding: '0.85rem', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
                   <div style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-primary)', marginBottom: 2 }}>Export Comprehensive System Dump</div>
-                  <div style={{ fontSize: '0.72rem', color: '#777', marginBottom: 8 }}>Produces an unredacted JSON snapshot of all platform records and audit events.</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--mm-text-3)', marginBottom: 8 }}>Produces an unredacted JSON snapshot of all platform records and audit events.</div>
                   <button
                     onClick={handleExportDump}
                     style={{
@@ -1084,7 +1069,7 @@ export default function AdminPanel() {
 
                 <div style={{ padding: '0.85rem', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
                   <div style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-primary)', marginBottom: 2 }}>Purge & Resync Local Offline Persistence</div>
-                  <div style={{ fontSize: '0.72rem', color: '#777', marginBottom: 8 }}>Evicts volatile browser caches and rebuilds from cloud master Firestore without touching records.</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--mm-text-3)', marginBottom: 8 }}>Evicts volatile browser caches and rebuilds from cloud master Firestore without touching records.</div>
                   <button
                     onClick={handleFlushCache}
                     style={{
@@ -1092,7 +1077,7 @@ export default function AdminPanel() {
                       borderRadius: 8,
                       background: 'rgba(248, 113, 113, 0.15)',
                       border: '1px solid #f87171',
-                      color: '#f87171',
+                      color: 'var(--mm-danger)',
                       fontWeight: 700,
                       fontSize: '0.75rem',
                       cursor: 'pointer'
@@ -1110,12 +1095,12 @@ export default function AdminPanel() {
         {activeTab === 'maintenance' && (
           <div style={{ marginTop: '1.25rem', padding: '1rem', borderRadius: 16, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
             <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>Your data backup</h3>
-            <p style={{ margin: '4px 0 0.75rem', color: '#888', fontSize: '0.78rem' }}>Exports only your own signed-in account data as a JSON file.</p>
+            <p style={{ margin: '4px 0 0.75rem', color: 'var(--mm-text-3)', fontSize: '0.78rem' }}>Exports only your own signed-in account data as a JSON file.</p>
             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-              <button type="button" onClick={handleExportBackup} style={{ padding: '0.6rem 1.1rem', borderRadius: 10, border: '1px solid rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.1)', color: '#4ade80', fontWeight: 700, cursor: 'pointer' }}>
+              <button type="button" onClick={handleExportBackup} style={{ padding: '0.6rem 1.1rem', borderRadius: 10, border: '1px solid rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.1)', color: 'var(--mm-success)', fontWeight: 700, cursor: 'pointer' }}>
                 Export full backup (JSON)
               </button>
-              <label style={{ fontSize: '0.8rem', color: '#aaa', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <label style={{ fontSize: '0.8rem', color: 'var(--mm-text-2)', display: 'flex', alignItems: 'center', gap: 6 }}>
                 Backup reminder every
                 <input type="number" min={1} max={365} value={backupDays} onChange={e => handleBackupDays(e.target.value)} style={{ width: 64, padding: '0.35rem', borderRadius: 8, border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: 'var(--text-primary)' }} />
                 days
@@ -1129,10 +1114,10 @@ export default function AdminPanel() {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
                   Super Admin Governance Stream ({auditLogs.length} events)
                 </h3>
-                <p style={{ margin: '3px 0 0', color: '#888', fontSize: '0.78rem' }}>
+                <p style={{ margin: '3px 0 0', color: 'var(--mm-text-3)', fontSize: '0.78rem' }}>
                   Tamper-evident chronological activity ledger tracking root administrative actions.
                 </p>
               </div>
@@ -1164,16 +1149,16 @@ export default function AdminPanel() {
                       width: 8,
                       height: 8,
                       borderRadius: '50%',
-                      background: log.action.includes('DELETE') ? '#f87171' : log.action.includes('UPDATE') ? '#fbbf24' : '#4ade80'
+                      background: log.action.includes('DELETE') ? 'var(--mm-danger)' : log.action.includes('UPDATE') ? 'var(--mm-warning)' : 'var(--mm-success)'
                     }} />
                     <div>
                       <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{log.details}</div>
-                      <div style={{ fontSize: '0.7rem', color: '#777', marginTop: 2 }}>
-                        Target: <span style={{ color: '#aaa' }}>{log.target}</span> · Admin: <span style={{ color: '#eab308' }}>{log.admin}</span>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)', marginTop: 2 }}>
+                        Target: <span style={{ color: 'var(--mm-text-2)' }}>{log.target}</span> · Admin: <span style={{ color: '#eab308' }}>{log.admin}</span>
                       </div>
                     </div>
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#666', whiteSpace: 'nowrap', fontFamily: 'Inter, sans-serif' }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--mm-text-3)', whiteSpace: 'nowrap' }}>
                     {new Date(log.timestamp).toLocaleString()}
                   </div>
                 </div>
@@ -1181,16 +1166,16 @@ export default function AdminPanel() {
             </div>
 
             <h3 style={{ margin: '1.5rem 0 0.5rem', fontSize: '1rem', color: 'var(--text-primary)' }}>Audit log (server, latest 50)</h3>
-            {remoteAuditError && <div style={{ color: '#f87171', fontSize: '0.78rem', marginBottom: 8 }}>{remoteAuditError}</div>}
+            {remoteAuditError && <div style={{ color: 'var(--mm-danger)', fontSize: '0.78rem', marginBottom: 8 }}>{remoteAuditError}</div>}
             <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.06)', padding: '1rem', maxHeight: 500, overflowY: 'auto' }}>
-              {remoteAudit.length === 0 && !remoteAuditError && <div style={{ color: '#777', fontSize: '0.8rem' }}>No server audit entries yet.</div>}
+              {remoteAudit.length === 0 && !remoteAuditError && <div style={{ color: 'var(--mm-text-3)', fontSize: '0.8rem' }}>No server audit entries yet.</div>}
               {remoteAudit.map(entry => (
                 <div key={entry.id} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', padding: '0.6rem 0.25rem', borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '0.8rem' }}>
                   <div>
                     <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{entry.action} · {entry.details}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#777', marginTop: 2 }}>Target: {entry.target} · Admin: {entry.admin}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)', marginTop: 2 }}>Target: {entry.target} · Admin: {entry.admin}</div>
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#666', whiteSpace: 'nowrap' }}>{entry.timestamp ? new Date(entry.timestamp).toLocaleString() : '—'}</div>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--mm-text-3)', whiteSpace: 'nowrap' }}>{entry.timestamp ? new Date(entry.timestamp).toLocaleString() : '—'}</div>
                 </div>
               ))}
             </div>

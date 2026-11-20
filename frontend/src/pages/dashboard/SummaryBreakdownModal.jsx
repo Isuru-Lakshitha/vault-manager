@@ -22,10 +22,10 @@ export default function SummaryBreakdownModal({ popup, onClose, transactions, mo
           borderRadius: 14,
           border: `1px solid ${popup.type === 'Income' ? 'rgba(74,222,128,0.2)' : 'rgba(248,113,113,0.2)'}`
         }}>
-          <div style={{ fontSize: '0.72rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px' }}>
             Total {popup.type === 'Income' ? 'Income Received' : 'Deductions & Expenses'}
           </div>
-          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '2rem', fontWeight: 800, color: popup.type === 'Income' ? '#4ade80' : '#f87171', marginTop: 4 }}>
+          <div style={{ fontSize: '2rem', fontWeight: 800, color: popup.type === 'Income' ? 'var(--mm-success)' : 'var(--mm-danger)', marginTop: 4 }}>
             {popup.type === 'Income' ? '+' : '-'}{formatCurrency(popup.type === 'Income' ? monthlyIncome : monthlyExpense)}
           </div>
         </div>
@@ -40,7 +40,7 @@ export default function SummaryBreakdownModal({ popup, onClose, transactions, mo
           return (
             <>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
                   Transactions ({txList.length})
                 </div>
                 <span style={{ fontSize: '0.7rem', color: 'var(--cyan)' }}>Tap item to view popup</span>
@@ -48,7 +48,7 @@ export default function SummaryBreakdownModal({ popup, onClose, transactions, mo
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', maxHeight: '50vh', overflowY: 'auto' }}>
                 {txList.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.82rem', fontFamily: 'Inter, sans-serif' }}>
+                  <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)', fontSize: '0.82rem' }}>
                     No {popup.type === 'Income' ? 'income' : 'expense'} transactions recorded this month yet.
                   </div>
                 ) : (
@@ -72,11 +72,11 @@ export default function SummaryBreakdownModal({ popup, onClose, transactions, mo
                         <div style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {tx.category || tx.type}
                         </div>
-                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+                        <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
                           {tx.date} {tx.notes ? `• ${tx.notes}` : ''}
                         </div>
                       </div>
-                      <div style={{ fontWeight: 700, fontFamily: 'Inter, sans-serif', color: popup.type === 'Income' ? '#4ade80' : '#f87171', fontSize: '0.9rem' }}>
+                      <div style={{ fontWeight: 700, color: popup.type === 'Income' ? 'var(--mm-success)' : 'var(--mm-danger)', fontSize: '0.9rem' }}>
                         {popup.type === 'Income' ? '+' : '-'}{formatCurrency(tx.amount)}
                       </div>
                     </div>

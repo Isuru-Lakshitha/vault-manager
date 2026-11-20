@@ -122,7 +122,7 @@ export default function EmailVerification({ user, onVerified, onSignOut }) {
           alignItems: 'center',
           justifyContent: 'center',
           margin: '0 auto 1.25rem',
-          color: '#4ade80'
+          color: 'var(--mm-success)'
         }}>
           <Mail size={36} />
         </div>
@@ -131,7 +131,6 @@ export default function EmailVerification({ user, onVerified, onSignOut }) {
           margin: '0 0 0.5rem',
           fontSize: '1.4rem',
           fontWeight: 800,
-          fontFamily: 'Inter, sans-serif',
           color: 'var(--text-primary)'
         }}>
           Verify Your Email
@@ -144,7 +143,7 @@ export default function EmailVerification({ user, onVerified, onSignOut }) {
           lineHeight: 1.5
         }}>
           We sent a verification link to:<br />
-          <strong style={{ color: '#4ade80', wordBreak: 'break-all' }}>{email}</strong>
+          <strong style={{ color: 'var(--mm-success)', wordBreak: 'break-all' }}>{email}</strong>
         </p>
 
         <div style={{
@@ -153,12 +152,12 @@ export default function EmailVerification({ user, onVerified, onSignOut }) {
           borderRadius: 12,
           padding: '0.75rem 1rem',
           fontSize: '0.78rem',
-          color: '#aaa',
+          color: 'var(--mm-text-2)',
           marginBottom: '1.5rem',
           textAlign: 'left',
           lineHeight: 1.4
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#fbbf24', fontWeight: 600, marginBottom: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--mm-warning)', fontWeight: 600, marginBottom: 4 }}>
             <AlertCircle size={14} /> Action Required
           </div>
           Please open your inbox, click the verification link from Firebase, and return here to unlock your financial vault.
@@ -177,7 +176,6 @@ export default function EmailVerification({ user, onVerified, onSignOut }) {
               background: 'linear-gradient(135deg, #4ade80, #22c55e)',
               border: 'none',
               color: 'var(--bg-void)',
-              fontFamily: 'Inter, sans-serif',
               fontWeight: 800,
               fontSize: '0.92rem',
               cursor: checking ? 'not-allowed' : 'pointer',
@@ -204,8 +202,7 @@ export default function EmailVerification({ user, onVerified, onSignOut }) {
               borderRadius: 12,
               background: 'rgba(255, 255, 255, 0.04)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: cooldown > 0 ? '#666' : '#ddd',
-              fontFamily: 'Inter, sans-serif',
+              color: cooldown > 0 ? 'var(--mm-text-3)' : 'var(--mm-text-2)',
               fontWeight: 600,
               fontSize: '0.82rem',
               cursor: resending || cooldown > 0 ? 'not-allowed' : 'pointer',
@@ -226,7 +223,7 @@ export default function EmailVerification({ user, onVerified, onSignOut }) {
             style={{
               background: 'transparent',
               border: 'none',
-              color: '#888',
+              color: 'var(--mm-text-3)',
               fontSize: '0.78rem',
               cursor: 'pointer',
               display: 'inline-flex',

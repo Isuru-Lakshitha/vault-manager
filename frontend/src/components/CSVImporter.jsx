@@ -106,12 +106,12 @@ const CSVImporter = ({ accounts, onImported, onClose }) => {
             style={{ border:'2px dashed rgba(74,222,128,0.3)', borderRadius:12, padding:'3rem', textAlign:'center', cursor:'pointer', background:'rgba(74,222,128,0.03)', transition:'all 0.2s' }}
             onDragOver={e => e.preventDefault()}
             onDrop={e => { e.preventDefault(); fileRef.current.files = e.dataTransfer.files; handleFile({ target: e.dataTransfer }); }}>
-            <Upload size={36} style={{ color:'#4ade80', marginBottom:'0.75rem', opacity:0.7 }}/>
-            <p style={{ fontFamily:'Inter, sans-serif', color:'var(--text-secondary)', margin:0, fontSize:'0.85rem' }}>DRAG & DROP YOUR BANK CSV</p>
-            <p style={{ fontFamily:'Inter, sans-serif', color:'var(--text-muted)', margin:'0.5rem 0 0', fontSize:'0.72rem' }}>OR CLICK TO BROWSE</p>
+            <Upload size={36} style={{ color:'var(--mm-success)', marginBottom:'0.75rem', opacity:0.7 }}/>
+            <p style={{ color:'var(--text-secondary)', margin:0, fontSize:'0.85rem' }}>DRAG & DROP YOUR BANK CSV</p>
+            <p style={{ color:'var(--text-muted)', margin:'0.5rem 0 0', fontSize:'0.72rem' }}>OR CLICK TO BROWSE</p>
           </div>
           <input ref={fileRef} type="file" accept=".csv,.txt" style={{ display:'none' }} onChange={handleFile}/>
-          <p style={{ fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:'0.75rem', textAlign:'center' }}>
+          <p style={{ fontSize:'0.72rem', color:'var(--text-muted)', marginTop:'0.75rem', textAlign:'center' }}>
             Supports most bank CSV exports. Expected columns: Date, Description, Amount.
           </p>
         </div>
@@ -119,7 +119,7 @@ const CSVImporter = ({ accounts, onImported, onClose }) => {
 
       {step === 'map' && parsed && (
         <div style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
-          <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.7rem', color:'#4ade80', letterSpacing:'2px' }}>
+          <div style={{ fontSize:'0.7rem', color:'var(--mm-success)', letterSpacing:'2px' }}>
             DETECTED {parsed.headers.length} COLUMNS, {parsed.rows.length} ROWS
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.75rem' }}>
@@ -162,11 +162,11 @@ const CSVImporter = ({ accounts, onImported, onClose }) => {
 
       {step === 'preview' && (
         <div>
-          <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.7rem', color:'#4ade80', letterSpacing:'2px', marginBottom:'0.75rem' }}>
+          <div style={{ fontSize:'0.7rem', color:'var(--mm-success)', letterSpacing:'2px', marginBottom:'0.75rem' }}>
             PREVIEW — {preview.length} TRANSACTIONS TO IMPORT
           </div>
           <div style={{ maxHeight:300, overflowY:'auto', border:'1px solid rgba(255,255,255,0.07)', borderRadius:8 }}>
-            <table style={{ width:'100%', borderCollapse:'collapse', fontFamily:'Inter, sans-serif', fontSize:'0.75rem' }}>
+            <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.75rem' }}>
               <thead><tr style={{ borderBottom:'1px solid rgba(74,222,128,0.15)', background:'rgba(0,0,0,0.4)' }}>
                 {['Date','Description','Amount','Type'].map(h => <th key={h} style={{ padding:'0.5rem 0.75rem', textAlign:'left', color:'var(--text-muted)', fontWeight:600 }}>{h}</th>)}
               </tr></thead>
@@ -174,9 +174,9 @@ const CSVImporter = ({ accounts, onImported, onClose }) => {
                 {preview.map((tx, i) => (
                   <tr key={i} style={{ borderBottom:'1px solid rgba(255,255,255,0.04)', background:i%2===0?'rgba(255,255,255,0.01)':'transparent' }}>
                     <td style={{ padding:'0.45rem 0.75rem', color:'var(--text-secondary)' }}>{tx.date}</td>
-                    <td style={{ padding:'0.45rem 0.75rem', color:'#aaa', maxWidth:180, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{getCategoryEmoji(tx.category)} {tx.category}</td>
-                    <td style={{ padding:'0.45rem 0.75rem', color: tx.type==='Income'?'#4ade80':'#f87171', fontWeight:600 }}>{tx.type==='Income'?'+':'-'}{formatCurrency(tx.amount)}</td>
-                    <td style={{ padding:'0.45rem 0.75rem' }}><span style={{ fontSize:'0.68rem', background:tx.type==='Income'?'rgba(16,185,129,0.15)':'rgba(244,63,94,0.15)', color:tx.type==='Income'?'#4ade80':'#f87171', padding:'0.15rem 0.4rem', borderRadius:4 }}>{tx.type}</span></td>
+                    <td style={{ padding:'0.45rem 0.75rem', color:'var(--mm-text-2)', maxWidth:180, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{getCategoryEmoji(tx.category)} {tx.category}</td>
+                    <td style={{ padding:'0.45rem 0.75rem', color: tx.type==='Income'?'var(--mm-success)':'var(--mm-danger)', fontWeight:600 }}>{tx.type==='Income'?'+':'-'}{formatCurrency(tx.amount)}</td>
+                    <td style={{ padding:'0.45rem 0.75rem' }}><span style={{ fontSize:'0.68rem', background:tx.type==='Income'?'rgba(16,185,129,0.15)':'rgba(244,63,94,0.15)', color:tx.type==='Income'?'var(--mm-success)':'var(--mm-danger)', padding:'0.15rem 0.4rem', borderRadius:4 }}>{tx.type}</span></td>
                   </tr>
                 ))}
               </tbody>
@@ -193,8 +193,8 @@ const CSVImporter = ({ accounts, onImported, onClose }) => {
 
       {step === 'done' && (
         <div style={{ textAlign:'center', padding:'2rem' }}>
-          <CheckCircle size={48} style={{ color:'#4ade80', marginBottom:'1rem' }}/>
-          <div style={{ fontFamily:'Inter, sans-serif', color:'#4ade80', fontWeight:700, fontSize:'1.1rem' }}>IMPORT COMPLETE</div>
+          <CheckCircle size={48} style={{ color:'var(--mm-success)', marginBottom:'1rem' }}/>
+          <div style={{ color:'var(--mm-success)', fontWeight:700, fontSize:'1.1rem' }}>IMPORT COMPLETE</div>
           <button className="btn btn-primary" style={{ marginTop:'1.5rem' }} onClick={onClose}>Done</button>
         </div>
       )}

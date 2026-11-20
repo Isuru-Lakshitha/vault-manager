@@ -95,13 +95,13 @@ const AccountDataRightsPanel = () => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ShieldCheck size={18} style={{ color: '#4ade80' }} />
+              <ShieldCheck size={18} style={{ color: 'var(--mm-success)' }} />
             </div>
             <div>
               <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
                 Ledger Balance Verification (Integer-Cents Audit)
               </div>
-              <div style={{ fontSize: '0.78rem', color: '#666', fontFamily: 'Inter, sans-serif' }}>
+              <div style={{ fontSize: '0.78rem', color: 'var(--mm-text-3)' }}>
                 Verify every account’s current balance against opening balance + sum of all transactions
               </div>
             </div>
@@ -115,7 +115,7 @@ const AccountDataRightsPanel = () => {
               borderRadius: 8,
               border: '1px solid rgba(74,222,128,0.35)',
               background: 'rgba(74,222,128,0.12)',
-              color: '#4ade80',
+              color: 'var(--mm-success)',
               cursor: auditing ? 'wait' : 'pointer',
               fontSize: '0.82rem',
               fontWeight: 600,
@@ -148,11 +148,11 @@ const AccountDataRightsPanel = () => {
                   </span>
                   {row.known ? (
                     row.drifted ? (
-                      <span style={{ color: '#fbbf24', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ color: 'var(--mm-warning)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                         <AlertTriangle size={13} /> Diff: {row.difference > 0 ? '+' : ''}{formatCurrency(row.difference, { currency: row.currency })} (Expected {formatCurrency(row.expected, { currency: row.currency })})
                       </span>
                     ) : (
-                      <span style={{ color: '#4ade80', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ color: 'var(--mm-success)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                         <CheckCircle2 size={13} /> Exact match ({formatCurrency(row.balance, { currency: row.currency })})
                       </span>
                     )
@@ -186,7 +186,7 @@ const AccountDataRightsPanel = () => {
           <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
             Privacy Policy & Full Data Portability
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#666', fontFamily: 'Inter, sans-serif' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--mm-text-3)' }}>
             Download all cloud records or review how your financial data is protected
           </div>
         </div>
@@ -244,10 +244,10 @@ const AccountDataRightsPanel = () => {
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
-            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#f87171' }}>
+            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--mm-danger)' }}>
               Delete My Account & Cloud Data
             </div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
               Permanently erase all accounts, transactions, budgets, loans, goals, and your login credentials
             </div>
           </div>
@@ -260,7 +260,7 @@ const AccountDataRightsPanel = () => {
                 borderRadius: 8,
                 border: '1px solid rgba(248,113,113,0.45)',
                 background: 'rgba(248,113,113,0.14)',
-                color: '#f87171',
+                color: 'var(--mm-danger)',
                 cursor: 'pointer',
                 fontSize: '0.8rem',
                 fontWeight: 700,
@@ -319,7 +319,7 @@ const AccountDataRightsPanel = () => {
                   padding: '0.45rem 0.95rem',
                   borderRadius: 8,
                   border: 'none',
-                  background: '#ef4444',
+                  background: 'var(--mm-danger)',
                   color: '#fff',
                   fontWeight: 700,
                   fontSize: '0.8rem',

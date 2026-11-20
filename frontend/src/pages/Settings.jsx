@@ -57,39 +57,30 @@ const CURRENCIES = [
 ];
 
 const SectionHeader = ({ label }) => (
-  <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.7rem', letterSpacing: '2px', color: '#444', marginBottom: '0.75rem', marginTop: '0.5rem' }}>
+  <div className="set-section">
     {label}
   </div>
 );
 
-const SettingsRow = ({ icon: Icon, label, description, children, color = '#4ade80' }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.1rem 1.5rem', background: 'rgba(255,255,255,0.02)', borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)', gap: '1rem', marginBottom: '0.5rem' }}
-  >
-    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-      <div style={{ width: 38, height: 38, borderRadius: 10, background: `${color}18`, border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-        <Icon size={18} style={{ color }} />
-      </div>
-      <div>
-        <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{label}</div>
-        {description && <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: 2, fontFamily: 'Inter, sans-serif' }}>{description}</div>}
+// One settings line: tinted icon, label + description, control on the right.
+// Styles: styles/ui.css (.set-row). `color` only tints the icon.
+const SettingsRow = ({ icon: Icon, label, description, children, color = 'var(--mm-accent)' }) => (
+  <motion.div className="set-row" style={{ '--row-color': color }} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+    <div className="set-row-main">
+      <span className="set-row-icon" aria-hidden="true"><Icon size={18} /></span>
+      <div className="set-row-text">
+        <div className="set-row-label">{label}</div>
+        {description && <div className="set-row-desc">{description}</div>}
       </div>
     </div>
-    <div style={{ flexShrink: 0 }}>{children}</div>
+    <div className="set-row-control">{children}</div>
   </motion.div>
 );
 
-const Toggle = ({ checked, onChange, color = '#818cf8', label }) => (
-  <button
-    type="button"
-    role="switch"
-    aria-checked={!!checked}
-    aria-label={label}
-    onClick={onChange}
-    style={{ width: 48, height: 26, borderRadius: 13, background: checked ? color : 'rgba(255,255,255,0.1)', border: 'none', cursor: 'pointer', position: 'relative', transition: 'background 0.25s', boxShadow: checked ? `0 0 12px ${color}66` : 'none' }}
-  >
-    <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#fff', position: 'absolute', top: 3, left: checked ? 25 : 3, transition: 'left 0.25s', boxShadow: '0 2px 4px rgba(0,0,0,0.3)' }} />
+// On/off switch (role=switch). Uses the accent colour in every row.
+const Toggle = ({ checked, onChange, label }) => (
+  <button type="button" role="switch" aria-checked={!!checked} aria-label={label} onClick={onChange} className="set-switch">
+    <span className="set-switch-knob" />
   </button>
 );
 
@@ -596,7 +587,7 @@ const Settings = () => {
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                    <span style={{ fontWeight: 800, fontSize: '1rem', color: 'var(--text-primary)' }}>
                       Super Admin Command Center
                     </span>
                     <span style={{
@@ -630,7 +621,6 @@ const Settings = () => {
                   fontWeight: 800,
                   fontSize: '0.82rem',
                   cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
                   boxShadow: '0 4px 16px rgba(234, 179, 8, 0.3)'
                 }}
               >
@@ -693,7 +683,7 @@ const Settings = () => {
               </div>
               <div>
                 <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>Accent Color</div>
-                <div style={{ fontSize: '0.78rem', color: '#555', fontFamily: 'Inter, sans-serif' }}>Choose your UI highlight color</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--mm-text-3)' }}>Choose your UI highlight color</div>
               </div>
             </div>
             <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
@@ -733,17 +723,17 @@ const Settings = () => {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.85rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', minWidth: 0, flex: 1 }}>
                 <div style={{ width: 42, height: 42, borderRadius: 12, background: isStandalone() ? 'rgba(74,222,128,0.15)' : 'linear-gradient(135deg, rgba(74,222,128,0.2), rgba(6,182,212,0.2))', border: `1px solid ${isStandalone() ? 'rgba(74,222,128,0.35)' : 'rgba(74,222,128,0.45)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Smartphone size={22} style={{ color: '#4ade80' }} />
+                  <Smartphone size={22} style={{ color: 'var(--mm-success)' }} />
                 </div>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                    <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
                       {isStandalone() ? 'Installed as Web App' : 'Install as Mobile Web App'}
                     </span>
                     <span style={{
                       fontSize: '0.62rem', fontWeight: 800, padding: '2px 7px', borderRadius: 6,
                       background: isStandalone() ? 'rgba(74,222,128,0.18)' : 'rgba(251,191,36,0.18)',
-                      color: isStandalone() ? '#4ade80' : '#fbbf24',
+                      color: isStandalone() ? 'var(--mm-success)' : 'var(--mm-warning)',
                       letterSpacing: '0.5px'
                     }}>
                       {isStandalone() ? 'STANDALONE MODE' : 'BROWSER MODE'}
@@ -770,7 +760,6 @@ const Settings = () => {
                     fontWeight: 800,
                     fontSize: '0.84rem',
                     cursor: 'pointer',
-                    fontFamily: 'Inter, sans-serif',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '0.45rem',
@@ -781,7 +770,7 @@ const Settings = () => {
                   <span>Install App</span>
                 </button>
               ) : (
-                <div style={{ padding: '0.4rem 0.8rem', borderRadius: 8, background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.3)', color: '#4ade80', fontSize: '0.78rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
+                <div style={{ padding: '0.4rem 0.8rem', borderRadius: 8, background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.3)', color: 'var(--mm-success)', fontSize: '0.78rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5, flexShrink: 0 }}>
                   <Check size={14} strokeWidth={2.5} /> Active on this device
                 </div>
               )}
@@ -795,11 +784,11 @@ const Settings = () => {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Lock size={18} style={{ color: '#4ade80' }} />
+                  <Lock size={18} style={{ color: 'var(--mm-success)' }} />
                 </div>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>Auto-Lock Timer</div>
-                  <div style={{ fontSize: '0.78rem', color: '#555', fontFamily: 'Inter, sans-serif' }}>PIN screen shown after this period of inactivity</div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--mm-text-3)' }}>PIN screen shown after this period of inactivity</div>
                 </div>
               </div>
               <select aria-label="Auto-lock after" value={localStorage.getItem('vm_lock_timeout') || '5'}
@@ -808,7 +797,7 @@ const Settings = () => {
                   const lbl = e.target.value === '0' ? 'Immediate' : e.target.value === '-1' ? 'Never' : `${e.target.value} min`;
                   toast.success(`Auto-lock: ${lbl}`);
                 }}
-                style={{ background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.3)', borderRadius: 8, padding: '0.4rem 0.75rem', color: '#4ade80', fontSize: '0.85rem', fontFamily: 'Inter, sans-serif', cursor: 'pointer' }}
+                style={{ background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.3)', borderRadius: 8, padding: '0.4rem 0.75rem', color: 'var(--mm-success)', fontSize: '0.85rem', cursor: 'pointer' }}
               >
                 <option value="0">Immediate</option>
                 <option value="1">1 min</option>
@@ -832,7 +821,7 @@ const Settings = () => {
                 </div>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>Daily Spending Limit</div>
-                  <div style={{ fontSize: '0.78rem', color: '#555', fontFamily: 'Inter, sans-serif' }}>Warn when daily expenses exceed this amount (0 = disabled)</div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--mm-text-3)' }}>Warn when daily expenses exceed this amount (0 = disabled)</div>
                 </div>
               </div>
               <input type="number" min="0" placeholder="0"
@@ -842,7 +831,7 @@ const Settings = () => {
                   if (val > 0) { localStorage.setItem('vm_daily_limit', String(val)); toast.success(`Daily limit: ${val}`); }
                   else { localStorage.removeItem('vm_daily_limit'); toast.success('Daily limit disabled'); }
                 }}
-                style={{ width: 100, background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.3)', borderRadius: 8, padding: '0.4rem 0.75rem', color: '#fb923c', fontSize: '0.85rem', fontFamily: 'Inter, sans-serif', textAlign:'right' }}
+                style={{ width: 100, background: 'rgba(251,146,60,0.1)', border: '1px solid rgba(251,146,60,0.3)', borderRadius: 8, padding: '0.4rem 0.75rem', color: '#fb923c', fontSize: '0.85rem', textAlign:'right' }}
               />
             </div>
           </motion.div>
@@ -858,7 +847,7 @@ const Settings = () => {
                 </div>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>7-Day Weekly Velocity Limit</div>
-                  <div style={{ fontSize: '0.78rem', color: '#555', fontFamily: 'Inter, sans-serif' }}>Alert when rolling 7-day expenses cross 80% or 100% of this cap (0 = disabled)</div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--mm-text-3)' }}>Alert when rolling 7-day expenses cross 80% or 100% of this cap (0 = disabled)</div>
                 </div>
               </div>
               <input type="number" min="0" placeholder="0"
@@ -868,7 +857,7 @@ const Settings = () => {
                   if (val > 0) { localStorage.setItem('vm_weekly_limit', String(val)); toast.success(`Weekly limit: ${val}`); }
                   else { localStorage.removeItem('vm_weekly_limit'); toast.success('Weekly limit disabled'); }
                 }}
-                style={{ width: 100, background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.3)', borderRadius: 8, padding: '0.4rem 0.75rem', color: '#38bdf8', fontSize: '0.85rem', fontFamily: 'Inter, sans-serif', textAlign:'right' }}
+                style={{ width: 100, background: 'rgba(56,189,248,0.1)', border: '1px solid rgba(56,189,248,0.3)', borderRadius: 8, padding: '0.4rem 0.75rem', color: '#38bdf8', fontSize: '0.85rem', textAlign:'right' }}
               />
             </div>
           </motion.div>
@@ -881,11 +870,11 @@ const Settings = () => {
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
               <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Globe size={18} style={{ color: '#4ade80' }} />
+                <Globe size={18} style={{ color: 'var(--mm-success)' }} />
               </div>
               <div>
                 <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>Display Currency</div>
-                <div style={{ fontSize: '0.78rem', color: '#555', fontFamily: 'Inter, sans-serif' }}>All amounts shown in selected currency</div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--mm-text-3)' }}>All amounts shown in selected currency</div>
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '0.5rem' }}>
@@ -893,8 +882,8 @@ const Settings = () => {
                 <button key={c.code} onClick={() => handleCurrencyChange(c.code)}
                   style={{ padding: '0.5rem 0.75rem', borderRadius: 8, border: currency === c.code ? '1px solid #4ade80' : '1px solid rgba(255,255,255,0.07)', background: currency === c.code ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.02)', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s' }}
                 >
-                  <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.8rem', color: currency === c.code ? '#4ade80' : '#888', fontWeight: 700 }}>{c.symbol} {c.code}</div>
-                  <div style={{ fontSize: '0.68rem', color: '#444', marginTop: 2 }}>{c.name}</div>
+                  <div style={{ fontSize: '0.8rem', color: currency === c.code ? 'var(--mm-success)' : 'var(--mm-text-3)', fontWeight: 700 }}>{c.symbol} {c.code}</div>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--mm-text-3)', marginTop: 2 }}>{c.name}</div>
                 </button>
               ))}
             </div>
@@ -902,7 +891,7 @@ const Settings = () => {
             <div style={{ marginTop: '1rem', paddingTop: '0.85rem', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Real-Time Global Converter</div>
-                <div style={{ fontSize: '0.72rem', color: '#555' }}>Convert across 30+ currencies with live mid-market rates</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--mm-text-3)' }}>Convert across 30+ currencies with live mid-market rates</div>
               </div>
               <button
                 type="button"
@@ -914,7 +903,6 @@ const Settings = () => {
                   border: '1px solid rgba(56,189,248,0.3)',
                   color: '#38bdf8',
                   fontSize: '0.78rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,
                   cursor: 'pointer'
                 }}
@@ -937,7 +925,7 @@ const Settings = () => {
                 </div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-primary)' }}>Institutional FinTech Tools</div>
-                  <div style={{ fontSize: '0.74rem', color: '#666', fontFamily: 'Inter, sans-serif' }}>Enterprise-grade automation, AI co-pilot & group settlement</div>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--mm-text-3)' }}>Enterprise-grade automation, AI co-pilot & group settlement</div>
                 </div>
               </div>
             </div>
@@ -978,7 +966,7 @@ const Settings = () => {
                   <span style={{ fontSize: '1.3rem' }}>{tool.icon}</span>
                   <div>
                     <div style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-primary)' }}>{tool.title}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#777', fontFamily: 'Inter, sans-serif' }}>{tool.desc}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)' }}>{tool.desc}</div>
                   </div>
                 </button>
               ))}
@@ -998,7 +986,7 @@ const Settings = () => {
                 </div>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>Custom Categories</div>
-                  <div style={{ fontSize: '0.78rem', color: '#555', fontFamily: 'Inter, sans-serif' }}>Manage transaction categories</div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--mm-text-3)' }}>Manage transaction categories</div>
                 </div>
               </div>
               <button onClick={() => { setEditingCategory(null); setCatForm({name:'', emoji:'', color:COLORS[0]}); setShowCategoryModal(true); }}
@@ -1012,14 +1000,14 @@ const Settings = () => {
               {customCategories.map((c, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem', background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                    <button type="button" aria-label={`Move ${c.name} up`} onClick={() => moveCategory(i, -1)} style={{ background:'none', border:'none', color:'#666', cursor:'pointer', padding:0, lineHeight:0 }} disabled={i===0}>▲</button>
-                    <button type="button" aria-label={`Move ${c.name} down`} onClick={() => moveCategory(i, 1)} style={{ background:'none', border:'none', color:'#666', cursor:'pointer', padding:0, lineHeight:0 }} disabled={i===customCategories.length-1}>▼</button>
+                    <button type="button" aria-label={`Move ${c.name} up`} onClick={() => moveCategory(i, -1)} style={{ background:'none', border:'none', color:'var(--mm-text-3)', cursor:'pointer', padding:0, lineHeight:0 }} disabled={i===0}>▲</button>
+                    <button type="button" aria-label={`Move ${c.name} down`} onClick={() => moveCategory(i, 1)} style={{ background:'none', border:'none', color:'var(--mm-text-3)', cursor:'pointer', padding:0, lineHeight:0 }} disabled={i===customCategories.length-1}>▼</button>
                   </div>
                   <div style={{ fontSize: '1.2rem' }}>{c.emoji}</div>
                   <div style={{ flex: 1, fontSize: '0.85rem' }}>{c.name}</div>
                   <div style={{ width: 12, height: 12, borderRadius: '50%', background: c.color }} />
                   <button onClick={() => { setEditingCategory(i); setCatForm(c); setShowCategoryModal(true); }} style={{ background:'none', border:'none', color:'#a78bfa', cursor:'pointer', padding: '0.3rem' }}>Edit</button>
-                  <button type="button" aria-label={`Delete category ${c.name}`} onClick={() => handleDeleteCategory(i)} style={{ background:'none', border:'none', color:'#f87171', cursor:'pointer', padding: '0.3rem' }}><Trash2 size={14}/></button>
+                  <button type="button" aria-label={`Delete category ${c.name}`} onClick={() => handleDeleteCategory(i)} style={{ background:'none', border:'none', color:'var(--mm-danger)', cursor:'pointer', padding: '0.3rem' }}><Trash2 size={14}/></button>
                 </div>
               ))}
             </div>
@@ -1051,7 +1039,7 @@ const Settings = () => {
                   Web Push Notification Engine
                 </div>
                 <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', marginTop: 2 }}>
-                  Status: <strong style={{ color: notifPerm === 'granted' ? '#4ade80' : '#fbbf24' }}>{notifPerm === 'granted' ? 'Active & Ready' : notifPerm}</strong> · 100% Free (No server cost)
+                  Status: <strong style={{ color: notifPerm === 'granted' ? 'var(--mm-success)' : 'var(--mm-warning)' }}>{notifPerm === 'granted' ? 'Active & Ready' : notifPerm}</strong> · 100% Free (No server cost)
                 </div>
               </div>
               <button
@@ -1062,12 +1050,10 @@ const Settings = () => {
                   borderRadius: 8,
                   background: 'rgba(251, 191, 36, 0.15)',
                   border: '1px solid rgba(251, 191, 36, 0.3)',
-                  color: '#fbbf24',
+                  color: 'var(--mm-warning)',
                   fontSize: '0.78rem',
                   fontWeight: 700,
-                  cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif'
-                }}
+                  cursor: 'pointer' }}
               >
                 🔔 Send Test Alert
               </button>
@@ -1091,7 +1077,7 @@ const Settings = () => {
                 borderRadius: 8,
                 background: 'rgba(0,0,0,0.35)',
                 border: '1px solid rgba(74,222,128,0.3)',
-                color: '#4ade80',
+                color: 'var(--mm-success)',
                 fontSize: '0.78rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -1115,7 +1101,7 @@ const Settings = () => {
             {pinEnabled ? (
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button onClick={startPinSetup} style={{ padding: '0.35rem 0.75rem', borderRadius: 7, border: '1px solid rgba(167,139,250,0.3)', background: 'rgba(167,139,250,0.1)', color: '#a78bfa', cursor: 'pointer', fontSize: '0.8rem' }}>Change</button>
-                <button onClick={handleRemovePin} style={{ padding: '0.35rem 0.75rem', borderRadius: 7, border: '1px solid rgba(244,63,94,0.3)', background: 'rgba(244,63,94,0.08)', color: '#f87171', cursor: 'pointer', fontSize: '0.8rem' }}>Remove</button>
+                <button onClick={handleRemovePin} style={{ padding: '0.35rem 0.75rem', borderRadius: 7, border: '1px solid rgba(244,63,94,0.3)', background: 'rgba(244,63,94,0.08)', color: 'var(--mm-danger)', cursor: 'pointer', fontSize: '0.8rem' }}>Remove</button>
               </div>
             ) : (
               <button onClick={startPinSetup} style={{ padding: '0.4rem 1rem', borderRadius: 8, border: '1px solid rgba(167,139,250,0.4)', background: 'rgba(167,139,250,0.12)', color: '#a78bfa', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>Set PIN</button>
@@ -1131,7 +1117,7 @@ const Settings = () => {
               } catch {
   toast.error('Migration failed');
 }
-            }} style={{ padding: '0.4rem 1rem', borderRadius: 8, border: '1px solid rgba(244,63,94,0.4)', background: 'rgba(244,63,94,0.12)', color: '#f87171', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>Run Migration</button>
+            }} style={{ padding: '0.4rem 1rem', borderRadius: 8, border: '1px solid rgba(244,63,94,0.4)', background: 'rgba(244,63,94,0.12)', color: 'var(--mm-danger)', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600 }}>Run Migration</button>
           </SettingsRow>
           
           
@@ -1197,7 +1183,7 @@ const Settings = () => {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.85rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div style={{ width: 38, height: 38, borderRadius: 10, background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Download size={18} style={{ color: '#4ade80' }} />
+                  <Download size={18} style={{ color: 'var(--mm-success)' }} />
                 </div>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -1207,14 +1193,13 @@ const Settings = () => {
                       padding: '0.12rem 0.45rem',
                       borderRadius: 20,
                       background: backupHealth.isDue ? 'rgba(251,191,36,0.14)' : 'rgba(74,222,128,0.14)',
-                      color: backupHealth.isDue ? '#fbbf24' : '#4ade80',
-                      fontFamily: 'Inter, sans-serif',
+                      color: backupHealth.isDue ? 'var(--mm-warning)' : 'var(--mm-success)',
                       fontWeight: 700,
                     }}>
                       {backupHealth.daysSinceBackup === null ? 'Never Backed Up' : backupHealth.daysSinceBackup === 0 ? 'Backed Up Today' : `${backupHealth.daysSinceBackup}d Since Last Backup`}
                     </span>
                   </div>
-                  <div style={{ fontSize: '0.76rem', color: '#666', marginTop: 2, fontFamily: 'Inter, sans-serif' }}>
+                  <div style={{ fontSize: '0.76rem', color: 'var(--mm-text-3)', marginTop: 2 }}>
                     Weekly auto-reminder enabled · Export plain JSON or encrypt on-device with PBKDF2 + AES-256-GCM
                   </div>
                 </div>
@@ -1235,24 +1220,23 @@ const Settings = () => {
                   padding: '0.45rem 0.75rem',
                   color: 'var(--text-primary)',
                   fontSize: '0.8rem',
-                  fontFamily: 'Inter, sans-serif',
                 }}
               />
               <button
                 type="button"
                 onClick={() => handleExportData(false)}
-                style={{ padding: '0.45rem 0.9rem', borderRadius: 8, border: '1px solid rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.12)', color: '#4ade80', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700, fontFamily: 'Inter, sans-serif' }}
+                style={{ padding: '0.45rem 0.9rem', borderRadius: 8, border: '1px solid rgba(74,222,128,0.4)', background: 'rgba(74,222,128,0.12)', color: 'var(--mm-success)', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700 }}
               >
                 📥 1-Tap JSON Export
               </button>
               <button
                 type="button"
                 onClick={() => handleExportData(true)}
-                style={{ padding: '0.45rem 0.9rem', borderRadius: 8, border: '1px solid rgba(56,189,248,0.45)', background: 'rgba(56,189,248,0.14)', color: '#38bdf8', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700, fontFamily: 'Inter, sans-serif' }}
+                style={{ padding: '0.45rem 0.9rem', borderRadius: 8, border: '1px solid rgba(56,189,248,0.45)', background: 'rgba(56,189,248,0.14)', color: '#38bdf8', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 700 }}
               >
                 🔒 AES-256 Encrypted Export
               </button>
-              <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.76rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif' }}>
+              <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.76rem', color: 'var(--text-secondary)' }}>
                 Remind every
                 <input
                   type="number"
@@ -1288,7 +1272,7 @@ const Settings = () => {
                 </div>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>Database Integrity Scanner</div>
-                  <div style={{ fontSize: '0.78rem', color: '#555', fontFamily: 'Inter, sans-serif' }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--mm-text-3)' }}>
                     Detect duplicate records, broken accounts & orphaned transactions
                   </div>
                 </div>
@@ -1305,9 +1289,7 @@ const Settings = () => {
                   color: '#38bdf8',
                   cursor: diagnosticLoading ? 'wait' : 'pointer',
                   fontSize: '0.82rem',
-                  fontWeight: 600,
-                  fontFamily: 'Inter, sans-serif'
-                }}
+                  fontWeight: 600 }}
               >
                 {diagnosticLoading ? 'Scanning...' : '🩺 Run Scan'}
               </button>
@@ -1319,7 +1301,7 @@ const Settings = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '1rem' }}>{diagnosticResult.integrityScore === 100 ? '✅' : '⚠️'}</span>
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.95rem', color: diagnosticResult.integrityScore === 100 ? '#4ade80' : '#fbbf24' }}>
+                    <span style={{ fontWeight: 700, fontSize: '0.95rem', color: diagnosticResult.integrityScore === 100 ? 'var(--mm-success)' : 'var(--mm-warning)' }}>
                       {diagnosticResult.integrityScore}% Health Score
                     </span>
                   </div>
@@ -1331,19 +1313,19 @@ const Settings = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem', marginBottom: '0.75rem' }}>
                   <div style={{ padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.02)', borderRadius: 6, fontSize: '0.75rem' }}>
                     <span style={{ color: 'var(--text-muted)' }}>Duplicates: </span>
-                    <strong style={{ color: diagnosticResult.duplicates.length > 0 ? '#f87171' : '#4ade80' }}>
+                    <strong style={{ color: diagnosticResult.duplicates.length > 0 ? 'var(--mm-danger)' : 'var(--mm-success)' }}>
                       {diagnosticResult.duplicates.length}
                     </strong>
                   </div>
                   <div style={{ padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.02)', borderRadius: 6, fontSize: '0.75rem' }}>
                     <span style={{ color: 'var(--text-muted)' }}>Orphaned: </span>
-                    <strong style={{ color: diagnosticResult.orphaned.length > 0 ? '#fbbf24' : '#4ade80' }}>
+                    <strong style={{ color: diagnosticResult.orphaned.length > 0 ? 'var(--mm-warning)' : 'var(--mm-success)' }}>
                       {diagnosticResult.orphaned.length}
                     </strong>
                   </div>
                   <div style={{ padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.02)', borderRadius: 6, fontSize: '0.75rem' }}>
                     <span style={{ color: 'var(--text-muted)' }}>Budget Errors: </span>
-                    <strong style={{ color: diagnosticResult.invalidBudgets.length > 0 ? '#f87171' : '#4ade80' }}>
+                    <strong style={{ color: diagnosticResult.invalidBudgets.length > 0 ? 'var(--mm-danger)' : 'var(--mm-success)' }}>
                       {diagnosticResult.invalidBudgets.length}
                     </strong>
                   </div>
@@ -1395,8 +1377,8 @@ const Settings = () => {
                 { label:'Data Since', val: dataStats.oldestTx ? dataStats.oldestTx.substring(0,7) : '—', color:'#888', isText:true },
               ].map(s => (
                 <div key={s.label} style={{ padding:'0.75rem', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:10, textAlign:'center' }}>
-                  <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize: s.isText ? '0.95rem' : '1.4rem', color:s.color, marginBottom:'0.2rem' }}>{s.val}</div>
-                  <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.65rem', color:'var(--text-muted)', letterSpacing:'1px' }}>{s.label.toUpperCase()}</div>
+                  <div style={{ fontWeight:700, fontSize: s.isText ? '0.95rem' : '1.4rem', color:s.color, marginBottom:'0.2rem' }}>{s.val}</div>
+                  <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', letterSpacing:'1px' }}>{s.label.toUpperCase()}</div>
                 </div>
               ))}
             </motion.div>
@@ -1406,7 +1388,7 @@ const Settings = () => {
           </div></details>
           <SectionHeader label="ABOUT" />
           <SettingsRow icon={Info} label="VaultManager" description="Personal Finance Intelligence Platform · v2.1" color="#06b6d4">
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.7rem', color: '#333' }}>v2.1</span>
+            <span style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)' }}>v2.1</span>
           </SettingsRow>
 
           {/* LOGOUT */}
@@ -1444,21 +1426,21 @@ const Settings = () => {
             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
               style={{ background: 'var(--bg-surface)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 20, padding: '1.75rem', width: '100%', maxWidth: 380, boxShadow: '0 24px 60px rgba(0,0,0,0.6)' }}
             >
-              <h3 style={{ fontFamily: 'Inter, sans-serif', color: 'var(--text-primary)', marginBottom: '1.5rem', textAlign: 'center' }}>
+              <h3 style={{ color: 'var(--text-primary)', marginBottom: '1.5rem', textAlign: 'center' }}>
                 {editingCategory !== null ? 'Edit Category' : 'New Category'}
               </h3>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
                 <div>
-                  <label style={{ display:'block', fontSize:'0.8rem', color:'#aaa', marginBottom:'0.3rem' }}>Emoji</label>
+                  <label style={{ display:'block', fontSize:'0.8rem', color:'var(--mm-text-2)', marginBottom:'0.3rem' }}>Emoji</label>
                   <input type="text" value={catForm.emoji} onChange={e=>setCatForm({...catForm, emoji: e.target.value})} style={{ width:'100%', padding:'0.6rem', borderRadius:8, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'#fff' }} maxLength={2} />
                 </div>
                 <div>
-                  <label style={{ display:'block', fontSize:'0.8rem', color:'#aaa', marginBottom:'0.3rem' }}>Name</label>
+                  <label style={{ display:'block', fontSize:'0.8rem', color:'var(--mm-text-2)', marginBottom:'0.3rem' }}>Name</label>
                   <input type="text" value={catForm.name} onChange={e=>setCatForm({...catForm, name: e.target.value})} style={{ width:'100%', padding:'0.6rem', borderRadius:8, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'#fff' }} />
                 </div>
                 <div>
-                  <label style={{ display:'block', fontSize:'0.8rem', color:'#aaa', marginBottom:'0.3rem' }}>Color</label>
+                  <label style={{ display:'block', fontSize:'0.8rem', color:'var(--mm-text-2)', marginBottom:'0.3rem' }}>Color</label>
                   <div style={{ display:'flex', gap:'0.4rem', flexWrap:'wrap' }}>
                     {COLORS.map(c => (
                       <button key={c} onClick={() => setCatForm({...catForm, color: c})}
@@ -1470,8 +1452,8 @@ const Settings = () => {
               </div>
 
               <div style={{ display:'flex', gap:'0.75rem', justifyContent:'flex-end' }}>
-                <button onClick={() => setShowCategoryModal(false)} style={{ flex: 1, minHeight: 42, padding:'0.65rem 1rem', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)', color:'var(--text-primary)', borderRadius:10, cursor:'pointer', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>Cancel</button>
-                <button onClick={handleSaveCategory} style={{ flex: 1, minHeight: 42, padding:'0.65rem 1rem', background:'linear-gradient(135deg, #4ade80, #22c55e)', border:'none', color:'var(--bg-void)', borderRadius:10, cursor:'pointer', fontWeight:700, fontFamily: 'Inter, sans-serif' }}>Save</button>
+                <button onClick={() => setShowCategoryModal(false)} style={{ flex: 1, minHeight: 42, padding:'0.65rem 1rem', background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)', color:'var(--text-primary)', borderRadius:10, cursor:'pointer', fontWeight: 600 }}>Cancel</button>
+                <button onClick={handleSaveCategory} style={{ flex: 1, minHeight: 42, padding:'0.65rem 1rem', background:'linear-gradient(135deg, #4ade80, #22c55e)', border:'none', color:'var(--bg-void)', borderRadius:10, cursor:'pointer', fontWeight:700 }}>Save</button>
               </div>
             </motion.div>
           </motion.div>
@@ -1491,10 +1473,10 @@ const Settings = () => {
               <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg,rgba(167,139,250,0.2),rgba(129,140,248,0.2))', border: '1px solid rgba(167,139,250,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
                 <Key size={24} style={{ color: '#a78bfa' }} />
               </div>
-              <h3 style={{ fontFamily: 'Inter, sans-serif', color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
+              <h3 style={{ color: 'var(--text-primary)', marginBottom: '0.5rem' }}>
                 {pinStep === 'enter' ? 'Create PIN' : 'Confirm PIN'}
               </h3>
-              <p style={{ color: '#555', fontSize: '0.82rem', fontFamily: 'Inter, sans-serif', marginBottom: '2rem' }}>
+              <p style={{ color: 'var(--mm-text-3)', fontSize: '0.82rem', marginBottom: '2rem' }}>
                 {pinStep === 'enter' ? 'Enter a 4-digit PIN' : 'Re-enter to confirm'}
               </p>
 
@@ -1508,13 +1490,13 @@ const Settings = () => {
                 ))}
               </div>
 
-              {pinError && <p style={{ color: '#f87171', fontSize: '0.8rem', marginBottom: '1rem' }}>{pinError}</p>}
+              {pinError && <p style={{ color: 'var(--mm-danger)', fontSize: '0.8rem', marginBottom: '1rem' }}>{pinError}</p>}
 
               {/* Keypad */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem' }}>
                 {DIGITS.map((d, i) => (
                   <button key={i} onClick={() => d === '⌫' ? handlePinDelete() : d ? handlePinDigit(d) : null}
-                    style={{ height: 60, borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', background: d ? 'rgba(255,255,255,0.04)' : 'transparent', color: d === '⌫' ? '#f87171' : '#f0f0f5', fontSize: '1.2rem', fontFamily: 'Inter, sans-serif', cursor: d ? 'pointer' : 'default', transition: 'all 0.1s' }}
+                    style={{ height: 60, borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', background: d ? 'rgba(255,255,255,0.04)' : 'transparent', color: d === '⌫' ? 'var(--mm-danger)' : '#f0f0f5', fontSize: '1.2rem', cursor: d ? 'pointer' : 'default', transition: 'all 0.1s' }}
                     onMouseDown={e => e.currentTarget.style.background = 'rgba(167,139,250,0.15)'}
                     onMouseUp={e => e.currentTarget.style.background = d ? 'rgba(255,255,255,0.04)' : 'transparent'}
                   >
@@ -1523,7 +1505,7 @@ const Settings = () => {
                 ))}
               </div>
 
-              <button onClick={() => setShowPinSetup(false)} style={{ marginTop: '1.5rem', background: 'none', border: 'none', color: '#444', cursor: 'pointer', fontSize: '0.85rem' }}>Cancel</button>
+              <button onClick={() => setShowPinSetup(false)} style={{ marginTop: '1.5rem', background: 'none', border: 'none', color: 'var(--mm-text-3)', cursor: 'pointer', fontSize: '0.85rem' }}>Cancel</button>
             </motion.div>
           </motion.div>
         )}

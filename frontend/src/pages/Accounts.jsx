@@ -344,7 +344,7 @@ const Accounts = () => {
         <div className="page-header">
           <div>
             <h1 className="glow-text text-cyan" style={{ fontSize: '2rem' }}>{t('nav.accounts')}</h1>
-            <p style={{ color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', fontSize: '0.75rem', marginTop: 4 }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', marginTop: 4 }}>
               Balances and account activity
             </p>
           </div>
@@ -774,7 +774,6 @@ const Accounts = () => {
                 background: 'rgba(255,255,255,0.04)',
                 border: '1px solid rgba(255,255,255,0.1)',
                 color: 'var(--text-primary)',
-                fontFamily: 'Inter, sans-serif',
                 fontSize: '0.9rem',
                 outline: 'none'
               }}
@@ -825,22 +824,22 @@ const Accounts = () => {
       <Modal isOpen={transferModal} onClose={() => setTransferModal(false)} title="↔ Quick Transfer">
         <form onSubmit={handleTransfer} style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
           <div>
-            <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', color:'var(--text-muted)', marginBottom:'0.4rem' }}>FROM</div>
-            <div style={{ fontFamily:'Inter, sans-serif', fontWeight:600, color:'var(--text-primary)' }}>
+            <div style={{ fontSize:'0.75rem', color:'var(--text-muted)', marginBottom:'0.4rem' }}>FROM</div>
+            <div style={{ fontWeight:600, color:'var(--text-primary)' }}>
               {accounts.find(a => String(a.id) === String(transferFrom))?.name || '—'}
             </div>
           </div>
           <div>
-            <label style={{ display:'block', marginBottom:'0.4rem', fontFamily:'Inter, sans-serif' }}>To Account</label>
+            <label style={{ display:'block', marginBottom:'0.4rem' }}>To Account</label>
             <select value={transferForm.toId} onChange={e => setTransferForm(f => ({...f, toId:e.target.value}))}
-              style={{ width:'100%', padding:'0.6rem', borderRadius:8, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'var(--text-primary)', fontFamily:'Inter, sans-serif' }}>
+              style={{ width:'100%', padding:'0.6rem', borderRadius:8, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.1)', color:'var(--text-primary)' }}>
               {accounts.filter(a => !a.archived && String(a.id) !== String(transferFrom)).map(a => (
                 <option key={a.id} value={a.id} style={{ background:'#0a0d1a' }}>{a.name} — {formatCurrency(a.balance, { currency: a.currency || baseCurrency })}</option>
               ))}
             </select>
           </div>
           <div>
-            <label style={{ display:'block', marginBottom:'0.4rem', fontFamily:'Inter, sans-serif' }}>Amount</label>
+            <label style={{ display:'block', marginBottom:'0.4rem' }}>Amount</label>
             <CurrencyInput required value={transferForm.amount} onChange={v => setTransferForm(f => ({...f, amount:v}))}/>
           </div>
           <label>Amount received in destination currency (required for different currencies)
@@ -876,22 +875,21 @@ const Accounts = () => {
                 border: '1px solid rgba(255,255,255,0.08)'
               }}>
                 <div>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                     Recorded in App
                   </div>
-                  <div style={{ fontSize: '1.05rem', fontWeight: 700, fontFamily: 'Inter, sans-serif', color: 'var(--text-primary)', marginTop: 2 }}>
+                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>
                     {formatCurrency(currentBal, { currency: accCur })}
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                     Discrepancy
                   </div>
                   <div style={{
                     fontSize: '1.05rem',
                     fontWeight: 700,
-                    fontFamily: 'Inter, sans-serif',
-                    color: Math.abs(diff) < 0.01 ? 'var(--text-muted)' : diff > 0 ? '#4ade80' : '#f87171',
+                    color: Math.abs(diff) < 0.01 ? 'var(--text-muted)' : diff > 0 ? 'var(--mm-success)' : 'var(--mm-danger)',
                     marginTop: 2
                   }}>
                     {Math.abs(diff) < 0.01 ? 'Matched ✓' : `${diff > 0 ? '+' : '-'}${formatCurrency(Math.abs(diff), { currency: accCur })}`}
@@ -949,9 +947,9 @@ const Accounts = () => {
             {/* Header */}
             <div style={{ padding:'1.5rem', borderBottom:'1px solid rgba(255,255,255,0.06)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:'0.75rem', background:`${ACCOUNT_CONFIG[viewAcc.type]?.iconColor || '#4ade80'}08` }}>
               <div>
-                <div style={{ fontSize:'0.65rem', fontFamily:'Inter, sans-serif', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:4 }}>{viewAcc.type} HISTORY</div>
-                <h2 style={{ margin:0, fontSize:'1.25rem', fontFamily:'Inter, sans-serif' }}>{viewAcc.name}</h2>
-                <div style={{ fontSize:'1.5rem', fontWeight:700, color:ACCOUNT_CONFIG[viewAcc.type]?.iconColor || '#4ade80', fontFamily:'Inter, sans-serif', marginTop:'0.25rem' }}>
+                <div style={{ fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:4 }}>{viewAcc.type} HISTORY</div>
+                <h2 style={{ margin:0, fontSize:'1.25rem' }}>{viewAcc.name}</h2>
+                <div style={{ fontSize:'1.5rem', fontWeight:700, color:ACCOUNT_CONFIG[viewAcc.type]?.iconColor || 'var(--mm-success)', marginTop:'0.25rem' }}>
                   {fmtAcc(viewAcc.balance)}
                 </div>
               </div>
@@ -977,21 +975,21 @@ const Accounts = () => {
         {/* Content */}
             <div style={{ padding:'1rem', flex:1 }}>
               {txLoading ? (
-                <div style={{ textAlign:'center', padding:'3rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.8rem' }}>Loading…</div>
+                <div style={{ textAlign:'center', padding:'3rem', color:'var(--text-muted)', fontSize:'0.8rem' }}>Loading…</div>
               ) : (
                 <>
                   <div style={{ display:'grid', gridTemplateColumns:'repeat(3, minmax(0, 1fr))', gap:'0.5rem', marginBottom:'0.85rem', padding:'0.75rem', borderRadius:12, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)' }}>
                     <div>
                       <div style={{ fontSize:'0.62rem', color:'var(--text-muted)', textTransform:'uppercase' }}>Inflows</div>
-                      <div style={{ fontSize:'0.82rem', fontWeight:700, color:'#4ade80', marginTop:2 }}>+{fmtAcc(summary.inflows)}</div>
+                      <div style={{ fontSize:'0.82rem', fontWeight:700, color:'var(--mm-success)', marginTop:2 }}>+{fmtAcc(summary.inflows)}</div>
                     </div>
                     <div>
                       <div style={{ fontSize:'0.62rem', color:'var(--text-muted)', textTransform:'uppercase' }}>Outflows</div>
-                      <div style={{ fontSize:'0.82rem', fontWeight:700, color:'#f87171', marginTop:2 }}>-{fmtAcc(summary.outflows)}</div>
+                      <div style={{ fontSize:'0.82rem', fontWeight:700, color:'var(--mm-danger)', marginTop:2 }}>-{fmtAcc(summary.outflows)}</div>
                     </div>
                     <div>
                       <div style={{ fontSize:'0.62rem', color:'var(--text-muted)', textTransform:'uppercase' }}>Net Change</div>
-                      <div style={{ fontSize:'0.82rem', fontWeight:700, color: summary.delta >= 0 ? '#4ade80' : '#f87171', marginTop:2 }}>
+                      <div style={{ fontSize:'0.82rem', fontWeight:700, color: summary.delta >= 0 ? 'var(--mm-success)' : 'var(--mm-danger)', marginTop:2 }}>
                         {summary.delta >= 0 ? '+' : '-'}{fmtAcc(Math.abs(summary.delta))}
                       </div>
                     </div>
@@ -1001,7 +999,7 @@ const Accounts = () => {
                         <span>
                           Expected: <strong>{fmtAcc(summary.expected)}</strong>
                           {Math.abs(summary.difference) >= 0.01 && (
-                            <span style={{ color:'#fbbf24', marginLeft:6 }}>
+                            <span style={{ color:'var(--mm-warning)', marginLeft:6 }}>
                               (Drift {summary.difference > 0 ? '+' : '-'}{fmtAcc(Math.abs(summary.difference))})
                             </span>
                           )}
@@ -1010,12 +1008,12 @@ const Accounts = () => {
                     </div>
                   </div>
                   {txHistory.length === 0 ? (
-                    <div style={{ textAlign:'center', padding:'2.5rem 1rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.82rem' }}>
+                    <div style={{ textAlign:'center', padding:'2.5rem 1rem', color:'var(--text-muted)', fontSize:'0.82rem' }}>
                       <History size={36} style={{ opacity:0.2, marginBottom:'1rem' }}/><br/>NO TRANSACTIONS FOR THIS ACCOUNT
                     </div>
                   ) : (
                     <>
-                      <div style={{ fontSize:'0.7rem', fontFamily:'Inter, sans-serif', letterSpacing:'1.5px', color:'var(--text-muted)', marginBottom:'0.75rem' }}>
+                      <div style={{ fontSize:'0.7rem', letterSpacing:'1.5px', color:'var(--text-muted)', marginBottom:'0.75rem' }}>
                         {txHistory.length} TRANSACTION{txHistory.length !== 1 ? 'S' : ''}
                       </div>
                       <div style={{ display:'flex', flexDirection:'column', gap:'0.4rem' }}>
@@ -1043,16 +1041,16 @@ const Accounts = () => {
                                 <div style={{ display:'flex', alignItems:'center', gap:'0.4rem', fontWeight:600, fontSize:'0.82rem', overflow:'hidden' }}>
                                   <span style={{ overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{getCategoryEmoji(tx.category)} {tx.category || tx.type}</span>
                                   {statusTag && (
-                                    <span style={{ fontSize:'0.6rem', padding:'0.08rem 0.35rem', borderRadius:4, flexShrink:0, background: tx.reversed_at ? 'rgba(251,191,36,0.16)' : tx.reversal_of ? 'rgba(167,139,250,0.18)' : 'rgba(255,255,255,0.07)', color: tx.reversed_at ? '#fbbf24' : tx.reversal_of ? '#c084fc' : 'var(--text-muted)' }}>
+                                    <span style={{ fontSize:'0.6rem', padding:'0.08rem 0.35rem', borderRadius:4, flexShrink:0, background: tx.reversed_at ? 'rgba(251,191,36,0.16)' : tx.reversal_of ? 'rgba(167,139,250,0.18)' : 'rgba(255,255,255,0.07)', color: tx.reversed_at ? 'var(--mm-warning)' : tx.reversal_of ? '#c084fc' : 'var(--text-muted)' }}>
                                       {statusTag}
                                     </span>
                                   )}
                                 </div>
-                                <div style={{ fontSize:'0.7rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:2 }}>
+                                <div style={{ fontSize:'0.7rem', color:'var(--text-muted)', marginTop:2 }}>
                                   {tx.date}{tx.type === 'Transfer' && Number(tx.fee_amount) > 0 && mov < 0 ? ` · incl. ${fmtAcc(tx.fee_amount)} fee` : ''}{tx.notes ? ` · ${tx.notes}` : ''}
                                 </div>
                               </div>
-                              <div style={{ fontWeight:700, fontFamily:'Inter, sans-serif', color: amountColor, flexShrink:0, fontSize:'0.875rem' }}>
+                              <div style={{ fontWeight:700, color: amountColor, flexShrink:0, fontSize:'0.875rem' }}>
                                 {amountText}
                               </div>
                             </motion.div>

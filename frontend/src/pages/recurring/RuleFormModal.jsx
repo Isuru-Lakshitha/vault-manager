@@ -37,7 +37,6 @@ export default function RuleFormModal({
                   border: `1px solid ${formData.name === p.name ? 'var(--mm-accent, #5b8def)' : 'var(--mm-border-subtle, rgba(255,255,255,0.08))'}`,
                   color: formData.name === p.name ? 'var(--mm-accent, #5b8def)' : 'var(--text-secondary)',
                   fontSize: '0.68rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 500,
                   cursor: 'pointer',
                 }}
@@ -84,7 +83,6 @@ export default function RuleFormModal({
                     borderRadius: 8,
                     border: `1px solid ${formData.type === t ? 'var(--mm-accent, #5b8def)' : 'var(--mm-border-subtle, rgba(255,255,255,0.08))'}`,
                     cursor: 'pointer',
-                    fontFamily: 'Inter, sans-serif',
                     fontSize: '0.7rem',
                     fontWeight: 600,
                     background: formData.type === t ? 'rgba(91,141,239,0.14)' : 'transparent',
@@ -110,7 +108,6 @@ export default function RuleFormModal({
                     borderRadius: 8,
                     border: `1px solid ${formData.frequency === f ? 'var(--mm-accent, #5b8def)' : 'var(--mm-border-subtle, rgba(255,255,255,0.08))'}`,
                     cursor: 'pointer',
-                    fontFamily: 'Inter, sans-serif',
                     fontSize: '0.7rem',
                     fontWeight: 600,
                     background: formData.frequency === f ? 'rgba(91,141,239,0.14)' : 'transparent',
@@ -127,7 +124,7 @@ export default function RuleFormModal({
         {/* Link to Active Loan when Type === 'Loan Payment' */}
         {formData.type === 'Loan Payment' && loans.filter(l => (l.status || 'Active') === 'Active').length > 0 && (
           <div style={{ padding: '0.7rem', borderRadius: 10, background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.22)' }}>
-            <label style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.76rem', color: '#f59e0b', fontWeight: 600 }}>
+            <label style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.76rem', color: 'var(--mm-warning)', fontWeight: 600 }}>
               Link to Active Loan / Debt
             </label>
             <select
@@ -175,7 +172,6 @@ export default function RuleFormModal({
                 border: `1px solid ${formData.schedule_mode === 'flexible' ? 'var(--mm-accent, #5b8def)' : 'var(--mm-border-subtle, rgba(255,255,255,0.08))'}`,
                 background: formData.schedule_mode === 'flexible' ? 'rgba(91,141,239,0.12)' : 'transparent',
                 color: formData.schedule_mode === 'flexible' ? 'var(--text-primary)' : 'var(--text-secondary)',
-                fontFamily: 'Inter, sans-serif',
                 fontSize: '0.73rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -192,7 +188,6 @@ export default function RuleFormModal({
                 border: `1px solid ${formData.schedule_mode === 'fixed' ? 'var(--mm-accent, #5b8def)' : 'var(--mm-border-subtle, rgba(255,255,255,0.08))'}`,
                 background: formData.schedule_mode === 'fixed' ? 'rgba(91,141,239,0.12)' : 'transparent',
                 color: formData.schedule_mode === 'fixed' ? 'var(--text-primary)' : 'var(--text-secondary)',
-                fontFamily: 'Inter, sans-serif',
                 fontSize: '0.73rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -246,7 +241,6 @@ export default function RuleFormModal({
                   background: formData.is_variable ? 'rgba(91,141,239,0.12)' : 'transparent',
                   color: formData.is_variable ? 'var(--text-primary)' : 'var(--text-muted)',
                   fontSize: '0.68rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,
                   cursor: 'pointer',
                 }}
@@ -263,7 +257,6 @@ export default function RuleFormModal({
                   background: !formData.is_variable ? 'rgba(91,141,239,0.12)' : 'transparent',
                   color: !formData.is_variable ? 'var(--text-primary)' : 'var(--text-muted)',
                   fontSize: '0.68rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,
                   cursor: 'pointer',
                 }}
@@ -364,7 +357,7 @@ export default function RuleFormModal({
               style={{ width: 16, height: 16 }}
             />
             <div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                 {formData.start_next_month
                   ? 'Already paid this month — start reminder from next month'
                   : 'Still due this month — reserve in this month’s Safe-to-Spend'}
@@ -381,7 +374,7 @@ export default function RuleFormModal({
         {editMode && (
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', cursor: 'pointer', userSelect: 'none' }}>
             <input type="checkbox" checked={formData.paused} onChange={e => setFormData({ ...formData, paused: e.target.checked })} style={{ width: 16, height: 16 }} />
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Pause this reminder</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Pause this reminder</span>
           </label>
         )}
 

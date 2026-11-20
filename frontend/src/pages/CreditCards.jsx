@@ -343,17 +343,17 @@ const CreditCards = () => {
                   </div>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '1.2px', color: '#4ade80', textTransform: 'uppercase' }}>
+                      <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '1.2px', color: 'var(--mm-success)', textTransform: 'uppercase' }}>
                         Best Card to Swipe Today
                       </span>
-                      <span style={{ fontSize: '0.66rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, padding: '0.1rem 0.45rem', borderRadius: 6, background: 'rgba(6,182,212,0.16)', color: '#06b6d4', border: '1px solid rgba(6,182,212,0.35)' }}>
+                      <span style={{ fontSize: '0.66rem', fontWeight: 700, padding: '0.1rem 0.45rem', borderRadius: 6, background: 'rgba(6,182,212,0.16)', color: '#06b6d4', border: '1px solid rgba(6,182,212,0.35)' }}>
                         🛡️ ~{bestPick.grace.floatDays} Days Interest-Free Float
                       </span>
                     </div>
-                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 2 }}>
+                    <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 2 }}>
                       {bestPick.card.name} {bestPick.card.last4 ? `(··${bestPick.card.last4})` : ''}
                     </div>
-                    <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+                    <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', marginTop: 2 }}>
                       {bestPick.grace.cycleStatus} · Next statement in <strong>{bestPick.grace.daysToNextStmt}d</strong> · Utilization <strong>{bestPick.grace.util.toFixed(0)}%</strong> ({formatCurrency(bestPick.grace.available)} available)
                     </div>
                   </div>
@@ -365,7 +365,7 @@ const CreditCards = () => {
                     style={{
                       padding: '0.48rem 0.95rem', borderRadius: 10,
                       background: 'rgba(74,222,128,0.18)', border: '1px solid rgba(74,222,128,0.45)',
-                      color: '#4ade80', fontFamily: 'Inter, sans-serif', fontSize: '0.78rem', fontWeight: 700,
+                      color: 'var(--mm-success)', fontSize: '0.78rem', fontWeight: 700,
                       cursor: 'pointer'
                     }}
                   >
@@ -380,9 +380,9 @@ const CreditCards = () => {
             {overallUtil >= 30 && cards.length > 0 && (
               <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }}
                 style={{ background: overallUtil >= 70 ? 'rgba(248,113,113,0.08)' : 'rgba(251,191,36,0.08)', border:`1px solid ${overallUtil >= 70 ? 'rgba(248,113,113,0.3)' : 'rgba(251,191,36,0.3)'}`, borderRadius:12, padding:'0.875rem 1.25rem', marginBottom:'1.5rem', display:'flex', alignItems:'center', gap:'0.75rem' }}>
-                <AlertTriangle size={18} style={{ color: overallUtil >= 70 ? '#f87171' : '#fbbf24', flexShrink:0 }}/>
-                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.82rem' }}>
-                  <span style={{ fontWeight:600, color: overallUtil >= 70 ? '#f87171' : '#fbbf24' }}>
+                <AlertTriangle size={18} style={{ color: overallUtil >= 70 ? 'var(--mm-danger)' : 'var(--mm-warning)', flexShrink:0 }}/>
+                <div style={{ fontSize:'0.82rem' }}>
+                  <span style={{ fontWeight:600, color: overallUtil >= 70 ? 'var(--mm-danger)' : 'var(--mm-warning)' }}>
                     {overallUtil >= 70 ? 'High utilization detected' : 'Moderate utilization'}
                   </span>
                   <span style={{ color:'var(--text-muted)', marginLeft:'0.5rem' }}>
@@ -432,23 +432,23 @@ const CreditCards = () => {
                             <span style={{ fontWeight:700, fontSize:'1rem', color:'var(--text-primary)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                               {card.name}
                             </span>
-                            <span style={{ fontSize:'0.62rem', fontFamily:'Inter, sans-serif', fontWeight:700, padding:'0.12rem 0.45rem', borderRadius:6, background:`${utilColor}18`, color:utilColor, border:`1px solid ${utilColor}35` }}>
+                            <span style={{ fontSize:'0.62rem', fontWeight:700, padding:'0.12rem 0.45rem', borderRadius:6, background:`${utilColor}18`, color:utilColor, border:`1px solid ${utilColor}35` }}>
                               {utilZoneLabel}
                             </span>
-                            <span style={{ fontSize:'0.62rem', fontFamily:'Inter, sans-serif', fontWeight:600, padding:'0.12rem 0.45rem', borderRadius:6, background:'rgba(6,182,212,0.14)', color:'#06b6d4', border:'1px solid rgba(6,182,212,0.3)' }}>
+                            <span style={{ fontSize:'0.62rem', fontWeight:600, padding:'0.12rem 0.45rem', borderRadius:6, background:'rgba(6,182,212,0.14)', color:'#06b6d4', border:'1px solid rgba(6,182,212,0.3)' }}>
                               🛡️ ~{grace.floatDays}d Float
                             </span>
                             {(card.balance || 0) <= 0 ? (
-                              <span style={{ fontSize:'0.62rem', fontFamily:'Inter, sans-serif', fontWeight:700, padding:'0.12rem 0.5rem', borderRadius:6, background:'rgba(16,185,129,0.14)', color:'#34d399', border:'1px solid rgba(16,185,129,0.35)' }}>
+                              <span style={{ fontSize:'0.62rem', fontWeight:700, padding:'0.12rem 0.5rem', borderRadius:6, background:'rgba(16,185,129,0.14)', color:'var(--mm-success)', border:'1px solid rgba(16,185,129,0.35)' }}>
                                 ✅ Paid in Full · 0% Interest
                               </span>
                             ) : days !== null && (
-                              <span style={{ fontSize:'0.62rem', fontFamily:'Inter, sans-serif', fontWeight:700, padding:'0.12rem 0.5rem', borderRadius:6, background:`${daysColor}18`, color:daysColor, border:`1px solid ${daysColor}40` }}>
+                              <span style={{ fontSize:'0.62rem', fontWeight:700, padding:'0.12rem 0.5rem', borderRadius:6, background:`${daysColor}18`, color:daysColor, border:`1px solid ${daysColor}40` }}>
                                 {days < 0 ? `🚨 ${Math.abs(days)}d Overdue` : days === 0 ? '⚡ Due Today' : `⏰ Due in ${days}d`}
                               </span>
                             )}
                           </div>
-                          <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:2 }}>
+                          <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', marginTop:2 }}>
                             {card.bank && `${card.bank} · `}{card.network} {card.last4 && `·· ${card.last4}`}
                           </div>
                         </div>
@@ -459,30 +459,30 @@ const CreditCards = () => {
                       {/* Stats row */}
                       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:'0.75rem', marginBottom:'1rem' }}>
                         <div>
-                          <div style={{ fontSize:'0.62rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.2rem' }}>BALANCE</div>
-                          <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.95rem', color:'#f87171' }}>{formatCurrency(card.balance || 0)}</div>
+                          <div style={{ fontSize:'0.62rem', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.2rem' }}>BALANCE</div>
+                          <div style={{ fontWeight:700, fontSize:'0.95rem', color:'var(--mm-danger)' }}>{formatCurrency(card.balance || 0)}</div>
                         </div>
                         <div>
-                          <div style={{ fontSize:'0.62rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.2rem' }}>LIMIT</div>
-                          <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.95rem', color:'var(--text-primary)' }}>{formatCurrency(card.credit_limit || 0)}</div>
+                          <div style={{ fontSize:'0.62rem', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.2rem' }}>LIMIT</div>
+                          <div style={{ fontWeight:700, fontSize:'0.95rem', color:'var(--text-primary)' }}>{formatCurrency(card.credit_limit || 0)}</div>
                         </div>
                         <div>
-                          <div style={{ fontSize:'0.62rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.2rem' }}>AVAILABLE</div>
-                          <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.95rem', color:'#4ade80' }}>{formatCurrency(available)}</div>
+                          <div style={{ fontSize:'0.62rem', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.2rem' }}>AVAILABLE</div>
+                          <div style={{ fontWeight:700, fontSize:'0.95rem', color:'var(--mm-success)' }}>{formatCurrency(available)}</div>
                         </div>
                         <div>
-                          <div style={{ fontSize:'0.62rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.2rem' }}>APR</div>
-                          <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.95rem', color:'var(--text-secondary)' }}>{(card.apr || 0).toFixed(1)}%</div>
+                          <div style={{ fontSize:'0.62rem', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.2rem' }}>APR</div>
+                          <div style={{ fontWeight:700, fontSize:'0.95rem', color:'var(--text-secondary)' }}>{(card.apr || 0).toFixed(1)}%</div>
                         </div>
                       </div>
 
                       {/* Utilization bar with 30% Credit Score Threshold Marker */}
                       <div style={{ marginBottom:'1rem' }}>
-                        <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.68rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', marginBottom:'0.35rem', flexWrap:'wrap', gap:'0.35rem' }}>
+                        <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.68rem', color:'var(--text-muted)', marginBottom:'0.35rem', flexWrap:'wrap', gap:'0.35rem' }}>
                           <span>
                             Utilization: <strong style={{ color: utilColor }}>{util.toFixed(1)}%</strong>
                             {target30Amt > 0 && (
-                              <span style={{ color: '#fbbf24', marginLeft: '0.5rem' }}>
+                              <span style={{ color: 'var(--mm-warning)', marginLeft: '0.5rem' }}>
                                 · Pay {formatCurrency(target30Amt)} to reach &lt;30% optimal zone
                               </span>
                             )}
@@ -505,7 +505,7 @@ const CreditCards = () => {
                         {(card.balance || 0) > 0 && (card.apr || 0) > 0 && (
                           <div style={{ marginTop:'0.45rem', fontSize:'0.68rem', color:'var(--text-secondary)', display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:'0.35rem' }}>
                             <span>
-                              🛡️ Interest Shield: Pay full <strong>{formatCurrency(card.balance)}</strong> before due date to avoid <strong style={{ color:'#f87171' }}>~{formatCurrency(Math.round((card.balance * (card.apr / 100)) / 12))}/mo</strong> interest
+                              🛡️ Interest Shield: Pay full <strong>{formatCurrency(card.balance)}</strong> before due date to avoid <strong style={{ color:'var(--mm-danger)' }}>~{formatCurrency(Math.round((card.balance * (card.apr / 100)) / 12))}/mo</strong> interest
                             </span>
                             {card.statement_date && <span>Statement: {card.statement_date}</span>}
                           </div>
@@ -517,26 +517,26 @@ const CreditCards = () => {
                         {/* Pay min */}
                         {card.balance > 0 && (
                           <button onClick={() => { openPay(card); }}
-                            style={{ padding:'0.4rem 0.875rem', borderRadius:8, border:'1px solid rgba(74,222,128,0.3)', background:'rgba(74,222,128,0.1)', color:'#4ade80', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.75rem', fontWeight:600, display:'flex', alignItems:'center', gap:'0.3rem' }}>
+                            style={{ padding:'0.4rem 0.875rem', borderRadius:8, border:'1px solid rgba(74,222,128,0.3)', background:'rgba(74,222,128,0.1)', color:'var(--mm-success)', cursor:'pointer', fontSize:'0.75rem', fontWeight:600, display:'flex', alignItems:'center', gap:'0.3rem' }}>
                             <Zap size={13}/> Pay {formatCurrency(minPay)}
                           </button>
                         )}
                         {/* Pay full */}
                         {card.balance > 0 && (
                           <button onClick={() => { setPayModal(card); setPayAmount(card.balance); if(accounts.length>0) setPayAccountId(accounts[0].id); }}
-                            style={{ padding:'0.4rem 0.875rem', borderRadius:8, border:'1px solid rgba(129,140,248,0.3)', background:'rgba(129,140,248,0.1)', color:'#818cf8', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.75rem', fontWeight:600, display:'flex', alignItems:'center', gap:'0.3rem' }}>
+                            style={{ padding:'0.4rem 0.875rem', borderRadius:8, border:'1px solid rgba(129,140,248,0.3)', background:'rgba(129,140,248,0.1)', color:'#818cf8', cursor:'pointer', fontSize:'0.75rem', fontWeight:600, display:'flex', alignItems:'center', gap:'0.3rem' }}>
                             <CheckCircle size={13}/> Pay Full
                           </button>
                         )}
                         {/* Add charge */}
                         <button onClick={() => { setChargeModal(card); setChargeAmt(0); }}
-                          style={{ padding:'0.4rem 0.875rem', borderRadius:8, border:'1px solid rgba(251,191,36,0.25)', background:'rgba(251,191,36,0.07)', color:'#fbbf24', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.75rem', fontWeight:600, display:'flex', alignItems:'center', gap:'0.3rem' }}>
+                          style={{ padding:'0.4rem 0.875rem', borderRadius:8, border:'1px solid rgba(251,191,36,0.25)', background:'rgba(251,191,36,0.07)', color:'var(--mm-warning)', cursor:'pointer', fontSize:'0.75rem', fontWeight:600, display:'flex', alignItems:'center', gap:'0.3rem' }}>
                           + Charge
                         </button>
                         {/* Payoff detail toggle */}
                         {card.balance > 0 && (
                           <button onClick={() => setExpandedId(isExpanded ? null : card.id)}
-                            style={{ padding:'0.4rem 0.875rem', borderRadius:8, border:'1px solid rgba(255,255,255,0.08)', background:'transparent', color:'var(--text-muted)', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.75rem', display:'flex', alignItems:'center', gap:'0.3rem' }}>
+                            style={{ padding:'0.4rem 0.875rem', borderRadius:8, border:'1px solid rgba(255,255,255,0.08)', background:'transparent', color:'var(--text-muted)', cursor:'pointer', fontSize:'0.75rem', display:'flex', alignItems:'center', gap:'0.3rem' }}>
                             <Calculator size={13}/> Payoff
                           </button>
                         )}
@@ -552,26 +552,26 @@ const CreditCards = () => {
                           <motion.div initial={{ height:0, opacity:0 }} animate={{ height:'auto', opacity:1 }} exit={{ height:0, opacity:0 }} transition={{ duration:0.22 }}
                             style={{ overflow:'hidden' }}>
                             <div style={{ marginTop:'1rem', paddingTop:'1rem', borderTop:'1px solid rgba(255,255,255,0.06)' }}>
-                              <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.68rem', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:'0.75rem' }}>
+                              <div style={{ fontSize:'0.68rem', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:'0.75rem' }}>
                                 <Calculator size={12} style={{ verticalAlign:'middle', marginRight:4 }}/> PAYOFF PROJECTION (minimum payments only)
                               </div>
                               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'0.75rem' }}>
                                 <div style={{ background:'rgba(248,113,113,0.06)', border:'1px solid rgba(248,113,113,0.15)', borderRadius:10, padding:'0.75rem', textAlign:'center' }}>
-                                  <div style={{ fontSize:'0.6rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.3rem' }}>TIME TO PAYOFF</div>
-                                  <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.1rem', color:'#f87171' }}>
+                                  <div style={{ fontSize:'0.6rem', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.3rem' }}>TIME TO PAYOFF</div>
+                                  <div style={{ fontWeight:700, fontSize:'1.1rem', color:'var(--mm-danger)' }}>
                                     {payoff.months >= 600 ? '50+ yrs' : payoff.months > 12 ? `${Math.floor(payoff.months/12)}y ${payoff.months%12}m` : `${payoff.months}mo`}
                                   </div>
                                 </div>
                                 <div style={{ background:'rgba(251,191,36,0.06)', border:'1px solid rgba(251,191,36,0.15)', borderRadius:10, padding:'0.75rem', textAlign:'center' }}>
-                                  <div style={{ fontSize:'0.6rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.3rem' }}>TOTAL INTEREST</div>
-                                  <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.1rem', color:'#fbbf24' }}>{formatCurrency(payoff.totalInterest)}</div>
+                                  <div style={{ fontSize:'0.6rem', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.3rem' }}>TOTAL INTEREST</div>
+                                  <div style={{ fontWeight:700, fontSize:'1.1rem', color:'var(--mm-warning)' }}>{formatCurrency(payoff.totalInterest)}</div>
                                 </div>
                                 <div style={{ background:'rgba(74,222,128,0.06)', border:'1px solid rgba(74,222,128,0.15)', borderRadius:10, padding:'0.75rem', textAlign:'center' }}>
-                                  <div style={{ fontSize:'0.6rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.3rem' }}>TOTAL PAID</div>
-                                  <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.1rem', color:'#4ade80' }}>{formatCurrency(parseFloat(((card.balance||0) + payoff.totalInterest).toFixed(2)))}</div>
+                                  <div style={{ fontSize:'0.6rem', color:'var(--text-muted)', letterSpacing:'1px', marginBottom:'0.3rem' }}>TOTAL PAID</div>
+                                  <div style={{ fontWeight:700, fontSize:'1.1rem', color:'var(--mm-success)' }}>{formatCurrency(parseFloat(((card.balance||0) + payoff.totalInterest).toFixed(2)))}</div>
                                 </div>
                               </div>
-                              <div style={{ marginTop:'0.625rem', fontFamily:'Inter, sans-serif', fontSize:'0.7rem', color:'var(--text-muted)', textAlign:'center' }}>
+                              <div style={{ marginTop:'0.625rem', fontSize:'0.7rem', color:'var(--text-muted)', textAlign:'center' }}>
                                 💡 Paying {formatCurrency(parseFloat((minPay * 2).toFixed(2)))} per month would cut payoff time roughly in half
                               </div>
                             </div>
@@ -587,15 +587,15 @@ const CreditCards = () => {
             {dueThisWeek.length > 0 && (
               <motion.div initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }}
                 style={{ background:'rgba(248,113,113,0.07)', border:'1px solid rgba(248,113,113,0.25)', borderRadius:14, padding:'1rem 1.25rem', marginTop:'0.5rem' }}>
-                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.68rem', letterSpacing:'2px', color:'#f87171', marginBottom:'0.625rem' }}>⚠ PAYMENTS DUE THIS WEEK</div>
+                <div style={{ fontSize:'0.68rem', letterSpacing:'2px', color:'var(--mm-danger)', marginBottom:'0.625rem' }}>⚠ PAYMENTS DUE THIS WEEK</div>
                 {dueThisWeek.map(c => (
                   <div key={c.id} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.4rem 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-                    <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.82rem' }}>{c.name}</span>
+                    <span style={{ fontSize:'0.82rem' }}>{c.name}</span>
                     <span style={{ display:'flex', gap:'0.75rem', alignItems:'center' }}>
-                      <span style={{ color:'#f87171', fontFamily:'Inter, sans-serif', fontWeight:600 }}>{formatCurrency(c.balance)}</span>
-                      <span style={{ color:'var(--text-muted)', fontSize:'0.72rem', fontFamily:'Inter, sans-serif' }}>due in {daysUntil(c.due_date)}d</span>
+                      <span style={{ color:'var(--mm-danger)', fontWeight:600 }}>{formatCurrency(c.balance)}</span>
+                      <span style={{ color:'var(--text-muted)', fontSize:'0.72rem' }}>due in {daysUntil(c.due_date)}d</span>
                       <button onClick={() => openPay(c)}
-                        style={{ padding:'0.25rem 0.6rem', borderRadius:7, background:'rgba(248,113,113,0.15)', border:'1px solid rgba(248,113,113,0.3)', color:'#f87171', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.7rem' }}>
+                        style={{ padding:'0.25rem 0.6rem', borderRadius:7, background:'rgba(248,113,113,0.15)', border:'1px solid rgba(248,113,113,0.3)', color:'var(--mm-danger)', cursor:'pointer', fontSize:'0.7rem' }}>
                         Pay Now
                       </button>
                     </span>
@@ -655,13 +655,13 @@ const CreditCards = () => {
       <Modal isOpen={!!payModal} onClose={() => setPayModal(null)} title={`Pay — ${payModal?.name || ''}`}>
         <div style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
           <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:10, padding:'0.875rem 1rem' }}>
-            <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.82rem', fontFamily:'Inter, sans-serif', marginBottom:'0.4rem' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.82rem', marginBottom:'0.4rem' }}>
               <span style={{ color:'var(--text-muted)' }}>Current Balance</span>
-              <span style={{ color:'#f87171', fontWeight:700 }}>{formatCurrency(payModal?.balance || 0)}</span>
+              <span style={{ color:'var(--mm-danger)', fontWeight:700 }}>{formatCurrency(payModal?.balance || 0)}</span>
             </div>
-            <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.82rem', fontFamily:'Inter, sans-serif' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.82rem' }}>
               <span style={{ color:'var(--text-muted)' }}>Minimum Payment</span>
-              <span style={{ color:'#fbbf24', fontWeight:600 }}>{formatCurrency(parseFloat(Math.max(10, (payModal?.balance||0) * (payModal?.min_payment_pct||2) / 100).toFixed(2)))}</span>
+              <span style={{ color:'var(--mm-warning)', fontWeight:600 }}>{formatCurrency(parseFloat(Math.max(10, (payModal?.balance||0) * (payModal?.min_payment_pct||2) / 100).toFixed(2)))}</span>
             </div>
           </div>
           <div>
@@ -673,7 +673,7 @@ const CreditCards = () => {
                 { label:'Full', val: payModal?.balance || 0 },
               ].map(({ label, val }) => (
                 <button key={label} type="button" onClick={() => setPayAmount(val)}
-                  style={{ padding:'0.35rem 0.8rem', borderRadius:8, border: parseFloat(payAmount) === val ? '1px solid #4ade80' : '1px solid rgba(255,255,255,0.1)', background: parseFloat(payAmount) === val ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.04)', color: parseFloat(payAmount) === val ? '#4ade80' : '#aaa', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.78rem' }}>
+                  style={{ padding:'0.35rem 0.8rem', borderRadius:8, border: parseFloat(payAmount) === val ? '1px solid #4ade80' : '1px solid rgba(255,255,255,0.1)', background: parseFloat(payAmount) === val ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.04)', color: parseFloat(payAmount) === val ? 'var(--mm-success)' : 'var(--mm-text-2)', cursor:'pointer', fontSize:'0.78rem' }}>
                   {label} ({formatCurrency(val)})
                 </button>
               ))}
@@ -695,7 +695,7 @@ const CreditCards = () => {
               const selAcc = accounts.find(a => String(a.id) === String(payAccountId));
               if (!selAcc) {
                 return (
-                  <div style={{ marginTop:'0.45rem', fontSize:'0.72rem', color:'#fbbf24' }}>
+                  <div style={{ marginTop:'0.45rem', fontSize:'0.72rem', color:'var(--mm-warning)' }}>
                     ℹ️ Card balance will be reduced without deducting from any bank account.
                   </div>
                 );
@@ -707,7 +707,7 @@ const CreditCards = () => {
                   <span style={{ color:'var(--text-secondary)' }}>
                     Current: <strong style={{ color:'var(--text-primary)' }}>{formatCurrency(curBal)}</strong>
                   </span>
-                  <span style={{ color: afterBal < 0 ? '#f87171' : '#4ade80', fontWeight:700 }}>
+                  <span style={{ color: afterBal < 0 ? 'var(--mm-danger)' : 'var(--mm-success)', fontWeight:700 }}>
                     After Payment: {formatCurrency(afterBal)}
                   </span>
                 </div>
@@ -715,7 +715,7 @@ const CreditCards = () => {
             })()}
           </div>
           {(payModal?.due_date || payModal?.statement_date) && (
-            <label style={{ display:'flex', alignItems:'center', gap:'0.6rem', padding:'0.7rem 0.85rem', borderRadius:10, background:'rgba(129,140,248,0.08)', border:'1px solid rgba(129,140,248,0.25)', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.8rem' }}>
+            <label style={{ display:'flex', alignItems:'center', gap:'0.6rem', padding:'0.7rem 0.85rem', borderRadius:10, background:'rgba(129,140,248,0.08)', border:'1px solid rgba(129,140,248,0.25)', cursor:'pointer', fontSize:'0.8rem' }}>
               <input type="checkbox" checked={rollDueNextMonth} onChange={e => setRollDueNextMonth(e.target.checked)} style={{ width:16, height:16, accentColor:'#818cf8' }} />
               <span>
                 📅 Roll due date +1 month
@@ -735,8 +735,8 @@ const CreditCards = () => {
       {/* ── Add Charge Modal ── */}
       <Modal isOpen={!!chargeModal} onClose={() => setChargeModal(null)} title={`Add Charge — ${chargeModal?.name || ''}`}>
         <div style={{ display:'flex', flexDirection:'column', gap:'0.9rem' }}>
-          <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.82rem', color:'var(--text-muted)' }}>
-            Current balance: <strong style={{ color:'#f87171' }}>{formatCurrency(chargeModal?.balance||0)}</strong> / {formatCurrency(chargeModal?.credit_limit||0)}
+          <div style={{ fontSize:'0.82rem', color:'var(--text-muted)' }}>
+            Current balance: <strong style={{ color:'var(--mm-danger)' }}>{formatCurrency(chargeModal?.balance||0)}</strong> / {formatCurrency(chargeModal?.credit_limit||0)}
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.75rem' }}>
             <div>
@@ -778,10 +778,9 @@ const CreditCards = () => {
                     padding:'0.2rem 0.55rem',
                     borderRadius:999,
                     fontSize:'0.72rem',
-                    fontFamily:'Inter, sans-serif',
                     cursor:'pointer',
                     background: chargeCategory === cat ? 'rgba(74,222,128,0.14)' : 'rgba(255,255,255,0.04)',
-                    color: chargeCategory === cat ? '#4ade80' : 'var(--text-secondary)',
+                    color: chargeCategory === cat ? 'var(--mm-success)' : 'var(--text-secondary)',
                     border: chargeCategory === cat ? '1px solid rgba(74,222,128,0.4)' : '1px solid rgba(255,255,255,0.08)',
                   }}
                 >
@@ -790,7 +789,7 @@ const CreditCards = () => {
               ))}
             </div>
           </div>
-          <label style={{ display:'flex', alignItems:'center', gap:'0.55rem', padding:'0.6rem 0.75rem', borderRadius:10, background:'rgba(56,189,248,0.08)', border:'1px solid rgba(56,189,248,0.25)', fontSize:'0.76rem', color:'var(--text-secondary)', cursor:'pointer', fontFamily:'Inter, sans-serif' }}>
+          <label style={{ display:'flex', alignItems:'center', gap:'0.55rem', padding:'0.6rem 0.75rem', borderRadius:10, background:'rgba(56,189,248,0.08)', border:'1px solid rgba(56,189,248,0.25)', fontSize:'0.76rem', color:'var(--text-secondary)', cursor:'pointer' }}>
             <input type="checkbox" checked={chargeLogTx} onChange={e => setChargeLogTx(e.target.checked)} style={{ width:15, height:15, accentColor:'#38bdf8' }} />
             <span>📊 Also record in Transactions &amp; Category Budgets (no bank deduction until card payment)</span>
           </label>

@@ -111,9 +111,7 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                 border: `1px solid ${step === it.s ? '#4ade80' : 'rgba(255,255,255,0.08)'}`,
                 color: step === it.s ? '#4ade80' : '#777',
                 fontSize: '0.75rem',
-                fontWeight: 600,
-                fontFamily: 'Inter, sans-serif'
-              }}
+                fontWeight: 600 }}
             >
               <span>{it.s}.</span> {it.label}
             </div>
@@ -131,10 +129,10 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
               style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
             >
               <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
                   Choose Your Global Base Currency
                 </h3>
-                <p style={{ margin: '4px 0 0', color: '#888', fontSize: '0.8rem' }}>
+                <p style={{ margin: '4px 0 0', color: 'var(--mm-text-3)', fontSize: '0.8rem' }}>
                   All portfolio valuations, net worth calculations, and digests will be converted to this currency.
                 </p>
               </div>
@@ -156,10 +154,10 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                       transition: 'all 0.15s'
                     }}
                   >
-                    <div style={{ fontSize: '0.85rem', fontWeight: 700, fontFamily: 'Inter, sans-serif' }}>
+                    <div style={{ fontSize: '0.85rem', fontWeight: 700 }}>
                       {c.symbol} {c.code}
                     </div>
-                    <div style={{ fontSize: '0.68rem', color: '#777', marginTop: 2 }}>{c.label}</div>
+                    <div style={{ fontSize: '0.68rem', color: 'var(--mm-text-3)', marginTop: 2 }}>{c.label}</div>
                   </button>
                 ))}
               </div>
@@ -180,7 +178,6 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                     fontSize: '0.78rem',
                     fontWeight: 500,
                     cursor: 'pointer',
-                    fontFamily: 'Inter, sans-serif',
                     transition: 'all 0.15s ease'
                   }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#f87171'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.3)'; }}
@@ -202,9 +199,7 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                     border: 'none',
                     color: 'var(--bg-void)',
                     fontWeight: 700,
-                    cursor: 'pointer',
-                    fontFamily: 'Inter, sans-serif'
-                  }}
+                    cursor: 'pointer' }}
                 >
                   Next Step <ArrowRight size={16} />
                 </button>
@@ -222,10 +217,10 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
               style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
             >
               <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
                   Fund Your Portfolio or Test Drive Sandbox
                 </h3>
-                <p style={{ margin: '4px 0 0', color: '#888', fontSize: '0.8rem' }}>
+                <p style={{ margin: '4px 0 0', color: 'var(--mm-text-3)', fontSize: '0.8rem' }}>
                   Start with a clean personal account, or populate a realistic demo dataset to test every SaaS feature.
                 </p>
               </div>
@@ -247,7 +242,7 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#818cf8', fontWeight: 700, fontSize: '0.9rem' }}>
                     <Play size={16} /> Try Instant Demo Sandbox
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#888', marginTop: 2 }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--mm-text-3)', marginTop: 2 }}>
                     Pre-populates 4 accounts, 15 categorized transactions, loan schedules & bills. Clearable anytime.
                   </div>
                 </div>
@@ -271,14 +266,14 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                 </button>
               </div>
 
-              <div style={{ textAlign: 'center', fontSize: '0.72rem', color: '#555', textTransform: 'uppercase', letterSpacing: 1 }}>
+              <div style={{ textAlign: 'center', fontSize: '0.72rem', color: 'var(--mm-text-3)', textTransform: 'uppercase', letterSpacing: 1 }}>
                 — OR CREATE YOUR FIRST ACCOUNT —
               </div>
 
               {/* Manual Account Setup Inputs */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.72rem', color: '#888', marginBottom: 2 }}>Account Name</label>
+                  <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--mm-text-3)', marginBottom: 2 }}>Account Name</label>
                   <input
                     type="text"
                     value={accountName}
@@ -288,7 +283,7 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', color: '#888', marginBottom: 2 }}>Account Type</label>
+                    <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--mm-text-3)', marginBottom: 2 }}>Account Type</label>
                     <select
                       value={accountType}
                       onChange={e => setAccountType(e.target.value)}
@@ -301,12 +296,12 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                     </select>
                   </div>
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', color: '#888', marginBottom: 2 }}>Starting Balance ({selectedCurrency})</label>
+                    <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--mm-text-3)', marginBottom: 2 }}>Starting Balance ({selectedCurrency})</label>
                     <input
                       type="number"
                       value={accountBalance}
                       onChange={e => setAccountBalance(e.target.value)}
-                      style={{ width: '100%', padding: '0.55rem', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#4ade80', fontWeight: 700 }}
+                      style={{ width: '100%', padding: '0.55rem', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--mm-success)', fontWeight: 700 }}
                     />
                   </div>
                 </div>
@@ -316,7 +311,7 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.65rem 1rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#888', cursor: 'pointer' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.65rem 1rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'var(--mm-text-3)', cursor: 'pointer' }}
                 >
                   <ArrowLeft size={16} /> Back
                 </button>
@@ -335,7 +330,6 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                     fontSize: '0.78rem',
                     fontWeight: 500,
                     cursor: 'pointer',
-                    fontFamily: 'Inter, sans-serif',
                     transition: 'all 0.15s ease'
                   }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#f87171'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.3)'; }}
@@ -365,10 +359,10 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
               style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
             >
               <div style={{ textAlign: 'center', marginBottom: '0.5rem' }}>
-                <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)' }}>
                   Safety Guardrails & Discretionary Limits
                 </h3>
-                <p style={{ margin: '4px 0 0', color: '#888', fontSize: '0.8rem' }}>
+                <p style={{ margin: '4px 0 0', color: 'var(--mm-text-3)', fontSize: '0.8rem' }}>
                   Set your daily spending tolerance and target emergency cash buffer.
                 </p>
               </div>
@@ -378,14 +372,14 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                   <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-primary)', fontWeight: 600 }}>
                     Daily Expense Limit ({selectedCurrency})
                   </label>
-                  <div style={{ fontSize: '0.7rem', color: '#777', marginBottom: 6 }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)', marginBottom: 6 }}>
                     Alerts you if your day-to-day spending exceeds this pace.
                   </div>
                   <input
                     type="number"
                     value={dailyLimit}
                     onChange={e => setDailyLimit(e.target.value)}
-                    style={{ width: '100%', padding: '0.55rem', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fbbf24', fontWeight: 700 }}
+                    style={{ width: '100%', padding: '0.55rem', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--mm-warning)', fontWeight: 700 }}
                   />
                 </div>
 
@@ -393,7 +387,7 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                   <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-primary)', fontWeight: 600 }}>
                     Target Emergency Runway (Months)
                   </label>
-                  <div style={{ fontSize: '0.7rem', color: '#777', marginBottom: 6 }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)', marginBottom: 6 }}>
                     The Safe-to-Spend engine will protect this many months of fixed bills.
                   </div>
                   <input
@@ -409,7 +403,7 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.65rem 1rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: '#888', cursor: 'pointer' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.65rem 1rem', background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'var(--mm-text-3)', cursor: 'pointer' }}
                 >
                   <ArrowLeft size={16} /> Back
                 </button>
@@ -428,7 +422,6 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                     fontSize: '0.78rem',
                     fontWeight: 500,
                     cursor: 'pointer',
-                    fontFamily: 'Inter, sans-serif',
                     transition: 'all 0.15s ease'
                   }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#f87171'; e.currentTarget.style.borderColor = 'rgba(248,113,113,0.3)'; }}
@@ -451,9 +444,7 @@ export default function OnboardingWizardModal({ isOpen, onClose, onComplete }) {
                     color: 'var(--bg-void)',
                     fontWeight: 800,
                     cursor: 'pointer',
-                    fontSize: '0.88rem',
-                    fontFamily: 'Inter, sans-serif'
-                  }}
+                    fontSize: '0.88rem' }}
                 >
                   🚀 Launch Vault Manager
                 </button>

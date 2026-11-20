@@ -178,7 +178,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
               borderRadius: 8,
               border: 'none',
               background: activeTab === 'upload' ? 'rgba(74,222,128,0.15)' : 'transparent',
-              color: activeTab === 'upload' ? '#4ade80' : '#888',
+              color: activeTab === 'upload' ? 'var(--mm-success)' : 'var(--mm-text-3)',
               fontWeight: 700,
               fontSize: '0.82rem',
               cursor: 'pointer',
@@ -198,7 +198,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
               borderRadius: 8,
               border: 'none',
               background: activeTab === 'sandbox' ? 'rgba(129,140,248,0.15)' : 'transparent',
-              color: activeTab === 'sandbox' ? '#818cf8' : '#888',
+              color: activeTab === 'sandbox' ? '#818cf8' : 'var(--mm-text-3)',
               fontWeight: 700,
               fontSize: '0.82rem',
               cursor: 'pointer',
@@ -224,7 +224,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
               background: 'rgba(0,0,0,0.4)',
               border: '1px solid rgba(255,255,255,0.1)',
               borderRadius: 8,
-              color: '#4ade80',
+              color: 'var(--mm-success)',
               fontWeight: 600,
               fontSize: '0.82rem',
               padding: '0.35rem 0.75rem'
@@ -248,7 +248,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
               lineHeight: 1.5,
               color: '#d1d5db'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#4ade80', fontWeight: 700, marginBottom: 4 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--mm-success)', fontWeight: 700, marginBottom: 4 }}>
                 <CheckCircle2 size={16} /> 100% Free Universal Bank Integration
               </div>
               Download an <strong>OFX, QFX, or QIF</strong> statement export from your bank portal (Chase, BoA, Wells Fargo, HSBC, Revolut, Monzo, HNB, Commercial Bank, Sampath, etc.) and drop it below. No third-party paid subscriptions required!
@@ -292,7 +292,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 1rem',
-                color: '#4ade80'
+                color: 'var(--mm-success)'
               }}>
                 <FileText size={28} />
               </div>
@@ -353,7 +353,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '1.2rem' }}>{bank.icon}</span>
-                    <span style={{ fontSize: '0.68rem', padding: '1px 6px', borderRadius: 4, background: 'rgba(74,222,128,0.15)', color: '#4ade80', fontWeight: 600 }}>
+                    <span style={{ fontSize: '0.68rem', padding: '1px 6px', borderRadius: 4, background: 'rgba(74,222,128,0.15)', color: 'var(--mm-success)', fontWeight: 600 }}>
                       {bank.status}
                     </span>
                   </div>
@@ -407,7 +407,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0 }}>
-                      <span style={{ fontSize: '0.68rem', padding: '1px 6px', borderRadius: 4, background: item.status === 'pending' ? 'rgba(251,191,36,0.15)' : 'rgba(74,222,128,0.15)', color: item.status === 'pending' ? '#fbbf24' : '#4ade80', fontWeight: 600 }}>
+                      <span style={{ fontSize: '0.68rem', padding: '1px 6px', borderRadius: 4, background: item.status === 'pending' ? 'rgba(251,191,36,0.15)' : 'rgba(74,222,128,0.15)', color: item.status === 'pending' ? 'var(--mm-warning)' : 'var(--mm-success)', fontWeight: 600 }}>
                         {item.status === 'pending' ? '⏳ PENDING' : 'CLEARED'}
                       </span>
 
@@ -416,13 +416,13 @@ export default function BankSyncModal({ isOpen, onClose }) {
                           {item.notes}
                         </span>
                         <div style={{ display: 'flex', gap: '0.4rem', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
-                          <span style={{ color: '#4ade80' }}>Category: {item.category}</span>
-                          <span style={{ color: '#888' }}>Date: {item.date}</span>
+                          <span style={{ color: 'var(--mm-success)' }}>Category: {item.category}</span>
+                          <span style={{ color: 'var(--mm-text-3)' }}>Date: {item.date}</span>
                           {matchedRules.length > 0 && (
                             <span style={{ color: '#818cf8' }}>⚡ Rule: {matchedRules[0]}</span>
                           )}
                           {item.is_tax_deductible && (
-                            <span style={{ color: '#fbbf24' }}>🏷️ Tax Deductible</span>
+                            <span style={{ color: 'var(--mm-warning)' }}>🏷️ Tax Deductible</span>
                           )}
                         </div>
                       </div>
@@ -432,7 +432,7 @@ export default function BankSyncModal({ isOpen, onClose }) {
                       {isDuplicate ? (
                         <span style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>Duplicate skipped</span>
                       ) : (
-                        <strong style={{ color: item.type === 'Income' ? '#4ade80' : '#f0f0f5', fontSize: '0.92rem' }}>
+                        <strong style={{ color: item.type === 'Income' ? 'var(--mm-success)' : '#f0f0f5', fontSize: '0.92rem' }}>
                           {item.type === 'Income' ? '+' : '-'}{formatCurrency(item.amount)}
                         </strong>
                       )}

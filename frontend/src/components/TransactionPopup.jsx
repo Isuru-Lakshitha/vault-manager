@@ -208,7 +208,7 @@ const TransactionPopup = ({
               {categoryEmoji}
             </div>
             <div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', letterSpacing: '0.3px' }}>
+              <div style={{ fontWeight: 700, fontSize: '1.15rem', color: 'var(--text-primary)', letterSpacing: '0.3px' }}>
                 {transaction.category || transaction.type}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: 2 }}>
@@ -218,7 +218,6 @@ const TransactionPopup = ({
                     alignItems: 'center',
                     gap: '0.25rem',
                     fontSize: '0.7rem',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 600,
                     padding: '0.15rem 0.5rem',
                     borderRadius: 6,
@@ -237,19 +236,18 @@ const TransactionPopup = ({
                       alignItems: 'center',
                       gap: '0.25rem',
                       fontSize: '0.7rem',
-                      fontFamily: 'Inter, sans-serif',
                       fontWeight: 600,
                       padding: '0.15rem 0.5rem',
                       borderRadius: 6,
                       background: 'rgba(74,222,128,0.15)',
-                      color: '#4ade80',
+                      color: 'var(--mm-success)',
                       border: '1px solid rgba(74,222,128,0.3)',
                     }}
                   >
                     🏷️ Tax Deductible ({transaction.tax_category || 'Business'})
                   </span>
                 )}
-                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                   {formatDate(transaction.date)}
                 </span>
               </div>
@@ -269,12 +267,11 @@ const TransactionPopup = ({
             overflow: 'hidden',
           }}
         >
-          <div style={{ fontSize: '0.72rem', fontFamily: 'Inter, sans-serif', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
+          <div style={{ fontSize: '0.72rem', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>
             {transaction.type === 'Income' ? 'Incoming Amount' : transaction.type === 'Transfer' ? 'Transfer Amount' : 'Deducted Amount'}
           </div>
           <div
             style={{
-              fontFamily: 'Inter, sans-serif',
               fontWeight: 800,
               fontSize: '2rem',
               color: cfg.color,
@@ -285,12 +282,12 @@ const TransactionPopup = ({
             {cfg.prefix}{formatCurrency(transaction.amount, { currency: txCurrency })}
           </div>
           {transaction.type === 'Transfer' && Number(transaction.destination_amount) > 0 && (
-            <div style={{ fontSize: '0.78rem', color: '#4ade80', marginTop: 4, fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--mm-success)', marginTop: 4, fontWeight: 600 }}>
               Received: {formatCurrency(transaction.destination_amount, { currency: toCurrency })}
             </div>
           )}
           {transaction.fee_amount > 0 && (
-            <div style={{ fontSize: '0.75rem', color: '#f87171', marginTop: 4, fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ fontSize: '0.75rem', color: 'var(--mm-danger)', marginTop: 4 }}>
               Fee: {formatCurrency(transaction.fee_amount, { currency: txCurrency })}
             </div>
           )}
@@ -326,10 +323,10 @@ const TransactionPopup = ({
               <CreditCard size={18} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                 {transaction.type === 'Transfer' ? 'Transfer Route' : transaction.type === 'Income' ? 'Credited To' : 'Debited From'}
               </div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)', marginTop: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)', marginTop: 1 }}>
                 {transaction.type === 'Transfer' ? (
                   <span style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     {fromAccName} <ArrowRight size={13} style={{ color: 'var(--text-muted)' }} /> {toAccName}
@@ -371,10 +368,10 @@ const TransactionPopup = ({
               <Calendar size={18} />
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                 Transaction Date
               </div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)', marginTop: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)', marginTop: 1 }}>
                 {formatDate(transaction.date)}
               </div>
             </div>
@@ -410,7 +407,7 @@ const TransactionPopup = ({
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.2rem' }}>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                     Notes & Details
                   </div>
                   <button
@@ -424,8 +421,7 @@ const TransactionPopup = ({
                       borderRadius: 6,
                       background: 'rgba(74, 222, 128, 0.1)',
                       border: '1px solid rgba(74, 222, 128, 0.25)',
-                      color: '#4ade80',
-                      fontFamily: 'Inter, sans-serif',
+                      color: 'var(--mm-success)',
                       fontSize: '0.68rem',
                       fontWeight: 600,
                       cursor: 'pointer',
@@ -473,7 +469,7 @@ const TransactionPopup = ({
                 <Tag size={18} />
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                   Tags
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginTop: 4 }}>
@@ -487,7 +483,6 @@ const TransactionPopup = ({
                         padding: '0.15rem 0.55rem',
                         fontSize: '0.72rem',
                         color: '#c084fc',
-                        fontFamily: 'Inter, sans-serif',
                       }}
                     >
                       #{t}
@@ -508,14 +503,14 @@ const TransactionPopup = ({
                 borderRadius: 12,
               }}
             >
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '0.5rem' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '0.5rem' }}>
                 Split Breakdown
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                 {transaction.splits.map((s, idx) => (
                   <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.4rem 0.6rem', background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
                     <span style={{ fontSize: '0.82rem', color: 'var(--text-primary)' }}>{s.category || 'Uncategorized'}</span>
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '0.82rem', color: cfg.color }}>{formatCurrency(s.amount, { currency: txCurrency })}</span>
+                    <span style={{ fontWeight: 600, fontSize: '0.82rem', color: cfg.color }}>{formatCurrency(s.amount, { currency: txCurrency })}</span>
                   </div>
                 ))}
               </div>
@@ -532,7 +527,7 @@ const TransactionPopup = ({
                 borderRadius: 12,
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '0.5rem' }}>
                 <Receipt size={13} />
                 Attached Receipt
               </div>
@@ -557,23 +552,23 @@ const TransactionPopup = ({
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.55rem', gap: '0.5rem', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
+                <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                   History Snapshot · {historySnapshot.label}
                 </span>
-                <span style={{ fontSize: '0.7rem', fontFamily: 'Inter, sans-serif', fontWeight: 600, color: '#38bdf8' }}>
+                <span style={{ fontSize: '0.7rem', fontWeight: 600, color: '#38bdf8' }}>
                   {historySnapshot.count} entries
                 </span>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: historySnapshot.recentOthers.length > 0 ? '0.6rem' : 0 }}>
                 <div style={{ padding: '0.45rem 0.65rem', background: 'rgba(255,255,255,0.025)', borderRadius: 8 }}>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>This Month</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>This Month</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                     {formatCurrency(historySnapshot.thisMonthSum, { currency: txCurrency })}
                   </div>
                 </div>
                 <div style={{ padding: '0.45rem 0.65rem', background: 'rgba(255,255,255,0.025)', borderRadius: 8 }}>
-                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>Historical Avg</div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif' }}>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>Historical Avg</div>
+                  <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
                     {formatCurrency(historySnapshot.avgAmount, { currency: txCurrency })}
                   </div>
                 </div>
@@ -581,7 +576,7 @@ const TransactionPopup = ({
               {historySnapshot.recentOthers.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.28rem' }}>
                   {historySnapshot.recentOthers.map(rt => (
-                    <div key={rt.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+                    <div key={rt.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: 'var(--text-muted)' }}>
                       <span>{formatDate(rt.date)}</span>
                       <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{formatCurrency(rt.amount, { currency: rt.currency || txCurrency })}</span>
                     </div>
@@ -608,7 +603,6 @@ const TransactionPopup = ({
             background: 'linear-gradient(135deg, rgba(129, 140, 248, 0.15), rgba(99, 102, 241, 0.15))',
             border: '1px solid rgba(129, 140, 248, 0.35)',
             color: '#c7d2fe',
-            fontFamily: 'Inter, sans-serif',
             fontSize: '0.82rem',
             fontWeight: 600,
             cursor: voucherLoading ? 'wait' : 'pointer',
@@ -621,7 +615,7 @@ const TransactionPopup = ({
           {voucherLoading ? 'Generating Official Voucher...' : 'Download Official Voucher PDF'}
         </button>
 
-        {transaction.reversed_at && <p role="status" style={{ fontSize: '0.82rem', color: '#fbbf24', textAlign: 'center', margin: '0.5rem 0' }}>Reversed on {transaction.reversed_at.slice(0, 10)}. Original record retained for audit.</p>}
+        {transaction.reversed_at && <p role="status" style={{ fontSize: '0.82rem', color: 'var(--mm-warning)', textAlign: 'center', margin: '0.5rem 0' }}>Reversed on {transaction.reversed_at.slice(0, 10)}. Original record retained for audit.</p>}
         {transaction.is_transfer_fee && !transaction.reversed_at && (
           <p role="status" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', textAlign: 'center', margin: '0.35rem 0' }}>
             Transfer fees are managed automatically from the parent transfer.
@@ -706,7 +700,7 @@ const TransactionPopup = ({
                 padding: '0.75rem',
                 fontSize: '0.85rem',
                 background: 'rgba(239, 68, 68, 0.15)',
-                color: '#f87171',
+                color: 'var(--mm-danger)',
                 border: '1px solid rgba(239, 68, 68, 0.3)',
               }}
             >

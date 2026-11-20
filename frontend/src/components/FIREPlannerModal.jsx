@@ -191,13 +191,13 @@ const [, setLoading] = useState(true);
                 borderRadius: 9,
                 border: 'none',
                 background: firePreset === p.id ? 'rgba(251,146,60,0.18)' : 'transparent',
-                color: firePreset === p.id ? '#fb923c' : '#888',
+                color: firePreset === p.id ? '#fb923c' : 'var(--mm-text-3)',
                 cursor: 'pointer',
                 textAlign: 'center',
                 transition: 'all 0.15s'
               }}
             >
-              <div style={{ fontSize: '0.82rem', fontWeight: 700, fontFamily: 'Inter, sans-serif' }}>{p.icon} {p.label}</div>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700 }}>{p.icon} {p.label}</div>
               <div style={{ fontSize: '0.65rem', opacity: 0.8, marginTop: 2 }}>{p.desc}</div>
             </button>
           ))}
@@ -214,37 +214,37 @@ const [, setLoading] = useState(true);
           border: '1px solid rgba(251,146,60,0.2)'
         }}>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#fb923c', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>FIRE FREEDOM NUMBER</div>
+            <div style={{ fontSize: '0.72rem', color: '#fb923c', fontWeight: 600 }}>FIRE FREEDOM NUMBER</div>
             <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 2 }}>
               {formatCurrency(fireNumber)}
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#888', marginTop: 2 }}>Based on {swr}% safe withdrawal</div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--mm-text-3)', marginTop: 2 }}>Based on {swr}% safe withdrawal</div>
           </div>
 
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#4ade80', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>CROSSOVER AGE</div>
-            <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#4ade80', marginTop: 2 }}>
+            <div style={{ fontSize: '0.72rem', color: 'var(--mm-success)', fontWeight: 600 }}>CROSSOVER AGE</div>
+            <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--mm-success)', marginTop: 2 }}>
               {crossoverAge ? `Age ${crossoverAge}` : 'Age 75+'}
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#888', marginTop: 2 }}>
+            <div style={{ fontSize: '0.68rem', color: 'var(--mm-text-3)', marginTop: 2 }}>
               {yearsToFIRE !== null ? `In ~${yearsToFIRE} years` : 'Adjust savings rate'}
             </div>
           </div>
 
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#38bdf8', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>PASSIVE MONTHLY DIVIDEND</div>
+            <div style={{ fontSize: '0.72rem', color: '#38bdf8', fontWeight: 600 }}>PASSIVE MONTHLY DIVIDEND</div>
             <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#38bdf8', marginTop: 2 }}>
               {formatCurrency(safeMonthlyPassiveIncome)}/mo
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#888', marginTop: 2 }}>Safe perpetual drawdown now</div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--mm-text-3)', marginTop: 2 }}>Safe perpetual drawdown now</div>
           </div>
 
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#a78bfa', fontFamily: 'Inter, sans-serif', fontWeight: 600 }}>COAST FIRE THRESHOLD</div>
+            <div style={{ fontSize: '0.72rem', color: '#a78bfa', fontWeight: 600 }}>COAST FIRE THRESHOLD</div>
             <div style={{ fontSize: '1.35rem', fontWeight: 800, color: '#a78bfa', marginTop: 2 }}>
               {formatCurrency(coastFireNumber)}
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#888', marginTop: 2 }}>
+            <div style={{ fontSize: '0.68rem', color: 'var(--mm-text-3)', marginTop: 2 }}>
               {currentPortfolio >= coastFireNumber ? '✅ Coast FIRE Achieved!' : `Need +${formatCurrency(Math.max(0, coastFireNumber - currentPortfolio))}`}
             </div>
           </div>
@@ -253,7 +253,7 @@ const [, setLoading] = useState(true);
         {/* Projection Chart */}
         <div style={{ background: 'rgba(255,255,255,0.02)', padding: '1.25rem', borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#aaa', fontFamily: 'Inter, sans-serif' }}>
+            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--mm-text-2)' }}>
               WEALTH ACCUMULATION CURVE (AGE {currentAge} → {currentAge + chartData.length})
             </span>
             <span style={{ fontSize: '0.72rem', color: '#fb923c' }}>
@@ -283,11 +283,11 @@ const [, setLoading] = useState(true);
                       const d = payload[0].payload;
                       return (
                         <div style={{ background: 'var(--bg-void)', border: '1px solid #444', borderRadius: 8, padding: '8px 12px' }}>
-                          <div style={{ color: '#aaa', fontSize: '0.75rem' }}>Age {d.age}</div>
+                          <div style={{ color: 'var(--mm-text-2)', fontSize: '0.75rem' }}>Age {d.age}</div>
                           <div style={{ color: '#fb923c', fontWeight: 700, fontSize: '0.9rem' }}>
                             Net Worth: {formatCurrency(d.portfolio)}
                           </div>
-                          <div style={{ color: '#666', fontSize: '0.75rem' }}>
+                          <div style={{ color: 'var(--mm-text-3)', fontSize: '0.75rem' }}>
                             FIRE Goal: {formatCurrency(d.fireTarget)}
                           </div>
                         </div>
@@ -307,7 +307,7 @@ const [, setLoading] = useState(true);
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1rem', background: 'rgba(255,255,255,0.02)', padding: '1.25rem', borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)' }}>
           {/* Current Portfolio */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#888', marginBottom: 4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--mm-text-3)', marginBottom: 4 }}>
               <span>Current Assets</span>
               <strong style={{ color: 'var(--text-primary)' }}>{formatCurrency(currentPortfolio)}</strong>
             </div>
@@ -324,9 +324,9 @@ const [, setLoading] = useState(true);
 
           {/* Monthly Savings */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#888', marginBottom: 4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--mm-text-3)', marginBottom: 4 }}>
               <span>Monthly Savings</span>
-              <strong style={{ color: '#4ade80' }}>+{formatCurrency(monthlyContribution)}/mo</strong>
+              <strong style={{ color: 'var(--mm-success)' }}>+{formatCurrency(monthlyContribution)}/mo</strong>
             </div>
             <input
               type="range"
@@ -335,15 +335,15 @@ const [, setLoading] = useState(true);
               step="100"
               value={monthlyContribution}
               onChange={e => setMonthlyContribution(Number(e.target.value))}
-              style={{ width: '100%', accentColor: '#4ade80' }}
+              style={{ width: '100%', accentColor: 'var(--mm-success)' }}
             />
           </div>
 
           {/* Annual Living Expenses */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#888', marginBottom: 4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--mm-text-3)', marginBottom: 4 }}>
               <span>Annual Expenses</span>
-              <strong style={{ color: '#f87171' }}>{formatCurrency(effectiveAnnualExpenses)}/yr</strong>
+              <strong style={{ color: 'var(--mm-danger)' }}>{formatCurrency(effectiveAnnualExpenses)}/yr</strong>
             </div>
             <input
               type="range"
@@ -352,13 +352,13 @@ const [, setLoading] = useState(true);
               step="2000"
               value={annualExpenses}
               onChange={e => setAnnualExpenses(Number(e.target.value))}
-              style={{ width: '100%', accentColor: '#f87171' }}
+              style={{ width: '100%', accentColor: 'var(--mm-danger)' }}
             />
           </div>
 
           {/* Expected ROI */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#888', marginBottom: 4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--mm-text-3)', marginBottom: 4 }}>
               <span>Expected Annual ROI</span>
               <strong style={{ color: '#38bdf8' }}>{expectedReturn}%</strong>
             </div>
@@ -375,7 +375,7 @@ const [, setLoading] = useState(true);
 
           {/* Current Age */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#888', marginBottom: 4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--mm-text-3)', marginBottom: 4 }}>
               <span>Current Age</span>
               <strong style={{ color: 'var(--text-primary)' }}>{currentAge} yrs</strong>
             </div>
@@ -391,7 +391,7 @@ const [, setLoading] = useState(true);
 
           {/* SWR Safe Withdrawal Rate */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#888', marginBottom: 4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--mm-text-3)', marginBottom: 4 }}>
               <span>Safe Withdrawal Rate (SWR)</span>
               <strong style={{ color: '#a78bfa' }}>{swr}%</strong>
             </div>

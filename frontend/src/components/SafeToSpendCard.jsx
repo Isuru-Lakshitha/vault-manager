@@ -164,7 +164,6 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
         <div style={{ flex: '1 1 320px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: 6, flexWrap: 'wrap' }}>
             <span style={{
-              fontFamily: 'Inter, sans-serif',
               fontSize: '0.72rem',
               letterSpacing: '1.5px',
               fontWeight: 800,
@@ -179,9 +178,7 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
               background: current.bg,
               border: `1px solid ${current.border}`,
               color: current.color,
-              fontWeight: 700,
-              fontFamily: 'Inter, sans-serif'
-            }}>
+              fontWeight: 700 }}>
               {current.badge}
             </span>
             <button
@@ -195,7 +192,6 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
                 border: '1px solid rgba(56,189,248,0.3)',
                 color: '#38bdf8',
                 fontWeight: 700,
-                fontFamily: 'Inter, sans-serif',
                 cursor: 'pointer'
               }}
             >
@@ -220,7 +216,6 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
                     padding: '0.24rem 0.65rem',
                     borderRadius: 20,
                     fontSize: '0.67rem',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 700,
                     cursor: 'pointer',
                     border: `1px solid ${active ? m.color : 'rgba(255,255,255,0.08)'}`,
@@ -247,7 +242,7 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
               background: 'rgba(0,0,0,0.35)',
               border: '1px solid rgba(56,189,248,0.25)'
             }}>
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif' }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
                 Select monthly payday:
               </span>
               {[
@@ -269,7 +264,6 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
                     background: paydayDay === p.val ? 'rgba(56,189,248,0.2)' : 'rgba(255,255,255,0.04)',
                     color: paydayDay === p.val ? '#38bdf8' : '#f0f0f5',
                     fontSize: '0.68rem',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 600,
                     cursor: 'pointer'
                   }}
@@ -284,7 +278,6 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
             fontSize: '2.15rem',
             fontWeight: 800,
             color: current.color,
-            fontFamily: 'Inter, sans-serif',
             letterSpacing: '-0.5px',
             display: 'flex',
             alignItems: 'baseline',
@@ -327,15 +320,13 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
             border: '1px solid rgba(255,255,255,0.06)',
             textAlign: 'right'
           }}>
-            <div style={{ fontSize: '0.63rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <div style={{ fontSize: '0.63rem', color: 'var(--mm-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               {overspentToday > 0 ? 'Overspent Today' : 'Left For Today'}
             </div>
             <div style={{
               fontSize: '0.95rem',
               fontWeight: 800,
-              color: overspentToday > 0 ? '#f87171' : '#4ade80',
-              fontFamily: 'Inter, sans-serif'
-            }}>
+              color: overspentToday > 0 ? 'var(--mm-danger)' : 'var(--mm-success)' }}>
               {overspentToday > 0 ? `-${formatCurrency(overspentToday)}` : formatCurrency(remainingToday)}
             </div>
             <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>
@@ -350,10 +341,10 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
             border: '1px solid rgba(255,255,255,0.06)',
             textAlign: 'right'
           }}>
-            <div style={{ fontSize: '0.63rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <div style={{ fontSize: '0.63rem', color: 'var(--mm-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               7-Day Safe Budget
             </div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#38bdf8', fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: '#38bdf8' }}>
               {formatCurrency(weeklyAllowance)}
             </div>
             <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>
@@ -368,10 +359,10 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
             border: '1px solid rgba(255,255,255,0.06)',
             textAlign: 'right'
           }}>
-            <div style={{ fontSize: '0.63rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+            <div style={{ fontSize: '0.63rem', color: 'var(--mm-text-3)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
               True Safe Pool ({activeDaysLeft}d)
             </div>
-            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>
               {formatCurrency(activeSafePool)}
             </div>
             <div style={{ fontSize: '0.62rem', color: '#a78bfa' }}>
@@ -423,9 +414,8 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
                 borderRadius: 8,
                 background: 'rgba(74,222,128,0.1)',
                 border: '1px solid rgba(74,222,128,0.28)',
-                color: '#4ade80',
+                color: 'var(--mm-success)',
                 fontSize: '0.7rem',
-                fontFamily: 'Inter, sans-serif',
                 fontWeight: 700,
                 cursor: 'pointer'
               }}
@@ -440,9 +430,8 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
                 borderRadius: 8,
                 background: 'rgba(251,191,36,0.1)',
                 border: '1px solid rgba(251,191,36,0.28)',
-                color: '#fbbf24',
+                color: 'var(--mm-warning)',
                 fontSize: '0.7rem',
-                fontFamily: 'Inter, sans-serif',
                 fontWeight: 700,
                 cursor: 'pointer'
               }}
@@ -461,7 +450,6 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
             color: '#818cf8',
             cursor: 'pointer',
             fontSize: '0.74rem',
-            fontFamily: 'Inter, sans-serif',
             fontWeight: 600,
             display: 'flex',
             alignItems: 'center',
@@ -491,16 +479,16 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(185px, 1fr))', gap: '0.65rem', marginBottom: '0.85rem' }}>
               <div style={{ padding: '0.75rem', borderRadius: 10, background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.04)' }}>
                 <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', display: 'block' }}>1. Liquid Cash (Bank + Cash)</span>
-                <strong style={{ color: '#4ade80', fontSize: '0.92rem' }}>+{formatCurrency(liquidCash)}</strong>
+                <strong style={{ color: 'var(--mm-success)', fontSize: '0.92rem' }}>+{formatCurrency(liquidCash)}</strong>
               </div>
 
               <div style={{ padding: '0.75rem', borderRadius: 10, background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.04)' }}>
                 <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', display: 'block' }}>
                   2. Unpaid Recurring ({unpaidRecurringCount} due, {paidRecurringCount} paid)
                 </span>
-                <strong style={{ color: '#f87171', fontSize: '0.92rem' }}>-{formatCurrency(unpaidRecurringTotal)}</strong>
+                <strong style={{ color: 'var(--mm-danger)', fontSize: '0.92rem' }}>-{formatCurrency(unpaidRecurringTotal)}</strong>
                 {paidRecurringThisMonth > 0 && (
-                  <span style={{ fontSize: '0.63rem', color: '#4ade80', display: 'block', marginTop: 2 }}>
+                  <span style={{ fontSize: '0.63rem', color: 'var(--mm-success)', display: 'block', marginTop: 2 }}>
                     ✅ {formatCurrency(paidRecurringThisMonth)} already paid this month
                   </span>
                 )}
@@ -510,9 +498,9 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
                 <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', display: 'block' }}>
                   3. Gold Loans & Debt Due This Month
                 </span>
-                <strong style={{ color: '#fbbf24', fontSize: '0.92rem' }}>-{formatCurrency(unlinkedLoanEMIs + creditCardDebt)}</strong>
+                <strong style={{ color: 'var(--mm-warning)', fontSize: '0.92rem' }}>-{formatCurrency(unlinkedLoanEMIs + creditCardDebt)}</strong>
                 {paidLoansThisMonth > 0 && (
-                  <span style={{ fontSize: '0.63rem', color: '#4ade80', display: 'block', marginTop: 2 }}>
+                  <span style={{ fontSize: '0.63rem', color: 'var(--mm-success)', display: 'block', marginTop: 2 }}>
                     ✅ {formatCurrency(paidLoansThisMonth)} loan interest/EMI paid
                   </span>
                 )}
@@ -522,7 +510,7 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
                 <span style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', display: 'block' }}>
                   4. Upcoming Bills ({upcomingBillsCount} due)
                 </span>
-                <strong style={{ color: '#f87171', fontSize: '0.92rem' }}>-{formatCurrency(upcomingBillsTotal)}</strong>
+                <strong style={{ color: 'var(--mm-danger)', fontSize: '0.92rem' }}>-{formatCurrency(upcomingBillsTotal)}</strong>
               </div>
 
               <div style={{ padding: '0.75rem', borderRadius: 10, background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.04)' }}>
@@ -531,7 +519,7 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
                 </span>
                 <strong style={{ color: '#a78bfa', fontSize: '0.92rem' }}>-{formatCurrency(Math.round(goalReservedAmount))}</strong>
                 {contributedToGoalsThisMonth > 0 && (
-                  <span style={{ fontSize: '0.63rem', color: '#4ade80', display: 'block', marginTop: 2 }}>
+                  <span style={{ fontSize: '0.63rem', color: 'var(--mm-success)', display: 'block', marginTop: 2 }}>
                     ✅ {formatCurrency(contributedToGoalsThisMonth)} saved this month
                   </span>
                 )}
@@ -549,7 +537,7 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
               {unpaidRecurringItems.length > 0 && (
                 <div style={{ padding: '0.75rem', borderRadius: 10, background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#38bdf8', fontFamily: 'Inter, sans-serif', marginBottom: '0.45rem', letterSpacing: '0.5px' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#38bdf8', marginBottom: '0.45rem', letterSpacing: '0.5px' }}>
                     🔁 UNPAID RECURRING BILLS THIS MONTH
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
@@ -561,7 +549,7 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
                             ({item.scheduleMode === 'flexible' ? 'Anytime this mo' : `Day ${item.dayOfMonth}`}{item.isVariable ? ' • ~Avg' : ''})
                           </span>
                         </span>
-                        <strong style={{ color: '#f87171', fontFamily: 'Inter, sans-serif' }}>{formatCurrency(item.amount)}</strong>
+                        <strong style={{ color: 'var(--mm-danger)' }}>{formatCurrency(item.amount)}</strong>
                       </div>
                     ))}
                   </div>
@@ -570,7 +558,7 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
 
               {loanItems.length > 0 && (
                 <div style={{ padding: '0.75rem', borderRadius: 10, background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#fbbf24', fontFamily: 'Inter, sans-serif', marginBottom: '0.45rem', letterSpacing: '0.5px' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--mm-warning)', marginBottom: '0.45rem', letterSpacing: '0.5px' }}>
                     🪙 GOLD LOANS & DEBT MONTHLY CHECK-IN
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
@@ -578,11 +566,11 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
                       <div key={loan.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem' }}>
                         <span style={{ color: 'var(--text-primary)' }}>
                           {loan.name}{' '}
-                          <span style={{ fontSize: '0.63rem', color: loan.isPaidThisMonth ? '#4ade80' : '#fbbf24' }}>
+                          <span style={{ fontSize: '0.63rem', color: loan.isPaidThisMonth ? 'var(--mm-success)' : 'var(--mm-warning)' }}>
                             ({loan.isPaidThisMonth ? '✅ Paid this mo' : `⏳ Interest ~${formatCurrency(Math.round(loan.monthlyInterest))}/mo`})
                           </span>
                         </span>
-                        <strong style={{ color: loan.isPaidThisMonth ? '#4ade80' : '#fbbf24', fontFamily: 'Inter, sans-serif' }}>
+                        <strong style={{ color: loan.isPaidThisMonth ? 'var(--mm-success)' : 'var(--mm-warning)' }}>
                           {loan.isPaidThisMonth ? 'Paid' : formatCurrency(Math.round(loan.remainingThisMonth))}
                         </strong>
                       </div>
@@ -593,7 +581,7 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
 
               {goalItems.length > 0 && (
                 <div style={{ padding: '0.75rem', borderRadius: 10, background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#a78bfa', fontFamily: 'Inter, sans-serif', marginBottom: '0.45rem', letterSpacing: '0.5px' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#a78bfa', marginBottom: '0.45rem', letterSpacing: '0.5px' }}>
                     🎯 SAVINGS GOALS DAILY & MONTHLY QUOTA
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
@@ -605,7 +593,7 @@ export default function SafeToSpendCard({ safeToSpendData, hideNavLinks = false 
                             ({formatCurrency(Math.round(g.dailyNeeded))}/day)
                           </span>
                         </span>
-                        <strong style={{ color: '#c4b5fd', fontFamily: 'Inter, sans-serif' }}>
+                        <strong style={{ color: '#c4b5fd' }}>
                           {formatCurrency(Math.round(g.monthlyNeeded))}/mo
                         </strong>
                       </div>

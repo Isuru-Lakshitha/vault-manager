@@ -172,11 +172,10 @@ const CurrencyInput = ({ value, onChange, style, ...props }) => {
             transform: 'translateY(-50%)',
             background: 'rgba(74, 222, 128, 0.18)',
             border: '1px solid rgba(74, 222, 128, 0.45)',
-            color: '#4ade80',
+            color: 'var(--mm-success)',
             borderRadius: 6,
             padding: '2px 6px',
             fontSize: '0.68rem',
-            fontFamily: 'Inter, sans-serif',
             fontWeight: 700,
             cursor: 'pointer',
             whiteSpace: 'nowrap',
@@ -196,7 +195,7 @@ const CurrencyInput = ({ value, onChange, style, ...props }) => {
             alignItems: 'center',
           }}
         >
-          <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', marginRight: 2 }}>
+          <span style={{ fontSize: '0.62rem', color: 'var(--text-muted)', marginRight: 2 }}>
             Calc:
           </span>
           {['+', '-', '×', '÷'].map((op) => (
@@ -214,7 +213,6 @@ const CurrencyInput = ({ value, onChange, style, ...props }) => {
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 color: '#cbd5e1',
                 fontSize: '0.72rem',
-                fontFamily: 'Inter, sans-serif',
                 fontWeight: 700,
                 cursor: 'pointer',
                 minHeight: 22,
@@ -235,9 +233,8 @@ const CurrencyInput = ({ value, onChange, style, ...props }) => {
                 borderRadius: 6,
                 background: 'rgba(74, 222, 128, 0.2)',
                 border: '1px solid rgba(74, 222, 128, 0.4)',
-                color: '#4ade80',
+                color: 'var(--mm-success)',
                 fontSize: '0.72rem',
-                fontFamily: 'Inter, sans-serif',
                 fontWeight: 800,
                 cursor: 'pointer',
                 minHeight: 22,

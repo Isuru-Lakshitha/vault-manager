@@ -171,13 +171,12 @@ export default function RecurringHistoryModal({
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                <h2 style={{ margin: 0, fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: '1.25rem', color: 'var(--text-primary)' }}>
+                <h2 style={{ margin: 0, fontWeight: 800, fontSize: '1.25rem', color: 'var(--text-primary)' }}>
                   {rule.name || rule.category}
                 </h2>
                 <span
                   style={{
                     fontSize: '0.65rem',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 700,
                     padding: '2px 8px',
                     borderRadius: 20,
@@ -197,12 +196,12 @@ export default function RecurringHistoryModal({
                     : '🔔 REMINDER • DUE THIS MONTH'}
                 </span>
                 {rule.paused && (
-                  <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', color: '#888', border: '1px solid #444' }}>
+                  <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: 4, background: 'rgba(255,255,255,0.08)', color: 'var(--mm-text-3)', border: '1px solid #444' }}>
                     PAUSED
                   </span>
                 )}
               </div>
-              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', marginTop: 3 }}>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: 3 }}>
                 <span>Frequency: <strong style={{ color: 'var(--text-secondary)' }}>{rule.frequency || 'Monthly'}</strong></span>
                 <span> · Schedule: <strong style={{ color: isFlexible ? '#38bdf8' : 'var(--text-secondary)' }}>
                   {isFlexible ? `🗓️ No Fixed Date (${rule.flexible_window || 'Anytime'})` : `📅 Day ${rule.day_of_month || 1}`}
@@ -217,7 +216,7 @@ export default function RecurringHistoryModal({
               className="icon-btn"
               title={rule.paused ? 'Resume' : 'Pause'}
               onClick={() => { haptic(); if (onTogglePause) onTogglePause(rule); }}
-              style={{ color: rule.paused ? '#4ade80' : '#fbbf24' }}
+              style={{ color: rule.paused ? 'var(--mm-success)' : 'var(--mm-warning)' }}
             >
               {rule.paused ? <Play size={15} /> : <Pause size={15} />}
             </button>
@@ -243,13 +242,13 @@ export default function RecurringHistoryModal({
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
-              <div style={{ fontSize: '0.68rem', color: typeColor, fontWeight: 800, fontFamily: 'Inter, sans-serif', letterSpacing: '0.8px' }}>
+              <div style={{ fontSize: '0.68rem', color: typeColor, fontWeight: 800, letterSpacing: '0.8px' }}>
                 {rule.is_variable ? 'MONTHLY ESTIMATE (3-MO ROLLING AVG)' : 'SCHEDULED PAYMENT AMOUNT'}
               </div>
-              <div style={{ fontSize: '1.9rem', fontWeight: 900, color: typeColor, fontFamily: 'Inter, sans-serif', marginTop: '0.2rem' }}>
+              <div style={{ fontSize: '1.9rem', fontWeight: 900, color: typeColor, marginTop: '0.2rem' }}>
                 {rule.type === 'Income' ? '+' : '-'}{rule.is_variable ? '~' : ''}{formatCurrency(effectiveAmt)}
               </div>
-              <div style={{ display: 'flex', gap: '0.85rem', marginTop: '0.35rem', fontSize: '0.75rem', fontFamily: 'Inter, sans-serif', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', gap: '0.85rem', marginTop: '0.35rem', fontSize: '0.75rem', flexWrap: 'wrap' }}>
                 {rule.is_variable && (
                   <span style={{ color: '#c4b5fd', fontWeight: 600 }}>
                     📈 Variable Bill (Adjusts with actual payments)
@@ -266,19 +265,19 @@ export default function RecurringHistoryModal({
             {/* Linked Loan Quick Badge if applicable */}
             {linkedLoan && (
               <div style={{ padding: '0.6rem 0.8rem', borderRadius: 12, background: 'rgba(251,191,36,0.1)', border: '1px solid rgba(251,191,36,0.28)', maxWidth: 220 }}>
-                <div style={{ fontSize: '0.65rem', fontWeight: 800, color: '#fbbf24', letterSpacing: '0.5px' }}>
+                <div style={{ fontSize: '0.65rem', fontWeight: 800, color: 'var(--mm-warning)', letterSpacing: '0.5px' }}>
                   🪙 LINKED LOAN TELEMETRY
                 </div>
                 <div style={{ fontSize: '0.74rem', color: 'var(--text-primary)', marginTop: 2 }}>
                   Principal: <strong>{formatCurrency(loanPrincipal)}</strong> ({loanApr}% APR)
                 </div>
                 {loanMonthlyInt > 0 && (
-                  <div style={{ fontSize: '0.7rem', color: '#4ade80', marginTop: 1 }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--mm-success)', marginTop: 1 }}>
                     Monthly Interest: ~{formatCurrency(loanMonthlyInt)}
                   </div>
                 )}
                 {loanAccrued > 0 && (
-                  <div style={{ fontSize: '0.7rem', color: '#f87171', marginTop: 1 }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--mm-danger)', marginTop: 1 }}>
                     Accrued: {formatCurrency(loanAccrued)}
                   </div>
                 )}
@@ -290,21 +289,21 @@ export default function RecurringHistoryModal({
         {/* History Analytics Strip */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem' }}>
           <div style={{ padding: '0.65rem 0.85rem', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>PAYMENTS RECORDED</div>
-            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>PAYMENTS RECORDED</div>
+            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 2 }}>
               {combinedHistory.length} months
             </div>
           </div>
           <div style={{ padding: '0.65rem 0.85rem', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>TOTAL AMOUNT PAID</div>
-            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: typeColor, fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>TOTAL AMOUNT PAID</div>
+            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: typeColor, marginTop: 2 }}>
               {formatCurrency(totalPaid)}
             </div>
           </div>
           {amounts.length > 1 && (
             <div style={{ padding: '0.65rem 0.85rem', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>MIN – MAX RECORDED</div>
-              <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#38bdf8', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>MIN – MAX RECORDED</div>
+              <div style={{ fontSize: '0.88rem', fontWeight: 800, color: '#38bdf8', marginTop: 2 }}>
                 {formatCurrency(minPaid)} – {formatCurrency(maxPaid)}
               </div>
             </div>
@@ -314,7 +313,7 @@ export default function RecurringHistoryModal({
         {/* Payment History List */}
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-            <div style={{ fontSize: '0.74rem', fontWeight: 800, letterSpacing: '1px', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <div style={{ fontSize: '0.74rem', fontWeight: 800, letterSpacing: '1px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Receipt size={14} style={{ color: '#38bdf8' }} />
               MONTHLY PAYMENT HISTORY ({combinedHistory.length})
             </div>
@@ -337,10 +336,10 @@ export default function RecurringHistoryModal({
               <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(56,189,248,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Clock size={18} style={{ color: '#38bdf8' }} />
               </div>
-              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 No Payment Records Yet
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', maxWidth: 360, fontFamily: 'Inter, sans-serif' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', maxWidth: 360 }}>
                 When you pay or mark this commitment each month, your actual paid amounts, dates, and account deductions will appear here in chronological order.
               </div>
             </div>
@@ -378,11 +377,11 @@ export default function RecurringHistoryModal({
                           flexShrink: 0
                         }}
                       >
-                        {isMarkOnly ? <Clock size={16} style={{ color: '#94a3b8' }} /> : <CheckCircle2 size={16} style={{ color: '#4ade80' }} />}
+                        {isMarkOnly ? <Clock size={16} style={{ color: '#94a3b8' }} /> : <CheckCircle2 size={16} style={{ color: 'var(--mm-success)' }} />}
                       </div>
                       <div style={{ minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                          <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                             {item.month || item.date}
                           </span>
                           <span
@@ -393,24 +392,23 @@ export default function RecurringHistoryModal({
                               background: isMarkOnly ? 'rgba(148,163,184,0.14)' : 'rgba(74,222,128,0.14)',
                               border: `1px solid ${isMarkOnly ? 'rgba(148,163,184,0.3)' : 'rgba(74,222,128,0.3)'}`,
                               color: isMarkOnly ? '#94a3b8' : '#4ade80',
-                              fontFamily: 'Inter, sans-serif',
                               fontWeight: 600
                             }}
                           >
                             {isMarkOnly ? '🔕 No Account Deduction' : (sourceAccName ? `💳 Deducted: ${sourceAccName}` : '💳 Deducted from Account')}
                           </span>
                         </div>
-                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: 2 }}>
                           📅 Payment Date: {item.date} {item.notes ? `• ${item.notes}` : ''}
                         </div>
                       </div>
                     </div>
 
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontSize: '0.95rem', fontWeight: 800, color: typeColor, fontFamily: 'Inter, sans-serif' }}>
+                      <div style={{ fontSize: '0.95rem', fontWeight: 800, color: typeColor }}>
                         {formatCurrency(item.amount)}
                       </div>
-                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>
                         {item.month === currentMonth ? 'Current Month' : 'Past Month'}
                       </div>
                     </div>

@@ -304,8 +304,8 @@ export default function AICoPilotModal({ isOpen, onClose }) {
 
         {/* Top Status Bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.03)', borderRadius: 10, marginBottom: '0.75rem', fontSize: '0.78rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#4ade80' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 8px #4ade80' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--mm-success)' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--mm-success)', boxShadow: '0 0 8px #4ade80' }} />
             <span>Ledger Intelligence Active</span>
           </div>
           <div style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
@@ -382,9 +382,9 @@ export default function AICoPilotModal({ isOpen, onClose }) {
                 <Sparkles size={18} color="#fff" />
               </div>
               <div style={{ background: 'rgba(37, 37, 64, 0.75)', padding: '0.6rem 1rem', borderRadius: 12, border: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: 4 }}>
-                <span className="dot-pulse" style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80' }} />
-                <span className="dot-pulse" style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', animationDelay: '0.2s' }} />
-                <span className="dot-pulse" style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', animationDelay: '0.4s' }} />
+                <span className="dot-pulse" style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mm-success)' }} />
+                <span className="dot-pulse" style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mm-success)', animationDelay: '0.2s' }} />
+                <span className="dot-pulse" style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mm-success)', animationDelay: '0.4s' }} />
               </div>
             </div>
           )}

@@ -61,7 +61,7 @@ export default function AchievementsModal({ isOpen, onClose, achievementData }) 
               🏆
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.25rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-primary)' }}>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-primary)' }}>
                 Financial Achievements
               </h2>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
@@ -109,7 +109,7 @@ export default function AchievementsModal({ isOpen, onClose, achievementData }) 
                 </span>
                 <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{totalXp} Total XP</span>
               </div>
-              <h3 style={{ margin: '0.35rem 0 0', fontSize: '1.4rem', fontFamily: 'Inter, sans-serif', color: currentRank.color }}>
+              <h3 style={{ margin: '0.35rem 0 0', fontSize: '1.4rem', color: currentRank.color }}>
                 {currentRank.title}
               </h3>
             </div>
@@ -186,10 +186,10 @@ export default function AchievementsModal({ isOpen, onClose, achievementData }) 
 
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-                  <h4 style={{ margin: 0, fontSize: '0.88rem', fontFamily: 'Inter, sans-serif', color: b.unlocked ? '#f0f0f5' : '#888' }}>
+                  <h4 style={{ margin: 0, fontSize: '0.88rem', color: b.unlocked ? '#f0f0f5' : 'var(--mm-text-3)' }}>
                     {b.title}
                   </h4>
-                  <span style={{ fontSize: '0.65rem', padding: '1px 6px', borderRadius: 4, background: b.unlocked ? 'rgba(74, 222, 128, 0.15)' : 'rgba(255,255,255,0.05)', color: b.unlocked ? '#4ade80' : '#666', fontWeight: 600 }}>
+                  <span style={{ fontSize: '0.65rem', padding: '1px 6px', borderRadius: 4, background: b.unlocked ? 'rgba(74, 222, 128, 0.15)' : 'rgba(255,255,255,0.05)', color: b.unlocked ? 'var(--mm-success)' : 'var(--mm-text-3)', fontWeight: 600 }}>
                     +{b.xp} XP
                   </span>
                 </div>
@@ -198,7 +198,7 @@ export default function AchievementsModal({ isOpen, onClose, achievementData }) 
                   {b.description}
                 </p>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.68rem', fontWeight: 600, color: b.unlocked ? '#fbbf24' : '#666' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '0.68rem', fontWeight: 600, color: b.unlocked ? 'var(--mm-warning)' : 'var(--mm-text-3)' }}>
                   {b.unlocked ? (
                     <>
                       <CheckCircle2 size={12} color="#fbbf24" />

@@ -22,7 +22,6 @@ export default function LoanReminderModal({ isOpen, onClose, loans, accounts, fo
                 padding: '0.45rem',
                 borderRadius: 8,
                 cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif',
                 fontWeight: 600,
                 fontSize: '0.75rem',
                 background: form.mode === 'existing' ? 'rgba(91,141,239,0.14)' : 'transparent',
@@ -40,7 +39,6 @@ export default function LoanReminderModal({ isOpen, onClose, loans, accounts, fo
                 padding: '0.45rem',
                 borderRadius: 8,
                 cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif',
                 fontWeight: 600,
                 fontSize: '0.75rem',
                 background: form.mode === 'new' ? 'rgba(91,141,239,0.14)' : 'transparent',
@@ -103,16 +101,16 @@ export default function LoanReminderModal({ isOpen, onClose, loans, accounts, fo
                   </div>
                   <div>
                     <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>Interest Rate</div>
-                    <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#f59e0b' }}>{apr}% APR</div>
+                    <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--mm-warning)' }}>{apr}% APR</div>
                   </div>
                   <div>
                     <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>Monthly Interest</div>
-                    <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#34d399' }}>~{formatCurrency(moInt)}/mo</div>
+                    <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--mm-success)' }}>~{formatCurrency(moInt)}/mo</div>
                   </div>
                   {accrued > 0 && (
                     <div>
                       <div style={{ fontSize: '0.64rem', color: 'var(--text-muted)' }}>Accrued Interest</div>
-                      <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#f87171' }}>{formatCurrency(accrued)}</div>
+                      <div style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--mm-danger)' }}>{formatCurrency(accrued)}</div>
                     </div>
                   )}
                 </div>
@@ -224,9 +222,8 @@ export default function LoanReminderModal({ isOpen, onClose, loans, accounts, fo
                     borderRadius: 6,
                     background: 'rgba(245,158,11,0.1)',
                     border: '1px solid rgba(245,158,11,0.28)',
-                    color: '#f59e0b',
+                    color: 'var(--mm-warning)',
                     fontSize: '0.68rem',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 600,
                     cursor: 'pointer',
                   }}
@@ -259,7 +256,6 @@ export default function LoanReminderModal({ isOpen, onClose, loans, accounts, fo
                 border: `1px solid ${form.schedule_mode === 'flexible' ? 'var(--mm-accent, #5b8def)' : 'var(--mm-border-subtle, rgba(255,255,255,0.08))'}`,
                 background: form.schedule_mode === 'flexible' ? 'rgba(91,141,239,0.12)' : 'transparent',
                 color: form.schedule_mode === 'flexible' ? 'var(--text-primary)' : 'var(--text-secondary)',
-                fontFamily: 'Inter, sans-serif',
                 fontSize: '0.73rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -276,7 +272,6 @@ export default function LoanReminderModal({ isOpen, onClose, loans, accounts, fo
                 border: `1px solid ${form.schedule_mode === 'fixed' ? 'var(--mm-accent, #5b8def)' : 'var(--mm-border-subtle, rgba(255,255,255,0.08))'}`,
                 background: form.schedule_mode === 'fixed' ? 'rgba(91,141,239,0.12)' : 'transparent',
                 color: form.schedule_mode === 'fixed' ? 'var(--text-primary)' : 'var(--text-secondary)',
-                fontFamily: 'Inter, sans-serif',
                 fontSize: '0.73rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -353,7 +348,7 @@ export default function LoanReminderModal({ isOpen, onClose, loans, accounts, fo
               style={{ width: 16, height: 16 }}
             />
             <div>
-              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+              <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-primary)' }}>
                 {form.start_next_month
                   ? 'Already paid this month — start reminder from next month'
                   : 'Still due this month — reserve in this month’s Safe-to-Spend'}

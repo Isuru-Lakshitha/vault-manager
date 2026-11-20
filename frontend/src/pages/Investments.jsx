@@ -26,8 +26,8 @@ const fmtPct = (v) => `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`;
 const CustomTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background:'var(--hud-bg, rgba(6,8,20,0.95))', border:'1px solid rgba(74,222,128,0.3)', padding:'0.75rem 1rem', borderRadius:10, fontFamily:'Inter, sans-serif', fontSize:'0.8rem' }}>
-      <p style={{ color:'#4ade80', margin:'0 0 0.3rem', fontWeight:700 }}>{payload[0].name}</p>
+    <div style={{ background:'var(--hud-bg, rgba(6,8,20,0.95))', border:'1px solid rgba(74,222,128,0.3)', padding:'0.75rem 1rem', borderRadius:10, fontSize:'0.8rem' }}>
+      <p style={{ color:'var(--mm-success)', margin:'0 0 0.3rem', fontWeight:700 }}>{payload[0].name}</p>
       <p style={{ color:'#fff', margin:0 }}>{formatCurrency(payload[0].value)}</p>
     </div>
   );
@@ -241,8 +241,8 @@ const Investments = () => {
               ].map((k) => (
                 <div key={k.label} className="bento-item col-span-4"
                   style={{ flexDirection:'column', border:'1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))', background:'var(--bg-surface)' }}>
-                  <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.68rem', letterSpacing:'0.04em', color:'var(--text-secondary)', marginBottom:'0.4rem', fontWeight:600 }}>{k.label}</div>
-                  <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.5rem', color:k.color }}>
+                  <div style={{ fontSize:'0.68rem', letterSpacing:'0.04em', color:'var(--text-secondary)', marginBottom:'0.4rem', fontWeight:600 }}>{k.label}</div>
+                  <div style={{ fontWeight:700, fontSize:'1.5rem', color:k.color }}>
                     {k.label === 'TOTAL P&L' ? (
                       <>{totalPnL >= 0 ? '+' : ''}{formatCurrency(totalPnL)} <span style={{ fontSize:'0.88rem' }}>({fmtPct(totalPnLPct)})</span></>
                     ) : <AnimatedCounter value={k.val} formatter={formatCurrency} />}
@@ -261,13 +261,13 @@ const Investments = () => {
                   <motion.div className="bento-item col-span-6" initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.3, type:'spring', stiffness:300 }}
                     style={{ flexDirection:'row', alignItems:'center', justifyContent:'space-between', border:'1px solid rgba(74,222,128,0.15)', background:'linear-gradient(135deg,rgba(74,222,128,0.06),transparent)', padding:'1rem 1.5rem' }}>
                     <div>
-                      <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:'0.3rem' }}>🏆 BEST PERFORMER</div>
-                      <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1rem' }}>{best.name} {best.symbol && <span style={{ color:'var(--text-muted)', fontSize:'0.75rem' }}>({best.symbol})</span>}</div>
-                      <div style={{ fontSize:'0.75rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:'0.2rem' }}>{best.type} · {best.quantity} units</div>
+                      <div style={{ fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:'0.3rem' }}>🏆 BEST PERFORMER</div>
+                      <div style={{ fontWeight:700, fontSize:'1rem' }}>{best.name} {best.symbol && <span style={{ color:'var(--text-muted)', fontSize:'0.75rem' }}>({best.symbol})</span>}</div>
+                      <div style={{ fontSize:'0.75rem', color:'var(--text-muted)', marginTop:'0.2rem' }}>{best.type} · {best.quantity} units</div>
                     </div>
                     <div style={{ textAlign:'right' }}>
-                      <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.4rem', color: pct >= 0 ? '#4ade80' : '#f87171' }}>{fmtPct(pct)}</div>
-                      <div style={{ fontSize:'0.8rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>{formatCurrency(best.current_price * best.quantity)}</div>
+                      <div style={{ fontWeight:700, fontSize:'1.4rem', color: pct >= 0 ? 'var(--mm-success)' : 'var(--mm-danger)' }}>{fmtPct(pct)}</div>
+                      <div style={{ fontSize:'0.8rem', color:'var(--text-muted)' }}>{formatCurrency(best.current_price * best.quantity)}</div>
                     </div>
                   </motion.div>
                 );
@@ -285,20 +285,20 @@ const Investments = () => {
                   <motion.div className="bento-item col-span-6" initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.32, type:'spring', stiffness:300 }}
                     style={{ flexDirection:'row', alignItems:'center', justifyContent:'space-between', border:'1px solid rgba(248,113,113,0.15)', background:'linear-gradient(135deg,rgba(248,113,113,0.06),transparent)', padding:'1rem 1.5rem' }}>
                     <div>
-                      <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:'0.3rem' }}>📉 WORST PERFORMER</div>
-                      <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1rem' }}>{worst.name} {worst.symbol && <span style={{ color:'var(--text-muted)', fontSize:'0.75rem' }}>({worst.symbol})</span>}</div>
-                      <div style={{ fontSize:'0.75rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:'0.2rem' }}>{worst.type} · {worst.quantity} units</div>
+                      <div style={{ fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:'0.3rem' }}>📉 WORST PERFORMER</div>
+                      <div style={{ fontWeight:700, fontSize:'1rem' }}>{worst.name} {worst.symbol && <span style={{ color:'var(--text-muted)', fontSize:'0.75rem' }}>({worst.symbol})</span>}</div>
+                      <div style={{ fontSize:'0.75rem', color:'var(--text-muted)', marginTop:'0.2rem' }}>{worst.type} · {worst.quantity} units</div>
                     </div>
                     <div style={{ textAlign:'right' }}>
-                      <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.4rem', color: pct >= 0 ? '#4ade80' : '#f87171' }}>{fmtPct(pct)}</div>
-                      <div style={{ fontSize:'0.8rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>{formatCurrency(worst.current_price * worst.quantity)}</div>
+                      <div style={{ fontWeight:700, fontSize:'1.4rem', color: pct >= 0 ? 'var(--mm-success)' : 'var(--mm-danger)' }}>{fmtPct(pct)}</div>
+                      <div style={{ fontSize:'0.8rem', color:'var(--text-muted)' }}>{formatCurrency(worst.current_price * worst.quantity)}</div>
                     </div>
                   </motion.div>
                 );
               })()}
 
               <div className="bento-item col-span-6" style={{ flexDirection:'column' }}>
-                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-secondary)', marginBottom:'0.75rem' }}>ALLOCATION</div>
+                <div style={{ fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-secondary)', marginBottom:'0.75rem' }}>ALLOCATION</div>
                 {pieData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={180}>
                     <PieChart>
@@ -308,10 +308,10 @@ const Investments = () => {
                       <Tooltip content={<CustomTooltip/>}/>
                     </PieChart>
                   </ResponsiveContainer>
-                ) : <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.8rem' }}>NO INVESTMENTS</div>}
+                ) : <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)', fontSize:'0.8rem' }}>NO INVESTMENTS</div>}
               </div>
               <div className="bento-item col-span-6" style={{ flexDirection:'column', padding:'1.5rem' }}>
-                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-secondary)', marginBottom:'0.875rem' }}>BY TYPE</div>
+                <div style={{ fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-secondary)', marginBottom:'0.875rem' }}>BY TYPE</div>
                 <div style={{ display:'flex', flexDirection:'column', gap:'0.7rem', overflowY:'auto', maxHeight:200 }}>
                   {Object.entries(investments.reduce((acc, inv) => {
                     acc[inv.type] = (acc[inv.type]||0) + inv.current_price * inv.quantity; return acc;
@@ -319,9 +319,9 @@ const Investments = () => {
                     const pct = totalCurrent > 0 ? (val / totalCurrent) * 100 : 0;
                     return (
                       <div key={type}>
-                        <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.8rem', fontFamily:'Inter, sans-serif', marginBottom:'0.3rem' }}>
+                        <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.8rem', marginBottom:'0.3rem' }}>
                           <span style={{ color:COLORS[i%COLORS.length] }}>● {type}</span>
-                          <span style={{ color:'#aaa' }}>{formatCurrency(val)} <span style={{ color:'var(--text-muted)', fontSize:'0.7rem' }}>({Math.round(pct)}%)</span></span>
+                          <span style={{ color:'var(--mm-text-2)' }}>{formatCurrency(val)} <span style={{ color:'var(--text-muted)', fontSize:'0.7rem' }}>({Math.round(pct)}%)</span></span>
                         </div>
                         <div style={{ height:4, background:'rgba(255,255,255,0.05)', borderRadius:2, overflow:'hidden' }}>
                           <motion.div initial={{ width:0 }} animate={{ width:`${pct}%` }} transition={{ duration:0.8, ease:'easeOut' }}
@@ -343,7 +343,7 @@ const Investments = () => {
               }));
               return (
                 <div className="hud-panel" style={{ padding:'1.25rem 1.5rem', marginBottom:'1rem' }}>
-                  <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.68rem', letterSpacing:'2px', color:'var(--text-secondary)', marginBottom:'1rem' }}>📊 COST vs CURRENT VALUE BY HOLDING</div>
+                  <div style={{ fontSize:'0.68rem', letterSpacing:'2px', color:'var(--text-secondary)', marginBottom:'1rem' }}>📊 COST vs CURRENT VALUE BY HOLDING</div>
                   <div style={{ height:180, overflowX:'auto' }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={chartData} margin={{ top:5, right:10, left:0, bottom:5 }} barGap={2}>
@@ -361,8 +361,8 @@ const Investments = () => {
                     </ResponsiveContainer>
                   </div>
                   <div style={{ display:'flex', gap:'1.25rem', marginTop:'0.5rem' }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:'0.4rem' }}><div style={{ width:10, height:10, borderRadius:2, background:'#8b5cf6' }}/><span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.68rem', color:'var(--text-muted)' }}>Cost</span></div>
-                    <div style={{ display:'flex', alignItems:'center', gap:'0.4rem' }}><div style={{ width:10, height:10, borderRadius:2, background:'#4ade80' }}/><span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.68rem', color:'var(--text-muted)' }}>Current (green = gain, red = loss)</span></div>
+                    <div style={{ display:'flex', alignItems:'center', gap:'0.4rem' }}><div style={{ width:10, height:10, borderRadius:2, background:'#8b5cf6' }}/><span style={{ fontSize:'0.68rem', color:'var(--text-muted)' }}>Cost</span></div>
+                    <div style={{ display:'flex', alignItems:'center', gap:'0.4rem' }}><div style={{ width:10, height:10, borderRadius:2, background:'var(--mm-success)' }}/><span style={{ fontSize:'0.68rem', color:'var(--text-muted)' }}>Current (green = gain, red = loss)</span></div>
                   </div>
                 </div>
               );
@@ -371,7 +371,7 @@ const Investments = () => {
             {/* Holdings list */}
             <div className="hud-panel" style={{ padding:'0.75rem' }}>
               <div style={{ overflowX:'auto' }}>
-                <table tabIndex={0} aria-label="Holdings" style={{ width:'100%', borderCollapse:'collapse', fontFamily:'Inter, sans-serif', fontSize:'0.82rem' }}>
+                <table tabIndex={0} aria-label="Holdings" style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.82rem' }}>
                   <thead><tr style={{ borderBottom:'1px solid rgba(74,222,128,0.15)' }}>
                     {['Name','Type','Qty','Buy Price','Current Price','Value','P&L','CAGR',''].map(h => (
                       <th key={h} style={{ textAlign:'left', padding:'0.6rem 1rem', color:'var(--text-muted)', fontWeight:600, fontSize:'0.7rem', letterSpacing:'1px' }}>{h}</th>
@@ -379,7 +379,7 @@ const Investments = () => {
                   </tr></thead>
                   <tbody>
                     {investments.length === 0 && (
-                      <tr><td colSpan={9} style={{ textAlign:'center', padding:'3rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>NO HOLDINGS. ADD YOUR FIRST INVESTMENT.</td></tr>
+                      <tr><td colSpan={9} style={{ textAlign:'center', padding:'3rem', color:'var(--text-muted)' }}>NO HOLDINGS. ADD YOUR FIRST INVESTMENT.</td></tr>
                     )}
                     {investments.map((inv, i) => {
                       const pnl = (inv.current_price - inv.buy_price) * inv.quantity;
@@ -403,9 +403,9 @@ const Investments = () => {
                             {inv.symbol && <div style={{ fontSize:'0.7rem', color:'var(--text-secondary)' }}>{inv.symbol}</div>}
                           </td>
                           <td style={{ padding:'0.75rem 1rem' }}><span style={{ background:'rgba(129,140,248,0.15)', color:'#a78bfa', padding:'0.15rem 0.5rem', borderRadius:5, fontSize:'0.72rem' }}>{inv.type}</span></td>
-                          <td style={{ padding:'0.75rem 1rem', color:'#aaa' }}>{formatNumber(inv.quantity)}</td>
-                          <td style={{ padding:'0.75rem 1rem', color:'#aaa' }}>{formatCurrency(inv.buy_price)}</td>
-                          <td style={{ padding:'0.75rem 1rem', color:'#4ade80', fontWeight:600 }}>
+                          <td style={{ padding:'0.75rem 1rem', color:'var(--mm-text-2)' }}>{formatNumber(inv.quantity)}</td>
+                          <td style={{ padding:'0.75rem 1rem', color:'var(--mm-text-2)' }}>{formatCurrency(inv.buy_price)}</td>
+                          <td style={{ padding:'0.75rem 1rem', color:'var(--mm-success)', fontWeight:600 }}>
                             {editingPriceId === inv.id ? (
                               <div style={{ display:'flex', alignItems:'center', gap:'0.3rem' }}>
                                 <input
@@ -448,10 +448,10 @@ const Investments = () => {
                           <td style={{ padding:'0.75rem 1rem' }}>
                             {cagr !== null ? (
                               <div>
-                                <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.82rem', color: cagr >= 0 ? '#4ade80' : '#f87171' }}>
+                                <div style={{ fontWeight:700, fontSize:'0.82rem', color: cagr >= 0 ? 'var(--mm-success)' : 'var(--mm-danger)' }}>
                                   {cagr >= 0 ? '+' : ''}{cagr.toFixed(1)}%/yr
                                 </div>
-                                <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>held {heldLabel}</div>
+                                <div style={{ fontSize:'0.65rem', color:'var(--text-muted)' }}>held {heldLabel}</div>
                               </div>
                             ) : (
                               <span style={{ fontSize:'0.7rem', color:'var(--text-muted)' }}>—</span>
@@ -467,7 +467,7 @@ const Investments = () => {
                                   setTopUpPrice(inv.current_price || inv.buy_price || 0);
                                   setTopUpAccountId('');
                                 }}
-                                style={{ padding:'0.25rem 0.55rem', borderRadius:6, background:'rgba(74,222,128,0.12)', border:'1px solid rgba(74,222,128,0.3)', color:'#4ade80', fontSize:'0.7rem', fontWeight:600, cursor:'pointer', whiteSpace:'nowrap' }}
+                                style={{ padding:'0.25rem 0.55rem', borderRadius:6, background:'rgba(74,222,128,0.12)', border:'1px solid rgba(74,222,128,0.3)', color:'var(--mm-success)', fontSize:'0.7rem', fontWeight:600, cursor:'pointer', whiteSpace:'nowrap' }}
                                 title={`Buy more ${inv.name}`}
                               >
                                 + Buy
@@ -503,14 +503,14 @@ const Investments = () => {
                 <div className="bento-item col-span-12 heavy-section-deferred" style={{ flexDirection: 'column', gap: '1.1rem', marginTop: '1.5rem', padding: '1.5rem', border: '1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))', background: 'var(--bg-surface)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div>
-                      <h3 style={{ margin: 0, fontFamily: 'Inter, sans-serif', fontSize: '0.88rem', fontWeight: 700, letterSpacing: '1px', color: '#4ade80' }}>
+                      <h3 style={{ margin: 0, fontSize: '0.88rem', fontWeight: 700, letterSpacing: '1px', color: 'var(--mm-success)' }}>
                         🚀 COMPOUND WEALTH & FIRE PROJECTOR
                       </h3>
                       <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
                         Starting from your current portfolio ({formatCurrency(pv)}) with monthly compounding
                       </span>
                     </div>
-                    <span style={{ padding: '0.25rem 0.7rem', borderRadius: 20, background: 'rgba(129,140,248,0.14)', border: '1px solid rgba(129,140,248,0.3)', color: '#818cf8', fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', fontWeight: 700 }}>
+                    <span style={{ padding: '0.25rem 0.7rem', borderRadius: 20, background: 'rgba(129,140,248,0.14)', border: '1px solid rgba(129,140,248,0.3)', color: '#818cf8', fontSize: '0.72rem', fontWeight: 700 }}>
                       4% Safe Withdrawal Rule
                     </span>
                   </div>
@@ -521,7 +521,7 @@ const Investments = () => {
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', marginBottom: '0.3rem' }}>
                           <span style={{ color: 'var(--text-secondary)' }}>Monthly Investment ({getCurrencyLabel()})</span>
-                          <strong style={{ color: '#4ade80', fontFamily: 'Inter, sans-serif' }}>{formatCurrency(fireMonthly)}</strong>
+                          <strong style={{ color: 'var(--mm-success)' }}>{formatCurrency(fireMonthly)}</strong>
                         </div>
                         <input
                           type="number"
@@ -538,7 +538,7 @@ const Investments = () => {
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', marginBottom: '0.3rem' }}>
                           <span style={{ color: 'var(--text-secondary)' }}>Expected Annual Return (APY)</span>
-                          <strong style={{ color: '#818cf8', fontFamily: 'Inter, sans-serif' }}>{fireRate}% / yr</strong>
+                          <strong style={{ color: '#818cf8' }}>{fireRate}% / yr</strong>
                         </div>
                         <input
                           type="range"
@@ -555,7 +555,7 @@ const Investments = () => {
                       <div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', marginBottom: '0.3rem' }}>
                           <span style={{ color: 'var(--text-secondary)' }}>Time Horizon</span>
-                          <strong style={{ color: '#fbbf24', fontFamily: 'Inter, sans-serif' }}>{fireYears} Years</strong>
+                          <strong style={{ color: 'var(--mm-warning)' }}>{fireYears} Years</strong>
                         </div>
                         <input
                           type="range"
@@ -565,7 +565,7 @@ const Investments = () => {
                           step="1"
                           value={fireYears}
                           onChange={e => setFireYears(parseInt(e.target.value, 10))}
-                          style={{ width: '100%', accentColor: '#fbbf24' }}
+                          style={{ width: '100%', accentColor: 'var(--mm-warning)' }}
                         />
                       </div>
                     </div>
@@ -573,10 +573,10 @@ const Investments = () => {
                     {/* Results Cards */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', background: 'rgba(0,0,0,0.28)', borderRadius: 14, padding: '1.15rem', border: '1px solid rgba(255,255,255,0.06)' }}>
                       <div>
-                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', letterSpacing: '1px' }}>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', letterSpacing: '1px' }}>
                           PROJECTED WEALTH IN {fireYears} YEARS
                         </div>
-                        <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#4ade80', fontFamily: 'Inter, sans-serif', marginTop: '0.15rem' }}>
+                        <div style={{ fontSize: '1.85rem', fontWeight: 800, color: 'var(--mm-success)', marginTop: '0.15rem' }}>
                           {formatCurrency(futureValue)}
                         </div>
                       </div>
@@ -584,11 +584,11 @@ const Investments = () => {
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
                         <div>
                           <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>Total Principal</div>
-                          <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>{formatCurrency(totalPrincipal)}</div>
+                          <div style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)' }}>{formatCurrency(totalPrincipal)}</div>
                         </div>
                         <div>
                           <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)' }}>Compound Growth</div>
-                          <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#a78bfa', fontFamily: 'Inter, sans-serif' }}>+{formatCurrency(compoundGain)}</div>
+                          <div style={{ fontSize: '0.92rem', fontWeight: 700, color: '#a78bfa' }}>+{formatCurrency(compoundGain)}</div>
                         </div>
                       </div>
 
@@ -598,15 +598,15 @@ const Investments = () => {
                           <div style={{ width: `${100 - gainPct}%`, background: '#4ade80' }} />
                           <div style={{ width: `${gainPct}%`, background: '#a78bfa' }} />
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: '0.25rem', fontFamily: 'Inter, sans-serif' }}>
-                          <span style={{ color: '#4ade80' }}>Principal {(100 - gainPct).toFixed(0)}%</span>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                          <span style={{ color: 'var(--mm-success)' }}>Principal {(100 - gainPct).toFixed(0)}%</span>
                           <span style={{ color: '#a78bfa' }}>Compound Interest {gainPct.toFixed(0)}%</span>
                         </div>
                       </div>
 
                       <div style={{ background: 'rgba(129,140,248,0.1)', border: '1px solid rgba(129,140,248,0.25)', borderRadius: 10, padding: '0.6rem 0.8rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: '0.74rem', color: '#d1d1e0' }}>🏖️ Est. FIRE Passive Income:</span>
-                        <strong style={{ fontSize: '0.9rem', color: '#818cf8', fontFamily: 'Inter, sans-serif' }}>{formatCurrency(fireMonthlyPassive)} / mo</strong>
+                        <strong style={{ fontSize: '0.9rem', color: '#818cf8' }}>{formatCurrency(fireMonthlyPassive)} / mo</strong>
                       </div>
                     </div>
                   </div>
@@ -630,9 +630,9 @@ const Investments = () => {
             <div style={{ display:'flex', gap:'0.4rem', flexWrap:'wrap' }}>
               {TYPES.map(t => (
                 <button key={t} type="button" onClick={() => setFormData({...formData,type:t})}
-                  style={{ padding:'0.35rem 0.75rem', borderRadius:7, border:'none', cursor:'pointer', fontSize:'0.75rem', fontFamily:'Inter, sans-serif',
+                  style={{ padding:'0.35rem 0.75rem', borderRadius:7, border:'none', cursor:'pointer', fontSize:'0.75rem',
                     background: formData.type===t ? 'linear-gradient(135deg,#818cf8,#a78bfa)' : 'rgba(255,255,255,0.05)',
-                    color: formData.type===t ? '#fff' : '#555' }}>{t}</button>
+                    color: formData.type===t ? '#fff' : 'var(--mm-text-3)' }}>{t}</button>
               ))}
             </div>
           </div>
@@ -664,7 +664,7 @@ const Investments = () => {
             <form onSubmit={handleTopUpSubmit} style={{ display:'flex', flexDirection:'column', gap:'0.9rem' }}>
               <div style={{ padding:'0.75rem 1rem', borderRadius:10, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', fontSize:'0.78rem', display:'flex', justifyContent:'space-between', flexWrap:'wrap', gap:'0.5rem' }}>
                 <span>Current: <strong>{formatNumber(oldQty)} units</strong> @ {formatCurrency(oldBuy)}</span>
-                <span style={{ color:'#4ade80' }}>New Avg Buy: <strong>{formatCurrency(nextAvg)}</strong> ({formatNumber(nextQty)} units)</span>
+                <span style={{ color:'var(--mm-success)' }}>New Avg Buy: <strong>{formatCurrency(nextAvg)}</strong> ({formatNumber(nextQty)} units)</span>
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.75rem' }}>
                 <div>

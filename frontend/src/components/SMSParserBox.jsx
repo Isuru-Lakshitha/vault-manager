@@ -177,8 +177,7 @@ export default function SMSParserBox({ accounts = [], onApply, defaultOpen = fal
               borderRadius: 10,
               background: 'linear-gradient(135deg, rgba(74,222,128,0.14) 0%, rgba(6,182,212,0.12) 100%)',
               border: '1px dashed rgba(74,222,128,0.45)',
-              color: '#4ade80',
-              fontFamily: 'Inter, sans-serif',
+              color: 'var(--mm-success)',
               fontSize: '0.76rem',
               fontWeight: 700,
               cursor: 'pointer',
@@ -206,7 +205,6 @@ export default function SMSParserBox({ accounts = [], onApply, defaultOpen = fal
               background: 'rgba(255,255,255,0.04)',
               border: '1px solid rgba(255,255,255,0.1)',
               color: '#c8c8d8',
-              fontFamily: 'Inter, sans-serif',
               fontSize: '0.75rem',
               fontWeight: 600,
               cursor: 'pointer',
@@ -230,7 +228,6 @@ export default function SMSParserBox({ accounts = [], onApply, defaultOpen = fal
               background: listening ? 'rgba(248,113,113,0.2)' : 'rgba(129,140,248,0.12)',
               border: `1px solid ${listening ? '#f87171' : 'rgba(129,140,248,0.35)'}`,
               color: listening ? '#f87171' : '#818cf8',
-              fontFamily: 'Inter, sans-serif',
               fontSize: '0.75rem',
               fontWeight: 700,
               cursor: 'pointer',
@@ -253,7 +250,7 @@ export default function SMSParserBox({ accounts = [], onApply, defaultOpen = fal
           gap: '0.6rem'
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontFamily: 'Inter, sans-serif', fontSize: '0.76rem', fontWeight: 700, color: '#4ade80' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.76rem', fontWeight: 700, color: 'var(--mm-success)' }}>
               <Clipboard size={14} /> Instant Bank SMS & Phrase Parser
             </div>
             <button
@@ -280,14 +277,12 @@ export default function SMSParserBox({ accounts = [], onApply, defaultOpen = fal
               background: 'rgba(0,0,0,0.3)',
               border: '1px solid rgba(255,255,255,0.1)',
               color: 'var(--text-primary)',
-              resize: 'none',
-              fontFamily: 'Inter, sans-serif'
-            }}
+              resize: 'none' }}
           />
 
           {/* Quick Sample SMS presets */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', overflowX: 'auto', paddingBottom: 2 }}>
-            <span style={{ fontSize: '0.66rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', flexShrink: 0 }}>
+            <span style={{ fontSize: '0.66rem', color: 'var(--text-muted)', flexShrink: 0 }}>
               Try sample:
             </span>
             {[
@@ -309,7 +304,6 @@ export default function SMSParserBox({ accounts = [], onApply, defaultOpen = fal
                   border: '1px solid rgba(255,255,255,0.08)',
                   color: 'var(--text-secondary)',
                   fontSize: '0.68rem',
-                  fontFamily: 'Inter, sans-serif',
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
                   flexShrink: 0,
@@ -330,8 +324,7 @@ export default function SMSParserBox({ accounts = [], onApply, defaultOpen = fal
                 borderRadius: 8,
                 background: 'linear-gradient(135deg, rgba(74,222,128,0.2), rgba(34,197,94,0.2))',
                 border: '1px solid rgba(74,222,128,0.4)',
-                color: '#4ade80',
-                fontFamily: 'Inter, sans-serif',
+                color: 'var(--mm-success)',
                 fontSize: '0.75rem',
                 fontWeight: 700,
                 cursor: 'pointer'
@@ -348,7 +341,6 @@ export default function SMSParserBox({ accounts = [], onApply, defaultOpen = fal
                 background: listening ? 'rgba(248,113,113,0.2)' : 'rgba(129,140,248,0.14)',
                 border: `1px solid ${listening ? '#f87171' : 'rgba(129,140,248,0.3)'}`,
                 color: listening ? '#f87171' : '#818cf8',
-                fontFamily: 'Inter, sans-serif',
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -368,7 +360,6 @@ export default function SMSParserBox({ accounts = [], onApply, defaultOpen = fal
                 background: 'rgba(255,255,255,0.06)',
                 border: '1px solid rgba(255,255,255,0.12)',
                 color: 'var(--text-primary)',
-                fontFamily: 'Inter, sans-serif',
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 cursor: 'pointer'
@@ -389,7 +380,7 @@ export default function SMSParserBox({ accounts = [], onApply, defaultOpen = fal
               gap: '0.35rem'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.88rem', color: '#4ade80' }}>
+                <span style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--mm-success)' }}>
                   {parsed.type === 'Expense' ? '💸' : '💰'} {formatCurrency(parsed.amount)}
                 </span>
                 <span style={{ fontSize: '0.72rem', color: '#818cf8', fontWeight: 600 }}>
@@ -415,7 +406,6 @@ export default function SMSParserBox({ accounts = [], onApply, defaultOpen = fal
                   background: 'linear-gradient(135deg, #4ade80, #22c55e)',
                   border: 'none',
                   color: 'var(--bg-void)',
-                  fontFamily: 'Inter, sans-serif',
                   fontSize: '0.78rem',
                   fontWeight: 700,
                   cursor: 'pointer',

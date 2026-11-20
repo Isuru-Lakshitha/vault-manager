@@ -111,3 +111,38 @@ html:is([data-lang='si'], [data-lang='ta']) .bottom-nav-label { font-size: 0.62r
 @media (max-width: 900px) {
   html body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) { font-size: max(16px, 1em) !important; }
 }
+
+/* ---------- Settings rows (pages/Settings.jsx) ---------- */
+.set-section { margin: 0.5rem 0 0.75rem; font: 700 0.7rem/1.2 Inter, sans-serif; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mm-text-3); }
+.set-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 1rem 1.25rem; margin-bottom: 0.5rem; border-radius: 14px;
+  border: 1px solid var(--mm-border); background: var(--mm-surface);
+}
+.set-row-main { display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
+.set-row-icon {
+  flex-shrink: 0; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px;
+  color: var(--row-color, var(--mm-accent));
+  background: color-mix(in srgb, var(--row-color, var(--mm-accent)) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--row-color, var(--mm-accent)) 24%, transparent);
+}
+body.light-mode .set-row-icon { color: color-mix(in srgb, var(--row-color, var(--mm-accent)) 70%, #000); }
+.set-row-text { min-width: 0; }
+.set-row-label { font-weight: 600; font-size: 0.9rem; color: var(--mm-text); }
+.set-row-desc { margin-top: 2px; font-size: 0.78rem; line-height: 1.45; color: var(--mm-text-2); }
+.set-row-control { flex-shrink: 0; }
+@media (max-width: 640px) {
+  .set-row { flex-wrap: wrap; padding: 0.9rem 1rem; }
+  .set-row-control { width: 100%; display: flex; justify-content: flex-end; }
+  .set-row-control:has(> .set-switch) { width: auto; }
+}
+.set-switch {
+  position: relative; width: 48px; height: 28px; border-radius: 999px; border: 0; cursor: pointer; flex-shrink: 0;
+  background: color-mix(in srgb, var(--mm-text-3) 35%, transparent); transition: background 0.25s var(--lg-spring-soft, ease);
+}
+.set-switch[aria-checked='true'] { background: var(--mm-accent-strong, var(--mm-accent)); }
+.set-switch-knob {
+  position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); transition: translate 0.35s var(--lg-spring, ease);
+}
+.set-switch[aria-checked='true'] .set-switch-knob { translate: 20px 0; }

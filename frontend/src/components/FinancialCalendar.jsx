@@ -155,7 +155,7 @@ export default function FinancialCalendar({
             >
               <ChevronLeft size={16} />
             </button>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)', minWidth: 140, textAlign: 'center' }}>
+            <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)', minWidth: 140, textAlign: 'center' }}>
               {monthName}
             </span>
             <button
@@ -181,7 +181,7 @@ export default function FinancialCalendar({
         {/* Days of Week Header */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', textAlign: 'center' }}>
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
-            <div key={d} style={{ fontSize: '0.68rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', fontWeight: 600, padding: '0.2rem 0' }}>
+            <div key={d} style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontWeight: 600, padding: '0.2rem 0' }}>
               {d}
             </div>
           ))}
@@ -231,9 +231,8 @@ export default function FinancialCalendar({
                 <span
                   style={{
                     fontSize: '0.74rem',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: isToday || isSelected ? 700 : 500,
-                    color: isToday ? '#818cf8' : isSelected ? '#4ade80' : '#d1d1e0',
+                    color: isToday ? '#818cf8' : isSelected ? 'var(--mm-success)' : '#d1d1e0',
                   }}
                 >
                   {cell.dayNumber}
@@ -241,9 +240,9 @@ export default function FinancialCalendar({
 
                 {/* Event Dots */}
                 <div style={{ display: 'flex', gap: '2px', alignItems: 'center', marginTop: 2 }}>
-                  {hasIncome && <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#4ade80' }} />}
-                  {hasExpense && <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#f87171' }} />}
-                  {hasBills && <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#fbbf24' }} />}
+                  {hasIncome && <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--mm-success)' }} />}
+                  {hasExpense && <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--mm-danger)' }} />}
+                  {hasBills && <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--mm-warning)' }} />}
                 </div>
 
                 {/* Day Net */}
@@ -251,9 +250,8 @@ export default function FinancialCalendar({
                   <span
                     style={{
                       fontSize: '0.58rem',
-                      fontFamily: 'Inter, sans-serif',
                       fontWeight: 600,
-                      color: cell.income >= cell.expense ? '#4ade80' : '#f87171',
+                      color: cell.income >= cell.expense ? 'var(--mm-success)' : 'var(--mm-danger)',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
@@ -283,17 +281,17 @@ export default function FinancialCalendar({
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: '0.4rem' }}>
-            <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-primary)' }}>
+            <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-primary)' }}>
               Events for {new Date(selectedDayStr + 'T00:00:00').toLocaleDateString('default', { month: 'short', day: 'numeric', year: 'numeric' })}
             </div>
-            <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem', fontFamily: 'Inter, sans-serif' }}>
-              {selectedDayData.income > 0 && <span style={{ color: '#4ade80' }}>+{formatCurrency(selectedDayData.income)}</span>}
-              {selectedDayData.expense > 0 && <span style={{ color: '#f87171' }}>-{formatCurrency(selectedDayData.expense)}</span>}
+            <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
+              {selectedDayData.income > 0 && <span style={{ color: 'var(--mm-success)' }}>+{formatCurrency(selectedDayData.income)}</span>}
+              {selectedDayData.expense > 0 && <span style={{ color: 'var(--mm-danger)' }}>-{formatCurrency(selectedDayData.expense)}</span>}
             </div>
           </div>
 
           {selectedDayData.items.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '1rem', color: 'var(--text-muted)', fontSize: '0.8rem', fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ textAlign: 'center', padding: '1rem', color: 'var(--text-muted)', fontSize: '0.8rem' }}>
               No transactions or bills scheduled for this date.
             </div>
           ) : (
@@ -327,10 +325,9 @@ export default function FinancialCalendar({
 
                   <div
                     style={{
-                      fontFamily: 'Inter, sans-serif',
                       fontWeight: 700,
                       fontSize: '0.88rem',
-                      color: item.type === 'Income' ? '#4ade80' : '#f87171',
+                      color: item.type === 'Income' ? 'var(--mm-success)' : 'var(--mm-danger)',
                     }}
                   >
                     {item.type === 'Income' ? '+' : '-'}{formatCurrency(item.amount)}

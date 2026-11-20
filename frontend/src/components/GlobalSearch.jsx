@@ -236,7 +236,7 @@ const GlobalSearch = ({ open, onClose }) => {
               <input ref={inputRef} value={query} onChange={e => setQuery(e.target.value)} onKeyDown={handleKey}
                 placeholder="Type a command or search transactions, goals, accounts, bills..."
                 aria-label="Global command palette and search"
-                style={{ flex:1, background:'none', border:'none', outline:'none', fontFamily:'Inter, sans-serif', fontSize:'1rem', color:'var(--text-primary)' }}/>
+                style={{ flex:1, background:'none', border:'none', outline:'none', fontSize:'1rem', color:'var(--text-primary)' }}/>
               <button onClick={onClose} aria-label="Close command palette" style={{ background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', display:'flex', alignItems:'center' }}><X size={16}/></button>
             </div>
 
@@ -260,30 +260,30 @@ const GlobalSearch = ({ open, onClose }) => {
                         )}
                       </div>
                       <div style={{ flex:1, minWidth:0 }}>
-                        <div style={{ fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:'0.88rem', color:'var(--text-primary)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{r.label}</div>
-                        <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', color:'var(--text-muted)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{r.sub}</div>
+                        <div style={{ fontWeight:600, fontSize:'0.88rem', color:'var(--text-primary)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{r.label}</div>
+                        <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{r.sub}</div>
                       </div>
                       <div style={{ flexShrink:0, textAlign:'right' }}>
                         {r.amount !== undefined && (
-                          <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.85rem', color:r.txType==='Income'?'#4ade80':r.txType==='Transfer'?'#818cf8':'#f87171' }}>
+                          <div style={{ fontWeight:700, fontSize:'0.85rem', color:r.txType==='Income'?'var(--mm-success)':r.txType==='Transfer'?'#818cf8':'var(--mm-danger)' }}>
                             {r.txType==='Income'?'+':r.txType==='Transfer'?'↔':'-'}{formatCurrency(r.amount)}
                           </div>
                         )}
-                        <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.62rem', color:col, letterSpacing:'0.5px', textTransform:'uppercase' }}>{r.type}</div>
+                        <div style={{ fontSize:'0.62rem', color:col, letterSpacing:'0.5px', textTransform:'uppercase' }}>{r.type}</div>
                       </div>
                     </div>
                   );
                 })}
               </div>
             ) : query.trim() ? (
-              <div style={{ padding:'2rem', textAlign:'center', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.85rem' }}>
+              <div style={{ padding:'2rem', textAlign:'center', color:'var(--text-muted)', fontSize:'0.85rem' }}>
                 No results for "{query}"
               </div>
             ) : (
               <div style={{ padding:'1.1rem 1.35rem', maxHeight:400, overflowY:'auto' }}>
                 {/* Quick Actions */}
                 <div style={{ marginBottom:'1.1rem' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:'0.4rem', fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'1.5px', color:'#38bdf8', marginBottom:'0.55rem' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:'0.4rem', fontSize:'0.65rem', letterSpacing:'1.5px', color:'#38bdf8', marginBottom:'0.55rem' }}>
                     <Zap size={12} />
                     <span>QUICK ACTIONS</span>
                   </div>
@@ -298,8 +298,7 @@ const GlobalSearch = ({ open, onClose }) => {
                           padding:'0.48rem 0.7rem', borderRadius:10,
                           background:'rgba(255,255,255,0.025)',
                           border:'1px solid rgba(255,255,255,0.07)',
-                          color:'var(--text-primary)', fontSize:'0.78rem',
-                          fontFamily:'Inter, sans-serif', cursor:'pointer', textAlign:'left',
+                          color:'var(--text-primary)', fontSize:'0.78rem', cursor:'pointer', textAlign:'left',
                           transition:'border-color 0.15s, background 0.15s',
                         }}
                         onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(56,189,248,0.4)'; e.currentTarget.style.background = 'rgba(56,189,248,0.06)'; }}
@@ -315,7 +314,7 @@ const GlobalSearch = ({ open, onClose }) => {
                 {/* Notes Memory Quick Filter Chips */}
                 {topNotes.length > 0 && (
                   <div style={{ marginBottom:'1.1rem' }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:'0.4rem', fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'1.5px', color:'#4ade80', marginBottom:'0.55rem' }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:'0.4rem', fontSize:'0.65rem', letterSpacing:'1.5px', color:'var(--mm-success)', marginBottom:'0.55rem' }}>
                       <Brain size={12} />
                       <span>NOTES MEMORY</span>
                     </div>
@@ -330,8 +329,7 @@ const GlobalSearch = ({ open, onClose }) => {
                             padding:'0.28rem 0.65rem', borderRadius:100,
                             background:'rgba(255,255,255,0.03)',
                             border:'1px solid rgba(255,255,255,0.08)',
-                            color:'var(--text-primary)', fontSize:'0.75rem',
-                            fontFamily:'Inter, sans-serif', cursor:'pointer',
+                            color:'var(--text-primary)', fontSize:'0.75rem', cursor:'pointer',
                             transition:'all 0.15s ease',
                           }}
                           onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(74,222,128,0.4)'; e.currentTarget.style.color = '#4ade80'; }}
@@ -347,7 +345,7 @@ const GlobalSearch = ({ open, onClose }) => {
                   </div>
                 )}
 
-                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'1.5px', color:'var(--text-muted)', marginBottom:'0.55rem' }}>QUICK NAVIGATION</div>
+                <div style={{ fontSize:'0.65rem', letterSpacing:'1.5px', color:'var(--text-muted)', marginBottom:'0.55rem' }}>QUICK NAVIGATION</div>
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(160px, 1fr))', gap:'0.25rem' }}>
                   {QUICK_PAGES.map(item => (
                     <div key={item.path} onClick={() => { navigate(item.path); onClose(); }}
@@ -355,7 +353,7 @@ const GlobalSearch = ({ open, onClose }) => {
                       onMouseEnter={e => e.currentTarget.style.background='rgba(255,255,255,0.04)'}
                       onMouseLeave={e => e.currentTarget.style.background='transparent'}>
                       <span style={{ fontSize:'0.95rem' }}>{item.emoji}</span>
-                      <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.82rem', color:'var(--text-secondary)' }}>{item.label}</span>
+                      <span style={{ fontSize:'0.82rem', color:'var(--text-secondary)' }}>{item.label}</span>
                     </div>
                   ))}
                 </div>
@@ -363,7 +361,7 @@ const GlobalSearch = ({ open, onClose }) => {
             )}
 
             {/* Footer hint */}
-            <div style={{ display:'flex', flexWrap:'wrap', gap:'0.85rem', padding:'0.6rem 1.25rem', borderTop:'1px solid rgba(255,255,255,0.05)', fontFamily:'Inter, sans-serif', fontSize:'0.65rem', color:'var(--text-muted)' }}>
+            <div style={{ display:'flex', flexWrap:'wrap', gap:'0.85rem', padding:'0.6rem 1.25rem', borderTop:'1px solid rgba(255,255,255,0.05)', fontSize:'0.65rem', color:'var(--text-muted)' }}>
               <span>↑↓ navigate</span><span>↵ run / open</span><span>ESC close</span>
               <span style={{ marginLeft:'auto' }}>Shortcuts: [N] Quick Add · [P] Stealth · [/] Search · [⌘K] Palette</span>
             </div>

@@ -113,14 +113,14 @@ export default function EmergencyRunwayCard({ accounts = [], analytics = {}, onN
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <span style={{ fontSize: '0.68rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, letterSpacing: '1px', padding: '0.2rem 0.55rem', borderRadius: 6, background: `${status.color}22`, color: status.color }}>
+            <span style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '1px', padding: '0.2rem 0.55rem', borderRadius: 6, background: `${status.color}22`, color: status.color }}>
               {status.badge}
             </span>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
               Monthly Burn: ~{formatCurrency(monthlyBurn)}
             </span>
           </div>
-          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '1.45rem', fontWeight: 800, color: status.color, display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
+          <div style={{ fontSize: '1.45rem', fontWeight: 800, color: status.color, display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
             <span>{runwayMonthsNum > 36 ? '36+' : runwayMonthsNum} Months</span>
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 500 }}>of Emergency Runway</span>
           </div>
@@ -138,7 +138,6 @@ export default function EmergencyRunwayCard({ accounts = [], analytics = {}, onN
             padding: '0.35rem 0.75rem',
             color: 'var(--text-secondary)',
             fontSize: '0.75rem',
-            fontFamily: 'Inter, sans-serif',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -154,29 +153,29 @@ export default function EmergencyRunwayCard({ accounts = [], analytics = {}, onN
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
         {/* 3-Month Target */}
         <div style={{ padding: '0.75rem 0.9rem', borderRadius: 10, background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.04)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontFamily: 'Inter, sans-serif', marginBottom: '0.4rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '0.4rem' }}>
             <span style={{ color: 'var(--text-secondary)' }}>3-Month Basic Buffer</span>
-            <span style={{ fontWeight: 700, color: progress3Mo >= 100 ? '#4ade80' : '#38bdf8' }}>
+            <span style={{ fontWeight: 700, color: progress3Mo >= 100 ? 'var(--mm-success)' : '#38bdf8' }}>
               {progress3Mo}% ({formatCurrency(target3Mo)})
             </span>
           </div>
           <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
             <motion.div initial={{ width: 0 }} animate={{ width: `${progress3Mo}%` }} transition={{ duration: 0.8 }}
-              style={{ height: '100%', background: progress3Mo >= 100 ? '#4ade80' : 'linear-gradient(90deg, #38bdf8, #818cf8)' }} />
+              style={{ height: '100%', background: progress3Mo >= 100 ? 'var(--mm-success)' : 'linear-gradient(90deg, #38bdf8, #818cf8)' }} />
           </div>
         </div>
 
         {/* 6-Month Target */}
         <div style={{ padding: '0.75rem 0.9rem', borderRadius: 10, background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.04)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontFamily: 'Inter, sans-serif', marginBottom: '0.4rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', marginBottom: '0.4rem' }}>
             <span style={{ color: 'var(--text-secondary)' }}>6-Month Fortress Goal</span>
-            <span style={{ fontWeight: 700, color: progress6Mo >= 100 ? '#4ade80' : '#fbbf24' }}>
+            <span style={{ fontWeight: 700, color: progress6Mo >= 100 ? 'var(--mm-success)' : 'var(--mm-warning)' }}>
               {progress6Mo}% ({formatCurrency(target6Mo)})
             </span>
           </div>
           <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
             <motion.div initial={{ width: 0 }} animate={{ width: `${progress6Mo}%` }} transition={{ duration: 0.8 }}
-              style={{ height: '100%', background: progress6Mo >= 100 ? '#4ade80' : 'linear-gradient(90deg, #fbbf24, #4ade80)' }} />
+              style={{ height: '100%', background: progress6Mo >= 100 ? 'var(--mm-success)' : 'linear-gradient(90deg, #fbbf24, #4ade80)' }} />
           </div>
         </div>
       </div>
@@ -195,9 +194,8 @@ export default function EmergencyRunwayCard({ accounts = [], analytics = {}, onN
                   borderRadius: 8,
                   background: 'rgba(74,222,128,0.15)',
                   border: '1px solid rgba(74,222,128,0.3)',
-                  color: '#4ade80',
+                  color: 'var(--mm-success)',
                   fontSize: '0.74rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,
                   cursor: 'pointer',
                   display: 'flex',

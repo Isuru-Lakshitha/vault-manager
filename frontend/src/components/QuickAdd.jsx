@@ -229,12 +229,11 @@ const QuickAdd = ({ open, onClose }) => {
               justifyContent: 'space-between',
               marginBottom: '0.35rem',
               fontSize: '0.68rem',
-              fontFamily: 'Inter, sans-serif',
               color: 'var(--text-muted)',
               fontWeight: 700,
               letterSpacing: '0.4px'
             }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#fbbf24' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--mm-warning)' }}>
                 <Zap size={11} /> 1-TAP FREQUENT REPEAT
               </span>
               <span>Tap to fill all fields</span>
@@ -263,7 +262,6 @@ const QuickAdd = ({ open, onClose }) => {
                       border: `1px solid ${active ? 'rgba(74,222,128,0.5)' : 'rgba(255,255,255,0.09)'}`,
                       color: active ? '#4ade80' : '#f0f0f5',
                       fontSize: '0.72rem',
-                      fontFamily: 'Inter, sans-serif',
                       fontWeight: 600,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
@@ -274,7 +272,7 @@ const QuickAdd = ({ open, onClose }) => {
                     <span>{getCategoryEmoji(tpl.category)}</span>
                     <span>{tpl.label}</span>
                     <span style={{
-                      color: tpl.type === 'Income' ? '#4ade80' : '#fbbf24',
+                      color: tpl.type === 'Income' ? 'var(--mm-success)' : 'var(--mm-warning)',
                       fontWeight: 700,
                       fontSize: '0.68rem'
                     }}>
@@ -297,8 +295,7 @@ const QuickAdd = ({ open, onClose }) => {
                 ? { to_account_id: accounts.find(a => String(a.id) !== String(f.from_account_id))?.id || f.to_account_id }
                 : {})
             }))}
-              style={{ flex: 1, padding: '0.6rem', borderRadius: 8, border: 'none', cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif', fontSize: '0.82rem', fontWeight: 600,
+              style={{ flex: 1, padding: '0.6rem', borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: '0.82rem', fontWeight: 600,
                 background: form.type === t ? TYPE_BG[t] : 'rgba(255,255,255,0.04)',
                 color: form.type === t ? TYPE_COLOR[t] : '#555',
                 borderBottom: form.type === t ? `2px solid ${TYPE_COLOR[t]}` : '2px solid transparent' }}
@@ -325,9 +322,8 @@ const QuickAdd = ({ open, onClose }) => {
             borderRadius: 10,
             background: 'rgba(251,191,36,0.12)',
             border: '1px solid rgba(251,191,36,0.4)',
-            color: '#fbbf24',
+            color: 'var(--mm-warning)',
             fontSize: '0.73rem',
-            fontFamily: 'Inter, sans-serif',
             lineHeight: 1.4
           }}>
             ⚠️ <strong>Possible Duplicate:</strong> You already logged {formatCurrency(duplicateWarning.amount)} for{' '}
@@ -340,9 +336,8 @@ const QuickAdd = ({ open, onClose }) => {
             borderRadius: 10,
             background: 'rgba(248,113,113,0.1)',
             border: '1px solid rgba(248,113,113,0.35)',
-            color: '#f87171',
+            color: 'var(--mm-danger)',
             fontSize: '0.73rem',
-            fontFamily: 'Inter, sans-serif',
             lineHeight: 1.4
           }}>
             📈 <strong>Unusual Spend Spike ({spikeWarning.ratio}× usual):</strong> Your average {form.category} expense is{' '}
@@ -417,10 +412,10 @@ const QuickAdd = ({ open, onClose }) => {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
               <span>Merchant / Note</span>
-              <Brain size={13} style={{ color: '#4ade80' }} />
+              <Brain size={13} style={{ color: 'var(--mm-success)' }} />
             </label>
             {rememberedNotes.length > 0 && (
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
                 {rememberedNotes.length} remembered
               </span>
             )}
@@ -429,8 +424,8 @@ const QuickAdd = ({ open, onClose }) => {
           {/* Quick-pick chips from memory */}
           {rememberedNotes.length > 0 && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', overflowX: 'auto', WebkitOverflowScrolling: 'touch', paddingBottom: '4px', marginBottom: '0.45rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', flexShrink: 0 }}>
-                <Sparkles size={11} style={{ color: '#4ade80' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.2rem', fontSize: '0.68rem', color: 'var(--text-muted)', flexShrink: 0 }}>
+                <Sparkles size={11} style={{ color: 'var(--mm-success)' }} />
                 <span>Quick:</span>
               </div>
               {rememberedNotes.slice(0, 7).map(item => {
@@ -447,7 +442,6 @@ const QuickAdd = ({ open, onClose }) => {
                       background: isSelected ? 'rgba(74,222,128,0.15)' : 'rgba(255,255,255,0.03)',
                       color: isSelected ? '#4ade80' : 'var(--text-secondary)',
                       fontSize: '0.72rem',
-                      fontFamily: 'Inter, sans-serif',
                       fontWeight: isSelected ? 600 : 400,
                       cursor: 'pointer',
                       whiteSpace: 'nowrap',
@@ -513,7 +507,7 @@ const QuickAdd = ({ open, onClose }) => {
                 padding: '0.35rem',
               }}
             >
-              <div style={{ fontSize: '0.65rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', padding: '0.25rem 0.5rem', letterSpacing: '0.5px' }}>
+              <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', padding: '0.25rem 0.5rem', letterSpacing: '0.5px' }}>
                 SUGGESTED FROM MEMORY
               </div>
               {matchingNotes.map(item => (
@@ -533,7 +527,7 @@ const QuickAdd = ({ open, onClose }) => {
                   onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', minWidth: 0 }}>
-                    <Brain size={13} style={{ color: '#4ade80', flexShrink: 0 }} />
+                    <Brain size={13} style={{ color: 'var(--mm-success)', flexShrink: 0 }} />
                     <span style={{ fontSize: '0.82rem', color: 'var(--text-primary)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                       {item.text}
                     </span>
@@ -544,7 +538,7 @@ const QuickAdd = ({ open, onClose }) => {
                         {item.category}
                       </span>
                     )}
-                    <span style={{ fontSize: '0.68rem', color: '#4ade80', fontWeight: 600 }}>
+                    <span style={{ fontSize: '0.68rem', color: 'var(--mm-success)', fontWeight: 600 }}>
                       {item.count}×
                     </span>
                   </div>
@@ -555,7 +549,7 @@ const QuickAdd = ({ open, onClose }) => {
 
           {autoCatSuggestion && form.category === autoCatSuggestion && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', marginTop: '0.35rem' }}>
-              <span style={{ fontSize: '0.72rem', color: '#4ade80', fontFamily: 'Inter, sans-serif' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--mm-success)' }}>
                 ✨ Auto-categorized as <strong>{form.category}</strong>
               </span>
               <button
@@ -600,9 +594,7 @@ const QuickAdd = ({ open, onClose }) => {
                 border: `1px solid ${form.tax_deductible ? 'rgba(129,140,248,0.35)' : 'rgba(255,255,255,0.06)'}`,
                 cursor: 'pointer',
                 fontSize: '0.78rem',
-                color: form.tax_deductible ? '#818cf8' : 'var(--text-secondary)',
-                fontFamily: 'Inter, sans-serif'
-              }}
+                color: form.tax_deductible ? '#818cf8' : 'var(--text-secondary)' }}
             >
               <input
                 type="checkbox"

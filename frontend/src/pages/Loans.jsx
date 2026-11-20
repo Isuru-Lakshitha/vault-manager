@@ -169,16 +169,16 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
       {/* Summary KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem' }}>
         <div style={{ background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.25)', borderRadius: 14, padding: '1rem 1.2rem' }}>
-          <div style={{ fontSize: '0.7rem', color: '#4ade80', fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>🟢 FRIENDS OWE ME</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 800, color: '#4ade80', fontFamily: 'Inter, sans-serif', marginTop: '0.2rem' }}>{formatCurrency(owedToMe)}</div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--mm-success)', fontWeight: 700 }}>🟢 FRIENDS OWE ME</div>
+          <div style={{ fontSize: '1.55rem', fontWeight: 800, color: 'var(--mm-success)', marginTop: '0.2rem' }}>{formatCurrency(owedToMe)}</div>
         </div>
         <div style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.25)', borderRadius: 14, padding: '1rem 1.2rem' }}>
-          <div style={{ fontSize: '0.7rem', color: '#f87171', fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>🔴 I OWE FRIENDS</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 800, color: '#f87171', fontFamily: 'Inter, sans-serif', marginTop: '0.2rem' }}>{formatCurrency(iOwe)}</div>
+          <div style={{ fontSize: '0.7rem', color: 'var(--mm-danger)', fontWeight: 700 }}>🔴 I OWE FRIENDS</div>
+          <div style={{ fontSize: '1.55rem', fontWeight: 800, color: 'var(--mm-danger)', marginTop: '0.2rem' }}>{formatCurrency(iOwe)}</div>
         </div>
         <div style={{ background: 'rgba(129,140,248,0.08)', border: '1px solid rgba(129,140,248,0.25)', borderRadius: 14, padding: '1rem 1.2rem' }}>
-          <div style={{ fontSize: '0.7rem', color: '#818cf8', fontFamily: 'Inter, sans-serif', fontWeight: 700 }}>⚖️ NET IOU BALANCE</div>
-          <div style={{ fontSize: '1.55rem', fontWeight: 800, color: owedToMe - iOwe >= 0 ? '#4ade80' : '#f87171', fontFamily: 'Inter, sans-serif', marginTop: '0.2rem' }}>
+          <div style={{ fontSize: '0.7rem', color: '#818cf8', fontWeight: 700 }}>⚖️ NET IOU BALANCE</div>
+          <div style={{ fontSize: '1.55rem', fontWeight: 800, color: owedToMe - iOwe >= 0 ? 'var(--mm-success)' : 'var(--mm-danger)', marginTop: '0.2rem' }}>
             {owedToMe - iOwe >= 0 ? '+' : ''}{formatCurrency(owedToMe - iOwe)}
           </div>
         </div>
@@ -187,7 +187,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '1.5rem' }}>
         {/* Left: Add IOU & Bill Splitter */}
         <form onSubmit={handleAddIou} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '1.35rem', display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
-          <h3 style={{ margin: 0, fontFamily: 'Inter, sans-serif', fontSize: '0.8rem', letterSpacing: '1.5px', color: 'var(--text-secondary)' }}>
+          <h3 style={{ margin: 0, fontSize: '0.8rem', letterSpacing: '1.5px', color: 'var(--text-secondary)' }}>
             🤝 NEW IOU OR SPLIT BILL
           </h3>
 
@@ -201,8 +201,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
                 type="button"
                 onClick={() => setDirection(opt.id)}
                 style={{
-                  flex: 1, padding: '0.55rem', borderRadius: 10, cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.78rem',
+                  flex: 1, padding: '0.55rem', borderRadius: 10, cursor: 'pointer', fontWeight: 700, fontSize: '0.78rem',
                   background: direction === opt.id ? opt.bg : 'rgba(255,255,255,0.03)',
                   color: direction === opt.id ? opt.color : 'var(--text-muted)',
                   border: `1px solid ${direction === opt.id ? opt.color : 'rgba(255,255,255,0.07)'}`
@@ -215,7 +214,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
 
           {/* Quick Bill Splitter helper */}
           <div style={{ background: 'rgba(129,140,248,0.06)', border: '1px dashed rgba(129,140,248,0.25)', borderRadius: 10, padding: '0.75rem' }}>
-            <div style={{ fontSize: '0.7rem', color: '#818cf8', fontFamily: 'Inter, sans-serif', fontWeight: 700, marginBottom: '0.45rem' }}>
+            <div style={{ fontSize: '0.7rem', color: '#818cf8', fontWeight: 700, marginBottom: '0.45rem' }}>
               🧮 QUICK BILL SPLITTER (OPTIONAL)
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 90px', gap: '0.5rem', alignItems: 'center' }}>
@@ -242,7 +241,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
               />
             </div>
             {splitTotal > 0 && (
-              <div style={{ fontSize: '0.72rem', color: '#4ade80', marginTop: '0.35rem', fontFamily: 'Inter, sans-serif' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--mm-success)', marginTop: '0.35rem' }}>
                 ÷ {splitCount} people = <strong>{formatCurrency(splitTotal / splitCount)}</strong> per person
               </div>
             )}
@@ -271,7 +270,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
         {/* Right: Active & Settled IOUs List */}
         <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '1.35rem', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <h3 style={{ margin: 0, fontFamily: 'Inter, sans-serif', fontSize: '0.8rem', letterSpacing: '1.5px', color: 'var(--text-secondary)' }}>
+            <h3 style={{ margin: 0, fontSize: '0.8rem', letterSpacing: '1.5px', color: 'var(--text-secondary)' }}>
               📋 IOU LEDGER ({activeIous.length} ACTIVE)
             </h3>
             {accounts.length > 0 && (
@@ -303,7 +302,6 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
                     borderRadius: 8,
                     fontSize: '0.72rem',
                     fontWeight: 600,
-                    fontFamily: 'Inter, sans-serif',
                     cursor: 'pointer',
                     background: iouViewFilter === tab.id ? 'rgba(129,140,248,0.16)' : 'rgba(255,255,255,0.03)',
                     color: iouViewFilter === tab.id ? '#818cf8' : 'var(--text-muted)',
@@ -317,7 +315,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
           )}
 
           {ious.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', fontSize: '0.85rem' }}>
+            <div style={{ textAlign: 'center', padding: '2.5rem 1rem', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
               <Users size={36} style={{ opacity: 0.25, marginBottom: '0.5rem' }} />
               <div>No shared bills or IOUs yet. Split a bill on the left!</div>
             </div>
@@ -337,7 +335,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
                     <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{personName}</div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{info.count} active IOU{info.count > 1 ? 's' : ''}</div>
                   </div>
-                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: info.net >= 0 ? '#4ade80' : '#f87171', fontFamily: 'Inter, sans-serif' }}>
+                  <div style={{ fontWeight: 800, fontSize: '0.95rem', color: info.net >= 0 ? 'var(--mm-success)' : 'var(--mm-danger)' }}>
                     {info.net >= 0 ? `Owes you ${formatCurrency(info.net)}` : `You owe ${formatCurrency(Math.abs(info.net))}`}
                   </div>
                 </div>
@@ -375,10 +373,10 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
                           {item.person}
                         </span>
                         <span style={{
-                          fontSize: '0.62rem', fontFamily: 'Inter, sans-serif', fontWeight: 700,
+                          fontSize: '0.62rem', fontWeight: 700,
                           padding: '0.12rem 0.45rem', borderRadius: 6,
                           background: isOwed ? 'rgba(74,222,128,0.16)' : 'rgba(248,113,113,0.16)',
-                          color: isOwed ? '#4ade80' : '#f87171'
+                          color: isOwed ? 'var(--mm-success)' : 'var(--mm-danger)'
                         }}>
                           {item.settled ? 'SETTLED' : (isOwed ? 'OWES YOU' : 'YOU OWE')}
                         </span>
@@ -389,7 +387,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: '0.98rem', color: isOwed ? '#4ade80' : '#f87171' }}>
+                      <span style={{ fontWeight: 800, fontSize: '0.98rem', color: isOwed ? 'var(--mm-success)' : 'var(--mm-danger)' }}>
                         {formatCurrency(item.amount)}
                       </span>
                       {!item.settled && (
@@ -409,7 +407,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
                               setPartPayAmt(parseFloat((item.amount / 2).toFixed(2)));
                             }}
                             title="Record a partial repayment"
-                            style={{ padding: '0.35rem 0.55rem', borderRadius: 8, background: 'rgba(56,189,248,0.14)', border: '1px solid rgba(56,189,248,0.35)', color: '#38bdf8', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '0.7rem', fontWeight: 700 }}
+                            style={{ padding: '0.35rem 0.55rem', borderRadius: 8, background: 'rgba(56,189,248,0.14)', border: '1px solid rgba(56,189,248,0.35)', color: '#38bdf8', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 700 }}
                           >
                             Part-Pay
                           </button>
@@ -417,7 +415,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
                             type="button"
                             onClick={() => handleSettle(item)}
                             title="Settle Up & Log Transaction"
-                            style={{ padding: '0.35rem 0.65rem', borderRadius: 8, background: 'rgba(74,222,128,0.18)', border: '1px solid rgba(74,222,128,0.4)', color: '#4ade80', cursor: 'pointer', fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                            style={{ padding: '0.35rem 0.65rem', borderRadius: 8, background: 'rgba(74,222,128,0.18)', border: '1px solid rgba(74,222,128,0.4)', color: 'var(--mm-success)', cursor: 'pointer', fontSize: '0.72rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                           >
                             <Check size={13} /> Settle
                           </button>
@@ -426,7 +424,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
                       <button
                         type="button"
                         onClick={() => handleDeleteIou(item.id)}
-                        style={{ padding: '0.38rem', borderRadius: 8, background: 'rgba(248,113,113,0.1)', border: 'none', color: '#f87171', cursor: 'pointer', display: 'flex' }}
+                        style={{ padding: '0.38rem', borderRadius: 8, background: 'rgba(248,113,113,0.1)', border: 'none', color: 'var(--mm-danger)', cursor: 'pointer', display: 'flex' }}
                       >
                         <Trash2 size={14} />
                       </button>
@@ -475,8 +473,8 @@ const EmiTab = () => {
 
   const row = (label, value, color) => (
     <div key={label} style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'0.75rem 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-      <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.8rem', color:'var(--text-secondary)' }}>{label}</span>
-      <span style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1rem', color }}>{value}</span>
+      <span style={{ fontSize:'0.8rem', color:'var(--text-secondary)' }}>{label}</span>
+      <span style={{ fontWeight:700, fontSize:'1rem', color }}>{value}</span>
     </div>
   );
 
@@ -484,7 +482,7 @@ const EmiTab = () => {
     <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.3 }}>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap:'2rem' }}>
         <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, padding:'1.5rem', display:'flex', flexDirection:'column', gap:'1rem' }}>
-          <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:0 }}>LOAN DETAILS</h3>
+          <h3 style={{ fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:0 }}>LOAN DETAILS</h3>
           <div><label style={{ display:'block', marginBottom:'0.4rem', fontSize:'0.82rem', color:'var(--text-secondary)' }}>{`Principal (${getCurrencyLabel()})`}</label>
             <CurrencyInput value={p} onChange={v => setP(v)} /></div>
           <div><label style={{ display:'block', marginBottom:'0.4rem', fontSize:'0.82rem', color:'var(--text-secondary)' }}>Annual Interest Rate (%)</label>
@@ -498,23 +496,23 @@ const EmiTab = () => {
         </div>
 
         <div style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:16, padding:'1.5rem', display:'flex', flexDirection:'column', gap:'0.25rem' }}>
-          <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:'0 0 1rem' }}>RESULTS</h3>
+          <h3 style={{ fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:'0 0 1rem' }}>RESULTS</h3>
           {!hasInput ? (
-            <div style={{ color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.82rem', marginTop:'2rem', textAlign:'center' }}>Enter loan details to calculate</div>
+            <div style={{ color:'var(--text-muted)', fontSize:'0.82rem', marginTop:'2rem', textAlign:'center' }}>Enter loan details to calculate</div>
           ) : (<>
             {row('Monthly EMI', formatCurrency(emi), '#4ade80')}
             {row('Total Payment', formatCurrency(total), '#f0f0f5')}
             {row('Total Interest', formatCurrency(interest), '#f87171')}
             {row('Loan Tenure', `${n} months`, '#818cf8')}
             <div style={{ marginTop:'1rem' }}>
-              <div style={{ fontSize:'0.7rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginBottom:'0.4rem' }}>Principal vs Interest</div>
+              <div style={{ fontSize:'0.7rem', color:'var(--text-muted)', marginBottom:'0.4rem' }}>Principal vs Interest</div>
               <div style={{ height:8, borderRadius:4, overflow:'hidden', background:'rgba(255,255,255,0.05)', display:'flex' }}>
-                <motion.div initial={{ width:0 }} animate={{ width:`${100-interestPct}%` }} transition={{ duration:1 }} style={{ height:'100%', background:'#4ade80' }} />
-                <motion.div initial={{ width:0 }} animate={{ width:`${interestPct}%` }} transition={{ duration:1 }} style={{ height:'100%', background:'#f87171' }} />
+                <motion.div initial={{ width:0 }} animate={{ width:`${100-interestPct}%` }} transition={{ duration:1 }} style={{ height:'100%', background:'var(--mm-success)' }} />
+                <motion.div initial={{ width:0 }} animate={{ width:`${interestPct}%` }} transition={{ duration:1 }} style={{ height:'100%', background:'var(--mm-danger)' }} />
               </div>
-              <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.68rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:'0.3rem' }}>
-                <span style={{ color:'#4ade80' }}>Principal {(100-interestPct).toFixed(1)}%</span>
-                <span style={{ color:'#f87171' }}>Interest {interestPct.toFixed(1)}%</span>
+              <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.68rem', color:'var(--text-muted)', marginTop:'0.3rem' }}>
+                <span style={{ color:'var(--mm-success)' }}>Principal {(100-interestPct).toFixed(1)}%</span>
+                <span style={{ color:'var(--mm-danger)' }}>Interest {interestPct.toFixed(1)}%</span>
               </div>
             </div>
           </>)}
@@ -732,7 +730,7 @@ const Loans = () => {
         <div style={{ display:'flex', gap:'0.35rem', marginBottom:'1.5rem', borderBottom:'1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))', paddingBottom:'0.65rem', flexWrap:'wrap' }}>
           {TABS.map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              style={{ padding:'0.45rem 0.95rem', borderRadius:8, cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.76rem', fontWeight: activeTab===tab.id ? 600 : 500,
+              style={{ padding:'0.45rem 0.95rem', borderRadius:8, cursor:'pointer', fontSize:'0.76rem', fontWeight: activeTab===tab.id ? 600 : 500,
                 background: activeTab===tab.id ? 'var(--mm-accent-soft, rgba(59,130,246,0.14))' : 'transparent',
                 color: activeTab===tab.id ? 'var(--mm-accent-text, #60a5fa)' : 'var(--text-secondary)',
                 border: activeTab===tab.id ? '1px solid rgba(59,130,246,0.35)' : '1px solid transparent',
@@ -769,25 +767,25 @@ const Loans = () => {
                           <div style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
                             <div style={{ padding:'0.65rem', background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.08)', borderRadius:10 }}><Landmark className="text-cyan" size={20}/></div>
                             <div>
-                              <h3 style={{ margin:'0 0 0.2rem', fontFamily:'Inter, sans-serif', fontSize:'1.02rem', fontWeight:600 }}>{loan.item_name}</h3>
+                              <h3 style={{ margin:'0 0 0.2rem', fontSize:'1.02rem', fontWeight:600 }}>{loan.item_name}</h3>
                               <span className="text-muted" style={{ fontSize:'0.76rem', textTransform:'uppercase', letterSpacing:'0.04em' }}>{loan.type}</span>
                             </div>
                           </div>
-                          <div className="text-danger" style={{ fontWeight:700, fontFamily:'Inter, sans-serif', fontSize:'0.95rem', background:'rgba(239,68,68,0.1)', padding:'0.35rem 0.75rem', borderRadius:8, border:'1px solid rgba(239,68,68,0.2)' }}>
+                          <div className="text-danger" style={{ fontWeight:700, fontSize:'0.95rem', background:'rgba(239,68,68,0.1)', padding:'0.35rem 0.75rem', borderRadius:8, border:'1px solid rgba(239,68,68,0.2)' }}>
                             {loan.annual_interest_rate}% APR
                           </div>
                         </div>
                         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(140px, 1fr))', gap:'0.85rem', marginBottom:'1.25rem', padding:'1rem', background:'rgba(0,0,0,0.25)', borderRadius:10, border:'1px solid rgba(255,255,255,0.06)' }}>
-                          <div><div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem', fontFamily:'Inter, sans-serif' }}>PRINCIPAL</div><div style={{ fontWeight:600, color:'var(--text-primary)' }}>{formatCurrency(loan.principal_amount)}</div></div>
-                          <div><div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem', fontFamily:'Inter, sans-serif' }}>INTEREST (UP TO DATE)</div><div className="text-warning glow-text" style={{ fontWeight:600 }}>{formatCurrency(interest)}</div></div>
+                          <div><div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem' }}>PRINCIPAL</div><div style={{ fontWeight:600, color:'var(--text-primary)' }}>{formatCurrency(loan.principal_amount)}</div></div>
+                          <div><div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem' }}>INTEREST (UP TO DATE)</div><div className="text-warning glow-text" style={{ fontWeight:600 }}>{formatCurrency(interest)}</div></div>
                           <div>
-                            <div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem', fontFamily:'Inter, sans-serif' }}>MONTHLY INTEREST / TARGET</div>
-                            <div style={{ fontWeight:600, color:'#fbbf24' }}>
+                            <div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem' }}>MONTHLY INTEREST / TARGET</div>
+                            <div style={{ fontWeight:600, color:'var(--mm-warning)' }}>
                               {formatCurrency(Math.round(loan.monthly_payment > 0 ? loan.monthly_payment : ((loan.principal_amount || 0) * (loan.annual_interest_rate || 0) / 100 / 12)))}/mo
                             </div>
                           </div>
                           {loan.next_payment_date && (
-                            <div><div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem', fontFamily:'Inter, sans-serif' }}>NEXT PAYMENT</div>
+                            <div><div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem' }}>NEXT PAYMENT</div>
                               <div style={{ fontWeight:600, color:'var(--cyan)' }}>{loan.next_payment_date}
                                 {loan.days_until_payment !== undefined && <span style={{ fontSize:'0.75rem', color:loan.days_until_payment<5?'var(--danger)':'var(--text-muted)', marginLeft:'0.5rem' }}>({loan.days_until_payment} days)</span>}
                               </div>
@@ -808,7 +806,7 @@ const Loans = () => {
                               months = Math.ceil(principal / estPayment);
                             } else {
                               const ratio = monthlyRate * principal / estPayment;
-                              if (ratio >= 1) return <div><div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem', fontFamily:'Inter, sans-serif' }}>PAYOFF DATE</div><div style={{ fontWeight:600, color:'var(--danger)', fontSize:'0.85rem' }}>Payment too low</div></div>;
+                              if (ratio >= 1) return <div><div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem' }}>PAYOFF DATE</div><div style={{ fontWeight:600, color:'var(--danger)', fontSize:'0.85rem' }}>Payment too low</div></div>;
                               months = Math.ceil(-Math.log(1 - ratio) / Math.log(1 + monthlyRate));
                             }
                             const payoffDate = new Date();
@@ -817,14 +815,14 @@ const Loans = () => {
                             const mos = months % 12;
                             const label = yrs > 0 ? `${yrs}y ${mos}m` : `${mos} months`;
                             return (
-                              <div><div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem', fontFamily:'Inter, sans-serif' }}>EST. PAYOFF</div>
-                                <div style={{ fontWeight:600, color:'#4ade80', fontSize:'0.85rem' }}>{payoffDate.toLocaleDateString('en-US',{month:'short',year:'numeric'})}</div>
-                                <div style={{ fontSize:'0.7rem', color:'#555', fontFamily:'Inter, sans-serif' }}>~{label} away</div>
+                              <div><div className="text-secondary" style={{ fontSize:'0.75rem', marginBottom:'0.2rem' }}>EST. PAYOFF</div>
+                                <div style={{ fontWeight:600, color:'var(--mm-success)', fontSize:'0.85rem' }}>{payoffDate.toLocaleDateString('en-US',{month:'short',year:'numeric'})}</div>
+                                <div style={{ fontSize:'0.7rem', color:'var(--mm-text-3)' }}>~{label} away</div>
                               </div>
                             );
                           })()}
                           <div style={{ gridColumn:'1/-1', marginTop:'0.5rem' }}>
-                            <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.75rem', marginBottom:'0.25rem', fontFamily:'Inter, sans-serif' }}>
+                            <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.75rem', marginBottom:'0.25rem' }}>
                               <span className="text-muted">DEBT COMPOSITION</span>
                               <span className="text-danger">TOTAL OWED: {formatCurrency(totalOwedLoan)}</span>
                             </div>
@@ -843,15 +841,15 @@ const Loans = () => {
                           return (
                             <div style={{ padding:'0.875rem 1rem', background:'rgba(0,245,255,0.04)', border:'1px solid rgba(0,245,255,0.12)', borderRadius:10, marginBottom:'0.75rem', transform:'translateZ(20px)' }}>
                               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.5rem' }}>
-                                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'1px', color:'var(--text-muted)' }}>REPAYMENT PROGRESS</div>
-                                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', color:'#00f5ff', fontWeight:600 }}>{paidPct.toFixed(1)}% paid off</div>
+                                <div style={{ fontSize:'0.72rem', letterSpacing:'1px', color:'var(--text-muted)' }}>REPAYMENT PROGRESS</div>
+                                <div style={{ fontSize:'0.75rem', color:'#00f5ff', fontWeight:600 }}>{paidPct.toFixed(1)}% paid off</div>
                               </div>
                               <div style={{ height:6, background:'rgba(255,255,255,0.06)', borderRadius:3, overflow:'hidden', marginBottom:'0.5rem' }}>
                                 <motion.div initial={{ width:0 }} animate={{ width:`${paidPct}%` }} transition={{ duration:1, ease:'easeOut' }}
                                   style={{ height:'100%', background:'linear-gradient(90deg,#00f5ff,#4ade80)', borderRadius:3, boxShadow:'0 0 6px rgba(0,245,255,0.4)' }}/>
                               </div>
-                              <div style={{ display:'flex', justifyContent:'space-between', fontFamily:'Inter, sans-serif', fontSize:'0.72rem' }}>
-                                <span style={{ color:'#4ade80' }}>Paid: {formatCurrency(totalPaid)}</span>
+                              <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.72rem' }}>
+                                <span style={{ color:'var(--mm-success)' }}>Paid: {formatCurrency(totalPaid)}</span>
                                 <span style={{ color:'var(--text-muted)' }}>Remaining: {formatCurrency(totalDebt)}</span>
                               </div>
                             </div>
@@ -936,7 +934,7 @@ const Loans = () => {
                                 {expandedLoanId === schedKey && (
                                   <motion.div initial={{ opacity:0, height:0 }} animate={{ opacity:1, height:'auto' }} exit={{ opacity:0, height:0 }} style={{ overflow:'hidden', marginTop:'0.5rem' }}>
                                     <div style={{ background:'rgba(0,0,0,0.5)', borderRadius:8, border:'1px solid rgba(168,85,247,0.2)', overflow:'auto', maxHeight:280 }}>
-                                      <table style={{ width:'100%', borderCollapse:'collapse', fontFamily:'Inter, sans-serif', fontSize:'0.72rem' }}>
+                                      <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.72rem' }}>
                                         <thead style={{ position:'sticky', top:0, background:'rgba(14,14,30,0.98)' }}>
                                           <tr>{['#','Opening','Payment','Principal','Interest','Closing'].map(h => (
                                             <th key={h} style={{ padding:'0.5rem 0.6rem', textAlign:'right', color:'var(--text-muted)', fontWeight:600, borderBottom:'1px solid rgba(255,255,255,0.06)', whiteSpace:'nowrap' }}>{h}</th>
@@ -947,17 +945,17 @@ const Loans = () => {
                                             <tr key={r.m} style={{ background: i%2===0?'rgba(255,255,255,0.01)':'transparent' }}>
                                               <td style={{ padding:'0.35rem 0.6rem', color:'var(--text-muted)', textAlign:'right' }}>{r.m}</td>
                                               <td style={{ padding:'0.35rem 0.6rem', textAlign:'right' }}>{formatCurrency(r.opening)}</td>
-                                              <td style={{ padding:'0.35rem 0.6rem', color:'#4ade80', fontWeight:600, textAlign:'right' }}>{formatCurrency(r.payment)}</td>
+                                              <td style={{ padding:'0.35rem 0.6rem', color:'var(--mm-success)', fontWeight:600, textAlign:'right' }}>{formatCurrency(r.payment)}</td>
                                               <td style={{ padding:'0.35rem 0.6rem', color:'#00f5ff', textAlign:'right' }}>{formatCurrency(r.principal)}</td>
-                                              <td style={{ padding:'0.35rem 0.6rem', color:'#f87171', textAlign:'right' }}>{formatCurrency(r.interest)}</td>
-                                              <td style={{ padding:'0.35rem 0.6rem', color: r.closing < principal*0.1?'#4ade80':'var(--text-primary)', fontWeight:600, textAlign:'right' }}>{formatCurrency(r.closing)}</td>
+                                              <td style={{ padding:'0.35rem 0.6rem', color:'var(--mm-danger)', textAlign:'right' }}>{formatCurrency(r.interest)}</td>
+                                              <td style={{ padding:'0.35rem 0.6rem', color: r.closing < principal*0.1?'var(--mm-success)':'var(--text-primary)', fontWeight:600, textAlign:'right' }}>{formatCurrency(r.closing)}</td>
                                             </tr>
                                           ))}
                                         </tbody>
                                       </table>
                                     </div>
-                                    <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:'0.35rem' }}>
-                                      💡 Based on avg payment {formatCurrency(pmt)}/mo · <span style={{ color:'#00f5ff' }}>Cyan = Principal</span> · <span style={{ color:'#f87171' }}>Red = Interest</span>
+                                    <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', marginTop:'0.35rem' }}>
+                                      💡 Based on avg payment {formatCurrency(pmt)}/mo · <span style={{ color:'#00f5ff' }}>Cyan = Principal</span> · <span style={{ color:'var(--mm-danger)' }}>Red = Interest</span>
                                     </div>
                                   </motion.div>
                                 )}
@@ -989,7 +987,7 @@ const Loans = () => {
                               fontSize: '0.72rem',
                             }}>
                               <span style={{ color: 'var(--text-secondary)' }}>
-                                💡 <strong>Part-Pay {formatCurrency(partAmt)}</strong> principal → saves <strong style={{ color: '#34d399' }}>{formatCurrency(savedMo)}/mo</strong> ({formatCurrency(savedYr)}/yr) in interest
+                                💡 <strong>Part-Pay {formatCurrency(partAmt)}</strong> principal → saves <strong style={{ color: 'var(--mm-success)' }}>{formatCurrency(savedMo)}/mo</strong> ({formatCurrency(savedYr)}/yr) in interest
                               </span>
                               <button
                                 type="button"
@@ -999,7 +997,7 @@ const Loans = () => {
                                   borderRadius: 6,
                                   border: '1px solid rgba(16, 185, 129, 0.35)',
                                   background: 'rgba(16, 185, 129, 0.14)',
-                                  color: '#34d399',
+                                  color: 'var(--mm-success)',
                                   fontWeight: 700,
                                   fontSize: '0.68rem',
                                   cursor: 'pointer',
@@ -1035,7 +1033,6 @@ const Loans = () => {
                               <div style={{ display:'flex', gap:'0.4rem', alignItems:'center', flexWrap:'wrap', justifyContent:'flex-end' }}>
                                 <span style={{
                                   fontSize:'0.66rem',
-                                  fontFamily:'Inter, sans-serif',
                                   fontWeight:700,
                                   padding:'0.28rem 0.55rem',
                                   borderRadius:8,
@@ -1054,7 +1051,7 @@ const Loans = () => {
                                     type="button"
                                     onClick={() => toggleLoanPaidThisMonth(loan, isMarkedPaidMo)}
                                     title={isMarkedPaidMo ? 'Mark as due for this month' : 'Mark as already paid without deducting from any account'}
-                                    style={{ padding:'0.35rem 0.65rem', borderRadius:8, border: isMarkedPaidMo ? '1px solid rgba(255,255,255,0.14)' : '1px solid rgba(255,255,255,0.15)', background: isMarkedPaidMo ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.03)', color: isMarkedPaidMo ? 'var(--text-secondary)' : 'var(--text-muted)', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.7rem', fontWeight:600 }}>
+                                    style={{ padding:'0.35rem 0.65rem', borderRadius:8, border: isMarkedPaidMo ? '1px solid rgba(255,255,255,0.14)' : '1px solid rgba(255,255,255,0.15)', background: isMarkedPaidMo ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.03)', color: isMarkedPaidMo ? 'var(--text-secondary)' : 'var(--text-muted)', cursor:'pointer', fontSize:'0.7rem', fontWeight:600 }}>
                                     {isMarkedPaidMo ? '↩️ Mark Due' : '🔕 Mark Paid (No Account Deduction)'}
                                   </button>
                                 )}
@@ -1062,7 +1059,7 @@ const Loans = () => {
                                   <button
                                     type="button"
                                     onClick={() => handleAddLoanToRecurring(loan)}
-                                    style={{ padding:'0.35rem 0.65rem', borderRadius:8, border:'1px solid rgba(167,139,250,0.35)', background:'rgba(167,139,250,0.12)', color:'#c4b5fd', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.72rem', fontWeight:600 }}>
+                                    style={{ padding:'0.35rem 0.65rem', borderRadius:8, border:'1px solid rgba(167,139,250,0.35)', background:'rgba(167,139,250,0.12)', color:'#c4b5fd', cursor:'pointer', fontSize:'0.72rem', fontWeight:600 }}>
                                     🔁 Add to Monthly Recurring
                                   </button>
                                 )}
@@ -1070,7 +1067,7 @@ const Loans = () => {
                                   <button
                                     disabled={loan.status !== 'Active'}
                                     onClick={() => quickPayLoan(loan, parseFloat(emi.toFixed(2)))}
-                                    style={{ padding:'0.35rem 0.65rem', borderRadius:8, border:'1px solid rgba(0,245,255,0.25)', background:'rgba(0,245,255,0.07)', color:'#00f5ff', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.72rem' }}>
+                                    style={{ padding:'0.35rem 0.65rem', borderRadius:8, border:'1px solid rgba(0,245,255,0.25)', background:'rgba(0,245,255,0.07)', color:'#00f5ff', cursor:'pointer', fontSize:'0.72rem' }}>
                                     ⚡ EMI {formatCurrency(parseFloat(emi.toFixed(2)))}
                                   </button>
                                 )}
@@ -1078,7 +1075,7 @@ const Loans = () => {
                                   <button
                                     disabled={loan.status !== 'Active'}
                                     onClick={() => quickPayLoan(loan, parseFloat(interest.toFixed(2)))}
-                                    style={{ padding:'0.35rem 0.65rem', borderRadius:8, border:'1px solid rgba(251,191,36,0.25)', background:'rgba(251,191,36,0.07)', color:'#fbbf24', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.72rem' }}>
+                                    style={{ padding:'0.35rem 0.65rem', borderRadius:8, border:'1px solid rgba(251,191,36,0.25)', background:'rgba(251,191,36,0.07)', color:'var(--mm-warning)', cursor:'pointer', fontSize:'0.72rem' }}>
                                     💰 Interest {formatCurrency(parseFloat(interest.toFixed(2)))}
                                   </button>
                                 )}
@@ -1096,7 +1093,7 @@ const Loans = () => {
                 })}
                 {loans.length === 0 && (
                   <div className="bento-item col-span-12" style={{ alignItems:'center', justifyContent:'center', padding:'3rem', gridColumn:'1/-1' }}>
-                    <p className="text-muted" style={{ fontFamily:'Inter, sans-serif' }}>NO ACTIVE LIABILITIES</p>
+                    <p className="text-muted" >NO ACTIVE LIABILITIES</p>
                   </div>
                 )}
               </div>
@@ -1104,7 +1101,7 @@ const Loans = () => {
 
             {activeTab === 'planner' && (
               <div className="hud-panel" style={{ padding:'1.5rem' }}>
-                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', color:'var(--text-secondary)', letterSpacing:'0.3px', fontWeight:600, marginBottom:'1.25rem' }}>
+                <div style={{ fontSize:'0.75rem', color:'var(--text-secondary)', letterSpacing:'0.3px', fontWeight:600, marginBottom:'1.25rem' }}>
                   DEBT PAYOFF PLANNER — AVALANCHE VS SNOWBALL
                 </div>
                 <DebtPayoffPlanner loans={loans}/>
@@ -1133,7 +1130,7 @@ const Loans = () => {
                     const moInt = Math.round((formData.principal_amount * (formData.annual_interest_rate / 100)) / 12);
                     setFormData({ ...formData, monthly_payment: moInt });
                   }}
-                  style={{ padding:'0.18rem 0.55rem', borderRadius:12, border:'1px solid rgba(251,191,36,0.35)', background:'rgba(251,191,36,0.12)', color:'#fbbf24', fontSize:'0.68rem', fontFamily:'Inter, sans-serif', fontWeight:700, cursor:'pointer' }}
+                  style={{ padding:'0.18rem 0.55rem', borderRadius:12, border:'1px solid rgba(251,191,36,0.35)', background:'rgba(251,191,36,0.12)', color:'var(--mm-warning)', fontSize:'0.68rem', fontWeight:700, cursor:'pointer' }}
                 >
                   Use Monthly Interest ({formatCurrency(Math.round((formData.principal_amount * (formData.annual_interest_rate / 100)) / 12))})
                 </button>
@@ -1156,7 +1153,7 @@ const Loans = () => {
             gap: '0.75rem'
           }}>
             <div>
-              <div style={{ fontWeight: 700, fontSize: '0.82rem', color: formData.start_next_month ? '#4ade80' : '#f0f0f5' }}>
+              <div style={{ fontWeight: 700, fontSize: '0.82rem', color: formData.start_next_month ? 'var(--mm-success)' : '#f0f0f5' }}>
                 ✅ Already Paid for This Month — Start From Next Month
               </div>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: 2 }}>
@@ -1169,7 +1166,7 @@ const Loans = () => {
               type="checkbox"
               checked={Boolean(formData.start_next_month)}
               onChange={e => setFormData({ ...formData, start_next_month: e.target.checked })}
-              style={{ width: 20, height: 20, accentColor: '#4ade80', cursor: 'pointer', flexShrink: 0 }}
+              style={{ width: 20, height: 20, accentColor: 'var(--mm-success)', cursor: 'pointer', flexShrink: 0 }}
             />
           </div>
           {!editMode && (
@@ -1204,17 +1201,17 @@ const Loans = () => {
             const emi12 = r === 0 ? Math.round(p / 12) : Math.round((p * r * Math.pow(1 + r, 12)) / (Math.pow(1 + r, 12) - 1));
             return (
               <div style={{ padding:'0.75rem 0.9rem', borderRadius:10, background:'rgba(251,191,36,0.08)', border:'1px solid rgba(251,191,36,0.25)' }}>
-                <div style={{ fontSize:'0.74rem', fontWeight:700, color:'#fbbf24', marginBottom:'0.4rem' }}>
+                <div style={{ fontSize:'0.74rem', fontWeight:700, color:'var(--mm-warning)', marginBottom:'0.4rem' }}>
                   🪙 {targetLoan.item_name} • Principal: {formatCurrency(p)} ({targetLoan.annual_interest_rate}% APR)
                 </div>
                 <div style={{ display:'flex', gap:'0.4rem', flexWrap:'wrap' }}>
                   {moInt > 0 && (
-                    <button type="button" onClick={() => setPaymentData(prev => ({ ...prev, amount: moInt }))} style={{ padding:'0.25rem 0.6rem', borderRadius:8, border:'1px solid rgba(251,191,36,0.35)', background:'rgba(251,191,36,0.14)', color:'#fbbf24', fontSize:'0.7rem', fontWeight:700, cursor:'pointer' }}>
+                    <button type="button" onClick={() => setPaymentData(prev => ({ ...prev, amount: moInt }))} style={{ padding:'0.25rem 0.6rem', borderRadius:8, border:'1px solid rgba(251,191,36,0.35)', background:'rgba(251,191,36,0.14)', color:'var(--mm-warning)', fontSize:'0.7rem', fontWeight:700, cursor:'pointer' }}>
                       Monthly Interest ({formatCurrency(moInt)})
                     </button>
                   )}
                   {accInt > 0 && (
-                    <button type="button" onClick={() => setPaymentData(prev => ({ ...prev, amount: accInt }))} style={{ padding:'0.25rem 0.6rem', borderRadius:8, border:'1px solid rgba(74,222,128,0.35)', background:'rgba(74,222,128,0.14)', color:'#4ade80', fontSize:'0.7rem', fontWeight:700, cursor:'pointer' }}>
+                    <button type="button" onClick={() => setPaymentData(prev => ({ ...prev, amount: accInt }))} style={{ padding:'0.25rem 0.6rem', borderRadius:8, border:'1px solid rgba(74,222,128,0.35)', background:'rgba(74,222,128,0.14)', color:'var(--mm-success)', fontSize:'0.7rem', fontWeight:700, cursor:'pointer' }}>
                       Accrued Interest ({formatCurrency(accInt)})
                     </button>
                   )}
@@ -1238,7 +1235,7 @@ const Loans = () => {
               const selAcc = accounts.find(a => String(a.id) === String(paymentData.account_id));
               if (!selAcc) {
                 return (
-                  <div style={{ marginTop:'0.45rem', fontSize:'0.72rem', color:'#fbbf24' }}>
+                  <div style={{ marginTop:'0.45rem', fontSize:'0.72rem', color:'var(--mm-warning)' }}>
                     ℹ️ No account selected — loan interest/principal will be updated without deducting from any bank account.
                   </div>
                 );
@@ -1250,7 +1247,7 @@ const Loans = () => {
                   <span style={{ color:'var(--text-secondary)' }}>
                     Current: <strong style={{ color:'var(--text-primary)' }}>{formatCurrency(curBal)}</strong>
                   </span>
-                  <span style={{ color: afterBal < 0 ? '#f87171' : '#4ade80', fontWeight:700 }}>
+                  <span style={{ color: afterBal < 0 ? 'var(--mm-danger)' : 'var(--mm-success)', fontWeight:700 }}>
                     After Payment: {formatCurrency(afterBal)}
                   </span>
                 </div>

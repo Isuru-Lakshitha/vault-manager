@@ -131,13 +131,13 @@ const TotpMfaPanel = () => {
               justifyContent: 'center',
             }}
           >
-            <Key size={18} style={{ color: '#4ade80' }} />
+            <Key size={18} style={{ color: 'var(--mm-success)' }} />
           </div>
           <div>
             <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-primary)' }}>
               Two-Factor Authentication (TOTP)
             </div>
-            <div style={{ fontSize: '0.78rem', color: '#666', fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--mm-text-3)' }}>
               Protect sign-in with Google Authenticator, Authy, or 1Password
             </div>
           </div>
@@ -153,7 +153,7 @@ const TotpMfaPanel = () => {
               borderRadius: 8,
               border: '1px solid rgba(74,222,128,0.4)',
               background: 'rgba(74,222,128,0.12)',
-              color: '#4ade80',
+              color: 'var(--mm-success)',
               cursor: enrolling ? 'wait' : 'pointer',
               fontSize: '0.84rem',
               fontWeight: 600,
@@ -200,7 +200,7 @@ const TotpMfaPanel = () => {
             borderRadius: 8,
             background: 'rgba(251,191,36,0.1)',
             border: '1px solid rgba(251,191,36,0.3)',
-            color: '#fbbf24',
+            color: 'var(--mm-warning)',
             fontSize: '0.78rem',
             display: 'flex',
             alignItems: 'center',
@@ -226,7 +226,7 @@ const TotpMfaPanel = () => {
                 borderRadius: 6,
                 background: 'rgba(251,191,36,0.2)',
                 border: '1px solid rgba(251,191,36,0.4)',
-                color: '#fbbf24',
+                color: 'var(--mm-warning)',
                 fontSize: '0.74rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -244,7 +244,7 @@ const TotpMfaPanel = () => {
             Add this secret key to your authenticator app, then enter the 6-digit code:
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.65rem', flexWrap: 'wrap' }}>
-            <code style={{ padding: '0.4rem 0.65rem', borderRadius: 6, background: 'rgba(255,255,255,0.06)', color: '#4ade80', fontSize: '0.82rem', wordBreak: 'break-all' }}>
+            <code style={{ padding: '0.4rem 0.65rem', borderRadius: 6, background: 'rgba(255,255,255,0.06)', color: 'var(--mm-success)', fontSize: '0.82rem', wordBreak: 'break-all' }}>
               {totpSecret.secretKey}
             </code>
             <button
@@ -316,7 +316,7 @@ const TotpMfaPanel = () => {
                 fontSize: '0.8rem',
               }}
             >
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: '#4ade80', fontWeight: 600 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--mm-success)', fontWeight: 600 }}>
                 <Shield size={14} /> {f.displayName || 'Authenticator App'} · Active
               </span>
               <button
@@ -325,7 +325,7 @@ const TotpMfaPanel = () => {
                 style={{
                   background: 'rgba(248,113,113,0.12)',
                   border: '1px solid rgba(248,113,113,0.3)',
-                  color: '#f87171',
+                  color: 'var(--mm-danger)',
                   borderRadius: 6,
                   padding: '0.25rem 0.55rem',
                   fontSize: '0.74rem',

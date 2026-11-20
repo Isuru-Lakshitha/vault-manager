@@ -115,7 +115,6 @@ export default function PrivacyShield() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '0.4rem',
-                fontFamily: 'Inter, sans-serif',
                 fontSize: '1.25rem',
                 fontWeight: 800,
                 color: 'var(--text-primary)'
@@ -125,9 +124,7 @@ export default function PrivacyShield() {
               <p style={{
                 margin: '0.4rem 0 0',
                 fontSize: '0.82rem',
-                color: 'var(--text-secondary)',
-                fontFamily: 'Inter, sans-serif'
-              }}>
+                color: 'var(--text-secondary)' }}>
                 Multitasking Privacy Shield active · Tap or return to resume session
               </p>
             </div>

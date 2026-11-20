@@ -1,5 +1,5 @@
 import { useT } from '../i18n';
-import { Button, EmptyState } from '../components/ui';
+import { Button, EmptyState, PageHeader } from '../components/ui';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import MoreSection from '../components/MoreSection';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -555,32 +555,18 @@ const Goals = () => {
       />
 
       <div style={{ maxWidth: 1240, margin: '0 auto', width: '100%' }}>
-        {/* Page Header */}
-        <div className="page-header" style={{ marginBottom: '1.25rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <h1 className="glow-text text-cyan" style={{ margin: 0, fontSize: '1.85rem', fontWeight: 800 }}>{t('nav.goals')}</h1>
-            </div>
-            <p style={{ color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', fontSize: '0.8rem', marginTop: 4 }}>
-              Track what you have right now, your end goal date, daily targets, and easily deposit or deduct funds.
-            </p>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-            <button
-              className="btn btn-secondary"
-              onClick={() => {
-                setIsRoundUpModalOpen(true);
-                if (goals.length > 0 && !roundUpGoalId) setRoundUpGoalId(goals[0].id);
-              }}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
-            >
-              <Sparkles size={15} color="#4ade80" /> Round-Up Simulator
-            </button>
-            <button className="btn btn-primary" onClick={openAddModal} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Plus size={16} /> New Goal
-            </button>
-          </div>
-        </div>
+        <PageHeader title={t('nav.goals')} subtitle="Track what you have now, your target date and the daily amount to get there.">
+          <Button
+            icon={Sparkles}
+            onClick={() => {
+              setIsRoundUpModalOpen(true);
+              if (goals.length > 0 && !roundUpGoalId) setRoundUpGoalId(goals[0].id);
+            }}
+          >
+            Round-up simulator
+          </Button>
+          <Button variant="primary" icon={Plus} onClick={openAddModal}>New goal</Button>
+        </PageHeader>
 
         {/* Top Summary KPIs Strip: What You Have Right Now + End Goal + Daily Needed */}
         {!loading && goals.length > 0 && <InsightGoals goals={goals} />}
@@ -606,10 +592,10 @@ const Goals = () => {
                 boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
               }}
             >
-              <div style={{ fontSize: '0.7rem', color: '#4ade80', fontFamily: 'Inter, sans-serif', fontWeight: 700, letterSpacing: '0.5px' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--mm-success)', fontWeight: 700, letterSpacing: '0.5px' }}>
                 💵 HAVE RIGHT NOW (SAVED)
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#4ade80', fontFamily: 'Inter, sans-serif', marginTop: '0.2rem' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--mm-success)', marginTop: '0.2rem' }}>
                 {formatCurrency(totalSaved)}
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
@@ -628,10 +614,10 @@ const Goals = () => {
                 boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
               }}
             >
-              <div style={{ fontSize: '0.7rem', color: '#06b6d4', fontFamily: 'Inter, sans-serif', fontWeight: 700, letterSpacing: '0.5px' }}>
+              <div style={{ fontSize: '0.7rem', color: '#06b6d4', fontWeight: 700, letterSpacing: '0.5px' }}>
                 ⚡ DAILY SAVINGS NEEDED
               </div>
-              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#06b6d4', fontFamily: 'Inter, sans-serif', marginTop: '0.2rem' }}>
+              <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#06b6d4', marginTop: '0.2rem' }}>
                 {formatCurrency(totalDailyNeeded)} <span style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ day</span>
               </div>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
@@ -649,13 +635,13 @@ const Goals = () => {
                 backdropFilter: 'blur(12px)'
               }}
             >
-              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', fontWeight: 600, letterSpacing: '0.5px' }}>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.5px' }}>
                 🎯 TOTAL TARGET CAPITAL
               </div>
-              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif', marginTop: '0.2rem' }}>
+              <div style={{ fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.2rem' }}>
                 {formatCurrency(totalTarget)}
               </div>
-              <div style={{ fontSize: '0.72rem', color: '#fbbf24', marginTop: '0.25rem' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--mm-warning)', marginTop: '0.25rem' }}>
                 {formatCurrency(totalRemaining)} remaining to complete all goals
               </div>
             </div>
@@ -700,12 +686,12 @@ const Goals = () => {
                 🪙
               </div>
               <div>
-                <div style={{ fontSize: '0.72rem', color: '#4ade80', fontFamily: 'Inter, sans-serif', fontWeight: 800, letterSpacing: '0.5px' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--mm-success)', fontWeight: 800, letterSpacing: '0.5px' }}>
                   SPARE-CHANGE ROUND-UP READY
                 </div>
                 <div style={{ fontSize: '0.82rem', color: 'var(--text-primary)', marginTop: 2 }}>
                   Rounding your last <strong>{recentExpenses.length}</strong> expenses to the nearest <strong>{roundUpIncrement}</strong> saves{' '}
-                  <strong style={{ color: '#4ade80' }}>+{formatCurrency(simulatedRoundUpTotal)}</strong>
+                  <strong style={{ color: 'var(--mm-success)' }}>+{formatCurrency(simulatedRoundUpTotal)}</strong>
                 </div>
               </div>
             </div>
@@ -720,12 +706,11 @@ const Goals = () => {
                     padding: '0.32rem 0.6rem',
                     borderRadius: 8,
                     fontSize: '0.72rem',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 700,
                     cursor: 'pointer',
                     border: roundUpIncrement === inc ? '1px solid #4ade80' : '1px solid rgba(255,255,255,0.08)',
                     background: roundUpIncrement === inc ? 'rgba(74, 222, 128, 0.18)' : 'rgba(255,255,255,0.03)',
-                    color: roundUpIncrement === inc ? '#4ade80' : 'var(--text-secondary)'
+                    color: roundUpIncrement === inc ? 'var(--mm-success)' : 'var(--text-secondary)'
                   }}
                 >
                   +{inc}
@@ -738,12 +723,11 @@ const Goals = () => {
                   padding: '0.42rem 0.85rem',
                   borderRadius: 9,
                   fontSize: '0.76rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 700,
                   cursor: 'pointer',
                   border: '1px solid rgba(74, 222, 128, 0.45)',
                   background: 'linear-gradient(135deg, rgba(74, 222, 128, 0.25), rgba(6, 182, 212, 0.22))',
-                  color: '#4ade80',
+                  color: 'var(--mm-success)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.35rem'
@@ -787,12 +771,11 @@ const Goals = () => {
                   padding: '0.35rem 0.75rem',
                   borderRadius: 20,
                   fontSize: '0.75rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,
                   cursor: 'pointer',
                   border: activeTab === tab.id ? '1px solid rgba(74, 222, 128, 0.5)' : '1px solid rgba(255, 255, 255, 0.06)',
                   background: activeTab === tab.id ? 'rgba(74, 222, 128, 0.15)' : 'rgba(255, 255, 255, 0.02)',
-                  color: activeTab === tab.id ? '#4ade80' : 'var(--text-secondary)',
+                  color: activeTab === tab.id ? 'var(--mm-success)' : 'var(--text-secondary)',
                   transition: 'all 0.18s'
                 }}
               >
@@ -833,9 +816,7 @@ const Goals = () => {
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 background: 'rgba(26, 26, 46, 0.85)',
                 color: 'var(--text-primary)',
-                cursor: 'pointer',
-                fontFamily: 'Inter, sans-serif'
-              }}
+                cursor: 'pointer' }}
             >
               {SORT_OPTIONS.map(opt => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -942,18 +923,17 @@ const Goals = () => {
                         {goal.icon || '🎯'}
                       </div>
                       <div>
-                        <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, fontFamily: 'Inter, sans-serif', color: 'var(--text-primary)' }}>
+                        <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                           {goal.name}
                         </h3>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.2rem', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                             {goal.category || 'Savings'}
                           </span>
                           <span
                             style={{
                               fontSize: '0.65rem',
                               fontWeight: 700,
-                              fontFamily: 'Inter, sans-serif',
                               color: priConfig.color,
                               background: priConfig.bg,
                               padding: '0.1rem 0.4rem',
@@ -972,7 +952,6 @@ const Goals = () => {
                             style={{
                               fontSize: '0.65rem',
                               fontWeight: 700,
-                              fontFamily: 'Inter, sans-serif',
                               color: '#38bdf8',
                               background: 'rgba(56, 189, 248, 0.12)',
                               border: '1px solid rgba(56, 189, 248, 0.3)',
@@ -1009,7 +988,7 @@ const Goals = () => {
                           e.stopPropagation();
                           setConfirm({ open: true, id: goal.id });
                         }}
-                        style={{ color: '#f87171' }}
+                        style={{ color: 'var(--mm-danger)' }}
                       >
                         <Trash2 size={15} />
                       </button>
@@ -1030,25 +1009,24 @@ const Goals = () => {
                     }}
                   >
                     <div>
-                      <div style={{ fontSize: '0.68rem', color: '#4ade80', fontFamily: 'Inter, sans-serif', fontWeight: 700, letterSpacing: '0.5px' }}>
+                      <div style={{ fontSize: '0.68rem', color: 'var(--mm-success)', fontWeight: 700, letterSpacing: '0.5px' }}>
                         HAVE RIGHT NOW
                       </div>
                       <div
                         style={{
                           fontSize: '1.5rem',
                           fontWeight: 800,
-                          color: '#4ade80',
-                          fontFamily: 'Inter, sans-serif',
+                          color: 'var(--mm-success)',
                           marginTop: '0.15rem'
                         }}
                       >
                         {formatCurrency(current)}
                       </div>
-                      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem', fontSize: '0.72rem', fontFamily: 'Inter, sans-serif' }}>
+                      <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.35rem', fontSize: '0.72rem' }}>
                         <span style={{ color: 'var(--text-secondary)' }}>
                           Target: <strong style={{ color: 'var(--text-primary)' }}>{formatCurrency(target)}</strong>
                         </span>
-                        <span style={{ color: remaining > 0 ? '#fbbf24' : '#4ade80' }}>
+                        <span style={{ color: remaining > 0 ? 'var(--mm-warning)' : 'var(--mm-success)' }}>
                           {remaining > 0 ? `To Go: ${formatCurrency(remaining)}` : 'Completed 🏆'}
                         </span>
                       </div>
@@ -1076,7 +1054,7 @@ const Goals = () => {
                         />
                       </svg>
                       <div style={{ position: 'absolute', textAlign: 'center' }}>
-                        <div style={{ fontSize: '0.82rem', fontWeight: 800, fontFamily: 'Inter, sans-serif', color: 'var(--text-primary)' }}>
+                        <div style={{ fontSize: '0.82rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                           {Math.round(progressPct)}%
                         </div>
                       </div>
@@ -1094,7 +1072,6 @@ const Goals = () => {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       fontSize: '0.75rem',
-                      fontFamily: 'Inter, sans-serif',
                       marginBottom: '0.85rem'
                     }}
                   >
@@ -1106,11 +1083,11 @@ const Goals = () => {
 
                     <div>
                       {isReached ? (
-                        <span style={{ color: '#4ade80', fontWeight: 700 }}>Achieved 🏆</span>
+                        <span style={{ color: 'var(--mm-success)', fontWeight: 700 }}>Achieved 🏆</span>
                       ) : isPast ? (
-                        <span style={{ color: '#f87171', fontWeight: 700 }}>Deadline Passed ⏰</span>
+                        <span style={{ color: 'var(--mm-danger)', fontWeight: 700 }}>Deadline Passed ⏰</span>
                       ) : (
-                        <span style={{ color: daysLeft < 30 ? '#fbbf24' : '#06b6d4', fontWeight: 700 }}>
+                        <span style={{ color: daysLeft < 30 ? 'var(--mm-warning)' : '#06b6d4', fontWeight: 700 }}>
                           {daysLeft} days left
                         </span>
                       )}
@@ -1130,16 +1107,16 @@ const Goals = () => {
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                          <div style={{ fontSize: '0.68rem', color: '#06b6d4', fontWeight: 700, fontFamily: 'Inter, sans-serif', letterSpacing: '0.5px' }}>
+                          <div style={{ fontSize: '0.68rem', color: '#06b6d4', fontWeight: 700, letterSpacing: '0.5px' }}>
                             ⚡ DAILY CALCULATION
                           </div>
-                          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif', marginTop: '0.15rem' }}>
+                          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.15rem' }}>
                             {formatCurrency(dailyNeeded)}{' '}
                             <span style={{ fontSize: '0.75rem', color: '#06b6d4', fontWeight: 600 }}>/ day</span>
                           </div>
                         </div>
 
-                        <div style={{ textAlign: 'right', fontSize: '0.7rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', maxWidth: 140 }}>
+                        <div style={{ textAlign: 'right', fontSize: '0.7rem', color: 'var(--text-secondary)', maxWidth: 140 }}>
                           {daysLeft > 0
                             ? `Save daily for ${daysLeft} days to hit your end date`
                             : 'Target date overdue'}
@@ -1148,14 +1125,14 @@ const Goals = () => {
 
                       {/* Goal Pacing Feasibility Check & 1-Tap Match Pace */}
                       {daysLeft > 0 && remaining > 0 && (
-                        <div style={{ marginTop: '0.6rem', paddingTop: '0.55rem', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.72rem', fontFamily: 'Inter, sans-serif' }}>
+                        <div style={{ marginTop: '0.6rem', paddingTop: '0.55rem', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.72rem' }}>
                           {stats.plannedMonthly >= stats.monthlyNeeded ? (
-                            <span style={{ color: '#4ade80', fontWeight: 600 }}>
+                            <span style={{ color: 'var(--mm-success)', fontWeight: 600 }}>
                               ✓ On Pace ({formatCurrency(stats.plannedMonthly)}/mo ≥ {formatCurrency(stats.monthlyNeeded)}/mo needed)
                             </span>
                           ) : (
                             <>
-                              <span style={{ color: '#fbbf24' }}>
+                              <span style={{ color: 'var(--mm-warning)' }}>
                                 ⚠️ Need <strong>{formatCurrency(stats.monthlyNeeded)}/mo</strong> (planned: {formatCurrency(stats.plannedMonthly)}/mo)
                               </span>
                               <button
@@ -1228,7 +1205,6 @@ const Goals = () => {
                                   alignItems: 'center',
                                   gap: '0.35rem',
                                   fontSize: '0.68rem',
-                                  fontFamily: 'Inter, sans-serif',
                                   fontWeight: 700,
                                   color: '#a78bfa'
                                 }}
@@ -1239,7 +1215,7 @@ const Goals = () => {
                                 </span>
                               </button>
                               {extraMonthly > 0 && (
-                                <strong style={{ fontSize: '0.68rem', color: '#4ade80', fontFamily: 'Inter, sans-serif' }}>
+                                <strong style={{ fontSize: '0.68rem', color: 'var(--mm-success)' }}>
                                   +{formatCurrency(extraMonthly)} / mo
                                 </strong>
                               )}
@@ -1247,9 +1223,9 @@ const Goals = () => {
 
                             {isExpanded && (
                               <div style={{ marginTop: '0.5rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.66rem', fontFamily: 'Inter, sans-serif', marginBottom: '0.3rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.66rem', marginBottom: '0.3rem' }}>
                                   <span style={{ color: 'var(--text-muted)' }}>Slide to simulate extra monthly savings:</span>
-                                  <strong style={{ color: extraMonthly > 0 ? '#4ade80' : 'var(--text-muted)' }}>
+                                  <strong style={{ color: extraMonthly > 0 ? 'var(--mm-success)' : 'var(--text-muted)' }}>
                                     +{formatCurrency(extraMonthly)} / mo
                                   </strong>
                                 </div>
@@ -1263,7 +1239,7 @@ const Goals = () => {
                                   onChange={e => setBoostByGoal(prev => ({ ...prev, [goal.id]: Number(e.target.value) }))}
                                   style={{
                                     width: '100%',
-                                    accentColor: '#4ade80',
+                                    accentColor: 'var(--mm-success)',
                                     cursor: 'pointer',
                                     height: 5
                                   }}
@@ -1281,12 +1257,10 @@ const Goals = () => {
                                       border: '1px solid rgba(74, 222, 128, 0.25)',
                                       borderRadius: 8,
                                       padding: '0.35rem 0.55rem',
-                                      fontSize: '0.68rem',
-                                      fontFamily: 'Inter, sans-serif'
-                                    }}
+                                      fontSize: '0.68rem' }}
                                   >
                                     <span style={{ color: 'var(--text-primary)' }}>
-                                      🎯 Finish <strong style={{ color: '#4ade80' }}>{daysSaved}d earlier</strong> ({earlyDateStr})
+                                      🎯 Finish <strong style={{ color: 'var(--mm-success)' }}>{daysSaved}d earlier</strong> ({earlyDateStr})
                                     </span>
                                     <button
                                       type="button"
@@ -1299,9 +1273,8 @@ const Goals = () => {
                                         borderRadius: 6,
                                         border: '1px solid rgba(74, 222, 128, 0.4)',
                                         background: 'rgba(74, 222, 128, 0.18)',
-                                        color: '#4ade80',
+                                        color: 'var(--mm-success)',
                                         fontSize: '0.65rem',
-                                        fontFamily: 'Inter, sans-serif',
                                         fontWeight: 700,
                                         cursor: 'pointer'
                                       }}
@@ -1327,11 +1300,9 @@ const Goals = () => {
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.5rem',
-                        color: '#4ade80',
+                        color: 'var(--mm-success)',
                         fontSize: '0.82rem',
-                        fontWeight: 700,
-                        fontFamily: 'Inter, sans-serif'
-                      }}
+                        fontWeight: 700 }}
                     >
                       <Trophy size={18} />
                       Goal Accomplished! Funds are available.
@@ -1384,10 +1355,9 @@ const Goals = () => {
                           gap: '0.35rem',
                           borderRadius: 'var(--radius-sm, 10px)',
                           background: current > 0 ? 'rgba(248, 113, 113, 0.15)' : 'rgba(255,255,255,0.04)',
-                          color: current > 0 ? '#f87171' : 'var(--text-muted)',
+                          color: current > 0 ? 'var(--mm-danger)' : 'var(--text-muted)',
                           border: current > 0 ? '1px solid rgba(248, 113, 113, 0.35)' : '1px solid rgba(255,255,255,0.05)',
                           cursor: current > 0 ? 'pointer' : 'not-allowed',
-                          fontFamily: 'Inter, sans-serif',
                           fontWeight: 700,
                           transition: 'all 0.18s'
                         }}
@@ -1400,7 +1370,7 @@ const Goals = () => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                       {/* Quick Add */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                        <span style={{ fontSize: '0.62rem', color: '#4ade80', fontFamily: 'Inter, sans-serif', fontWeight: 700, minWidth: 32 }}>
+                        <span style={{ fontSize: '0.62rem', color: 'var(--mm-success)', fontWeight: 700, minWidth: 32 }}>
                           ADD:
                         </span>
                         {[50, 100, 500].map(amt => (
@@ -1417,9 +1387,8 @@ const Goals = () => {
                               borderRadius: 6,
                               border: '1px solid rgba(74, 222, 128, 0.2)',
                               background: 'rgba(74, 222, 128, 0.06)',
-                              color: '#4ade80',
+                              color: 'var(--mm-success)',
                               fontSize: '0.68rem',
-                              fontFamily: 'Inter, sans-serif',
                               fontWeight: 600,
                               cursor: 'pointer'
                             }}
@@ -1432,7 +1401,7 @@ const Goals = () => {
                       {/* Quick Deduct (active if current > 0) */}
                       {current > 0 && (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                          <span style={{ fontSize: '0.62rem', color: '#f87171', fontFamily: 'Inter, sans-serif', fontWeight: 700, minWidth: 32 }}>
+                          <span style={{ fontSize: '0.62rem', color: 'var(--mm-danger)', fontWeight: 700, minWidth: 32 }}>
                             DEDUCT:
                           </span>
                           {[50, 100, 500].map(amt => {
@@ -1452,9 +1421,8 @@ const Goals = () => {
                                   borderRadius: 6,
                                   border: canDeduct ? '1px solid rgba(248, 113, 113, 0.2)' : '1px solid rgba(255,255,255,0.04)',
                                   background: canDeduct ? 'rgba(248, 113, 113, 0.06)' : 'transparent',
-                                  color: canDeduct ? '#f87171' : 'var(--text-muted)',
+                                  color: canDeduct ? 'var(--mm-danger)' : 'var(--text-muted)',
                                   fontSize: '0.68rem',
-                                  fontFamily: 'Inter, sans-serif',
                                   fontWeight: 600,
                                   cursor: canDeduct ? 'pointer' : 'not-allowed'
                                 }}
@@ -1517,7 +1485,6 @@ const Goals = () => {
                       padding: '0.3rem 0.6rem',
                       borderRadius: 14,
                       fontSize: '0.72rem',
-                      fontFamily: 'Inter, sans-serif',
                       fontWeight: 600,
                       cursor: 'pointer',
                       border: isSelected ? `1px solid ${cat.color}` : '1px solid rgba(255,255,255,0.08)',
@@ -1609,7 +1576,7 @@ const Goals = () => {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, monthly_contribution: autoMo })}
-                    style={{ padding: '0.18rem 0.55rem', borderRadius: 10, border: '1px solid rgba(167,139,250,0.4)', background: 'rgba(167,139,250,0.15)', color: '#c4b5fd', fontSize: '0.68rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, cursor: 'pointer' }}
+                    style={{ padding: '0.18rem 0.55rem', borderRadius: 10, border: '1px solid rgba(167,139,250,0.4)', background: 'rgba(167,139,250,0.15)', color: '#c4b5fd', fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer' }}
                   >
                     Use Auto ({formatCurrency(autoMo)}/mo)
                   </button>
@@ -1667,13 +1634,11 @@ const Goals = () => {
                 borderRadius: 12,
                 display: 'flex',
                 justifyContent: 'space-between',
-                fontSize: '0.8rem',
-                fontFamily: 'Inter, sans-serif'
-              }}
+                fontSize: '0.8rem' }}
             >
               <div>
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.68rem' }}>HAVE RIGHT NOW</div>
-                <div style={{ fontWeight: 800, color: '#4ade80', fontSize: '1.2rem', marginTop: '0.1rem' }}>
+                <div style={{ fontWeight: 800, color: 'var(--mm-success)', fontSize: '1.2rem', marginTop: '0.1rem' }}>
                   {formatCurrency(depositTargetGoal.current_amount)}
                 </div>
               </div>
@@ -1717,7 +1682,7 @@ const Goals = () => {
                     borderRadius: 8,
                     background: 'rgba(74, 222, 128, 0.15)',
                     border: '1px solid rgba(74, 222, 128, 0.3)',
-                    color: '#4ade80',
+                    color: 'var(--mm-success)',
                     fontSize: '0.75rem',
                     fontWeight: 600,
                     cursor: 'pointer'
@@ -1754,7 +1719,7 @@ const Goals = () => {
                 const selAcc = accounts.find(a => String(a.id) === String(depositData.account_id));
                 if (!selAcc) {
                   return (
-                    <div style={{ marginTop: '0.45rem', fontSize: '0.72rem', color: '#fbbf24' }}>
+                    <div style={{ marginTop: '0.45rem', fontSize: '0.72rem', color: 'var(--mm-warning)' }}>
                       ℹ️ Goal balance will increase without deducting from any bank account.
                     </div>
                   );
@@ -1766,7 +1731,7 @@ const Goals = () => {
                     <span style={{ color: 'var(--text-secondary)' }}>
                       Current: <strong style={{ color: 'var(--text-primary)' }}>{formatCurrency(curBal)}</strong>
                     </span>
-                    <span style={{ color: afterBal < 0 ? '#f87171' : '#4ade80', fontWeight: 700 }}>
+                    <span style={{ color: afterBal < 0 ? 'var(--mm-danger)' : 'var(--mm-success)', fontWeight: 700 }}>
                       After Deposit: {formatCurrency(afterBal)}
                     </span>
                   </div>
@@ -1818,10 +1783,10 @@ const Goals = () => {
                 color: 'var(--text-primary)'
               }}
             >
-              <div style={{ color: 'var(--text-muted)', fontSize: '0.68rem', fontFamily: 'Inter, sans-serif' }}>
+              <div style={{ color: 'var(--text-muted)', fontSize: '0.68rem' }}>
                 HAVE RIGHT NOW IN THIS GOAL
               </div>
-              <div style={{ fontWeight: 800, fontSize: '1.4rem', color: '#f87171', fontFamily: 'Inter, sans-serif', marginTop: '0.15rem' }}>
+              <div style={{ fontWeight: 800, fontSize: '1.4rem', color: 'var(--mm-danger)', marginTop: '0.15rem' }}>
                 {formatCurrency(deductTargetGoal.current_amount)}
               </div>
               <p style={{ margin: '0.35rem 0 0', fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
@@ -1846,7 +1811,6 @@ const Goals = () => {
                       border: '1px solid rgba(255,255,255,0.08)',
                       color: 'var(--text-primary)',
                       fontSize: '0.75rem',
-                      fontFamily: 'Inter, sans-serif',
                       cursor: 'pointer'
                     }}
                   >
@@ -1934,10 +1898,10 @@ const Goals = () => {
               backdropFilter: 'blur(12px)'
             }}
           >
-            <div style={{ fontSize: '0.7rem', color: '#4ade80', fontFamily: 'Inter, sans-serif', fontWeight: 700, letterSpacing: '0.5px' }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--mm-success)', fontWeight: 700, letterSpacing: '0.5px' }}>
               ⚡ SIMULATED SPARE-CHANGE POTENTIAL
             </div>
-            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#4ade80', fontFamily: 'Inter, sans-serif', marginTop: '0.2rem' }}>
+            <div style={{ fontSize: '1.8rem', fontWeight: 800, color: 'var(--mm-success)', marginTop: '0.2rem' }}>
               +{formatCurrency(simulatedRoundUpTotal)}
             </div>
             <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
@@ -1962,7 +1926,6 @@ const Goals = () => {
                     border: `1px solid ${roundUpIncrement === inc ? '#4ade80' : 'rgba(255,255,255,0.08)'}`,
                     background: roundUpIncrement === inc ? 'rgba(74, 222, 128, 0.15)' : 'rgba(255,255,255,0.03)',
                     color: roundUpIncrement === inc ? '#4ade80' : '#f0f0f5',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 700,
                     fontSize: '0.9rem',
                     cursor: 'pointer',

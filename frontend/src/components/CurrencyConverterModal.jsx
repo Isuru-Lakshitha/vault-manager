@@ -192,7 +192,7 @@ export default function CurrencyConverterModal({ isOpen, onClose }) {
               💱
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: '1.15rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-primary)' }}>
+              <h2 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-primary)' }}>
                 Currency Hub
               </h2>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -236,7 +236,6 @@ export default function CurrencyConverterModal({ isOpen, onClose }) {
                   background: isSelected ? 'rgba(56,189,248,0.18)' : 'rgba(255,255,255,0.03)',
                   color: isSelected ? '#38bdf8' : 'var(--text-secondary)',
                   fontSize: '0.72rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,
                   cursor: 'pointer',
                   whiteSpace: 'nowrap',
@@ -276,7 +275,6 @@ export default function CurrencyConverterModal({ isOpen, onClose }) {
                   color: 'var(--text-primary)',
                   padding: '0.5rem 0.6rem',
                   fontSize: '0.95rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 700,
                   cursor: 'pointer',
                   outline: 'none'
@@ -299,7 +297,6 @@ export default function CurrencyConverterModal({ isOpen, onClose }) {
                   background: 'transparent',
                   border: 'none',
                   fontSize: '1.4rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 700,
                   color: 'var(--text-primary)',
                   textAlign: 'right',
@@ -359,7 +356,6 @@ export default function CurrencyConverterModal({ isOpen, onClose }) {
                   color: 'var(--text-primary)',
                   padding: '0.5rem 0.6rem',
                   fontSize: '0.95rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 700,
                   cursor: 'pointer',
                   outline: 'none'
@@ -382,9 +378,8 @@ export default function CurrencyConverterModal({ isOpen, onClose }) {
                   background: 'transparent',
                   border: 'none',
                   fontSize: '1.4rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 700,
-                  color: '#4ade80',
+                  color: 'var(--mm-success)',
                   textAlign: 'right',
                   outline: 'none'
                 }}
@@ -408,7 +403,6 @@ export default function CurrencyConverterModal({ isOpen, onClose }) {
                 background: 'rgba(255,255,255,0.03)',
                 color: 'var(--text-secondary)',
                 fontSize: '0.72rem',
-                fontFamily: 'Inter, sans-serif',
                 fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease'
@@ -432,7 +426,7 @@ export default function CurrencyConverterModal({ isOpen, onClose }) {
             gap: '0.35rem'
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', fontFamily: 'Inter, sans-serif' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem' }}>
             <span style={{ color: '#38bdf8', fontWeight: 600 }}>
               1 {fromCur} = {!Number.isFinite(exchangeRate) ? 'Unavailable' : exchangeRate >= 100 ? exchangeRate.toFixed(2) : exchangeRate.toFixed(4)} {toCur}
             </span>

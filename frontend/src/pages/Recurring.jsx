@@ -1014,7 +1014,7 @@ const Recurring = () => {
                   width: 17,
                   height: 17,
                   borderRadius: '50%',
-                  background: isPaidThisMonth ? '#10b981' : urgency.level === 'overdue' ? '#ef4444' : '#f59e0b',
+                  background: isPaidThisMonth ? 'var(--mm-success)' : urgency.level === 'overdue' ? 'var(--mm-danger)' : 'var(--mm-warning)',
                   color: '#06120e',
                   fontSize: '0.62rem',
                   fontWeight: 800,
@@ -1046,7 +1046,6 @@ const Recurring = () => {
               {!rule.paused ? (
                 <span style={{
                   fontSize: '0.68rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 700,
                   letterSpacing: '0.2px',
                   padding: '3px 9px',
@@ -1061,7 +1060,7 @@ const Recurring = () => {
                   {urgency.label}
                 </span>
               ) : (
-                <span style={{ fontSize: '0.64rem', fontFamily: 'Inter, sans-serif', fontWeight: 600, color: 'var(--text-muted)', border: '1px solid var(--mm-border)', borderRadius: 999, padding: '2px 8px' }}>
+                <span style={{ fontSize: '0.64rem', fontWeight: 600, color: 'var(--text-muted)', border: '1px solid var(--mm-border)', borderRadius: 999, padding: '2px 8px' }}>
                   ⏸ PAUSED
                 </span>
               )}
@@ -1069,7 +1068,6 @@ const Recurring = () => {
               {rule.is_variable && (
                 <span style={{
                   fontSize: '0.63rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,
                   padding: '2px 7px',
                   borderRadius: 6,
@@ -1084,12 +1082,11 @@ const Recurring = () => {
               {variancePct !== 0 && Math.abs(variancePct) >= 5 && (
                 <span style={{
                   fontSize: '0.62rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,
                   padding: '2px 6px',
                   borderRadius: 6,
                   background: variancePct > 0 ? 'rgba(248, 113, 113, 0.1)' : 'rgba(52, 211, 153, 0.1)',
-                  color: variancePct > 0 ? '#f87171' : '#34d399',
+                  color: variancePct > 0 ? 'var(--mm-danger)' : 'var(--mm-success)',
                 }} title="Latest payment vs historical average">
                   {variancePct > 0 ? `+${variancePct}%` : `${variancePct}%`} vs avg
                 </span>
@@ -1097,10 +1094,10 @@ const Recurring = () => {
             </div>
 
             {/* Clean Metadata Row */}
-            <div style={{ fontSize: '0.73rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', marginTop: 4, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: 4, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
               <span>{rule.frequency || 'Monthly'}</span>
               <span>·</span>
-              <span style={{ color: !isPaidThisMonth && urgency.level === 'overdue' ? '#f87171' : 'var(--text-secondary)', fontWeight: 500 }}>
+              <span style={{ color: !isPaidThisMonth && urgency.level === 'overdue' ? 'var(--mm-danger)' : 'var(--text-secondary)', fontWeight: 500 }}>
                 {isFlexible ? `Flexible (${rule.flexible_window || 'Anytime'})` : `Day ${rule.day_of_month}`}
               </span>
               {acct && (
@@ -1112,7 +1109,7 @@ const Recurring = () => {
               {isPaidThisMonth && rule.last_paid_date && (
                 <>
                   <span>·</span>
-                  <span style={{ color: '#10b981', fontWeight: 600 }}>Paid on {rule.last_paid_date}</span>
+                  <span style={{ color: 'var(--mm-success)', fontWeight: 600 }}>Paid on {rule.last_paid_date}</span>
                 </>
               )}
               {(rule.min_amount > 0 || rule.max_amount > 0) && (
@@ -1135,7 +1132,6 @@ const Recurring = () => {
                   padding: 0,
                   color: 'var(--mm-accent, #5b8def)',
                   fontSize: '0.73rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,
                   cursor: 'pointer',
                 }}
@@ -1149,7 +1145,7 @@ const Recurring = () => {
               <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: 5, fontSize: '0.68rem', color: 'var(--text-secondary)' }}>
                 <span>Principal: <strong>{formatCurrency(loanPrincipal)}</strong> ({loanApr}% APR)</span>
                 {loanMonthlyInt > 0 && <span>· Interest: ~{formatCurrency(loanMonthlyInt)}/mo</span>}
-                {loanAccrued > 0 && <span style={{ color: '#f87171' }}>· Accrued: {formatCurrency(loanAccrued)}</span>}
+                {loanAccrued > 0 && <span style={{ color: 'var(--mm-danger)' }}>· Accrued: {formatCurrency(loanAccrued)}</span>}
               </div>
             )}
           </div>
@@ -1216,7 +1212,7 @@ const Recurring = () => {
                   className="icon-btn"
                   title="Save estimate"
                   onClick={e => saveInlineEstimate(rule, e)}
-                  style={{ color: '#10b981' }}
+                  style={{ color: 'var(--mm-success)' }}
                 >
                   <Check size={14} />
                 </button>
@@ -1234,9 +1230,8 @@ const Recurring = () => {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 5 }}>
                   <span style={{
                     fontWeight: 800,
-                    fontFamily: 'Inter, sans-serif',
                     fontSize: '1.02rem',
-                    color: isPaidThisMonth ? '#10b981' : typeColor,
+                    color: isPaidThisMonth ? 'var(--mm-success)' : typeColor,
                     fontVariantNumeric: 'tabular-nums',
                   }}>
                     {isIncome ? '+' : '-'}{rule.is_variable ? '~' : ''}{formatCurrency(effectiveAmt)}
@@ -1262,7 +1257,7 @@ const Recurring = () => {
                     ✎
                   </button>
                 </div>
-                <div style={{ fontSize: '0.65rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', marginTop: 1 }}>
+                <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: 1 }}>
                   {isPaidThisMonth && rule.last_paid_amount
                     ? `Paid ${formatCurrency(rule.last_paid_amount)}`
                     : `${freqLabel(rule.frequency)} · ~${formatCurrency(Math.round(monthly))}/mo`}
@@ -1314,7 +1309,7 @@ const Recurring = () => {
                   fontWeight: 600,
                   whiteSpace: 'nowrap',
                   borderColor: isPaidThisMonth ? 'rgba(245, 158, 11, 0.35)' : 'rgba(16, 185, 129, 0.38)',
-                  color: isPaidThisMonth ? '#fbbf24' : '#34d399',
+                  color: isPaidThisMonth ? 'var(--mm-warning)' : 'var(--mm-success)',
                   background: isPaidThisMonth ? 'rgba(245, 158, 11, 0.08)' : 'rgba(16, 185, 129, 0.1)',
                 }}
                 title={isPaidThisMonth ? 'Undo paid status and mark as due this month' : 'Mark as already paid this month without deducting from an account'}
@@ -1433,9 +1428,8 @@ const Recurring = () => {
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        fontFamily: 'Inter, sans-serif',
                       }}>
-                        <span style={{ fontSize: '0.95rem', fontWeight: 800, color: cycleStats.paidPct === 100 ? '#10b981' : 'var(--text-primary)' }}>
+                        <span style={{ fontSize: '0.95rem', fontWeight: 800, color: cycleStats.paidPct === 100 ? 'var(--mm-success)' : 'var(--text-primary)' }}>
                           {cycleStats.paidPct}%
                         </span>
                         <span style={{ fontSize: '0.55rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
@@ -1451,11 +1445,11 @@ const Recurring = () => {
                       <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: 2 }}>
                         {cycleStats.paidCount} of {cycleStats.totalCount} Paid
                         {cycleStats.unpaidCount > 0 ? (
-                          <span style={{ color: '#fbbf24', fontWeight: 700, fontSize: '0.92rem', marginLeft: 8 }}>
+                          <span style={{ color: 'var(--mm-warning)', fontWeight: 700, fontSize: '0.92rem', marginLeft: 8 }}>
                             · {cycleStats.unpaidCount} Still Due
                           </span>
                         ) : (
-                          <span style={{ color: '#10b981', fontWeight: 700, fontSize: '0.92rem', marginLeft: 8 }}>
+                          <span style={{ color: 'var(--mm-success)', fontWeight: 700, fontSize: '0.92rem', marginLeft: 8 }}>
                             · 🎉 All Settled!
                           </span>
                         )}
@@ -1488,7 +1482,7 @@ const Recurring = () => {
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.6px', color: cycleStats.unpaidCount > 0 ? '#fbbf24' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.6px', color: cycleStats.unpaidCount > 0 ? 'var(--mm-warning)' : 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 5 }}>
                           <Clock size={13} /> ⏳ UNPAID / DUE THIS MONTH
                         </span>
                         <span style={{
@@ -1497,23 +1491,23 @@ const Recurring = () => {
                           padding: '2px 8px',
                           borderRadius: 999,
                           background: cycleStats.unpaidCount > 0 ? 'rgba(245, 158, 11, 0.22)' : 'rgba(255,255,255,0.06)',
-                          color: cycleStats.unpaidCount > 0 ? '#fbbf24' : 'var(--text-muted)',
+                          color: cycleStats.unpaidCount > 0 ? 'var(--mm-warning)' : 'var(--text-muted)',
                         }}>
                           {cycleStats.unpaidCount} item{cycleStats.unpaidCount === 1 ? '' : 's'}
                         </span>
                       </div>
-                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: cycleStats.unpaidCount > 0 ? '#fbbf24' : 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: cycleStats.unpaidCount > 0 ? 'var(--mm-warning)' : 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
                         <AnimatedCounter value={Math.round(safeToSpendData.unpaidRecurringTotal)} formatter={formatCurrency} />
                       </div>
                       <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
                         {cycleStats.overdueCount > 0 && (
-                          <span style={{ color: '#f87171', fontWeight: 700 }}>🚨 {cycleStats.overdueCount} Overdue</span>
+                          <span style={{ color: 'var(--mm-danger)', fontWeight: 700 }}>🚨 {cycleStats.overdueCount} Overdue</span>
                         )}
                         {cycleStats.dueSoonCount > 0 && (
-                          <span style={{ color: '#fbbf24', fontWeight: 600 }}>⚡ {cycleStats.dueSoonCount} Due Soon</span>
+                          <span style={{ color: 'var(--mm-warning)', fontWeight: 600 }}>⚡ {cycleStats.dueSoonCount} Due Soon</span>
                         )}
                         {cycleStats.unpaidCount === 0 && (
-                          <span style={{ color: '#10b981', fontWeight: 600 }}>✓ Nothing left to pay this month</span>
+                          <span style={{ color: 'var(--mm-success)', fontWeight: 600 }}>✓ Nothing left to pay this month</span>
                         )}
                         {cycleStats.unpaidCount > 0 && cycleStats.overdueCount === 0 && cycleStats.dueSoonCount === 0 && (
                           <span>Click to filter unpaid items</span>
@@ -1539,7 +1533,7 @@ const Recurring = () => {
                       }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.6px', color: '#34d399', display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: 800, letterSpacing: '0.6px', color: 'var(--mm-success)', display: 'flex', alignItems: 'center', gap: 5 }}>
                           <CheckCircle2 size={13} /> ✅ PAID / SETTLED THIS MONTH
                         </span>
                         <span style={{
@@ -1548,17 +1542,17 @@ const Recurring = () => {
                           padding: '2px 8px',
                           borderRadius: 999,
                           background: 'rgba(16, 185, 129, 0.2)',
-                          color: '#34d399',
+                          color: 'var(--mm-success)',
                         }}>
                           {cycleStats.paidCount} item{cycleStats.paidCount === 1 ? '' : 's'}
                         </span>
                       </div>
-                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#34d399', fontVariantNumeric: 'tabular-nums' }}>
+                      <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--mm-success)', fontVariantNumeric: 'tabular-nums' }}>
                         <AnimatedCounter value={Math.round(safeToSpendData.paidRecurringThisMonth || cycleStats.paidAmount)} formatter={formatCurrency} />
                       </div>
                       <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', display: 'flex', gap: '0.45rem', flexWrap: 'wrap' }}>
                         {cycleStats.paidLedgerCount > 0 && (
-                          <span style={{ color: '#34d399', fontWeight: 600 }}>✓ {cycleStats.paidLedgerCount} Recorded in Ledger</span>
+                          <span style={{ color: 'var(--mm-success)', fontWeight: 600 }}>✓ {cycleStats.paidLedgerCount} Recorded in Ledger</span>
                         )}
                         {cycleStats.paidMarkedCount > 0 && (
                           <span>☑️ {cycleStats.paidMarkedCount} Marked Paid</span>
@@ -1593,7 +1587,7 @@ const Recurring = () => {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 6, fontSize: '0.69rem', color: 'var(--text-muted)', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <span>
-                      <strong style={{ color: '#34d399' }}>✅ {cycleStats.paidCount} Paid</strong> · <strong style={{ color: '#fbbf24' }}>⏳ {cycleStats.unpaidCount} Unpaid</strong>
+                      <strong style={{ color: 'var(--mm-success)' }}>✅ {cycleStats.paidCount} Paid</strong> · <strong style={{ color: 'var(--mm-warning)' }}>⏳ {cycleStats.unpaidCount} Unpaid</strong>
                     </span>
                     <button
                       type="button"
@@ -1634,7 +1628,7 @@ const Recurring = () => {
                 flexWrap: 'wrap',
               }}>
                 <span style={{ fontSize: '0.7rem', fontWeight: 700, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <ShieldCheck size={14} style={{ color: '#34d399' }} /> Account Funding Check:
+                  <ShieldCheck size={14} style={{ color: 'var(--mm-success)' }} /> Account Funding Check:
                 </span>
                 {accountCoverage.items.map(item => (
                   <span
@@ -1744,7 +1738,7 @@ const Recurring = () => {
               gap: '0.4rem',
               flexWrap: 'wrap',
             }}>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-muted)', marginRight: '0.2rem' }}>
+              <span style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-muted)', marginRight: '0.2rem' }}>
                 Quick Add:
               </span>
               <button
@@ -1755,9 +1749,8 @@ const Recurring = () => {
                   borderRadius: 6,
                   background: 'rgba(245,158,11,0.1)',
                   border: '1px solid rgba(245,158,11,0.25)',
-                  color: '#f59e0b',
+                  color: 'var(--mm-warning)',
                   fontSize: '0.7rem',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,
                   cursor: 'pointer',
                 }}
@@ -1776,7 +1769,6 @@ const Recurring = () => {
                     border: '1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))',
                     color: 'var(--text-secondary)',
                     fontSize: '0.7rem',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 500,
                     cursor: 'pointer',
                   }}
@@ -1810,7 +1802,6 @@ const Recurring = () => {
                         border: `1px solid ${filterTab === t.id ? 'var(--mm-accent, #5b8def)' : 'var(--mm-border-subtle, rgba(255,255,255,0.08))'}`,
                         background: filterTab === t.id ? 'rgba(91,141,239,0.14)' : 'transparent',
                         color: filterTab === t.id ? 'var(--mm-accent, #5b8def)' : 'var(--text-secondary)',
-                        fontFamily: 'Inter, sans-serif',
                         fontSize: '0.72rem',
                         fontWeight: 600,
                         cursor: 'pointer',
@@ -1917,7 +1908,7 @@ const Recurring = () => {
                     <button
                       type="button"
                       onClick={() => setSelectedIds(unpaidFilteredRules.map(r => String(r.id)))}
-                      style={{ background: 'none', border: 'none', color: '#fbbf24', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
+                      style={{ background: 'none', border: 'none', color: 'var(--mm-warning)', fontSize: '0.72rem', fontWeight: 600, cursor: 'pointer' }}
                     >
                       Select All Due ({unpaidFilteredRules.length})
                     </button>
@@ -1934,7 +1925,7 @@ const Recurring = () => {
                       type="button"
                       className="btn btn-primary"
                       onClick={() => handleBatchMarkStatus(true)}
-                      style={{ padding: '0.32rem 0.7rem', fontSize: '0.72rem', background: '#10b981', borderColor: '#10b981' }}
+                      style={{ padding: '0.32rem 0.7rem', fontSize: '0.72rem', background: 'var(--mm-success)', borderColor: 'var(--mm-success)' }}
                     >
                       ✓ Mark Selected Paid
                     </button>
@@ -1942,7 +1933,7 @@ const Recurring = () => {
                       type="button"
                       className="btn btn-secondary"
                       onClick={() => handleBatchMarkStatus(false)}
-                      style={{ padding: '0.32rem 0.7rem', fontSize: '0.72rem', color: '#fbbf24', borderColor: 'rgba(245,158,11,0.4)' }}
+                      style={{ padding: '0.32rem 0.7rem', fontSize: '0.72rem', color: 'var(--mm-warning)', borderColor: 'rgba(245,158,11,0.4)' }}
                     >
                       ⏳ Mark Selected Unpaid
                     </button>
@@ -2021,7 +2012,7 @@ const Recurring = () => {
               return (
                 <div className="bento-item col-span-12" style={{ flexDirection: 'column', padding: '1.5rem', marginBottom: '1.5rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                       <Calendar size={16} style={{ color: 'var(--accent-primary)' }} />
                       {today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} — Commitments Calendar
                     </div>
@@ -2029,7 +2020,7 @@ const Recurring = () => {
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '0.35rem', marginBottom: '0.4rem' }}>
                     {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map(d => (
-                      <div key={d} style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.62rem', letterSpacing: '1px', color: 'var(--text-muted)', textAlign: 'center', padding: '0.3rem 0' }}>{d}</div>
+                      <div key={d} style={{ fontSize: '0.62rem', letterSpacing: '1px', color: 'var(--text-muted)', textAlign: 'center', padding: '0.3rem 0' }}>{d}</div>
                     ))}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7,1fr)', gap: '0.35rem' }}>
@@ -2044,13 +2035,13 @@ const Recurring = () => {
                         }}>
                           {day && (
                             <>
-                              <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--accent-primary)' : 'var(--text-muted)', marginBottom: '0.25rem' }}>{day}</div>
+                              <div style={{ fontSize: '0.72rem', fontWeight: isToday ? 700 : 500, color: isToday ? 'var(--accent-primary)' : 'var(--text-muted)', marginBottom: '0.25rem' }}>{day}</div>
                               {dayItems.map(item => (
                                 <div key={item.id} onClick={() => item.rule ? openPayRuleModal(item.rule) : navigate('/bills')} style={{
                                   fontSize: '0.64rem', fontWeight: 600, padding: '0.15rem 0.35rem', borderRadius: 4, marginBottom: 2,
                                   cursor: 'pointer',
                                   background: item.paid ? 'rgba(52,211,153,0.12)' : 'rgba(245,158,11,0.14)',
-                                  color: item.paid ? '#34d399' : '#f59e0b',
+                                  color: item.paid ? 'var(--mm-success)' : 'var(--mm-warning)',
                                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                                 }}>
                                   {item.paid ? '✓ ' : '⏳ '}{item.name}
@@ -2078,7 +2069,7 @@ const Recurring = () => {
                               borderRadius: 6,
                               border: '1px solid var(--mm-border-subtle, rgba(255,255,255,0.1))',
                               background: item.paid ? 'rgba(52,211,153,0.1)' : 'var(--bg-surface)',
-                              color: item.paid ? '#34d399' : 'var(--text-primary)',
+                              color: item.paid ? 'var(--mm-success)' : 'var(--text-primary)',
                               fontSize: '0.72rem',
                               cursor: 'pointer',
                             }}
@@ -2123,7 +2114,7 @@ const Recurring = () => {
                             fontWeight: 800,
                             letterSpacing: '0.7px',
                             textTransform: 'uppercase',
-                            color: unpaidFilteredRules.length > 0 ? '#fbbf24' : '#10b981',
+                            color: unpaidFilteredRules.length > 0 ? 'var(--mm-warning)' : 'var(--mm-success)',
                             display: 'flex',
                             alignItems: 'center',
                             gap: 6,
@@ -2140,7 +2131,7 @@ const Recurring = () => {
                               padding: '2px 9px',
                               borderRadius: 999,
                               background: 'rgba(245, 158, 11, 0.16)',
-                              color: '#fbbf24',
+                              color: 'var(--mm-warning)',
                             }}>
                               Remaining Due: {formatCurrency(Math.round(unpaidFilteredRules.reduce((s, r) => s + (['Expense', 'Loan Payment'].includes(r.type) ? freqMonthly(r) : 0), 0)))}
                             </span>
@@ -2205,7 +2196,7 @@ const Recurring = () => {
                             fontWeight: 800,
                             letterSpacing: '0.7px',
                             textTransform: 'uppercase',
-                            color: '#34d399',
+                            color: 'var(--mm-success)',
                             display: 'flex',
                             alignItems: 'center',
                             gap: 6,
@@ -2220,7 +2211,7 @@ const Recurring = () => {
                               padding: '2px 9px',
                               borderRadius: 999,
                               background: 'rgba(16, 185, 129, 0.16)',
-                              color: '#34d399',
+                              color: 'var(--mm-success)',
                             }}>
                               Settled: {formatCurrency(Math.round(paidFilteredRules.reduce((s, r) => s + (['Expense', 'Loan Payment'].includes(r.type) ? ((!r.last_paid_marked_only && Number(r.last_paid_amount) > 0) ? Number(r.last_paid_amount) : freqMonthly(r)) : 0), 0)))}
                             </span>
@@ -2263,7 +2254,7 @@ const Recurring = () => {
                   /* Flat / Filtered Active Rules List */
                   filteredActiveRules.length > 0 && (
                     <div style={{ marginBottom: '1.5rem' }}>
-                      <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.68rem', fontWeight: 700, letterSpacing: '1px', color: 'var(--text-muted)', marginBottom: '0.65rem', textTransform: 'uppercase' }}>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 700, letterSpacing: '1px', color: 'var(--text-muted)', marginBottom: '0.65rem', textTransform: 'uppercase' }}>
                         {filterTab === 'unpaid'
                           ? `⏳ Unpaid / Due Reminders (${filteredActiveRules.length})`
                           : filterTab === 'paid'
@@ -2283,7 +2274,7 @@ const Recurring = () => {
                 {unpaidBills.length > 0 && (filterTab === 'all' || filterTab === 'unpaid') && (
                   <div style={{ marginBottom: '1.5rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem' }}>
-                      <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.68rem', fontWeight: 600, letterSpacing: '1px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+                      <div style={{ fontSize: '0.68rem', fontWeight: 600, letterSpacing: '1px', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
                         Upcoming Scheduled Bills ({unpaidBills.length})
                       </div>
                       <button
@@ -2351,7 +2342,7 @@ const Recurring = () => {
                 {/* Paused rules */}
                 {pausedRules.length > 0 && (
                   <div>
-                    <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.68rem', fontWeight: 600, letterSpacing: '1px', color: 'var(--text-muted)', marginBottom: '0.65rem', textTransform: 'uppercase' }}>
+                    <div style={{ fontSize: '0.68rem', fontWeight: 600, letterSpacing: '1px', color: 'var(--text-muted)', marginBottom: '0.65rem', textTransform: 'uppercase' }}>
                       Paused ({pausedRules.length})
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>

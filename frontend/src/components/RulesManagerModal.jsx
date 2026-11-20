@@ -234,7 +234,7 @@ export default function RulesManagerModal({ isOpen, onClose }) {
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
                         <span style={{ color: 'var(--text-secondary)', textDecoration: 'line-through' }}>{m.original.category || 'None'}</span>
                         <ArrowRight size={12} color="#4ade80" />
-                        <span style={{ color: '#4ade80', fontWeight: 600 }}>{m.updated.category}</span>
+                        <span style={{ color: 'var(--mm-success)', fontWeight: 600 }}>{m.updated.category}</span>
                       </div>
                     </div>
                   ))}
@@ -277,7 +277,7 @@ export default function RulesManagerModal({ isOpen, onClose }) {
             >
               <form onSubmit={handleSaveEditor} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.95rem', color: '#4ade80' }}>
+                  <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.95rem', color: 'var(--mm-success)' }}>
                     <Sliders size={16} /> {editingRule.id.startsWith('rule_') && !rules.some(r => r.id === editingRule.id) ? 'Create Automation Rule' : 'Edit Automation Rule'}
                   </h4>
                   <button type="button" onClick={() => setEditingRule(null)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
@@ -320,7 +320,7 @@ export default function RulesManagerModal({ isOpen, onClose }) {
                     <button
                       type="button"
                       onClick={() => setEditingRule(r => ({ ...r, conditions: [...r.conditions, { field: 'description', operator: 'contains', value: '' }] }))}
-                      style={{ background: 'none', border: 'none', color: '#4ade80', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}
+                      style={{ background: 'none', border: 'none', color: 'var(--mm-success)', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}
                     >
                       <Plus size={12} /> Add Condition
                     </button>
@@ -376,7 +376,7 @@ export default function RulesManagerModal({ isOpen, onClose }) {
                           type="button"
                           disabled={editingRule.conditions.length <= 1}
                           onClick={() => setEditingRule(r => ({ ...r, conditions: r.conditions.filter((_, i) => i !== idx) }))}
-                          style={{ background: 'none', border: 'none', color: editingRule.conditions.length > 1 ? '#f87171' : 'rgba(255,255,255,0.2)', cursor: editingRule.conditions.length > 1 ? 'pointer' : 'default', padding: 4 }}
+                          style={{ background: 'none', border: 'none', color: editingRule.conditions.length > 1 ? 'var(--mm-danger)' : 'rgba(255,255,255,0.2)', cursor: editingRule.conditions.length > 1 ? 'pointer' : 'default', padding: 4 }}
                         >
                           <Trash2 size={14} />
                         </button>
@@ -387,7 +387,7 @@ export default function RulesManagerModal({ isOpen, onClose }) {
 
                 {/* Actions (THEN...) */}
                 <div style={{ background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: 12, border: '1px solid rgba(255,255,255,0.04)' }}>
-                  <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#4ade80', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>
+                  <span style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: 'var(--mm-success)', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>
                     THEN PERFORM ACTIONS
                   </span>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
@@ -430,7 +430,7 @@ export default function RulesManagerModal({ isOpen, onClose }) {
                       <select
                         value={editingRule.actions?.tax_category || 'Business'}
                         onChange={e => setEditingRule(r => ({ ...r, actions: { ...r.actions, tax_category: e.target.value } }))}
-                        style={{ padding: '0.25rem 0.5rem', borderRadius: 6, background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(74,222,128,0.3)', color: '#4ade80', fontSize: '0.75rem' }}
+                        style={{ padding: '0.25rem 0.5rem', borderRadius: 6, background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(74,222,128,0.3)', color: 'var(--mm-success)', fontSize: '0.75rem' }}
                       >
                         {TAX_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
@@ -462,7 +462,7 @@ export default function RulesManagerModal({ isOpen, onClose }) {
                   {testText && (
                     <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                       {testMatchResult?.match ? (
-                        <span style={{ color: '#4ade80', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <span style={{ color: 'var(--mm-success)', display: 'flex', alignItems: 'center', gap: 4 }}>
                           <CheckCircle2 size={13} /> Rule MATCHES! Category would become <strong>{testMatchResult.simulated.category || 'same'}</strong>
                           {testMatchResult.simulated.is_tax_deductible && ` (Tax: ${testMatchResult.simulated.tax_category})`}
                         </span>
@@ -526,7 +526,7 @@ export default function RulesManagerModal({ isOpen, onClose }) {
                     onClick={() => handleToggleActive(rule)}
                     style={{
                       width: 22, height: 22, borderRadius: 6,
-                      background: rule.active ? '#4ade80' : 'rgba(255,255,255,0.1)',
+                      background: rule.active ? 'var(--mm-success)' : 'rgba(255,255,255,0.1)',
                       border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0
                     }}
@@ -544,7 +544,7 @@ export default function RulesManagerModal({ isOpen, onClose }) {
                         {rule.matchMode === 'any' ? 'ANY' : 'ALL'}
                       </span>
                       {rule.actions?.set_tax_deductible && (
-                        <span style={{ fontSize: '0.68rem', padding: '1px 6px', borderRadius: 4, background: 'rgba(74,222,128,0.15)', color: '#4ade80', fontWeight: 600 }}>
+                        <span style={{ fontSize: '0.68rem', padding: '1px 6px', borderRadius: 4, background: 'rgba(74,222,128,0.15)', color: 'var(--mm-success)', fontWeight: 600 }}>
                           🏷️ Tax Deductible
                         </span>
                       )}
@@ -560,7 +560,7 @@ export default function RulesManagerModal({ isOpen, onClose }) {
                       ))}
                       <ArrowRight size={11} color="#4ade80" />
                       {rule.actions?.set_category && (
-                        <span style={{ color: '#4ade80', fontWeight: 600 }}>{rule.actions.set_category}</span>
+                        <span style={{ color: 'var(--mm-success)', fontWeight: 600 }}>{rule.actions.set_category}</span>
                       )}
                       {rule.actions?.add_tags?.map(t => (
                         <span key={t} style={{ color: '#a78bfa', fontSize: '0.7rem' }}>{t}</span>
@@ -584,7 +584,7 @@ export default function RulesManagerModal({ isOpen, onClose }) {
                   </button>
                   <button
                     onClick={() => handleDeleteRule(rule.id)}
-                    style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', padding: 6, borderRadius: 6 }}
+                    style={{ background: 'none', border: 'none', color: 'var(--mm-danger)', cursor: 'pointer', padding: 6, borderRadius: 6 }}
                     title="Delete rule"
                   >
                     <Trash2 size={15} />

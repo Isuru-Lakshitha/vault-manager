@@ -347,15 +347,15 @@ const Budgets = () => {
                 }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-                  <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.86rem', color: 'var(--text-primary)' }}>
+                  <div style={{ fontWeight: 700, fontSize: '0.86rem', color: 'var(--text-primary)' }}>
                     🔄 {carryOverCandidates.length} budget categor{carryOverCandidates.length > 1 ? 'ies' : 'y'} ready to carry over into {targetRolloverMonth}
                   </div>
-                  <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
                     Copy previous limits in one click — optionally roll forward unspent surplus.
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
-                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.76rem', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>
+                  <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.76rem', color: 'var(--text-secondary)', cursor: 'pointer' }}>
                     <input
                       type="checkbox"
                       checked={rolloverSurplus}
@@ -381,7 +381,7 @@ const Budgets = () => {
             {/* Month Filter Bar */}
             {budgets.length > 0 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-                <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', fontWeight: 600, marginRight: '0.25rem' }}>
+                <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontWeight: 600, marginRight: '0.25rem' }}>
                   Month:
                 </span>
                 {[
@@ -405,7 +405,6 @@ const Budgets = () => {
                         color: active ? '#60a5fa' : 'var(--text-secondary)',
                         fontSize: '0.74rem',
                         fontWeight: active ? 600 : 500,
-                        fontFamily: 'Inter, sans-serif',
                         cursor: 'pointer'
                       }}
                     >
@@ -454,13 +453,13 @@ const Budgets = () => {
                     strokeDashoffset={2*Math.PI*20 * (1 - health/100)}
                     style={{ transform:'rotate(-90deg)', transformOrigin:'center', transition:'stroke-dashoffset 0.25s ease' }}/>
                 </svg>
-                <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.75rem', color }}>
+                <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', fontWeight:700, fontSize:'0.75rem', color }}>
                   {health}
                 </div>
               </div>
               <div>
-                <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1rem', color }}>{label}</div>
-                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.7rem', color:'var(--text-muted)', marginTop:'0.2rem' }}>
+                <div style={{ fontWeight:700, fontSize:'1rem', color }}>{label}</div>
+                <div style={{ fontSize:'0.7rem', color:'var(--text-muted)', marginTop:'0.2rem' }}>
                   BUDGET HEALTH SCORE · {visibleBudgets.length - overBudgetCount}/{visibleBudgets.length} categories within limit
                 </div>
               </div>
@@ -496,8 +495,8 @@ const Budgets = () => {
                         <Target size={16} color={statusColor} />
                       </div>
                       <div>
-                        <h3 style={{ margin: 0, fontSize: '0.95rem', fontFamily: 'Inter, sans-serif' }}>{getCategoryEmoji(budget.category)} {budget.category}</h3>
-                        <div style={{ fontSize: '0.65rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)' }}>{budget.month}</div>
+                        <h3 style={{ margin: 0, fontSize: '0.95rem' }}>{getCategoryEmoji(budget.category)} {budget.category}</h3>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{budget.month}</div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
@@ -531,12 +530,12 @@ const Budgets = () => {
                     <ProgressRing progress={progress} color={statusColor} size={88} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ marginBottom: '0.5rem' }}>
-                        <div style={{ fontSize: '0.65rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Spent</div>
-                        <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '1rem', color: statusColor }}>{formatCurrency(spent)}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Spent</div>
+                        <div style={{ fontWeight: 700, fontSize: '1rem', color: statusColor }}>{formatCurrency(spent)}</div>
                       </div>
                       <div>
-                        <div style={{ fontSize: '0.65rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Budget</div>
-                        <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{formatCurrency(budget.amount)}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Budget</div>
+                        <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{formatCurrency(budget.amount)}</div>
                       </div>
                       {(() => {
                         const avg3Mo = getThreeMonthAvg(budget.category);
@@ -544,7 +543,7 @@ const Budgets = () => {
                         const driftPct = budget.amount > 0 ? Math.abs(budget.amount - avg3Mo) / budget.amount : 0;
                         return (
                           <div style={{ marginTop: '0.45rem', display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+                            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
                               3-mo avg: <strong style={{ color: 'var(--text-secondary)' }}>{formatCurrency(avg3Mo)}</strong>
                             </span>
                             {driftPct >= 0.15 && (
@@ -561,7 +560,6 @@ const Budgets = () => {
                                 }}
                                 style={{
                                   fontSize: '0.64rem',
-                                  fontFamily: 'Inter, sans-serif',
                                   fontWeight: 600,
                                   padding: '0.12rem 0.45rem',
                                   borderRadius: 6,
@@ -581,7 +579,7 @@ const Budgets = () => {
                   </div>
 
                   {/* Status badge */}
-                  <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.72rem', fontFamily: 'Inter, sans-serif', color: statusColor }}>
+                  <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.72rem', color: statusColor }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                       {isOver ? <><AlertTriangle size={13} /> BUDGET BREACHED — {formatCurrency(spent - budget.amount)} OVER</> :
                        isWarning ? <><Activity size={13} /> WARNING ZONE</> :
@@ -611,7 +609,7 @@ const Budgets = () => {
 
                     return (
                       <div style={{ marginTop: '0.65rem', paddingTop: '0.55rem', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5, fontSize: '0.68rem', fontFamily: 'Inter, sans-serif' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5, fontSize: '0.68rem' }}>
                           <span style={{ color: 'var(--text-muted)' }}>Pacing: <strong style={{ color: paceColor }}>{paceLabel}</strong></span>
                           <span style={{ color: 'var(--text-muted)' }}>Day {dayOfMonth}/{daysInMonth} ({timeElapsedPct}%)</span>
                         </div>
@@ -658,21 +656,21 @@ const Budgets = () => {
                     const breachDay = dayOfMonth + daysUntilBreach;
 
                     return (
-                      <div style={{ marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.72rem', fontFamily: 'Inter, sans-serif' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: willOver ? '#fbbf24' : '#4ade80' }}>
+                      <div style={{ marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', flexDirection: 'column', gap: '0.35rem', fontSize: '0.72rem' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: willOver ? 'var(--mm-warning)' : 'var(--mm-success)' }}>
                           <span>{willOver ? '🔥 Overspending Pace' : '✅ Controlled Pace'}</span>
                           <strong>{willOver ? `+${formatCurrency(projected - budgetLimit)}` : `-${formatCurrency(budgetLimit - projected)}`}</strong>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)', fontSize: '0.68rem' }}>
                           <span>Projected Month-End:</span>
-                          <strong style={{ color: willOver ? '#fbbf24' : '#f0f0f5' }}>~{formatCurrency(projected)}</strong>
+                          <strong style={{ color: willOver ? 'var(--mm-warning)' : '#f0f0f5' }}>~{formatCurrency(projected)}</strong>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.68rem' }}>
                           <span>Safe daily limit:</span>
-                          <strong style={{ color: safeDaily > 0 ? '#4ade80' : '#f87171' }}>{formatCurrency(safeDaily)}/day</strong>
+                          <strong style={{ color: safeDaily > 0 ? 'var(--mm-success)' : 'var(--mm-danger)' }}>{formatCurrency(safeDaily)}/day</strong>
                         </div>
                         {willOver && daysUntilBreach <= daysLeft && (
-                          <div style={{ color: '#f87171', fontSize: '0.66rem', background: 'rgba(248,113,113,0.08)', padding: '2px 6px', borderRadius: 4, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <div style={{ color: 'var(--mm-danger)', fontSize: '0.66rem', background: 'rgba(248,113,113,0.08)', padding: '2px 6px', borderRadius: 4, display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <span>⚠</span> On track to breach around Day {Math.min(daysInMonth, breachDay)} ({daysUntilBreach}d left)
                           </div>
                         )}
@@ -726,7 +724,7 @@ const Budgets = () => {
               type="checkbox"
               checked={!!formData.rollover}
               onChange={e => setFormData({ ...formData, rollover: e.target.checked })}
-              style={{ width: 18, height: 18, accentColor: '#4ade80', cursor: 'pointer' }}
+              style={{ width: 18, height: 18, accentColor: 'var(--mm-success)', cursor: 'pointer' }}
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>

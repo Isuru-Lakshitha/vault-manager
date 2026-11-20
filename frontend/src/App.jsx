@@ -566,9 +566,7 @@ function App() {
         justifyContent: 'center',
         background: 'var(--bg-void)',
         padding: '2rem',
-        textAlign: 'center',
-        fontFamily: 'Inter, sans-serif'
-      }}>
+        textAlign: 'center' }}>
         <div style={{
           width: 68,
           height: 68,
@@ -598,9 +596,7 @@ function App() {
             border: 'none',
             color: 'var(--bg-void)',
             fontWeight: 700,
-            cursor: 'pointer',
-            fontFamily: 'Inter, sans-serif'
-          }}
+            cursor: 'pointer' }}
         >
           Check Status / Reload
         </button>
@@ -639,7 +635,7 @@ function App() {
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
               <span>{t('shell.search')}…</span><kbd>⌘ K</kbd>
             </button>
-            <button className="menu-toggle" onClick={toggleStealth} aria-label="Privacy Mode" title={isStealth ? 'Reveal balances' : 'Hide balances'} style={{ color: isStealth ? '#fbbf24' : 'var(--text-secondary)' }}>
+            <button className="menu-toggle" onClick={toggleStealth} aria-label="Privacy Mode" title={isStealth ? 'Reveal balances' : 'Hide balances'} style={{ color: isStealth ? 'var(--mm-warning)' : 'var(--text-secondary)' }}>
               {isStealth ? <EyeOff size={17} /> : <Eye size={17} />}
             </button>
             <ThemeToggle />
@@ -658,7 +654,7 @@ function App() {
             </div>
             {/* iOS large-title pattern: the page's own heading carries the name;
                 the bar shows it only once that heading scrolls away. */}
-            <h2 className="mobile-title" style={{ fontFamily:'Inter, sans-serif', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
+            <h2 className="mobile-title" style={{ whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>
               <span className="mobile-title-brand">Vault Manager</span>
               <span key={pageTitle} className="mobile-title-page" aria-hidden="true">{pageTitle}</span>
             </h2>
@@ -705,7 +701,7 @@ function App() {
               <Cloud
                 size={17}
                 style={{
-                  color: !syncStatus.online ? '#fbbf24' : syncStatus.syncing ? '#38bdf8' : '#4ade80',
+                  color: !syncStatus.online ? 'var(--mm-warning)' : syncStatus.syncing ? '#38bdf8' : 'var(--mm-success)',
                   transition: 'color 0.2s',
                 }}
               />
@@ -722,7 +718,6 @@ function App() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontFamily: 'Inter, sans-serif',
               }}>
                 {syncStatus.pendingCount > 0 ? syncStatus.pendingCount : ''}
               </span>
@@ -734,7 +729,7 @@ function App() {
               onClick={toggleStealth}
               title={isStealth ? "Privacy Mode Active (Tap to reveal)" : "Hide Balances (Privacy Mode)"}
               aria-label="Privacy Mode"
-              style={{ color: isStealth ? '#fbbf24' : 'var(--text-secondary)' }}
+              style={{ color: isStealth ? 'var(--mm-warning)' : 'var(--text-secondary)' }}
             >
               {isStealth ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>

@@ -168,7 +168,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
                   cursor: 'pointer',
                   border: statusFilter === st ? '1px solid rgba(74,222,128,0.4)' : '1px solid rgba(255,255,255,0.06)',
                   background: statusFilter === st ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.02)',
-                  color: statusFilter === st ? '#4ade80' : '#9191ab',
+                  color: statusFilter === st ? 'var(--mm-success)' : '#9191ab',
                   transition: 'all 0.15s',
                 }}
               >
@@ -208,7 +208,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
             >
               <form onSubmit={handleSaveEditor} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h4 style={{ margin: 0, color: '#4ade80', fontSize: '1rem' }}>
+                  <h4 style={{ margin: 0, color: 'var(--mm-success)', fontSize: '1rem' }}>
                     {editingInvoice.id.startsWith('inv_') && !invoices.some(i => i.id === editingInvoice.id) ? 'Create New Invoice' : 'Edit Invoice'}
                   </h4>
                   <button type="button" onClick={() => setEditingInvoice(null)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
@@ -302,11 +302,11 @@ export default function InvoiceModal({ isOpen, onClose }) {
                 {/* Line Items Builder */}
                 <div style={{ background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.04)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#4ade80', textTransform: 'uppercase' }}>Line Items</div>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--mm-success)', textTransform: 'uppercase' }}>Line Items</div>
                     <button
                       type="button"
                       onClick={() => setEditingInvoice(i => ({ ...i, items: [...i.items, { description: '', quantity: 1, unitPrice: 0 }] }))}
-                      style={{ background: 'none', border: 'none', color: '#4ade80', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}
+                      style={{ background: 'none', border: 'none', color: 'var(--mm-success)', fontSize: '0.75rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 3 }}
                     >
                       <Plus size={12} /> Add Item
                     </button>
@@ -368,7 +368,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
                           type="button"
                           disabled={editingInvoice.items.length <= 1}
                           onClick={() => setEditingInvoice(inv => ({ ...inv, items: inv.items.filter((_, i) => i !== idx) }))}
-                          style={{ background: 'none', border: 'none', color: editingInvoice.items.length > 1 ? '#f87171' : 'rgba(255,255,255,0.2)', cursor: editingInvoice.items.length > 1 ? 'pointer' : 'default', padding: 4 }}
+                          style={{ background: 'none', border: 'none', color: editingInvoice.items.length > 1 ? 'var(--mm-danger)' : 'rgba(255,255,255,0.2)', cursor: editingInvoice.items.length > 1 ? 'pointer' : 'default', padding: 4 }}
                         >
                           <Trash2 size={14} />
                         </button>
@@ -397,7 +397,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <span style={{ color: 'var(--text-secondary)' }}>Total:</span>
-                          <strong style={{ color: '#4ade80', fontSize: '1rem' }}>{formatCurrency(grandTotal, {currency:editingInvoice.currency || 'LKR'})}</strong>
+                          <strong style={{ color: 'var(--mm-success)', fontSize: '1rem' }}>{formatCurrency(grandTotal, {currency:editingInvoice.currency || 'LKR'})}</strong>
                         </div>
                       </div>
                     );
@@ -477,7 +477,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
 
                       <div style={{ fontSize: '0.74rem', color: 'var(--text-secondary)', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                         <span>Issued: {inv.issueDate}</span>
-                        <span>Due: <strong style={{ color: inv.status === 'Overdue' ? '#f87171' : '#cbd5e1' }}>{inv.dueDate}</strong></span>
+                        <span>Due: <strong style={{ color: inv.status === 'Overdue' ? 'var(--mm-danger)' : '#cbd5e1' }}>{inv.dueDate}</strong></span>
                         <span>({inv.items?.length || 1} line items)</span>
                       </div>
                     </div>
@@ -489,7 +489,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
                       <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                         {formatCurrency(grandTotal, {currency:inv.currency || 'LKR'})}
                       </div>
-                      <div style={{ fontSize: '0.7rem', color: '#4ade80' }}>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--mm-success)' }}>
                         {inv.status === 'Paid' ? 'Deposit settled' : 'Net receivable'}
                       </div>
                     </div>
@@ -501,7 +501,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
                           title="Mark as Paid & log deposit"
                           style={{
                             background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.3)',
-                            color: '#4ade80', borderRadius: 8, padding: '0.4rem 0.65rem',
+                            color: 'var(--mm-success)', borderRadius: 8, padding: '0.4rem 0.65rem',
                             fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4
                           }}
                         >
@@ -533,7 +533,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
 
                       <button
                         onClick={() => handleDeleteInvoice(inv.id)}
-                        style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', padding: 6 }}
+                        style={{ background: 'none', border: 'none', color: 'var(--mm-danger)', cursor: 'pointer', padding: 6 }}
                         title="Delete invoice"
                       >
                         <Trash2 size={15} />

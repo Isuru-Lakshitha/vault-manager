@@ -238,7 +238,7 @@ export default function Budget503020View({ analyticsData }) {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span style={{ fontSize: '0.75rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', letterSpacing: '1px' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', letterSpacing: '1px' }}>
                 50/30/20 MONTHLY ALLOCATION ENGINE
               </span>
               <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: 4, background: 'rgba(56, 189, 248, 0.15)', color: '#38bdf8', fontWeight: 600 }}>
@@ -246,7 +246,7 @@ export default function Budget503020View({ analyticsData }) {
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', marginTop: '0.2rem' }}>
-              <span style={{ fontSize: '1.35rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, color: 'var(--text-primary)' }}>
+              <span style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {formatCurrency(activeIncome)}
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -270,7 +270,6 @@ export default function Budget503020View({ analyticsData }) {
                 border: 'none',
                 color: 'var(--text-primary)',
                 fontSize: '0.8rem',
-                fontFamily: 'Inter, sans-serif',
                 width: 170,
                 outline: 'none'
               }}
@@ -279,7 +278,7 @@ export default function Budget503020View({ analyticsData }) {
               <button
                 type="button"
                 onClick={() => setCustomIncomeOverride('')}
-                style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--mm-danger)', cursor: 'pointer', fontSize: '0.75rem', fontWeight: 700 }}
               >
                 ✕
               </button>
@@ -339,20 +338,20 @@ export default function Budget503020View({ analyticsData }) {
                     {config.icon}
                   </div>
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                    <h3 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                       {config.title}
                       <span style={{ fontSize: '0.75rem', color: config.color, fontWeight: 600 }}>
                         {config.targetPct}% Target
                       </span>
                     </h3>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
                       {config.badge}
                     </div>
                   </div>
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '1.15rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, color: config.color }}>
+                  <div style={{ fontSize: '1.15rem', fontWeight: 700, color: config.color }}>
                     {formatCurrency(spent)}
                   </div>
                   <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
@@ -363,7 +362,7 @@ export default function Budget503020View({ analyticsData }) {
 
               {/* Progress & Bar */}
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, fontSize: '0.72rem', fontFamily: 'Inter, sans-serif' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, fontSize: '0.72rem' }}>
                   <span style={{ color: 'var(--text-secondary)' }}>
                     Actual: <strong style={{ color: statusColor }}>{currentPct}%</strong> of Income
                   </span>
@@ -420,7 +419,6 @@ export default function Budget503020View({ analyticsData }) {
                     justifyContent: 'space-between',
                     width: '100%',
                     fontSize: '0.72rem',
-                    fontFamily: 'Inter, sans-serif',
                     padding: 0
                   }}
                 >
@@ -513,7 +511,7 @@ export default function Budget503020View({ analyticsData }) {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
               <Sparkles size={18} color={verdict.color} />
-              <h4 style={{ margin: 0, fontSize: '0.95rem', fontFamily: 'Inter, sans-serif', color: verdict.color }}>
+              <h4 style={{ margin: 0, fontSize: '0.95rem', color: verdict.color }}>
                 {verdict.title}
               </h4>
             </div>
@@ -599,7 +597,7 @@ export default function Budget503020View({ analyticsData }) {
           </div>
 
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-            <div style={{ fontSize: '0.75rem', fontFamily: 'Inter, sans-serif', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>
               Cash Flow Allocation
             </div>
             {Object.entries(PILLAR_CONFIG).map(([key, config]) => (

@@ -107,13 +107,12 @@ export default function GoalHistoryModal({
             </div>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                <h2 style={{ margin: 0, fontFamily: 'Inter, sans-serif', fontWeight: 800, fontSize: '1.25rem', color: 'var(--text-primary)' }}>
+                <h2 style={{ margin: 0, fontWeight: 800, fontSize: '1.25rem', color: 'var(--text-primary)' }}>
                   {goal.name}
                 </h2>
                 <span
                   style={{
                     fontSize: '0.65rem',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 700,
                     padding: '2px 8px',
                     borderRadius: 20,
@@ -125,7 +124,7 @@ export default function GoalHistoryModal({
                   {isReached ? '🏆 TARGET REACHED' : `${progressPct}% COMPLETED`}
                 </span>
               </div>
-              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', marginTop: 3 }}>
+              <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: 3 }}>
                 Category: <strong style={{ color: 'var(--text-secondary)' }}>{goal.category || 'General Savings'}</strong>
                 {goal.target_date && <span> · Deadline: <strong style={{ color: 'var(--text-secondary)' }}>{goal.target_date}</strong></span>}
               </div>
@@ -157,27 +156,27 @@ export default function GoalHistoryModal({
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.75rem' }}>
             <div>
-              <div style={{ fontSize: '0.68rem', color: '#4ade80', fontWeight: 800, fontFamily: 'Inter, sans-serif', letterSpacing: '0.8px' }}>
+              <div style={{ fontSize: '0.68rem', color: 'var(--mm-success)', fontWeight: 800, letterSpacing: '0.8px' }}>
                 CURRENT SAVINGS BALANCE
               </div>
-              <div style={{ fontSize: '1.9rem', fontWeight: 900, color: '#4ade80', fontFamily: 'Inter, sans-serif', marginTop: '0.2rem' }}>
+              <div style={{ fontSize: '1.9rem', fontWeight: 900, color: 'var(--mm-success)', marginTop: '0.2rem' }}>
                 {formatCurrency(current)}
               </div>
-              <div style={{ display: 'flex', gap: '0.85rem', marginTop: '0.35rem', fontSize: '0.76rem', fontFamily: 'Inter, sans-serif' }}>
+              <div style={{ display: 'flex', gap: '0.85rem', marginTop: '0.35rem', fontSize: '0.76rem' }}>
                 <span style={{ color: 'var(--text-secondary)' }}>
                   Target: <strong style={{ color: 'var(--text-primary)' }}>{formatCurrency(target)}</strong>
                 </span>
-                <span style={{ color: remaining > 0 ? '#fbbf24' : '#4ade80', fontWeight: 600 }}>
+                <span style={{ color: remaining > 0 ? 'var(--mm-warning)' : 'var(--mm-success)', fontWeight: 600 }}>
                   {remaining > 0 ? `Remaining: ${formatCurrency(remaining)}` : 'Fully Funded 🎉'}
                 </span>
               </div>
             </div>
 
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontSize: '1.35rem', fontWeight: 900, color: isReached ? '#4ade80' : '#38bdf8', fontFamily: 'Inter, sans-serif' }}>
+              <div style={{ fontSize: '1.35rem', fontWeight: 900, color: isReached ? 'var(--mm-success)' : '#38bdf8' }}>
                 {progressPct}%
               </div>
-              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+              <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
                 {goalHistory.length} total activity log(s)
               </div>
             </div>
@@ -201,20 +200,20 @@ export default function GoalHistoryModal({
         {/* History Analytics Strip */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.5rem' }}>
           <div style={{ padding: '0.65rem 0.85rem', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>TOTAL DEPOSITED</div>
-            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#4ade80', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>TOTAL DEPOSITED</div>
+            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: 'var(--mm-success)', marginTop: 2 }}>
               +{formatCurrency(totalDeposited)}
             </div>
           </div>
           <div style={{ padding: '0.65rem 0.85rem', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>TOTAL WITHDRAWN</div>
-            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: totalWithdrawn > 0 ? '#f87171' : 'var(--text-muted)', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>TOTAL WITHDRAWN</div>
+            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: totalWithdrawn > 0 ? 'var(--mm-danger)' : 'var(--text-muted)', marginTop: 2 }}>
               {totalWithdrawn > 0 ? `-${formatCurrency(totalWithdrawn)}` : 'LKR 0'}
             </div>
           </div>
           <div style={{ padding: '0.65rem 0.85rem', borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>NET CONTRIBUTIONS</div>
-            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#38bdf8', fontFamily: 'Inter, sans-serif', marginTop: 2 }}>
+            <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>NET CONTRIBUTIONS</div>
+            <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#38bdf8', marginTop: 2 }}>
               {formatCurrency(totalDeposited - totalWithdrawn)}
             </div>
           </div>
@@ -223,7 +222,7 @@ export default function GoalHistoryModal({
         {/* Transaction History Section */}
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <div style={{ fontSize: '0.74rem', fontWeight: 800, letterSpacing: '1px', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <div style={{ fontSize: '0.74rem', fontWeight: 800, letterSpacing: '1px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <Receipt size={14} style={{ color: '#06b6d4' }} />
               CONTRIBUTION & WITHDRAWAL HISTORY ({goalHistory.length})
             </div>
@@ -243,7 +242,6 @@ export default function GoalHistoryModal({
                     padding: '0.22rem 0.55rem',
                     borderRadius: 14,
                     fontSize: '0.66rem',
-                    fontFamily: 'Inter, sans-serif',
                     fontWeight: 600,
                     cursor: 'pointer',
                     border: filterType === f.id ? '1px solid rgba(56,189,248,0.45)' : '1px solid rgba(255,255,255,0.08)',
@@ -275,10 +273,10 @@ export default function GoalHistoryModal({
               <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(6,182,212,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Sparkles size={18} style={{ color: '#06b6d4' }} />
               </div>
-              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 No Contribution Records Yet
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', maxWidth: 360, fontFamily: 'Inter, sans-serif' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', maxWidth: 360 }}>
                 When you deposit or withdraw money for this goal, every payment and deduction with its date and bank account will be tracked here.
               </div>
             </div>
@@ -317,30 +315,30 @@ export default function GoalHistoryModal({
                           flexShrink: 0
                         }}
                       >
-                        {isWithdrawal ? <ArrowUpRight size={16} style={{ color: '#f87171' }} /> : <ArrowDownLeft size={16} style={{ color: '#4ade80' }} />}
+                        {isWithdrawal ? <ArrowUpRight size={16} style={{ color: 'var(--mm-danger)' }} /> : <ArrowDownLeft size={16} style={{ color: 'var(--mm-success)' }} />}
                       </div>
                       <div style={{ minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
-                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                             {isWithdrawal ? 'Goal Deduction' : 'Goal Contribution'}
                           </span>
                           {sourceAccName && (
-                            <span style={{ fontSize: '0.64rem', padding: '1px 6px', borderRadius: 6, background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif' }}>
+                            <span style={{ fontSize: '0.64rem', padding: '1px 6px', borderRadius: 6, background: 'rgba(255,255,255,0.06)', color: 'var(--text-secondary)' }}>
                               💳 {sourceAccName}
                             </span>
                           )}
                         </div>
-                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           📅 {item.date || '—'} {item.notes ? `• ${item.notes}` : ''}
                         </div>
                       </div>
                     </div>
 
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontSize: '0.92rem', fontWeight: 800, color: isWithdrawal ? '#f87171' : '#4ade80', fontFamily: 'Inter, sans-serif' }}>
+                      <div style={{ fontSize: '0.92rem', fontWeight: 800, color: isWithdrawal ? 'var(--mm-danger)' : 'var(--mm-success)' }}>
                         {isWithdrawal ? '-' : '+'}{formatCurrency(amt)}
                       </div>
-                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+                      <div style={{ fontSize: '0.62rem', color: 'var(--text-muted)' }}>
                         {isWithdrawal ? 'Debited from goal' : 'Added to goal'}
                       </div>
                     </div>
@@ -374,10 +372,9 @@ export default function GoalHistoryModal({
                 padding: '0.48rem 0.9rem',
                 borderRadius: 'var(--radius-sm, 10px)',
                 background: current > 0 ? 'rgba(248, 113, 113, 0.15)' : 'rgba(255,255,255,0.04)',
-                color: current > 0 ? '#f87171' : 'var(--text-muted)',
+                color: current > 0 ? 'var(--mm-danger)' : 'var(--text-muted)',
                 border: current > 0 ? '1px solid rgba(248, 113, 113, 0.35)' : '1px solid rgba(255,255,255,0.05)',
                 cursor: current > 0 ? 'pointer' : 'not-allowed',
-                fontFamily: 'Inter, sans-serif',
                 fontWeight: 700
               }}
             >

@@ -47,7 +47,7 @@ export default function PayReminderModal({ state, setState, accounts, onConfirm 
                     <button
                       type="button"
                       onClick={() => setState(p => ({ ...p, amount: moInt }))}
-                      style={{ padding: '0.26rem 0.6rem', borderRadius: 6, border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.1)', color: '#f59e0b', fontSize: '0.7rem', fontFamily: 'Inter, sans-serif', fontWeight: 600, cursor: 'pointer' }}
+                      style={{ padding: '0.26rem 0.6rem', borderRadius: 6, border: '1px solid rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.1)', color: 'var(--mm-warning)', fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}
                     >
                       Monthly Interest: {formatCurrency(moInt)}
                     </button>
@@ -56,7 +56,7 @@ export default function PayReminderModal({ state, setState, accounts, onConfirm 
                     <button
                       type="button"
                       onClick={() => setState(p => ({ ...p, amount: accrued }))}
-                      style={{ padding: '0.26rem 0.6rem', borderRadius: 6, border: '1px solid rgba(248,113,113,0.35)', background: 'rgba(248,113,113,0.1)', color: '#f87171', fontSize: '0.7rem', fontFamily: 'Inter, sans-serif', fontWeight: 600, cursor: 'pointer' }}
+                      style={{ padding: '0.26rem 0.6rem', borderRadius: 6, border: '1px solid rgba(248,113,113,0.35)', background: 'rgba(248,113,113,0.1)', color: 'var(--mm-danger)', fontSize: '0.7rem', fontWeight: 600, cursor: 'pointer' }}
                     >
                       Accrued Interest: {formatCurrency(accrued)}
                     </button>
@@ -149,7 +149,6 @@ export default function PayReminderModal({ state, setState, accounts, onConfirm 
                 border: '1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))',
                 fontSize: '0.73rem',
                 color: 'var(--text-secondary)',
-                fontFamily: 'Inter, sans-serif',
                 display: 'flex',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
@@ -159,7 +158,7 @@ export default function PayReminderModal({ state, setState, accounts, onConfirm 
                   {isInc ? 'Crediting to' : 'Deducting from'} <strong style={{ color: 'var(--text-primary)' }}>{chosenAcct.name}</strong>
                 </span>
                 <span>
-                  Projected Balance: <strong style={{ color: nextBal >= 0 ? '#34d399' : '#f87171' }}>{formatCurrency(nextBal)}</strong>
+                  Projected Balance: <strong style={{ color: nextBal >= 0 ? 'var(--mm-success)' : 'var(--mm-danger)' }}>{formatCurrency(nextBal)}</strong>
                 </span>
               </div>
             );
@@ -183,7 +182,7 @@ export default function PayReminderModal({ state, setState, accounts, onConfirm 
               onChange={e => setState(p => ({ ...p, updateEstimate: e.target.checked }))}
               style={{ width: 16, height: 16 }}
             />
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
               Update future monthly estimate using 3-month rolling average
             </span>
           </label>

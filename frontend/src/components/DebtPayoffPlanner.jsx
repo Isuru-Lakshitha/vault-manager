@@ -89,7 +89,7 @@ const DebtPayoffPlanner = ({ loans = [] }) => {
 
   if (activeLoans.length === 0) {
     return (
-      <div style={{ padding:'3rem', textAlign:'center', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.8rem' }}>
+      <div style={{ padding:'3rem', textAlign:'center', color:'var(--text-muted)', fontSize:'0.8rem' }}>
         NO ACTIVE LOANS TO PLAN
       </div>
     );
@@ -106,14 +106,14 @@ const DebtPayoffPlanner = ({ loans = [] }) => {
     <div style={{ display:'flex', flexDirection:'column', gap:'1.5rem' }}>
       {/* Extra payment slider */}
       <div className="hud-panel" style={{ padding:'1.5rem' }}>
-        <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', color:'var(--text-secondary)', letterSpacing:'0.3px', fontWeight:600, marginBottom:'1rem' }}>EXTRA MONTHLY PAYMENT</div>
+        <div style={{ fontSize:'0.75rem', color:'var(--text-secondary)', letterSpacing:'0.3px', fontWeight:600, marginBottom:'1rem' }}>EXTRA MONTHLY PAYMENT</div>
         <div style={{ display:'flex', alignItems:'center', gap:'1rem' }}>
           <input type="range" min={0} max={100000} step={1000} value={extraPayment}
             onChange={e => setExtraPayment(+e.target.value)}
-            style={{ flex:1, accentColor:'#4ade80' }}/>
-          <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.1rem', color:'#4ade80', minWidth:110, textAlign:'right' }}>{formatCurrency(extraPayment)}</div>
+            style={{ flex:1, accentColor:'var(--mm-success)' }}/>
+          <div style={{ fontWeight:700, fontSize:'1.1rem', color:'var(--mm-success)', minWidth:110, textAlign:'right' }}>{formatCurrency(extraPayment)}</div>
         </div>
-        <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', color:'var(--text-secondary)', marginTop:'0.5rem' }}>
+        <div style={{ fontSize:'0.72rem', color:'var(--text-secondary)', marginTop:'0.5rem' }}>
           Total Debt: {formatCurrency(totalBalance)} · {activeLoans.length} active loan{activeLoans.length !== 1 ? 's' : ''}
         </div>
       </div>
@@ -128,21 +128,21 @@ const DebtPayoffPlanner = ({ loans = [] }) => {
             style={{ padding:'1.5rem', background:`${color}08`, border:`1px solid ${color}${winner===method?'60':'20'}`, borderRadius:14,
               boxShadow: winner === method ? `0 0 20px ${color}20` : 'none', position:'relative' }}>
             {winner === method && (
-              <div style={{ position:'absolute', top:12, right:12, background:color, color:'#fff', fontSize:'0.65rem', fontFamily:'Inter, sans-serif', padding:'0.2rem 0.5rem', borderRadius:5, letterSpacing:'1px' }}>BEST</div>
+              <div style={{ position:'absolute', top:12, right:12, background:color, color:'#fff', fontSize:'0.65rem', padding:'0.2rem 0.5rem', borderRadius:5, letterSpacing:'1px' }}>BEST</div>
             )}
             <div style={{ fontSize:'1.5rem', marginBottom:'0.5rem' }}>{icon}</div>
-            <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.9rem', color, marginBottom:'0.25rem' }}>{label}</div>
-            <div style={{ fontSize:'0.72rem', color:'var(--text-secondary)', fontFamily:'Inter, sans-serif', marginBottom:'1.25rem' }}>{sub}</div>
+            <div style={{ fontWeight:700, fontSize:'0.9rem', color, marginBottom:'0.25rem' }}>{label}</div>
+            <div style={{ fontSize:'0.72rem', color:'var(--text-secondary)', marginBottom:'1.25rem' }}>{sub}</div>
             <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem' }}>
               <div>
-                <div style={{ fontSize:'0.65rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', letterSpacing:'1px' }}>PAYOFF TIME</div>
-                <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.3rem', color }}>
+                <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', letterSpacing:'1px' }}>PAYOFF TIME</div>
+                <div style={{ fontWeight:700, fontSize:'1.3rem', color }}>
                   {res.months >= 360 ? '30+ years' : res.months < 12 ? `${res.months} mo` : `${Math.floor(res.months/12)}y ${res.months%12}m`}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize:'0.65rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', letterSpacing:'1px' }}>TOTAL INTEREST</div>
-                <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.1rem', color }}>{formatCurrency(res.totalInterest)}</div>
+                <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', letterSpacing:'1px' }}>TOTAL INTEREST</div>
+                <div style={{ fontWeight:700, fontSize:'1.1rem', color }}>{formatCurrency(res.totalInterest)}</div>
               </div>
             </div>
           </motion.div>
@@ -151,7 +151,7 @@ const DebtPayoffPlanner = ({ loans = [] }) => {
 
       {/* Winner insight */}
       <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.3 }}
-        style={{ padding:'1rem 1.25rem', background:'rgba(16,185,129,0.08)', border:'1px solid rgba(16,185,129,0.2)', borderRadius:10, fontFamily:'Inter, sans-serif', fontSize:'0.8rem', color:'#4ade80' }}>
+        style={{ padding:'1rem 1.25rem', background:'rgba(16,185,129,0.08)', border:'1px solid rgba(16,185,129,0.2)', borderRadius:10, fontSize:'0.8rem', color:'var(--mm-success)' }}>
         💡 The <strong style={{ textTransform:'uppercase' }}>{winner}</strong> method saves you {formatCurrency(savings)} in interest.
         {extraPayment > 0 && ` Adding ${formatCurrency(extraPayment)}/month extra accelerates your debt freedom.`}
       </motion.div>

@@ -57,8 +57,7 @@ class ErrorBoundary extends React.Component {
         <div style={{
           minHeight: '60vh', display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center', gap: '1.5rem',
-          padding: '2rem', textAlign: 'center', fontFamily: 'Inter, sans-serif'
-        }}>
+          padding: '2rem', textAlign: 'center' }}>
           <div style={{
             width: 64, height: 64, borderRadius: 16,
             background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)',
@@ -72,7 +71,7 @@ class ErrorBoundary extends React.Component {
               An update was deployed. Click below to load the latest version.
             </p>
             {this.state.error && (
-              <pre style={{ marginTop: '1rem', color: '#f87171', fontSize: '0.72rem', textAlign: 'left', background: 'rgba(248,113,113,0.05)', padding: '0.75rem', borderRadius: 8, maxWidth: 480, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+              <pre style={{ marginTop: '1rem', color: 'var(--mm-danger)', fontSize: '0.72rem', textAlign: 'left', background: 'rgba(248,113,113,0.05)', padding: '0.75rem', borderRadius: 8, maxWidth: 480, overflowX: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
                 {this.state.error.message}
               </pre>
             )}
@@ -82,8 +81,7 @@ class ErrorBoundary extends React.Component {
             style={{
               padding: '0.75rem 1.5rem', borderRadius: 12,
               background: 'linear-gradient(135deg, #818cf8, #a78bfa)',
-              color: 'white', border: 'none', cursor: 'pointer',
-              fontFamily: 'Inter, sans-serif', fontSize: '0.9rem', fontWeight: 600,
+              color: 'white', border: 'none', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 600,
               transition: 'transform 0.2s, box-shadow 0.2s'
             }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(129,140,248,0.3)'; }}

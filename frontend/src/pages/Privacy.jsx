@@ -41,7 +41,7 @@ const Privacy = () => {
 
   return (
     <PageWrapper>
-      <div style={{ maxWidth: 780, margin: '0 auto', padding: '1.5rem 1rem 4rem', fontFamily: 'Inter, sans-serif' }}>
+      <div style={{ maxWidth: 780, margin: '0 auto', padding: '1.5rem 1rem 4rem' }}>
         <button
           type="button"
           onClick={() => navigate(-1)}

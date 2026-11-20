@@ -102,7 +102,7 @@ const AlertCenter = () => {
               position: 'absolute',
               top: 2, right: 2,
               width: 16, height: 16,
-              background: '#f87171',
+              background: 'var(--mm-danger)',
               color: 'white',
               borderRadius: '50%',
               fontSize: '10px',
@@ -140,7 +140,7 @@ const AlertCenter = () => {
             }}
           >
             <div style={{ padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>Notifications</h3>
+              <h3 style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-primary)' }}>Notifications</h3>
               {activeAlerts.length > 0 && (
                 <button
                   onClick={handleDismissAll}
@@ -153,7 +153,7 @@ const AlertCenter = () => {
 
             <div style={{ maxHeight: 360, overflowY: 'auto', padding: '0.5rem' }}>
               {activeAlerts.length === 0 ? (
-                <div style={{ padding: '2rem 1rem', textAlign: 'center', color: '#666' }}>
+                <div style={{ padding: '2rem 1rem', textAlign: 'center', color: 'var(--mm-text-3)' }}>
                   <CheckCircle size={32} style={{ margin: '0 auto 0.5rem', opacity: 0.5 }} />
                   <div style={{ fontSize: '0.85rem' }}>You're all caught up!</div>
                 </div>
@@ -187,14 +187,14 @@ const AlertCenter = () => {
                         }}
                       >
                         <div style={{
-                          color: alert.type === 'danger' ? '#f87171' : alert.type === 'warning' ? '#fbbf24' : '#4ade80',
+                          color: alert.type === 'danger' ? 'var(--mm-danger)' : alert.type === 'warning' ? 'var(--mm-warning)' : 'var(--mm-success)',
                           marginTop: 2
                         }}>
                           {alert.type === 'danger' ? <ShieldAlert size={18} /> : <AlertTriangle size={18} />}
                         </div>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>{alert.title}</div>
-                          <div style={{ fontSize: '0.75rem', color: '#888', lineHeight: 1.4 }}>{alert.body}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'var(--mm-text-3)', lineHeight: 1.4 }}>{alert.body}</div>
                           {targetHref && (
                             <div style={{ fontSize: '0.68rem', color: 'var(--mm-accent, #5b8def)', fontWeight: 600, marginTop: 4 }}>
                               Open {targetHref.replace('/', '')} →
@@ -206,7 +206,7 @@ const AlertCenter = () => {
                           title="Snooze 1 day"
                           aria-label="Snooze 1 day"
                           style={{
-                            background: 'transparent', border: 'none', color: '#666', cursor: 'pointer', padding: 4, height: 'fit-content'
+                            background: 'transparent', border: 'none', color: 'var(--mm-text-3)', cursor: 'pointer', padding: 4, height: 'fit-content'
                           }}
                         >
                           <Clock size={14} />
@@ -216,7 +216,7 @@ const AlertCenter = () => {
                           aria-label="Dismiss"
                           title="Dismiss"
                           style={{
-                            background: 'transparent', border: 'none', color: '#666', cursor: 'pointer', padding: 4, height: 'fit-content'
+                            background: 'transparent', border: 'none', color: 'var(--mm-text-3)', cursor: 'pointer', padding: 4, height: 'fit-content'
                           }}
                         >
                           <X size={14} />

@@ -172,7 +172,7 @@ export default function TaxCapitalGainsModal({ isOpen, onClose }) {
               <select
                 value={taxBracket}
                 onChange={e => setTaxBracket(parseInt(e.target.value, 10))}
-                style={{ padding: '0.35rem 0.65rem', borderRadius: 8, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: '#4ade80', fontSize: '0.85rem', fontWeight: 600 }}
+                style={{ padding: '0.35rem 0.65rem', borderRadius: 8, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--mm-success)', fontSize: '0.85rem', fontWeight: 600 }}
               >
                 {TAX_BRACKETS.map(b => (
                   <option key={b} value={b}>{b}% Bracket</option>
@@ -206,18 +206,18 @@ export default function TaxCapitalGainsModal({ isOpen, onClose }) {
           <div style={{ background: 'rgba(37,37,64,0.7)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '1rem' }}>
             <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.5px' }}>Total Deductions</div>
             <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 4 }}>{formatCurrency(totalDeductions)}</div>
-            <div style={{ fontSize: '0.72rem', color: '#4ade80', marginTop: 2 }}>{deductibleTxs.length} items claimable</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--mm-success)', marginTop: 2 }}>{deductibleTxs.length} items claimable</div>
           </div>
 
           <div style={{ background: 'rgba(74,222,128,0.08)', border: '1px solid rgba(74,222,128,0.25)', borderRadius: 12, padding: '1rem' }}>
-            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: '#4ade80', letterSpacing: '0.5px' }}>Estimated Tax Savings</div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#4ade80', marginTop: 4 }}>~{formatCurrency(estimatedTaxSavings)}</div>
+            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--mm-success)', letterSpacing: '0.5px' }}>Estimated Tax Savings</div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--mm-success)', marginTop: 4 }}>~{formatCurrency(estimatedTaxSavings)}</div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: 2 }}>At {taxBracket}% tax bracket</div>
           </div>
 
           <div style={{ background: 'rgba(37,37,64,0.7)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '1rem' }}>
             <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--text-secondary)', letterSpacing: '0.5px' }}>Net Capital Gains</div>
-            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: capitalGainsData.netGains >= 0 ? '#4ade80' : '#f87171', marginTop: 4 }}>
+            <div style={{ fontSize: '1.4rem', fontWeight: 700, color: capitalGainsData.netGains >= 0 ? 'var(--mm-success)' : 'var(--mm-danger)', marginTop: 4 }}>
               {capitalGainsData.netGains >= 0 ? '+' : ''}{formatCurrency(capitalGainsData.netGains)}
             </div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', marginTop: 2 }}>
@@ -247,7 +247,7 @@ export default function TaxCapitalGainsModal({ isOpen, onClose }) {
                   <div key={c.name} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem' }}>
                       <span style={{ fontWeight: 500 }}>{c.name}</span>
-                      <strong style={{ color: '#4ade80' }}>{formatCurrency(c.amount)} ({pct.toFixed(0)}%)</strong>
+                      <strong style={{ color: 'var(--mm-success)' }}>{formatCurrency(c.amount)} ({pct.toFixed(0)}%)</strong>
                     </div>
                     <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
                       <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg, #4ade80, #818cf8)', borderRadius: 3 }} />
@@ -303,7 +303,7 @@ export default function TaxCapitalGainsModal({ isOpen, onClose }) {
                       {t.tax_category || 'Business'}
                     </span>
                   </div>
-                  <strong style={{ color: '#4ade80', fontSize: '0.88rem', marginLeft: '0.75rem' }}>
+                  <strong style={{ color: 'var(--mm-success)', fontSize: '0.88rem', marginLeft: '0.75rem' }}>
                     {formatCurrency(t.amount)}
                   </strong>
                 </div>

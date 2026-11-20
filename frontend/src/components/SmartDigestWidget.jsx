@@ -52,10 +52,10 @@ export default function SmartDigestWidget({
             <Sparkles size={16} color="#4ade80" />
           </div>
           <div>
-            <h3 style={{ margin: 0, fontFamily: 'Inter, sans-serif', fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.5px' }}>
+            <h3 style={{ margin: 0, fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '0.5px' }}>
               FINANCIAL INTELLIGENCE
             </h3>
-            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+            <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
               Liquidity burn-rate & anomaly engine
             </span>
           </div>
@@ -70,7 +70,6 @@ export default function SmartDigestWidget({
               border: `1px solid ${currentStatus.border}`,
               color: currentStatus.text,
               fontSize: '0.72rem',
-              fontFamily: 'Inter, sans-serif',
               fontWeight: 600,
             }}
           >
@@ -124,7 +123,7 @@ export default function SmartDigestWidget({
               gap: '0.85rem'
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.8rem', fontWeight: 700, color: '#818cf8' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#818cf8' }}>
                   🔮 INSTANT PURCHASE IMPACT SIMULATOR
                 </div>
                 <button
@@ -195,7 +194,7 @@ export default function SmartDigestWidget({
                     borderRadius: 10,
                     padding: '0.75rem 0.95rem'
                   }}>
-                    <div style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.85rem', color: verdictColor }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.85rem', color: verdictColor }}>
                       {verdictTitle}
                     </div>
                     <div style={{ fontSize: '0.76rem', color: '#e0e0ee', marginTop: '0.25rem', lineHeight: 1.45 }}>
@@ -222,15 +221,15 @@ export default function SmartDigestWidget({
             overflow: 'hidden',
           }}
         >
-          <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>
+          <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>
             Safe to Spend (Discretionary)
           </div>
-          <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '1.65rem', fontWeight: 800, color: currentStatus.text, letterSpacing: '-0.5px' }}>
+          <div style={{ fontSize: '1.65rem', fontWeight: 800, color: currentStatus.text, letterSpacing: '-0.5px' }}>
             {formatCurrency(safeToSpend)}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.35rem', fontSize: '0.74rem', color: '#e0e0ee', fontFamily: 'Inter, sans-serif' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.35rem', fontSize: '0.74rem', color: '#e0e0ee' }}>
             <span>Allowance:</span>
-            <strong style={{ color: '#4ade80' }}>{formatCurrency(dailyDiscretionary)}</strong>
+            <strong style={{ color: 'var(--mm-success)' }}>{formatCurrency(dailyDiscretionary)}</strong>
             <span style={{ color: 'var(--text-muted)' }}>/ day ({daysRemainingInMonth}d left)</span>
           </div>
         </div>
@@ -248,7 +247,7 @@ export default function SmartDigestWidget({
           }}
         >
           <div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.5rem' }}>
               Cash Flow Obligations (30d)
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '0.3rem' }}>
@@ -257,7 +256,7 @@ export default function SmartDigestWidget({
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
               <span>Committed Bills & Debt:</span>
-              <strong style={{ color: '#f87171' }}>-{formatCurrency(commitments)}</strong>
+              <strong style={{ color: 'var(--mm-danger)' }}>-{formatCurrency(commitments)}</strong>
             </div>
           </div>
           <div style={{ height: 4, width: '100%', background: 'rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden', marginTop: '0.5rem' }}>
@@ -277,7 +276,7 @@ export default function SmartDigestWidget({
       <AnimatePresence>
         {activeAnomalies.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-            <div style={{ fontSize: '0.68rem', fontFamily: 'Inter, sans-serif', color: 'var(--text-muted)', letterSpacing: '1px', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', letterSpacing: '1px', textTransform: 'uppercase' }}>
               PROACTIVE ALERTS ({activeAnomalies.length})
             </div>
             {activeAnomalies.map(anom => (
@@ -317,7 +316,7 @@ export default function SmartDigestWidget({
                       style={{
                         background: 'none',
                         border: 'none',
-                        color: '#4ade80',
+                        color: 'var(--mm-success)',
                         fontSize: '0.72rem',
                         cursor: 'pointer',
                         padding: '0.2rem 0.4rem',

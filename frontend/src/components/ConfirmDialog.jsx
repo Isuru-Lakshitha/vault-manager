@@ -89,7 +89,6 @@ const ConfirmDialog = ({
 
             <h3 style={{
               margin: '0 0 0.5rem',
-              fontFamily: 'Inter, sans-serif',
               fontSize: '1.1rem',
               fontWeight: 700,
               color: 'var(--text-primary)',
@@ -101,7 +100,6 @@ const ConfirmDialog = ({
               color: 'var(--text-secondary)',
               fontSize: '0.88rem',
               lineHeight: 1.5,
-              fontFamily: 'Inter, sans-serif',
             }}>
               {message}
             </p>
@@ -119,7 +117,6 @@ const ConfirmDialog = ({
                   background: 'rgba(255,255,255,0.05)',
                   color: 'var(--text-primary)',
                   cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 600,
                   fontSize: '0.88rem',
                   transition: 'background 0.15s ease',
@@ -142,7 +139,6 @@ const ConfirmDialog = ({
                     : 'linear-gradient(135deg, #818cf8, #a78bfa)',
                   color: 'white',
                   cursor: 'pointer',
-                  fontFamily: 'Inter, sans-serif',
                   fontWeight: 700,
                   fontSize: '0.88rem',
                   boxShadow: danger ? '0 4px 16px rgba(248,113,113,0.35)' : '0 4px 16px rgba(129,140,248,0.35)',

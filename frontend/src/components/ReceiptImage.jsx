@@ -42,7 +42,7 @@ const ReceiptImage = ({ value, thumb, style, alt = 'Receipt' }) => {
           style={{ cursor: 'zoom-in', ...style }} />
       ) : (
         <div onClick={openViewer} style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', background:'rgba(255,255,255,0.04)', ...style }}>
-          <Loader size={14} style={{ animation:'spin 1s linear infinite', color:'#666' }} />
+          <Loader size={14} style={{ animation:'spin 1s linear infinite', color:'var(--mm-text-3)' }} />
         </div>
       )}
 

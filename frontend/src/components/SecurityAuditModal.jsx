@@ -63,27 +63,27 @@ export default function SecurityAuditModal({ isOpen, onClose }) {
           border: '1px solid rgba(255,255,255,0.06)'
         }}>
           <div>
-            <div style={{ fontSize: '0.7rem', color: '#777', textTransform: 'uppercase', letterSpacing: 1 }}>DEVICE ENCRYPTION</div>
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#4ade80', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)', textTransform: 'uppercase', letterSpacing: 1 }}>DEVICE ENCRYPTION</div>
+            <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--mm-success)', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
               <ShieldCheck size={18} color="#4ade80" /> AES-256 / SHA
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#555', marginTop: 2 }}>Zero-knowledge local store</div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--mm-text-3)', marginTop: 2 }}>Zero-knowledge local store</div>
           </div>
 
           <div>
-            <div style={{ fontSize: '0.7rem', color: '#777', textTransform: 'uppercase', letterSpacing: 1 }}>AUTO LOCK SESSION</div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)', textTransform: 'uppercase', letterSpacing: 1 }}>AUTO LOCK SESSION</div>
             <div style={{ fontSize: '1rem', fontWeight: 700, color: '#818cf8', marginTop: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
               <Lock size={18} color="#818cf8" /> {localStorage.getItem('vm_lock_timeout') || '5'} Minutes
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#555', marginTop: 2 }}>Inactivity screen protection</div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--mm-text-3)', marginTop: 2 }}>Inactivity screen protection</div>
           </div>
 
           <div>
-            <div style={{ fontSize: '0.7rem', color: '#777', textTransform: 'uppercase', letterSpacing: 1 }}>BIOMETRICS / WEBAUTHN</div>
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: localStorage.getItem('vm_webauthn_cred_id') ? '#4ade80' : '#fbbf24', marginTop: 2 }}>
+            <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)', textTransform: 'uppercase', letterSpacing: 1 }}>BIOMETRICS / WEBAUTHN</div>
+            <div style={{ fontSize: '1rem', fontWeight: 700, color: localStorage.getItem('vm_webauthn_cred_id') ? 'var(--mm-success)' : 'var(--mm-warning)', marginTop: 2 }}>
               {localStorage.getItem('vm_webauthn_cred_id') ? '✅ Enabled' : '⚡ PIN Protected'}
             </div>
-            <div style={{ fontSize: '0.68rem', color: '#555', marginTop: 2 }}>FIDO2 Hardware passkey</div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--mm-text-3)', marginTop: 2 }}>FIDO2 Hardware passkey</div>
           </div>
         </div>
 
@@ -99,7 +99,7 @@ export default function SecurityAuditModal({ isOpen, onClose }) {
                   borderRadius: 8,
                   border: 'none',
                   background: filter === f ? 'rgba(74,222,128,0.18)' : 'rgba(255,255,255,0.03)',
-                  color: filter === f ? '#4ade80' : '#888',
+                  color: filter === f ? 'var(--mm-success)' : 'var(--mm-text-3)',
                   fontSize: '0.75rem',
                   fontWeight: 600,
                   cursor: 'pointer'
@@ -139,7 +139,7 @@ export default function SecurityAuditModal({ isOpen, onClose }) {
                 borderRadius: 8,
                 background: 'rgba(248,113,113,0.1)',
                 border: '1px solid rgba(248,113,113,0.25)',
-                color: '#f87171',
+                color: 'var(--mm-danger)',
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 cursor: 'pointer'
@@ -171,7 +171,7 @@ export default function SecurityAuditModal({ isOpen, onClose }) {
               >
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                    <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                       {log.action}
                     </span>
                     <span style={{
@@ -179,24 +179,24 @@ export default function SecurityAuditModal({ isOpen, onClose }) {
                       padding: '1px 6px',
                       borderRadius: 4,
                       background: isCrit ? 'rgba(248,113,113,0.15)' : isWarn ? 'rgba(251,191,36,0.15)' : 'rgba(74,222,128,0.12)',
-                      color: isCrit ? '#f87171' : isWarn ? '#fbbf24' : '#4ade80',
+                      color: isCrit ? 'var(--mm-danger)' : isWarn ? 'var(--mm-warning)' : 'var(--mm-success)',
                       fontWeight: 700
                     }}>
                       {log.category}
                     </span>
                   </div>
                   {log.details && (
-                    <div style={{ fontSize: '0.75rem', color: '#888', marginTop: 3 }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--mm-text-3)', marginTop: 3 }}>
                       {log.details}
                     </div>
                   )}
                 </div>
 
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontSize: '0.72rem', color: '#aaa', fontFamily: 'Inter, sans-serif' }}>
+                  <div style={{ fontSize: '0.72rem', color: 'var(--mm-text-2)' }}>
                     {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                   </div>
-                  <div style={{ fontSize: '0.65rem', color: '#666', marginTop: 2 }}>
+                  <div style={{ fontSize: '0.65rem', color: 'var(--mm-text-3)', marginTop: 2 }}>
                     {log.device}
                   </div>
                 </div>
@@ -205,7 +205,7 @@ export default function SecurityAuditModal({ isOpen, onClose }) {
           })}
 
           {filteredLogs.length === 0 && (
-            <div style={{ textAlign: 'center', padding: '2.5rem', color: '#666', fontSize: '0.82rem' }}>
+            <div style={{ textAlign: 'center', padding: '2.5rem', color: 'var(--mm-text-3)', fontSize: '0.82rem' }}>
               No audit events recorded yet. Mutations, exports, and session activity will appear here.
             </div>
           )}

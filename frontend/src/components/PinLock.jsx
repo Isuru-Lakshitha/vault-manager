@@ -266,7 +266,6 @@ export default function PinLock({ onUnlock, onSignOut }) {
               <Landmark size={28} color="#4ade80" />
             </div>
             <h1 style={{
-              fontFamily: 'Inter, sans-serif',
               fontWeight: 800,
               fontSize: '1.4rem',
               letterSpacing: '0.5px',
@@ -280,7 +279,6 @@ export default function PinLock({ onUnlock, onSignOut }) {
               }}>Manager</span>
             </h1>
             <p style={{
-              fontFamily: 'Inter, sans-serif',
               fontSize: '0.72rem',
               color: 'rgba(74,222,128,0.55)',
               letterSpacing: '2.5px',
@@ -325,9 +323,8 @@ export default function PinLock({ onUnlock, onSignOut }) {
                   exit={{ opacity: 0, y: -4 }}
                   style={{
                     margin: 0,
-                    fontFamily: 'Inter, sans-serif',
                     fontSize: '0.75rem',
-                    color: '#f87171',
+                    color: 'var(--mm-danger)',
                     letterSpacing: '1px',
                     textAlign: 'center',
                   }}
@@ -362,8 +359,7 @@ export default function PinLock({ onUnlock, onSignOut }) {
                 background: 'none',
                 border: '1px solid rgba(74,222,128,0.3)',
                 cursor: 'pointer',
-                color: '#4ade80',
-                fontFamily: 'Inter, sans-serif',
+                color: 'var(--mm-success)',
                 fontSize: '0.85rem',
                 letterSpacing: '0.5px',
                 display: 'flex',
@@ -389,7 +385,6 @@ export default function PinLock({ onUnlock, onSignOut }) {
               border: 'none',
               cursor: 'pointer',
               color: 'rgba(255,255,255,0.3)',
-              fontFamily: 'Inter, sans-serif',
               fontSize: '0.7rem',
               letterSpacing: '1px',
               display: 'flex',

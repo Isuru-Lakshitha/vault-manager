@@ -173,7 +173,6 @@ const Modal = ({ isOpen, onClose, title, children }) => {
               <h2 style={{
                 margin: 0,
                 fontSize: isMobile ? '1.05rem' : '1.2rem',
-                fontFamily: 'Inter, sans-serif',
                 fontWeight: 700,
                 letterSpacing: '0.8px',
                 color: 'var(--text-primary)',

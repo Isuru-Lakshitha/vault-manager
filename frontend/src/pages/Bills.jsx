@@ -271,7 +271,7 @@ const Bills = () => {
                   <strong style={{ color: 'var(--text-primary)' }}>Annual commitment:</strong> {formatCurrency(yearlyCommit)}/yr · 10-yr opportunity value (10% APY): <strong style={{ color: 'var(--success)' }}>{formatCurrency(tenYearOpportunityCost)}</strong>
                 </div>
                 {topDrain && (
-                  <span style={{ padding: '0.18rem 0.55rem', borderRadius: 6, background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.22)', color: 'var(--danger)', fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', fontWeight: 600 }}>
+                  <span style={{ padding: '0.18rem 0.55rem', borderRadius: 6, background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.22)', color: 'var(--danger)', fontSize: '0.72rem', fontWeight: 600 }}>
                     Largest: {topDrain.name} ({formatCurrency(getAnnualAmount(topDrain))}/yr)
                   </span>
                 )}
@@ -298,11 +298,11 @@ const Bills = () => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem', flexWrap: 'wrap', gap: '0.5rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span style={{ fontSize: '1.2rem' }}>🤖</span>
-                <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.82rem', color: '#a78bfa', letterSpacing: '1px' }}>
+                <span style={{ fontWeight: 700, fontSize: '0.82rem', color: '#a78bfa', letterSpacing: '1px' }}>
                   SMART RECURRING DETECTOR • {detectedSubs.length} Unmanaged Subscriptions
                 </span>
               </div>
-              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+              <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                 Identified from recurring transaction cadence
               </span>
             </div>
@@ -313,7 +313,7 @@ const Bills = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
                       <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-primary)' }}>{sub.name}</span>
                       {sub.priceHike && (
-                        <span style={{ fontSize: '0.62rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, padding: '0.1rem 0.45rem', borderRadius: 6, background: 'rgba(248,113,113,0.16)', border: '1px solid rgba(248,113,113,0.35)', color: '#f87171' }}>
+                        <span style={{ fontSize: '0.62rem', fontWeight: 700, padding: '0.1rem 0.45rem', borderRadius: 6, background: 'rgba(248,113,113,0.16)', border: '1px solid rgba(248,113,113,0.35)', color: 'var(--mm-danger)' }}>
                           📈 +{formatCurrency(sub.priceHike.diff)} (+{sub.priceHike.pct}%) Hike
                         </span>
                       )}
@@ -323,7 +323,7 @@ const Bills = () => {
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, color: '#a78bfa', fontSize: '0.95rem' }}>
+                    <span style={{ fontWeight: 700, color: '#a78bfa', fontSize: '0.95rem' }}>
                       {formatCurrency(sub.amount)}
                     </span>
                     <button
@@ -336,7 +336,6 @@ const Bills = () => {
                         color: '#c4b5fd',
                         fontSize: '0.72rem',
                         fontWeight: 700,
-                        fontFamily: 'Inter, sans-serif',
                         cursor: 'pointer',
                       }}
                     >
@@ -372,11 +371,11 @@ const Bills = () => {
           const dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
           return (
             <motion.div initial={{ opacity:0,y:8 }} animate={{ opacity:1,y:0 }}>
-              <div style={{ textAlign:'center', marginBottom:'1rem', fontFamily:'Inter, sans-serif', fontWeight:700, color:'var(--cyan, #00f5ff)', fontSize:'1rem' }}>
+              <div style={{ textAlign:'center', marginBottom:'1rem', fontWeight:700, color:'var(--cyan, #00f5ff)', fontSize:'1rem' }}>
                 {today.toLocaleString('default', { month:'long', year:'numeric' })}
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:'2px', marginBottom:'0.5rem' }}>
-                {dayNames.map(d => <div key={d} style={{ textAlign:'center', fontSize:'0.7rem', color:'#555', padding:'0.4rem', fontFamily:'Inter, sans-serif' }}>{d}</div>)}
+                {dayNames.map(d => <div key={d} style={{ textAlign:'center', fontSize:'0.7rem', color:'var(--mm-text-3)', padding:'0.4rem' }}>{d}</div>)}
               </div>
               <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:'4px' }}>
                 {cells.map((day, i) => {
@@ -387,13 +386,13 @@ const Bills = () => {
                     <div key={day} style={{ minHeight:64, border:'1px solid rgba(255,255,255,0.06)', borderRadius:8,
                       background: isToday ? 'rgba(0,245,255,0.06)' : 'rgba(255,255,255,0.02)',
                       borderColor: isToday ? 'rgba(0,245,255,0.3)' : 'rgba(255,255,255,0.06)', padding:'0.3rem' }}>
-                      <div style={{ fontSize:'0.75rem', fontWeight: isToday ? 700 : 400, color: isToday ? 'var(--cyan,#00f5ff)' : '#666', fontFamily:'Inter, sans-serif', marginBottom:'0.2rem' }}>{day}</div>
+                      <div style={{ fontSize:'0.75rem', fontWeight: isToday ? 700 : 400, color: isToday ? 'var(--cyan,#00f5ff)' : 'var(--mm-text-3)', marginBottom:'0.2rem' }}>{day}</div>
                       {dayBills.map(b => (
                         <div key={b.id} title={`${b.name} — ${formatCurrency(b.amount)}`}
                           style={{ fontSize:'0.62rem', background: b.paid ? 'rgba(74,222,128,0.15)' : `${urgencyColor(daysUntil(b.due_date))}22`,
                             border:`1px solid ${b.paid ? 'rgba(74,222,128,0.3)' : urgencyColor(daysUntil(b.due_date)) + '44'}`,
                             borderRadius:4, padding:'1px 4px', marginBottom:'1px', color: b.paid ? '#4ade80' : urgencyColor(daysUntil(b.due_date)),
-                            whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', cursor:'pointer', fontFamily:'Inter, sans-serif' }}
+                            whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis', cursor:'pointer' }}
                           onClick={() => openEdit(b)}>
                           {getCategoryEmoji(b.category)} {b.name}
                         </div>
@@ -424,7 +423,6 @@ const Bills = () => {
                         borderRadius: 8,
                         fontSize: '0.74rem',
                         fontWeight: 600,
-                        fontFamily: 'Inter, sans-serif',
                         cursor: 'pointer',
                         background: billFilter === tab.id ? 'var(--mm-accent-soft, rgba(59,130,246,0.15))' : 'rgba(255,255,255,0.03)',
                         color: billFilter === tab.id ? 'var(--mm-accent-text, #60a5fa)' : 'var(--text-secondary)',
@@ -473,18 +471,18 @@ const Bills = () => {
                   <div key={bill.id}
                     style={{ display:'flex', alignItems:'center', padding:'0.9rem 1.15rem', background:'var(--bg-surface)', border:'1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))', borderLeft:`3px solid ${color}`, borderRadius:10, gap:'0.9rem', opacity: bill.paid ? 0.55 : 1 }}
                   >
-                    <button onClick={() => togglePaid(bill)} style={{ background:'none', border:'none', cursor:'pointer', flexShrink:0, color: bill.paid ? '#4ade80' : '#444', transition:'color 0.2s' }}>
+                    <button onClick={() => togglePaid(bill)} style={{ background:'none', border:'none', cursor:'pointer', flexShrink:0, color: bill.paid ? 'var(--mm-success)' : '#444', transition:'color 0.2s' }}>
                       <CheckCircle size={20} />
                     </button>
                     <span style={{ fontSize:'1.35rem', flexShrink:0 }}>{getCategoryEmoji(bill.category)}</span>
                     <div style={{ flex:1, minWidth:0 }}>
                       <div style={{ fontWeight:600, fontSize:'0.92rem', color: bill.paid ? 'var(--text-muted)' : 'var(--text-primary)', textDecoration: bill.paid ? 'line-through' : 'none', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{bill.name}</div>
-                      <div style={{ fontSize:'0.74rem', fontFamily:'Inter, sans-serif', color:'var(--text-secondary)', marginTop:2 }}>
+                      <div style={{ fontSize:'0.74rem', color:'var(--text-secondary)', marginTop:2 }}>
                         {bill.frequency} · {bill.due_date}
                         {!bill.paid && <span style={{ marginLeft:'0.75rem', color, fontWeight: 600 }}>{days < 0 ? `${Math.abs(days)}d overdue` : days === 0 ? 'Due today' : `${days}d left`}</span>}
                       </div>
                     </div>
-                    <div style={{ fontWeight:700, fontFamily:'Inter, sans-serif', fontSize:'0.98rem', color: bill.paid ? 'var(--text-muted)' : 'var(--text-primary)', flexShrink:0 }}>{formatCurrency(bill.amount)}</div>
+                    <div style={{ fontWeight:700, fontSize:'0.98rem', color: bill.paid ? 'var(--text-muted)' : 'var(--text-primary)', flexShrink:0 }}>{formatCurrency(bill.amount)}</div>
                     {!bill.paid && (
                       <div style={{ display:'flex', gap:'0.4rem', flexShrink:0, flexWrap:'wrap', alignItems:'center' }}>
                         <button
@@ -542,9 +540,9 @@ const Bills = () => {
             <div style={{ display:'flex', gap:'0.5rem', flexWrap:'wrap' }}>
               {FREQUENCIES.map(f => (
                 <button key={f} type="button" onClick={() => setFormData({...formData, frequency:f})}
-                  style={{ padding:'0.4rem 1rem', borderRadius:8, border:'none', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.78rem',
+                  style={{ padding:'0.4rem 1rem', borderRadius:8, border:'none', cursor:'pointer', fontSize:'0.78rem',
                     background: formData.frequency===f ? 'linear-gradient(135deg,#818cf8,#a78bfa)' : 'rgba(255,255,255,0.05)',
-                    color: formData.frequency===f ? '#fff' : '#666' }}>{f}</button>
+                    color: formData.frequency===f ? '#fff' : 'var(--mm-text-3)' }}>{f}</button>
               ))}
             </div>
           </div>
@@ -592,7 +590,7 @@ const Bills = () => {
                 const selAcc = accounts.find(a => String(a.id) === String(payModalData.account_id));
                 if (!selAcc) {
                   return (
-                    <div style={{ marginTop:'0.45rem', fontSize:'0.72rem', color:'#fbbf24' }}>
+                    <div style={{ marginTop:'0.45rem', fontSize:'0.72rem', color:'var(--mm-warning)' }}>
                       ℹ️ Reminder-only mode: marks bill paid / advances due date without deducting from any account.
                     </div>
                   );
@@ -604,7 +602,7 @@ const Bills = () => {
                     <span style={{ color:'var(--text-secondary)' }}>
                       Current: <strong style={{ color:'var(--text-primary)' }}>{formatCurrency(curBal)}</strong>
                     </span>
-                    <span style={{ color: afterBal < 0 ? '#f87171' : '#4ade80', fontWeight:700 }}>
+                    <span style={{ color: afterBal < 0 ? 'var(--mm-danger)' : 'var(--mm-success)', fontWeight:700 }}>
                       After Payment: {formatCurrency(afterBal)}
                     </span>
                   </div>

@@ -283,7 +283,7 @@ export default function SplitSettleModal({ isOpen, onClose }) {
                   cursor: 'pointer',
                   border: activeTabId === tab.id ? '1px solid rgba(74,222,128,0.4)' : '1px solid rgba(255,255,255,0.06)',
                   background: activeTabId === tab.id ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.02)',
-                  color: activeTabId === tab.id ? '#4ade80' : '#9191ab',
+                  color: activeTabId === tab.id ? 'var(--mm-success)' : '#9191ab',
                   whiteSpace: 'nowrap',
                   transition: 'all 0.15s',
                 }}
@@ -372,7 +372,7 @@ export default function SplitSettleModal({ isOpen, onClose }) {
                 </label>
               )}
               {debtAnalysis.settlements.length === 0 ? (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#4ade80', fontSize: '0.85rem', padding: '0.5rem 0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--mm-success)', fontSize: '0.85rem', padding: '0.5rem 0' }}>
                   <CheckCircle2 size={16} /> All accounts are fully settled! No debts outstanding. 🎉
                 </div>
               ) : (
@@ -387,9 +387,9 @@ export default function SplitSettleModal({ isOpen, onClose }) {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.84rem' }}>
-                        <span style={{ fontWeight: 600, color: '#f87171' }}>{s.from}</span>
+                        <span style={{ fontWeight: 600, color: 'var(--mm-danger)' }}>{s.from}</span>
                         <ArrowRight size={13} color="#9191ab" />
-                        <span style={{ fontWeight: 600, color: '#4ade80' }}>{s.to}</span>
+                        <span style={{ fontWeight: 600, color: 'var(--mm-success)' }}>{s.to}</span>
                         <strong style={{ marginLeft: 4, color: 'var(--text-primary)' }}>{formatCurrency(s.amount)}</strong>
                       </div>
 
@@ -397,7 +397,7 @@ export default function SplitSettleModal({ isOpen, onClose }) {
                         onClick={() => handleSettleDebt(s)}
                         style={{
                           background: 'rgba(74,222,128,0.15)', border: '1px solid rgba(74,222,128,0.35)',
-                          color: '#4ade80', borderRadius: 8, padding: '0.25rem 0.65rem',
+                          color: 'var(--mm-success)', borderRadius: 8, padding: '0.25rem 0.65rem',
                           fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer',
                         }}
                       >

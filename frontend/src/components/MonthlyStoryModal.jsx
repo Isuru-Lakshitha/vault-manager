@@ -250,7 +250,7 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '0.85rem' }}>✨</span>
-              <span style={{ fontFamily: 'Inter, sans-serif', fontWeight: 700, fontSize: '0.82rem', letterSpacing: '1px', color: 'var(--text-primary)' }}>
+              <span style={{ fontWeight: 700, fontSize: '0.82rem', letterSpacing: '1px', color: 'var(--text-primary)' }}>
                 MONEY WRAPPED · {monthName.toUpperCase()}
               </span>
             </div>
@@ -296,10 +296,10 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                 transition={{ duration: 0.35 }}
                 style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
               >
-                <div style={{ fontSize: '0.75rem', color: '#818cf8', fontFamily: 'Inter, sans-serif', fontWeight: 600, letterSpacing: '1.5px' }}>
+                <div style={{ fontSize: '0.75rem', color: '#818cf8', fontWeight: 600, letterSpacing: '1.5px' }}>
                   CHAPTER 01 // CASH FLOW
                 </div>
-                <h2 style={{ fontSize: '1.75rem', fontFamily: 'Inter, sans-serif', margin: 0, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+                <h2 style={{ fontSize: '1.75rem', margin: 0, color: 'var(--text-primary)', lineHeight: 1.2 }}>
                   Your Financial Orbit This Month
                 </h2>
                 <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
@@ -308,15 +308,15 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
                   <div style={{ padding: '1rem', borderRadius: 14, background: 'rgba(74, 222, 128, 0.08)', border: '1px solid rgba(74, 222, 128, 0.25)' }}>
-                    <div style={{ fontSize: '0.7rem', color: '#4ade80', fontWeight: 600 }}>TOTAL INFLOW</div>
-                    <div style={{ fontSize: '1.5rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, color: '#4ade80', marginTop: 2 }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--mm-success)', fontWeight: 600 }}>TOTAL INFLOW</div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--mm-success)', marginTop: 2 }}>
                       +{formatCurrency(storyStats.totalIncome)}
                     </div>
                   </div>
 
                   <div style={{ padding: '1rem', borderRadius: 14, background: 'rgba(248, 113, 113, 0.08)', border: '1px solid rgba(248, 113, 113, 0.25)' }}>
-                    <div style={{ fontSize: '0.7rem', color: '#f87171', fontWeight: 600 }}>TOTAL OUTFLOW</div>
-                    <div style={{ fontSize: '1.5rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, color: '#f87171', marginTop: 2 }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--mm-danger)', fontWeight: 600 }}>TOTAL OUTFLOW</div>
+                    <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--mm-danger)', marginTop: 2 }}>
                       -{formatCurrency(storyStats.totalExpense)}
                     </div>
                   </div>
@@ -324,7 +324,7 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
 
                 <div style={{ padding: '0.85rem 1.25rem', borderRadius: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Net Capital Retained</span>
-                  <span style={{ fontSize: '1.1rem', fontWeight: 700, color: storyStats.netSavings >= 0 ? '#4ade80' : '#f87171' }}>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 700, color: storyStats.netSavings >= 0 ? 'var(--mm-success)' : 'var(--mm-danger)' }}>
                     {formatCurrency(storyStats.netSavings)}
                   </span>
                 </div>
@@ -341,10 +341,10 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                 transition={{ duration: 0.35 }}
                 style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
               >
-                <div style={{ fontSize: '0.75rem', color: '#a78bfa', fontFamily: 'Inter, sans-serif', fontWeight: 600, letterSpacing: '1.5px' }}>
+                <div style={{ fontSize: '0.75rem', color: '#a78bfa', fontWeight: 600, letterSpacing: '1.5px' }}>
                   CHAPTER 02 // DOMINANT SPEND REALM
                 </div>
-                <h2 style={{ fontSize: '1.75rem', fontFamily: 'Inter, sans-serif', margin: 0, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+                <h2 style={{ fontSize: '1.75rem', margin: 0, color: 'var(--text-primary)', lineHeight: 1.2 }}>
                   Your Biggest Spending Gravity
                 </h2>
 
@@ -363,7 +363,7 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                 >
                   <div style={{ fontSize: '3rem' }}>{getCategoryEmoji(storyStats.topCategory.name)}</div>
                   <h3 style={{ margin: 0, fontSize: '1.3rem', color: 'var(--text-primary)' }}>{storyStats.topCategory.name}</h3>
-                  <div style={{ fontSize: '1.6rem', fontFamily: 'Inter, sans-serif', fontWeight: 800, color: '#a78bfa' }}>
+                  <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#a78bfa' }}>
                     {formatCurrency(storyStats.topCategory.total)}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -378,7 +378,7 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                       {storyStats.topSingleTxns.map((t, i) => (
                         <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.4rem 0.6rem', background: 'rgba(255,255,255,0.03)', borderRadius: 8, fontSize: '0.75rem' }}>
                           <span style={{ color: 'var(--text-primary)' }}>{t.notes || t.category || 'Expense'}</span>
-                          <span style={{ fontWeight: 600, color: '#f87171' }}>-{formatCurrency(t.amount)}</span>
+                          <span style={{ fontWeight: 600, color: 'var(--mm-danger)' }}>-{formatCurrency(t.amount)}</span>
                         </div>
                       ))}
                     </div>
@@ -397,10 +397,10 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                 transition={{ duration: 0.35 }}
                 style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
               >
-                <div style={{ fontSize: '0.75rem', color: '#fbbf24', fontFamily: 'Inter, sans-serif', fontWeight: 600, letterSpacing: '1.5px' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--mm-warning)', fontWeight: 600, letterSpacing: '1.5px' }}>
                   CHAPTER 03 // DISCIPLINE & ZEN
                 </div>
-                <h2 style={{ fontSize: '1.75rem', fontFamily: 'Inter, sans-serif', margin: 0, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+                <h2 style={{ fontSize: '1.75rem', margin: 0, color: 'var(--text-primary)', lineHeight: 1.2 }}>
                   The Art of Zero-Spend Zen
                 </h2>
 
@@ -417,7 +417,7 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                 >
                   <div style={{ fontSize: '2.5rem' }}>🧘</div>
                   <div>
-                    <div style={{ fontSize: '2rem', fontFamily: 'Inter, sans-serif', fontWeight: 800, color: '#fbbf24' }}>
+                    <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--mm-warning)' }}>
                       {storyStats.zeroSpendDays} Days
                     </div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
@@ -435,7 +435,7 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                   </div>
                   <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: 14, border: '1px solid rgba(255,255,255,0.06)' }}>
                     <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>SAVINGS EFFICIENCY</div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#4ade80', marginTop: 4 }}>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--mm-success)', marginTop: 4 }}>
                       {storyStats.savingsRate}%
                     </div>
                   </div>
@@ -457,10 +457,10 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                 transition={{ duration: 0.35 }}
                 style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
               >
-                <div style={{ fontSize: '0.75rem', color: '#38bdf8', fontFamily: 'Inter, sans-serif', fontWeight: 600, letterSpacing: '1.5px' }}>
+                <div style={{ fontSize: '0.75rem', color: '#38bdf8', fontWeight: 600, letterSpacing: '1.5px' }}>
                   CHAPTER 04 // WEALTH MOMENTUM
                 </div>
-                <h2 style={{ fontSize: '1.75rem', fontFamily: 'Inter, sans-serif', margin: 0, color: 'var(--text-primary)', lineHeight: 1.2 }}>
+                <h2 style={{ fontSize: '1.75rem', margin: 0, color: 'var(--text-primary)', lineHeight: 1.2 }}>
                   Fortress & Growth Horizon
                 </h2>
 
@@ -479,7 +479,7 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                     <Shield size={20} color="#38bdf8" />
                     <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)' }}>Savings Rate Metric</span>
                   </div>
-                  <div style={{ fontSize: '2rem', fontFamily: 'Inter, sans-serif', fontWeight: 800, color: '#4ade80' }}>
+                  <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--mm-success)' }}>
                     {storyStats.savingsRate}%
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
@@ -508,7 +508,7 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                 transition={{ duration: 0.35 }}
                 style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', alignItems: 'center', textAlign: 'center' }}
               >
-                <div style={{ fontSize: '0.75rem', color: storyStats.persona.accent, fontFamily: 'Inter, sans-serif', fontWeight: 600, letterSpacing: '1.5px' }}>
+                <div style={{ fontSize: '0.75rem', color: storyStats.persona.accent, fontWeight: 600, letterSpacing: '1.5px' }}>
                   FINAL CHAPTER // YOUR FINTECH PERSONA
                 </div>
 
@@ -531,7 +531,7 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                   <span style={{ fontSize: '0.75rem', padding: '3px 10px', borderRadius: 20, background: `${storyStats.persona.accent}20`, color: storyStats.persona.accent, fontWeight: 700, letterSpacing: '1px' }}>
                     {storyStats.persona.badge}
                   </span>
-                  <h2 style={{ fontSize: '1.6rem', fontFamily: 'Inter, sans-serif', margin: 0, color: 'var(--text-primary)' }}>
+                  <h2 style={{ fontSize: '1.6rem', margin: 0, color: 'var(--text-primary)' }}>
                     {storyStats.persona.title}
                   </h2>
                   <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: 280 }}>
@@ -550,7 +550,6 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                       background: 'linear-gradient(135deg, #818cf8, #a78bfa)',
                       border: 'none',
                       color: '#fff',
-                      fontFamily: 'Inter, sans-serif',
                       fontWeight: 700,
                       fontSize: '0.85rem',
                       display: 'flex',
@@ -571,7 +570,6 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
                       background: 'rgba(255,255,255,0.06)',
                       border: '1px solid rgba(255,255,255,0.1)',
                       color: 'var(--text-primary)',
-                      fontFamily: 'Inter, sans-serif',
                       fontWeight: 600,
                       fontSize: '0.85rem',
                       cursor: 'pointer'
@@ -605,7 +603,7 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
             <ChevronLeft size={16} /> Prev
           </button>
 
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
             {currentSlide + 1} / {TOTAL_SLIDES}
           </span>
 

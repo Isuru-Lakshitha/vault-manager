@@ -132,11 +132,11 @@ const ReceiptUpload = ({ existingUrl, existingThumb, onUploaded }) => {
           </div>
           <div style={{ display: 'flex', gap: '1rem', marginTop: '0.4rem' }}>
             <button type="button" onClick={handleRemove}
-              style={{ fontSize: '0.75rem', color: '#f87171', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'Inter, sans-serif', display: 'flex', alignItems: 'center', gap: 4 }}>
+              style={{ fontSize: '0.75rem', color: 'var(--mm-danger)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', gap: 4 }}>
               <X size={12} /> Remove
             </button>
             <button type="button" onClick={() => galleryRef.current?.click()} disabled={uploading}
-              style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontFamily: 'Inter, sans-serif' }}>
+              style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               {uploading ? stage : 'Replace'}
             </button>
           </div>

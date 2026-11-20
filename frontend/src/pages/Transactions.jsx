@@ -1063,7 +1063,7 @@ const Transactions = () => {
                   <button
                     type="button"
                     onClick={() => { setToolsMenuOpen(false); window.dispatchEvent(new Event('vm:open-receipt-scanner')); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer' }}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
@@ -1072,7 +1072,7 @@ const Transactions = () => {
                   <button
                     type="button"
                     onClick={() => { setToolsMenuOpen(false); window.dispatchEvent(new Event('vm:open-cash-calendar')); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer' }}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
@@ -1081,7 +1081,7 @@ const Transactions = () => {
                   <button
                     type="button"
                     onClick={() => { setToolsMenuOpen(false); window.dispatchEvent(new Event('vm:open-rules-manager')); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer' }}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
@@ -1090,7 +1090,7 @@ const Transactions = () => {
                   <button
                     type="button"
                     onClick={() => { setToolsMenuOpen(false); window.dispatchEvent(new Event('vm:open-bank-sync')); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer' }}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
@@ -1100,7 +1100,7 @@ const Transactions = () => {
                   <button
                     type="button"
                     onClick={() => { setToolsMenuOpen(false); setCsvModalOpen(true); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer' }}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
@@ -1109,7 +1109,7 @@ const Transactions = () => {
                   <button
                     type="button"
                     onClick={() => { setToolsMenuOpen(false); handleExportCSV(); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer' }}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
@@ -1118,7 +1118,7 @@ const Transactions = () => {
                   <button
                     type="button"
                     onClick={() => { setToolsMenuOpen(false); handleExportExcel(); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.8rem', textAlign: 'left', cursor: 'pointer' }}
                     onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
                     onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
                   >
@@ -1150,11 +1150,11 @@ const Transactions = () => {
         {/* ── Quick Templates ── */}
         {templates.length > 0 && (
           <div style={{ display:'flex', gap:'0.5rem', flexWrap:'wrap', marginBottom:'1rem', alignItems:'center' }}>
-            <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.65rem', color:'var(--text-muted)', letterSpacing:'1px', marginRight:'0.25rem' }}>TEMPLATES:</span>
+            <span style={{ fontSize:'0.65rem', color:'var(--text-muted)', letterSpacing:'1px', marginRight:'0.25rem' }}>TEMPLATES:</span>
             {templates.map(t => (
               <div key={t.id} style={{ display:'flex', alignItems:'center', gap:0, background:'rgba(0,245,255,0.07)', border:'1px solid rgba(0,245,255,0.2)', borderRadius:100, overflow:'hidden' }}>
                 <button onClick={() => applyTemplate(t)}
-                  style={{ background:'none', border:'none', cursor:'pointer', padding:'0.3rem 0.65rem', fontFamily:'Inter, sans-serif', fontSize:'0.75rem', color:'#00f5ff', display:'flex', alignItems:'center', gap:'0.35rem' }}>
+                  style={{ background:'none', border:'none', cursor:'pointer', padding:'0.3rem 0.65rem', fontSize:'0.75rem', color:'#00f5ff', display:'flex', alignItems:'center', gap:'0.35rem' }}>
                   {getCategoryEmoji(t.category)} {t.label}
                   <span style={{ fontSize:'0.65rem', color:'rgba(0,245,255,0.6)' }}>{formatCurrency(t.amount)}</span>
                 </button>
@@ -1176,7 +1176,7 @@ const Transactions = () => {
               <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:'1rem', flexWrap:'wrap' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
                   <RefreshCw size={16} color="#818cf8"/>
-                  <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.85rem' }}>
+                  <span style={{ fontSize:'0.85rem' }}>
                     <strong style={{ color:'#818cf8' }}>{pendingRecurring.length}</strong> recurring transaction{pendingRecurring.length>1?'s':''} ready · {formatCurrency(pendingRecurring.reduce((s,r)=>s+(r.amount||0),0))} total
                   </span>
                 </div>
@@ -1188,14 +1188,14 @@ const Transactions = () => {
               {pendingRecurring.length > 0 && (
                 <div style={{ marginTop:'0.625rem', display:'flex', flexDirection:'column', gap:'0.25rem' }}>
                   {pendingRecurring.slice(0,4).map((r, idx) => (
-                    <div key={idx} style={{ display:'flex', justifyContent:'space-between', padding:'0.35rem 0.5rem', background:'rgba(129,140,248,0.06)', borderRadius:7, fontSize:'0.78rem', fontFamily:'Inter, sans-serif' }}>
+                    <div key={idx} style={{ display:'flex', justifyContent:'space-between', padding:'0.35rem 0.5rem', background:'rgba(129,140,248,0.06)', borderRadius:7, fontSize:'0.78rem' }}>
                       <span style={{ color:'#d0d0e0' }}>{r.category || r.description || 'Recurring'}</span>
-                      <span style={{ color: r.type === 'Expense' ? '#f87171' : '#4ade80', fontWeight:600 }}>
+                      <span style={{ color: r.type === 'Expense' ? 'var(--mm-danger)' : 'var(--mm-success)', fontWeight:600 }}>
                         {r.type === 'Expense' ? '-' : '+'}{formatCurrency(r.amount||0)}
                       </span>
                     </div>
                   ))}
-                  {pendingRecurring.length > 4 && <div style={{ fontSize:'0.7rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', textAlign:'center', marginTop:'0.2rem' }}>+{pendingRecurring.length-4} more</div>}
+                  {pendingRecurring.length > 4 && <div style={{ fontSize:'0.7rem', color:'var(--text-muted)', textAlign:'center', marginTop:'0.2rem' }}>+{pendingRecurring.length-4} more</div>}
                 </div>
               )}
             </motion.div>
@@ -1239,8 +1239,8 @@ const Transactions = () => {
                 const over = todaySpend > limit;
                 return (
                   <div className="monthly-strip-item" style={{ borderLeft: `2px solid ${over ? '#f87171' : '#fb923c'}33` }}>
-                    <div className="monthly-strip-label" style={{ color: over ? '#f87171' : '#fb923c' }}>TODAY {over ? '🔴 OVER' : `${pct}%`}</div>
-                    <div className="monthly-strip-value" style={{ color: over ? '#f87171' : '#fb923c', fontSize:'0.85rem' }}>{formatCurrency(todaySpend)} / {formatCurrency(limit)}</div>
+                    <div className="monthly-strip-label" style={{ color: over ? 'var(--mm-danger)' : '#fb923c' }}>TODAY {over ? '🔴 OVER' : `${pct}%`}</div>
+                    <div className="monthly-strip-value" style={{ color: over ? 'var(--mm-danger)' : '#fb923c', fontSize:'0.85rem' }}>{formatCurrency(todaySpend)} / {formatCurrency(limit)}</div>
                   </div>
                 );
               })()}
@@ -1358,7 +1358,7 @@ const Transactions = () => {
               </div>
               {/* Amount range */}
               <div style={{ display:'flex', alignItems:'center', gap:'0.4rem', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, padding:'0.6rem 1rem' }}>
-                <span style={{ fontSize:'0.75rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', whiteSpace:'nowrap' }}>💰</span>
+                <span style={{ fontSize:'0.75rem', color:'var(--text-muted)', whiteSpace:'nowrap' }}>💰</span>
                 <input type="number" inputMode="decimal" aria-label="Minimum amount" placeholder="Min" value={minAmt} onChange={e=>setMinAmt(e.target.value)}
                   style={{ background:'transparent', border:'none', boxShadow:'none', padding:0, width:72, fontSize:'0.8rem', color:'var(--text-primary)' }}/>
                 <span style={{ color:'var(--text-muted)', fontSize:'0.75rem' }}>–</span>
@@ -1368,7 +1368,7 @@ const Transactions = () => {
               {/* Active tag filter pill */}
               {filterTag && (
                 <button onClick={() => setFilterTag('')}
-                  style={{ display:'flex', alignItems:'center', gap:'0.3rem', background:'rgba(168,85,247,0.15)', border:'1px solid rgba(168,85,247,0.4)', borderRadius:100, padding:'0.4rem 0.75rem', color:'#c084fc', fontSize:'0.75rem', fontFamily:'Inter, sans-serif', cursor:'pointer', whiteSpace:'nowrap' }}>
+                  style={{ display:'flex', alignItems:'center', gap:'0.3rem', background:'rgba(168,85,247,0.15)', border:'1px solid rgba(168,85,247,0.4)', borderRadius:100, padding:'0.4rem 0.75rem', color:'#c084fc', fontSize:'0.75rem', cursor:'pointer', whiteSpace:'nowrap' }}>
                   #{filterTag} ✕
                 </button>
               )}
@@ -1381,7 +1381,7 @@ const Transactions = () => {
                   border: `1px solid ${filterTaxDeductible ? 'rgba(74,222,128,0.45)' : 'rgba(255,255,255,0.07)'}`,
                   borderRadius: 100, padding: '0.4rem 0.8rem',
                   color: filterTaxDeductible ? '#4ade80' : 'var(--text-secondary)',
-                  fontSize: '0.75rem', fontFamily: 'Inter, sans-serif', fontWeight: 600,
+                  fontSize: '0.75rem', fontWeight: 600,
                   cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s'
                 }}
               >
@@ -1396,7 +1396,7 @@ const Transactions = () => {
                   border: `1px solid ${filterAnomalies ? 'rgba(251,191,36,0.5)' : anomalyCount > 0 ? 'rgba(251,191,36,0.28)' : 'rgba(255,255,255,0.07)'}`,
                   borderRadius: 100, padding: '0.4rem 0.8rem',
                   color: filterAnomalies ? '#fbbf24' : anomalyCount > 0 ? '#fcd34d' : 'var(--text-secondary)',
-                  fontSize: '0.75rem', fontFamily: 'Inter, sans-serif', fontWeight: 600,
+                  fontSize: '0.75rem', fontWeight: 600,
                   cursor: 'pointer', whiteSpace: 'nowrap', transition: 'all 0.15s'
                 }}
                 title="Scan for suspected duplicate transactions or unusual spend spikes"
@@ -1411,7 +1411,7 @@ const Transactions = () => {
             {/* Remembered Notes Quick Search Row */}
             {rememberedNotes.length > 0 && (
               <div style={{ display:'flex', alignItems:'center', gap:'0.45rem', marginBottom:'1.25rem', overflowX:'auto', WebkitOverflowScrolling:'touch', paddingBottom:'4px' }}>
-                <div style={{ display:'flex', alignItems:'center', gap:'0.35rem', fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', textTransform:'uppercase', letterSpacing:'1px', whiteSpace:'nowrap', flexShrink:0 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:'0.35rem', fontSize:'0.72rem', color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'1px', whiteSpace:'nowrap', flexShrink:0 }}>
                   <Brain size={14} style={{ color:'var(--cyan, #4ade80)' }} />
                   <span>Notes Memory:</span>
                 </div>
@@ -1430,8 +1430,8 @@ const Transactions = () => {
                         padding:'0.35rem 0.7rem', borderRadius:100,
                         background: isSelected ? 'rgba(74,222,128,0.18)' : 'rgba(255,255,255,0.03)',
                         border: isSelected ? '1px solid rgba(74,222,128,0.5)' : '1px solid rgba(255,255,255,0.07)',
-                        color: isSelected ? '#4ade80' : 'var(--text-secondary)',
-                        fontSize:'0.75rem', fontFamily:'Inter, sans-serif', fontWeight: isSelected ? 600 : 400,
+                        color: isSelected ? 'var(--mm-success)' : 'var(--text-secondary)',
+                        fontSize:'0.75rem', fontWeight: isSelected ? 600 : 400,
                         cursor:'pointer', whiteSpace:'nowrap', flexShrink:0,
                         transition:'all 0.15s ease',
                       }}
@@ -1452,7 +1452,7 @@ const Transactions = () => {
                     style={{
                       padding:'0.35rem 0.7rem', borderRadius:100,
                       background:'rgba(248,113,113,0.12)', border:'1px solid rgba(248,113,113,0.3)',
-                      color:'#f87171', fontSize:'0.72rem', fontFamily:'Inter, sans-serif',
+                      color:'var(--mm-danger)', fontSize:'0.72rem',
                       cursor:'pointer', whiteSpace:'nowrap', flexShrink:0
                     }}
                   >
@@ -1471,7 +1471,7 @@ const Transactions = () => {
                 ))}
               </div>
             ) : filtered.length === 0 ? (
-              <div style={{ textAlign:'center', padding:'4rem 2rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>
+              <div style={{ textAlign:'center', padding:'4rem 2rem', color:'var(--text-muted)' }}>
                 <div style={{ fontSize:'3rem', marginBottom:'1rem', opacity:0.3 }}>📭</div>
                 <div style={{ fontSize:'0.82rem', letterSpacing:'1px' }}>NO TRANSACTIONS FOUND</div>
                 {(searchQuery||filterType!=='All'||filterAccount!=='All'||dateFrom||dateTo||minAmt||maxAmt||filterTag||filterAnomalies) && (
@@ -1485,7 +1485,7 @@ const Transactions = () => {
                 {selectedIds.size > 0 && (
                   <motion.div initial={{ opacity:0, y:-8 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-8 }}
                     style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0.75rem 1.25rem', background:'rgba(239,68,68,0.12)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:12, gap:'1rem' }}>
-                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.88rem', fontWeight:600, color:'#f87171' }}>
+                    <div style={{ fontSize:'0.88rem', fontWeight:600, color:'var(--mm-danger)' }}>
                       {selectedIds.size} selected
                     </div>
                     <div style={{ display:'flex', gap:'0.5rem' }}>
@@ -1503,7 +1503,7 @@ const Transactions = () => {
                         <button onClick={() => setBulkMode('category')} className="btn btn-secondary" style={{ fontSize:'0.78rem', padding:'0.4rem 0.875rem' }}>Set category</button>
                         <button onClick={() => setBulkMode('tag')} className="btn btn-secondary" style={{ fontSize:'0.78rem', padding:'0.4rem 0.875rem' }}>Add tag</button>
                       </>)}
-                      <button onClick={handleBulkDelete} className="btn" style={{ fontSize:'0.78rem', padding:'0.4rem 0.875rem', background:'rgba(239,68,68,0.2)', color:'#f87171', border:'1px solid rgba(239,68,68,0.4)' }}>
+                      <button onClick={handleBulkDelete} className="btn" style={{ fontSize:'0.78rem', padding:'0.4rem 0.875rem', background:'rgba(239,68,68,0.2)', color:'var(--mm-danger)', border:'1px solid rgba(239,68,68,0.4)' }}>
                         🗑 Delete {selectedIds.size}
                       </button>
                     </div>
@@ -1517,10 +1517,10 @@ const Transactions = () => {
                     <div key={date} className={groupIdx >= 2 ? 'heavy-section-deferred' : undefined}>
                       {/* Date group header */}
                       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'0.5rem', paddingBottom:'0.5rem', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
-                        <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', fontWeight:600, color:'var(--text-secondary)', letterSpacing:'1px' }}>
+                        <div style={{ fontSize:'0.78rem', fontWeight:600, color:'var(--text-secondary)', letterSpacing:'1px' }}>
                           {formatGroupDate(date)}
                         </div>
-                        <div style={{ display:'flex', gap:'1rem', fontFamily:'Inter, sans-serif', fontSize:'0.72rem' }}>
+                        <div style={{ display:'flex', gap:'1rem', fontSize:'0.72rem' }}>
                           {dayIncome  > 0 && <span style={{ color:'var(--success)' }}>+{formatCurrency(dayIncome)}</span>}
                           {dayExpense > 0 && <span style={{ color:'var(--danger)' }}>-{formatCurrency(dayExpense)}</span>}
                         </div>
@@ -1589,7 +1589,7 @@ const Transactions = () => {
                                       return next;
                                     });
                                   }}
-                                  style={{ width:15, height:15, flexShrink:0, accentColor:'#f87171', cursor:'pointer' }}
+                                  style={{ width:15, height:15, flexShrink:0, accentColor:'var(--mm-danger)', cursor:'pointer' }}
                                   onClick={e => e.stopPropagation()}
                                 />
 
@@ -1604,7 +1604,7 @@ const Transactions = () => {
                                     <span style={{ fontWeight:600, fontSize:'0.92rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                                       <Highlight text={tx.category || tx.type} query={searchQuery} />
                                     </span>
-                                    <span style={{ fontSize:'0.65rem', fontFamily:'Inter, sans-serif', padding:'0.1rem 0.4rem', borderRadius:4, background:'var(--bg-elevated)', color, flexShrink:0 }}>
+                                    <span style={{ fontSize:'0.65rem', padding:'0.1rem 0.4rem', borderRadius:4, background:'var(--bg-elevated)', color, flexShrink:0 }}>
                                       {tx.type}
                                     </span>
                                     {canEdit && quickEditId !== tx.id && (
@@ -1621,7 +1621,6 @@ const Transactions = () => {
                                           fontSize: '0.64rem',
                                           color: 'var(--text-muted)',
                                           cursor: 'pointer',
-                                          fontFamily: 'Inter, sans-serif',
                                           flexShrink: 0,
                                         }}
                                       >
@@ -1629,22 +1628,22 @@ const Transactions = () => {
                                       </button>
                                     )}
                                     {(tx.tax_deductible || tx.is_tax_deductible) && (
-                                      <span style={{ fontSize:'0.63rem', fontFamily:'Inter, sans-serif', padding:'0.1rem 0.4rem', borderRadius:4, background:'rgba(74,222,128,0.14)', color:'#4ade80', border:'1px solid rgba(74,222,128,0.3)', flexShrink:0 }}>
+                                      <span style={{ fontSize:'0.63rem', padding:'0.1rem 0.4rem', borderRadius:4, background:'rgba(74,222,128,0.14)', color:'var(--mm-success)', border:'1px solid rgba(74,222,128,0.3)', flexShrink:0 }}>
                                         🏷️ Tax {tx.tax_category ? `(${tx.tax_category})` : ''}
                                       </span>
                                     )}
                                     {tx.status === 'pending' && (
-                                      <span style={{ fontSize:'0.63rem', fontFamily:'Inter, sans-serif', padding:'0.1rem 0.4rem', borderRadius:4, background:'rgba(251,191,36,0.15)', color:'#fbbf24', border:'1px solid rgba(251,191,36,0.3)', flexShrink:0 }}>
+                                      <span style={{ fontSize:'0.63rem', padding:'0.1rem 0.4rem', borderRadius:4, background:'rgba(251,191,36,0.15)', color:'var(--mm-warning)', border:'1px solid rgba(251,191,36,0.3)', flexShrink:0 }}>
                                         ⏳ Pending
                                       </span>
                                     )}
                                     {anomalyMap[tx.id] && (
-                                      <span style={{ fontSize:'0.63rem', fontFamily:'Inter, sans-serif', fontWeight:700, padding:'0.1rem 0.45rem', borderRadius:4, background: anomalyMap[tx.id].isDuplicate ? 'rgba(251,191,36,0.18)' : 'rgba(167,139,250,0.18)', color: anomalyMap[tx.id].isDuplicate ? '#fbbf24' : '#c084fc', border:`1px solid ${anomalyMap[tx.id].isDuplicate ? 'rgba(251,191,36,0.4)' : 'rgba(167,139,250,0.4)'}`, flexShrink:0 }}>
+                                      <span style={{ fontSize:'0.63rem', fontWeight:700, padding:'0.1rem 0.45rem', borderRadius:4, background: anomalyMap[tx.id].isDuplicate ? 'rgba(251,191,36,0.18)' : 'rgba(167,139,250,0.18)', color: anomalyMap[tx.id].isDuplicate ? '#fbbf24' : '#c084fc', border:`1px solid ${anomalyMap[tx.id].isDuplicate ? 'rgba(251,191,36,0.4)' : 'rgba(167,139,250,0.4)'}`, flexShrink:0 }}>
                                         {anomalyMap[tx.id].label}
                                       </span>
                                     )}
                                   </div>
-                                  <div style={{ fontSize:'0.76rem', color:'var(--text-secondary)', fontFamily:'Inter, sans-serif', marginTop:'0.2rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                                  <div style={{ fontSize:'0.76rem', color:'var(--text-secondary)', marginTop:'0.2rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                                     {tx.type === 'Transfer'
                                       ? `${getAccountName(tx.from_account_id)} → ${getAccountName(tx.to_account_id)}`
                                       : tx.type === 'Income'
@@ -1656,7 +1655,7 @@ const Transactions = () => {
                                     <div className="tx-extra" style={{ display:'flex', flexWrap:'wrap', gap:'0.25rem', marginTop:'0.3rem' }}>
                                       {tx.tags.map(tag => (
                                         <button key={tag} onClick={e => { e.stopPropagation(); setFilterTag(filterTag===tag ? '' : tag); }}
-                                          style={{ background: filterTag===tag ? 'rgba(168,85,247,0.25)' : 'rgba(168,85,247,0.1)', border:`1px solid ${filterTag===tag ? 'rgba(168,85,247,0.6)' : 'rgba(168,85,247,0.25)'}`, borderRadius:100, padding:'0.1rem 0.45rem', fontSize:'0.65rem', color:'#c084fc', cursor:'pointer', fontFamily:'Inter, sans-serif', letterSpacing:'0.3px' }}>
+                                          style={{ background: filterTag===tag ? 'rgba(168,85,247,0.25)' : 'rgba(168,85,247,0.1)', border:`1px solid ${filterTag===tag ? 'rgba(168,85,247,0.6)' : 'rgba(168,85,247,0.25)'}`, borderRadius:100, padding:'0.1rem 0.45rem', fontSize:'0.65rem', color:'#c084fc', cursor:'pointer', letterSpacing:'0.3px' }}>
                                           #{tag}
                                         </button>
                                       ))}
@@ -1713,14 +1712,14 @@ const Transactions = () => {
 
                                 {/* Amount + Bank-Statement Running Balance */}
                                 <div style={{ textAlign:'right', flexShrink:0 }}>
-                                  <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1rem', color }}>
+                                  <div style={{ fontWeight:700, fontSize:'1rem', color }}>
                                     {isExpense ? '-' : isIncome ? '+' : ''}{formatCurrency(tx.amount, txCurrency ? { currency: txCurrency } : {})}{auditStatus(tx) !== 'Active' && <small style={{display:'block'}}>{auditStatus(tx)}</small>}
                                   </div>
                                   {tx.fee_amount > 0 && (
                                     <div style={{ fontSize:'0.68rem', color:'var(--danger)', marginTop:1 }}>Fee: {formatCurrency(tx.fee_amount, txCurrency ? { currency: txCurrency } : {})}</div>
                                   )}
                                   {filterAccount !== 'All' && runningBalanceMap.has(tx.id) && (
-                                    <div data-testid="tx-running-balance" style={{ fontSize:'0.68rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:2, fontVariantNumeric:'tabular-nums' }}>
+                                    <div data-testid="tx-running-balance" style={{ fontSize:'0.68rem', color:'var(--text-muted)', marginTop:2, fontVariantNumeric:'tabular-nums' }}>
                                       Bal: {formatCurrency(runningBalanceMap.get(tx.id), filteredAccCurrency ? { currency: filteredAccCurrency } : {})}
                                     </div>
                                   )}
@@ -1757,7 +1756,7 @@ const Transactions = () => {
 
                 {visibleFiltered.length < filtered.length && (
                   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 0', flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif' }}>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
                       Showing {visibleFiltered.length} of {filtered.length} transactions
                     </span>
                     <button
@@ -1804,12 +1803,11 @@ const Transactions = () => {
                     justifyContent: 'space-between',
                     marginBottom: '0.35rem',
                     fontSize: '0.68rem',
-                    fontFamily: 'Inter, sans-serif',
                     color: 'var(--text-muted)',
                     fontWeight: 700,
                     letterSpacing: '0.4px'
                   }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: '#fbbf24' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--mm-warning)' }}>
                       <Zap size={11} /> 1-TAP FREQUENT REPEAT
                     </span>
                     <span>Tap to fill all fields</span>
@@ -1842,7 +1840,6 @@ const Transactions = () => {
                           border: '1px solid rgba(255,255,255,0.09)',
                           color: 'var(--text-primary)',
                           fontSize: '0.72rem',
-                          fontFamily: 'Inter, sans-serif',
                           fontWeight: 600,
                           cursor: 'pointer',
                           whiteSpace: 'nowrap',
@@ -1851,7 +1848,7 @@ const Transactions = () => {
                       >
                         <span>{getCategoryEmoji(tpl.category)}</span>
                         <span>{tpl.label}</span>
-                        <span style={{ color: tpl.type === 'Income' ? '#4ade80' : '#fbbf24', fontWeight: 700, fontSize: '0.68rem' }}>
+                        <span style={{ color: tpl.type === 'Income' ? 'var(--mm-success)' : 'var(--mm-warning)', fontWeight: 700, fontSize: '0.68rem' }}>
                           {formatCurrency(tpl.amount)}
                         </span>
                       </button>
@@ -1881,7 +1878,7 @@ const Transactions = () => {
                     }
                     return { ...f, type: t, to_account_id: nextTo };
                   })}
-                    style={{ flex:1, padding:'0.6rem', borderRadius:8, border:'none', cursor:'pointer', fontFamily:'Inter, sans-serif', fontSize:'0.78rem', fontWeight:600, transition:'all 0.15s',
+                    style={{ flex:1, padding:'0.6rem', borderRadius:8, border:'none', cursor:'pointer', fontSize:'0.78rem', fontWeight:600, transition:'all 0.15s',
                       background: formData.type===t ? TYPE_BG[t] : 'rgba(255,255,255,0.04)',
                       color: formData.type===t ? TYPE_COLOR[t] : '#555',
                       borderBottom: formData.type===t ? `2px solid ${TYPE_COLOR[t]}` : '2px solid transparent' }}>
@@ -1914,7 +1911,7 @@ const Transactions = () => {
             {/* Foreign currency converter (optional) */}
             {!isRecurring && (
               <div style={{ background:'rgba(0,245,255,0.04)', border:'1px solid rgba(0,245,255,0.12)', borderRadius:10, padding:'0.75rem 1rem' }}>
-                <div style={{ fontSize:'0.72rem', letterSpacing:'1.5px', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginBottom:'0.5rem' }}>💱 FOREIGN CURRENCY (optional)</div>
+                <div style={{ fontSize:'0.72rem', letterSpacing:'1.5px', color:'var(--text-muted)', marginBottom:'0.5rem' }}>💱 FOREIGN CURRENCY (optional)</div>
                 <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'0.5rem' }}>
                   <div>
                     <label style={{ display:'block', marginBottom:'0.3rem', fontSize:'0.78rem', color:'var(--text-secondary)' }}>Foreign Amount</label>
@@ -1940,12 +1937,12 @@ const Transactions = () => {
                     <label style={{ display:'block', marginBottom:'0.3rem', fontSize:'0.78rem', color:'var(--text-secondary)' }}>Currency</label>
                     <select value={formData._foreignCur || 'USD'}
                       onChange={e => setFormData(f => ({ ...f, _foreignCur: e.target.value }))}
-                      style={{ width:'100%', background:'rgba(0,0,0,0.3)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, padding:'0.5rem', color:'var(--text-primary)', fontSize:'0.85rem', fontFamily:'Inter, sans-serif' }}>
+                      style={{ width:'100%', background:'rgba(0,0,0,0.3)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, padding:'0.5rem', color:'var(--text-primary)', fontSize:'0.85rem' }}>
                       {['USD','EUR','GBP','AUD','CAD','SGD','JPY','INR','AED','MYR','CHF','CNY'].map(c => <option key={c} value={c} style={{ background:'#0a0a1a' }}>{c}</option>)}
                     </select>
                   </div>
                 </div>
-                {formData._foreignAmt > 0 && <div style={{ fontSize:'0.7rem', color:'var(--cyan,#00f5ff)', marginTop:'0.3rem', fontFamily:'Inter, sans-serif' }}>→ Converted: {getCurrencyLabel()} {formData.amount?.toLocaleString()}</div>}
+                {formData._foreignAmt > 0 && <div style={{ fontSize:'0.7rem', color:'var(--cyan,#00f5ff)', marginTop:'0.3rem' }}>→ Converted: {getCurrencyLabel()} {formData.amount?.toLocaleString()}</div>}
               </div>
             )}
 
@@ -2009,7 +2006,7 @@ const Transactions = () => {
                       <button type="button" onClick={() => {
                         const newSplits = formData.splits.filter((_, i) => i !== idx);
                         setFormData({...formData, splits: newSplits});
-                      }} style={{ background:'none', border:'none', color:'#f87171', cursor:'pointer' }}><X size={16}/></button>
+                      }} style={{ background:'none', border:'none', color:'var(--mm-danger)', cursor:'pointer' }}><X size={16}/></button>
                     )}
                   </div>
                 ))}
@@ -2020,7 +2017,7 @@ const Transactions = () => {
                   const total = Math.round(formData.splits.reduce((s, c) => s + (Number(c.amount) || 0), 0) * 100) / 100;
                   const isMatch = Math.abs(total - Number(formData.amount)) < 0.01;
                   return (
-                    <div style={{ color: isMatch ? '#4ade80' : '#f87171', fontSize:'0.8rem' }}>
+                    <div style={{ color: isMatch ? 'var(--mm-success)' : 'var(--mm-danger)', fontSize:'0.8rem' }}>
                       Splits total: {total} / {formData.amount}
                       {!isMatch && ' (Amounts must match)'}
                     </div>
@@ -2151,7 +2148,7 @@ const Transactions = () => {
                     borderRadius:10, overflow:'hidden', boxShadow:'0 8px 30px rgba(0,0,0,0.5)',
                     maxHeight:220, overflowY:'auto', WebkitOverflowScrolling:'touch'
                   }}>
-                    <div style={{ padding:'0.4rem 0.75rem', fontSize:'0.65rem', fontFamily:'Inter, sans-serif', letterSpacing:'1.5px', color:'var(--text-muted)', textTransform:'uppercase', background:'rgba(255,255,255,0.02)', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+                    <div style={{ padding:'0.4rem 0.75rem', fontSize:'0.65rem', letterSpacing:'1.5px', color:'var(--text-muted)', textTransform:'uppercase', background:'rgba(255,255,255,0.02)', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
                       🧠 Remembered Notes
                     </div>
                     {matches.map(item => (
@@ -2202,7 +2199,7 @@ const Transactions = () => {
               {/* Auto-category suggestion badge */}
               {formData._autoCat && formData.category === formData._autoCat && (
                 <div style={{ display:'flex', alignItems:'center', gap:'0.4rem', marginTop:'0.35rem' }}>
-                  <span style={{ fontSize:'0.7rem', color:'var(--cyan, #4ade80)', fontFamily:'Inter, sans-serif' }}>
+                  <span style={{ fontSize:'0.7rem', color:'var(--cyan, #4ade80)' }}>
                     ✨ Auto-categorized as <b>{formData._autoCat}</b>
                   </span>
                   <button type="button" onClick={() => setFormData(f => ({ ...f, category: '', _autoCat: null }))}
@@ -2213,7 +2210,7 @@ const Transactions = () => {
               {/* Quick-pick Note Memory Chips */}
               {rememberedNotes.length > 0 && (
                 <div style={{ marginTop:'0.5rem' }}>
-                  <div style={{ fontSize:'0.68rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginBottom:'0.3rem', display:'flex', alignItems:'center', gap:'0.25rem' }}>
+                  <div style={{ fontSize:'0.68rem', color:'var(--text-muted)', marginBottom:'0.3rem', display:'flex', alignItems:'center', gap:'0.25rem' }}>
                     <span>Quick memory notes:</span>
                   </div>
                   <div style={{ display:'flex', flexWrap:'wrap', gap:'0.35rem' }}>
@@ -2264,15 +2261,13 @@ const Transactions = () => {
                 display:'flex', alignItems:'center', gap:'0.75rem', padding:'0.65rem 1rem',
                 background: formData.tax_deductible ? 'rgba(74,222,128,0.1)' : 'rgba(255,255,255,0.03)',
                 borderRadius:10, border:`1px solid ${formData.tax_deductible ? 'rgba(74,222,128,0.35)' : 'rgba(255,255,255,0.08)'}`,
-                cursor:'pointer', fontSize:'0.82rem', color: formData.tax_deductible ? '#4ade80' : 'var(--text-secondary)',
-                fontFamily:'Inter, sans-serif'
-              }}
+                cursor:'pointer', fontSize:'0.82rem', color: formData.tax_deductible ? '#4ade80' : 'var(--text-secondary)' }}
             >
               <input
                 type="checkbox"
                 checked={!!formData.tax_deductible}
                 onChange={e => setFormData(f => ({ ...f, tax_deductible: e.target.checked }))}
-                style={{ width:16, height:16, accentColor:'#4ade80' }}
+                style={{ width:16, height:16, accentColor:'var(--mm-success)' }}
               />
               <span>🧾 Mark as Tax-Deductible / Business Expense</span>
             </label>
@@ -2298,7 +2293,7 @@ const Transactions = () => {
             {/* Buttons */}
             <div style={{ display:'flex', justifyContent:'space-between', gap:'0.75rem', marginTop:'0.25rem', flexWrap:'wrap' }}>
               <button type="button" onClick={saveTemplate}
-                style={{ background:'rgba(0,245,255,0.07)', border:'1px solid rgba(0,245,255,0.2)', borderRadius:8, padding:'0.45rem 0.875rem', color:'#00f5ff', cursor:'pointer', fontSize:'0.78rem', fontFamily:'Inter, sans-serif' }}>
+                style={{ background:'rgba(0,245,255,0.07)', border:'1px solid rgba(0,245,255,0.2)', borderRadius:8, padding:'0.45rem 0.875rem', color:'#00f5ff', cursor:'pointer', fontSize:'0.78rem' }}>
                 ⭐ Save as Template
               </button>
               <div style={{ display:'flex', gap:'0.75rem' }}>

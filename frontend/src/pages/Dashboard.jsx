@@ -46,10 +46,10 @@ const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
 
   return (
-    <div style={{ background:'var(--hud-bg, rgba(6,8,20,0.97))', border:'1px solid rgba(74,222,128,0.25)', padding:'0.75rem 1rem', borderRadius:10, fontFamily:'Inter, sans-serif', fontSize:'0.78rem' }}>
-      {label && <p style={{ color:'#4ade80', margin:'0 0 0.4rem', fontWeight:700 }}>{label}</p>}
+    <div style={{ background:'var(--hud-bg, rgba(6,8,20,0.97))', border:'1px solid rgba(74,222,128,0.25)', padding:'0.75rem 1rem', borderRadius:10, fontSize:'0.78rem' }}>
+      {label && <p style={{ color:'var(--mm-success)', margin:'0 0 0.4rem', fontWeight:700 }}>{label}</p>}
       {payload.map((e,i) => (
-        <div key={i} style={{ display:'flex', justifyContent:'space-between', gap:'1rem', color:e.color||'#aaa' }}>
+        <div key={i} style={{ display:'flex', justifyContent:'space-between', gap:'1rem', color:e.color||'var(--mm-text-2)' }}>
           <span>{e.name}:</span><span style={{ color:'#fff', fontWeight:700 }}>{formatCurrency(e.value)}</span>
         </div>
       ))}
@@ -584,27 +584,27 @@ const Dashboard = () => {
           <X size={18} />
         </button>
         
-        <h2 style={{ margin: '0 0 1rem', fontFamily: 'Inter, sans-serif', color: 'var(--warning)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem' }}>
+        <h2 style={{ margin: '0 0 1rem', color: 'var(--warning)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.1rem' }}>
           <Activity size={20} /> {monthName} Summary
         </h2>
         
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif' }}>Income</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Income</div>
             <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--success)' }}>{formatCurrency(lmIncome)}</div>
             <div style={{ fontSize: '0.7rem', display: 'flex', alignItems: 'center', color: incChange >= 0 ? 'var(--success)' : 'var(--danger)' }}>
               {incChange >= 0 ? <ChevronUp size={12}/> : <ChevronDown size={12}/>} {Math.abs(incChange).toFixed(1)}% vs prev
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif' }}>Expenses</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Expenses</div>
             <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--danger)' }}>{formatCurrency(lmExpense)}</div>
             <div style={{ fontSize: '0.7rem', display: 'flex', alignItems: 'center', color: expChange <= 0 ? 'var(--success)' : 'var(--danger)' }}>
               {expChange >= 0 ? <ChevronUp size={12}/> : <ChevronDown size={12}/>} {Math.abs(expChange).toFixed(1)}% vs prev
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif' }}>Net Savings</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Net Savings</div>
             <div style={{ fontSize: '1.2rem', fontWeight: 700, color: lmNet >= 0 ? 'var(--cyan)' : 'var(--danger)' }}>{formatCurrency(lmNet)}</div>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Rate: {lmSavingsRate}%</div>
           </div>
@@ -612,7 +612,7 @@ const Dashboard = () => {
         
         {topCats.length > 0 && (
           <div style={{ background: 'rgba(0,0,0,0.2)', padding: '0.75rem 1rem', borderRadius: 8 }}>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', marginBottom: '0.5rem' }}>Top Expenses</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Top Expenses</div>
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               {topCats.map(([cat, amount]) => (
                 <div key={cat} style={{ fontSize: '0.85rem' }}>
@@ -687,7 +687,7 @@ const Dashboard = () => {
                   {announcement.level === 'critical' ? '🚨' : announcement.level === 'warning' ? '⚠️' : '📢'}
                 </span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: announcement.level === 'critical' ? '#f87171' : announcement.level === 'warning' ? '#fbbf24' : '#38bdf8', letterSpacing: '0.5px' }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: announcement.level === 'critical' ? 'var(--mm-danger)' : announcement.level === 'warning' ? 'var(--mm-warning)' : '#38bdf8', letterSpacing: '0.5px' }}>
                     System Broadcast
                   </div>
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: 500 }}>
@@ -725,7 +725,7 @@ const Dashboard = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span style={{ fontSize: '1.25rem' }}>{alert.icon}</span>
                   <div>
-                    <span style={{ fontWeight: 700, fontSize: '0.85rem', color: '#f87171' }}>{alert.title}</span>
+                    <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--mm-danger)' }}>{alert.title}</span>
                     <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', marginLeft: '0.5rem' }}>{alert.body}</span>
                   </div>
                 </div>
@@ -868,7 +868,7 @@ const Dashboard = () => {
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.65rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-                          <span style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '1.2px', fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                          <span style={{ letterSpacing: '1.2px', fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
                             MONTHLY REMINDERS STATUS
                           </span>
                           <span style={{
@@ -877,7 +877,7 @@ const Dashboard = () => {
                             padding: '2px 8px',
                             borderRadius: 999,
                             background: 'rgba(16, 185, 129, 0.14)',
-                            color: '#34d399',
+                            color: 'var(--mm-success)',
                           }}>
                             ✅ {paidRec.length}/{activeRec.length} Paid ({pct}%)
                           </span>
@@ -888,7 +888,7 @@ const Dashboard = () => {
                               padding: '2px 8px',
                               borderRadius: 999,
                               background: 'rgba(245, 158, 11, 0.16)',
-                              color: '#fbbf24',
+                              color: 'var(--mm-warning)',
                             }}>
                               ⏳ {unpaidRec.length} Still Due
                             </span>
@@ -897,7 +897,7 @@ const Dashboard = () => {
                         <button
                           type="button"
                           onClick={() => navigate('/recurring')}
-                          style={{ background: 'none', border: 'none', color: 'var(--cyan)', fontFamily: 'Inter, sans-serif', fontSize: '0.74rem', cursor: 'pointer', fontWeight: 600 }}
+                          style={{ background: 'none', border: 'none', color: 'var(--cyan)', fontSize: '0.74rem', cursor: 'pointer', fontWeight: 600 }}
                         >
                           OPEN REMINDERS →
                         </button>
@@ -939,13 +939,13 @@ const Dashboard = () => {
                                     padding: '1px 7px',
                                     borderRadius: 999,
                                     background: isOverdue ? 'rgba(239, 68, 68, 0.18)' : 'rgba(245, 158, 11, 0.14)',
-                                    color: isOverdue ? '#f87171' : '#fbbf24',
+                                    color: isOverdue ? 'var(--mm-danger)' : 'var(--mm-warning)',
                                   }}>
                                     {isOverdue ? `🚨 Overdue (Day ${dom})` : isFixed ? `⏳ Due Day ${dom}` : `⏳ Due (${r.flexible_window || 'Anytime'})`}
                                   </span>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-                                  <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#fbbf24', fontVariantNumeric: 'tabular-nums' }}>
+                                  <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--mm-warning)', fontVariantNumeric: 'tabular-nums' }}>
                                     {formatCurrency(amt)}
                                   </span>
                                   <button
@@ -960,7 +960,7 @@ const Dashboard = () => {
                                         toast.error('Failed to update status');
                                       }
                                     }}
-                                    style={{ padding: '0.24rem 0.55rem', fontSize: '0.68rem', color: '#34d399', borderColor: 'rgba(16, 185, 129, 0.35)' }}
+                                    style={{ padding: '0.24rem 0.55rem', fontSize: '0.68rem', color: 'var(--mm-success)', borderColor: 'rgba(16, 185, 129, 0.35)' }}
                                   >
                                     ✓ Mark Paid
                                   </button>
@@ -1107,7 +1107,7 @@ const Dashboard = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span style={{ fontSize: '1.3rem' }}>🔐</span>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#38bdf8', fontFamily: 'Inter, sans-serif' }}>
+                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: '#38bdf8' }}>
                       {backupStatus.daysSinceBackup === null
                         ? 'Weekly Vault Protection: Save Your First Local Backup'
                         : `Weekly Backup Due (${backupStatus.daysSinceBackup} days since last export)`}
@@ -1140,7 +1140,6 @@ const Dashboard = () => {
                       fontWeight: 700,
                       fontSize: '0.74rem',
                       cursor: 'pointer',
-                      fontFamily: 'Inter, sans-serif',
                     }}
                   >
                     📥 1-Tap Backup
@@ -1157,7 +1156,6 @@ const Dashboard = () => {
                       fontWeight: 600,
                       fontSize: '0.74rem',
                       cursor: 'pointer',
-                      fontFamily: 'Inter, sans-serif',
                     }}
                   >
                     🔒 AES-256 Encrypt
@@ -1176,7 +1174,6 @@ const Dashboard = () => {
                       fontSize: '0.72rem',
                       cursor: 'pointer',
                       padding: '0.3rem 0.45rem',
-                      fontFamily: 'Inter, sans-serif',
                     }}
                     title="Remind me next week"
                   >
@@ -1191,7 +1188,7 @@ const Dashboard = () => {
               <div style={{ background:'rgba(239,68,68,0.1)', border:'1px solid rgba(239,68,68,0.3)', borderRadius:12, padding:'1.25rem 1.5rem', marginBottom:'1.75rem' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', color:'var(--danger)', marginBottom:'0.75rem' }}>
                   <TrendingDown size={18} />
-                  <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'1px', fontSize:'0.85rem' }}>UNPAID INTEREST DETECTED</h3>
+                  <h3 style={{ margin:0, letterSpacing:'1px', fontSize:'0.85rem' }}>UNPAID INTEREST DETECTED</h3>
                 </div>
                 {loans.filter(l => l.status === 'Active' && (l.unpaid_interest || 0) > 0).map(loan => (
                   <div key={loan.id} style={{ display:'flex', justifyContent:'space-between', padding:'0.6rem 0.75rem', background:'rgba(0,0,0,0.2)', borderRadius:8, marginBottom:4 }}>
@@ -1254,7 +1251,7 @@ const Dashboard = () => {
                 >
                   <div className="monthly-strip-label">{s.label} {s.clickable ? '↗' : ''}</div>
                   <div className="monthly-strip-value" style={{ color: s.color }}>{s.val}</div>
-                  {s.sub && <div style={{ fontSize:'0.6rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:'0.15rem' }}>{s.sub}</div>}
+                  {s.sub && <div style={{ fontSize:'0.6rem', color:'var(--text-muted)', marginTop:'0.15rem' }}>{s.sub}</div>}
                 </div>
               ))}
             </motion.div>
@@ -1268,7 +1265,7 @@ const Dashboard = () => {
               const barColor = isOver ? '#f87171' : spendPct > 80 ? '#fbbf24' : '#00f5ff';
               return (
                 <div style={{ marginBottom:'1.5rem', padding:'0.75rem 1rem', background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:10 }}>
-                  <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.4rem', fontFamily:'Inter, sans-serif', fontSize:'0.72rem' }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.4rem', fontSize:'0.72rem' }}>
                     <span style={{ color:'var(--text-muted)' }}>MONTH SPEND PROGRESS</span>
                     <span style={{ color:barColor, fontWeight:600 }}>{Math.round(spendPct)}% of income spent · Day {today.getDate()}/{new Date(today.getFullYear(),today.getMonth()+1,0).getDate()}</span>
                   </div>
@@ -1278,7 +1275,7 @@ const Dashboard = () => {
                     {/* Day marker */}
                     <div style={{ position:'absolute', top:0, left:`${dayPct}%`, width:2, height:'100%', background:'rgba(255,255,255,0.4)', borderRadius:1 }} title={`Today: Day ${today.getDate()}`}/>
                   </div>
-                  {isOver && <div style={{ fontSize:'0.65rem', color:'#f87171', fontFamily:'Inter, sans-serif', marginTop:'0.3rem' }}>⚠ Spending exceeds this month's income</div>}
+                  {isOver && <div style={{ fontSize:'0.65rem', color:'var(--mm-danger)', marginTop:'0.3rem' }}>⚠ Spending exceeds this month's income</div>}
                 </div>
               );
             })()}
@@ -1297,7 +1294,7 @@ const Dashboard = () => {
                 initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} transition={{ delay:0.05 }}>
                 <ParticleBackground count={20} color="#4ade80" opacity={0.5} />
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.75rem' }}>
-                  <h3 className="text-cyan" style={{ fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.72rem', margin:0 }}>NET WORTH</h3>
+                  <h3 className="text-cyan" style={{ letterSpacing:'2px', fontSize:'0.72rem', margin:0 }}>NET WORTH</h3>
                   <Landmark size={18} className="text-cyan" />
                 </div>
                 <div className="dash-num dash-kpi-figure" style={{ marginBottom:'0.5rem' }}>
@@ -1312,16 +1309,16 @@ const Dashboard = () => {
                         <Tooltip content={<CustomTooltip/>}/>
                       </AreaChart>
                     </ResponsiveContainer>
-                  ) : <div style={{ height:60, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)', fontSize:'0.75rem', fontFamily:'Inter, sans-serif' }}>ADD TRANSACTIONS</div>}
+                  ) : <div style={{ height:60, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)', fontSize:'0.75rem' }}>ADD TRANSACTIONS</div>}
                 </div>
-                <div style={{ fontSize:'0.62rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:'0.5rem', textAlign:'right', letterSpacing:'0.5px' }}>TAP FOR BREAKDOWN ↗</div>
+                <div style={{ fontSize:'0.62rem', color:'var(--text-muted)', marginTop:'0.5rem', textAlign:'right', letterSpacing:'0.5px' }}>TAP FOR BREAKDOWN ↗</div>
               </motion.div>
               </TiltWrapper>
 
               {/* Total Assets */}
               <motion.div className="bento-card bento-item bento-4 holographic-card dash-3d" data-tilt initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} transition={{ delay:0.1 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.75rem' }}>
-                  <h3 className="text-success" style={{ fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.72rem', margin:0 }}>TOTAL ASSETS</h3>
+                  <h3 className="text-success" style={{ letterSpacing:'2px', fontSize:'0.72rem', margin:0 }}>TOTAL ASSETS</h3>
                   <TrendingUp size={18} className="text-success" />
                 </div>
                 <div className="hero-metric dash-num dash-kpi-figure" style={{ marginBottom:'1rem' }}>
@@ -1329,8 +1326,8 @@ const Dashboard = () => {
                 </div>
                 <div style={{ display:'flex', flexDirection:'column', gap:'0.35rem' }}>
                   {accounts.slice(0, 3).map(a => (
-                    <div key={a.id} style={{ display:'flex', justifyContent:'space-between', fontSize:'0.75rem', fontFamily:'Inter, sans-serif', color:'var(--text-secondary)' }}>
-                      <span>{a.name}</span><span style={{ color:'#4ade80' }}>{formatCurrency(a.balance)}</span>
+                    <div key={a.id} style={{ display:'flex', justifyContent:'space-between', fontSize:'0.75rem', color:'var(--text-secondary)' }}>
+                      <span>{a.name}</span><span style={{ color:'var(--mm-success)' }}>{formatCurrency(a.balance)}</span>
                     </div>
                   ))}
                 </div>
@@ -1339,7 +1336,7 @@ const Dashboard = () => {
               {/* Liabilities */}
               <motion.div className="bento-card bento-item bento-4 holographic-card dash-3d" data-tilt initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} transition={{ delay:0.15 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.75rem' }}>
-                  <h3 className="text-danger" style={{ fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.72rem', margin:0 }}>LIABILITIES</h3>
+                  <h3 className="text-danger" style={{ letterSpacing:'2px', fontSize:'0.72rem', margin:0 }}>LIABILITIES</h3>
                   <TrendingDown size={18} className="text-danger" />
                 </div>
                 <div className="dash-num dash-neg dash-kpi-figure" style={{ marginBottom:'1rem' }}>
@@ -1347,35 +1344,35 @@ const Dashboard = () => {
                 </div>
                 <div style={{ display:'flex', flexDirection:'column', gap:'0.35rem' }}>
                   {loans.filter(l => l.status === 'Active').slice(0, 3).map(l => (
-                    <div key={l.id} style={{ display:'flex', justifyContent:'space-between', fontSize:'0.75rem', fontFamily:'Inter, sans-serif', color:'var(--text-secondary)' }}>
-                      <span>{l.item_name || 'Loan'}</span><span style={{ color:'#f87171' }}>{formatCurrency(l.principal_amount)}</span>
+                    <div key={l.id} style={{ display:'flex', justifyContent:'space-between', fontSize:'0.75rem', color:'var(--text-secondary)' }}>
+                      <span>{l.item_name || 'Loan'}</span><span style={{ color:'var(--mm-danger)' }}>{formatCurrency(l.principal_amount)}</span>
                     </div>
                   ))}
-                  {loans.filter(l => l.status === 'Active').length === 0 && <div style={{ fontSize:'0.75rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>NO ACTIVE LOANS</div>}
+                  {loans.filter(l => l.status === 'Active').length === 0 && <div style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>NO ACTIVE LOANS</div>}
                 </div>
               </motion.div>
 
               {/* Health Score */}
               <motion.div className="bento-card bento-item bento-4" style={{ alignItems:'center' }} initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.2 }}>
-                <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', letterSpacing:'0.5px', color:'var(--text-secondary)', margin:'0 0 1rem', width:'100%', textAlign:'center' }}>FINANCIAL HEALTH</h3>
+                <h3 style={{ fontSize:'0.78rem', letterSpacing:'0.5px', color:'var(--text-secondary)', margin:'0 0 1rem', width:'100%', textAlign:'center' }}>FINANCIAL HEALTH</h3>
                 <HealthScoreGauge score={health.score} breakdown={health.breakdown} />
               </motion.div>
 
               {/* Asset Allocation Pie */}
               <motion.div className="bento-card bento-item bento-4" style={{ flexDirection:'column' }} initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.22 }}>
-                <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', letterSpacing:'0.5px', color:'var(--text-secondary)', margin:'0 0 1rem' }}>ASSET ALLOCATION</h3>
+                <h3 style={{ fontSize:'0.78rem', letterSpacing:'0.5px', color:'var(--text-secondary)', margin:'0 0 1rem' }}>ASSET ALLOCATION</h3>
                 {assetData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={160}>
                     <PieChart><Pie data={assetData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={3} stroke="none">
                       {assetData.map((_,i) => <Cell key={i} fill={COLORS[i % COLORS.length]} style={{ filter:`drop-shadow(0 0 4px ${COLORS[i%COLORS.length]})` }}/>)}
                     </Pie><Tooltip content={<CustomTooltip/>}/></PieChart>
                   </ResponsiveContainer>
-                ) : <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.75rem' }}>ADD ACCOUNTS</div>}
+                ) : <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)', fontSize:'0.75rem' }}>ADD ACCOUNTS</div>}
               </motion.div>
 
               {/* Monthly trend bar */}
               <motion.div className="bento-card bento-item bento-4" style={{ flexDirection:'column' }} initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.25 }}>
-                <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', letterSpacing:'0.5px', color:'var(--text-secondary)', margin:'0 0 1rem' }}>MONTHLY TREND</h3>
+                <h3 style={{ fontSize:'0.78rem', letterSpacing:'0.5px', color:'var(--text-secondary)', margin:'0 0 1rem' }}>MONTHLY TREND</h3>
                 {incomeExpenseData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={160}>
                     <BarChart data={incomeExpenseData.slice(-4)}>
@@ -1385,17 +1382,17 @@ const Dashboard = () => {
                       <Bar dataKey="Expense" fill="#f87171" radius={[3,3,0,0]}/>
                     </BarChart>
                   </ResponsiveContainer>
-                ) : <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.75rem' }}>NO DATA</div>}
+                ) : <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)', fontSize:'0.75rem' }}>NO DATA</div>}
               </motion.div>
 
               {/* Recent Transactions */}
               <motion.div className="bento-card bento-item bento-12" style={{ flexDirection:'column' }} initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.28 }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem' }}>
-                  <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', letterSpacing:'0.5px', color:'var(--text-secondary)', margin:0 }}>RECENT ACTIVITY</h3>
-                  <a href="/transactions" style={{ fontSize:'0.75rem', color:'#4ade80', fontFamily:'Inter, sans-serif', textDecoration:'none' }}>VIEW ALL →</a>
+                  <h3 style={{ fontSize:'0.78rem', letterSpacing:'0.5px', color:'var(--text-secondary)', margin:0 }}>RECENT ACTIVITY</h3>
+                  <a href="/transactions" style={{ fontSize:'0.75rem', color:'var(--mm-success)', textDecoration:'none' }}>VIEW ALL →</a>
                 </div>
                 {recentTxns.length === 0 ? (
-                  <p style={{ color:'var(--text-muted)', fontFamily:'Inter, sans-serif', textAlign:'center', padding:'1.5rem', fontSize:'0.8rem' }}>NO TRANSACTIONS YET</p>
+                  <p style={{ color:'var(--text-muted)', textAlign:'center', padding:'1.5rem', fontSize:'0.8rem' }}>NO TRANSACTIONS YET</p>
                 ) : (
                   <div style={{ display:'flex', flexDirection:'column', gap:'0.4rem' }}>
                     {recentTxns.map(tx => {
@@ -1405,9 +1402,9 @@ const Dashboard = () => {
                           <div style={{ width:3, height:36, borderRadius:2, background:typeColor, flexShrink:0 }}/>
                           <div style={{ flex:1, minWidth:0 }}>
                             <div style={{ fontWeight:600, fontSize:'0.875rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{tx.category || tx.type}</div>
-                            <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>{tx.date}</div>
+                            <div style={{ fontSize:'0.72rem', color:'var(--text-muted)' }}>{tx.date}</div>
                           </div>
-                          <div style={{ color:typeColor, fontWeight:700, fontFamily:'Inter, sans-serif', fontSize:'0.875rem', flexShrink:0 }}>
+                          <div style={{ color:typeColor, fontWeight:700, fontSize:'0.875rem', flexShrink:0 }}>
                             {tx.type === 'Expense' || tx.type === 'Loan Payment' ? '-' : '+'}{formatCurrency(tx.amount)}
                           </div>
                         </div>
@@ -1419,7 +1416,7 @@ const Dashboard = () => {
 
               {/* ── Feature 1: Net Worth Trajectory ───────────────────────── */}
               <motion.div className="bento-card bento-item bento-8" style={{ flexDirection:'column' }} initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.32 }}>
-                <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', letterSpacing:'0.5px', color:'var(--text-secondary)', margin:'0 0 1rem' }}>NET WORTH TRAJECTORY</h3>
+                <h3 style={{ fontSize:'0.78rem', letterSpacing:'0.5px', color:'var(--text-secondary)', margin:'0 0 1rem' }}>NET WORTH TRAJECTORY</h3>
                 {netWorthTrajectory.length > 1 ? (
                   <ResponsiveContainer width="100%" height={160}>
                     <AreaChart data={netWorthTrajectory} margin={{ top:4, right:8, left:0, bottom:0 }}>
@@ -1436,7 +1433,7 @@ const Dashboard = () => {
                     </AreaChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.75rem' }}>ADD TRANSACTIONS TO SEE TRAJECTORY</div>
+                  <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-muted)', fontSize:'0.75rem' }}>ADD TRANSACTIONS TO SEE TRAJECTORY</div>
                 )}
               </motion.div>
 
@@ -1446,25 +1443,24 @@ const Dashboard = () => {
                   <>
                     <div style={{ fontSize:'2.5rem', marginBottom:'0.5rem' }}>🔥</div>
                     <div style={{
-                      fontFamily:'Inter, sans-serif',
                       fontSize:'1.75rem',
                       fontWeight:700,
-                      color: spendingStreak.streak >= 7 ? '#4ade80' : spendingStreak.streak >= 3 ? '#fbbf24' : '#ffffff',
+                      color: spendingStreak.streak >= 7 ? 'var(--mm-success)' : spendingStreak.streak >= 3 ? 'var(--mm-warning)' : '#ffffff',
                       textShadow: 'none',
                       lineHeight:1,
                       marginBottom:'0.5rem',
                     }}>
                       {spendingStreak.streak}
                     </div>
-                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.68rem', letterSpacing:'1.5px', color:'var(--text-secondary)', marginBottom:'0.4rem' }}>DAY STREAK</div>
-                    <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>spending under daily target</div>
-                    <div style={{ marginTop:'0.75rem', fontSize:'0.7rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>TARGET: {formatCurrency(spendingStreak.target)}/day</div>
+                    <div style={{ fontSize:'0.68rem', letterSpacing:'1.5px', color:'var(--text-secondary)', marginBottom:'0.4rem' }}>DAY STREAK</div>
+                    <div style={{ fontSize:'0.72rem', color:'var(--text-muted)' }}>spending under daily target</div>
+                    <div style={{ marginTop:'0.75rem', fontSize:'0.7rem', color:'var(--text-muted)' }}>TARGET: {formatCurrency(spendingStreak.target)}/day</div>
                   </>
                 ) : (
                   <>
                     <div style={{ fontSize:'2rem', marginBottom:'0.5rem' }}>💡</div>
-                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', letterSpacing:'1px', color:'var(--text-secondary)', marginBottom:'0.5rem' }}>START YOUR STREAK</div>
-                    <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', lineHeight:1.5 }}>
+                    <div style={{ fontSize:'0.75rem', letterSpacing:'1px', color:'var(--text-secondary)', marginBottom:'0.5rem' }}>START YOUR STREAK</div>
+                    <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', lineHeight:1.5 }}>
                       Stay under {formatCurrency(spendingStreak.target)}/day today
                     </div>
                   </>
@@ -1497,28 +1493,28 @@ const Dashboard = () => {
                   </div>
                   {/* Stats */}
                   <div style={{ flex:1 }}>
-                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.68rem', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:'0.875rem' }}>NET WORTH RATIO</div>
+                    <div style={{ fontSize:'0.68rem', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:'0.875rem' }}>NET WORTH RATIO</div>
                     <div style={{ display:'flex', flexDirection:'column', gap:'0.5rem' }}>
                       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                        <span style={{ display:'flex', alignItems:'center', gap:'0.4rem', fontFamily:'Inter, sans-serif', fontSize:'0.8rem' }}>
+                        <span style={{ display:'flex', alignItems:'center', gap:'0.4rem', fontSize:'0.8rem' }}>
                           <span style={{ width:8, height:8, borderRadius:'50%', background:gaugeColor, display:'inline-block' }}/> Assets
                         </span>
-                        <span style={{ fontFamily:'Inter, sans-serif', fontWeight:700, color:gaugeColor }}>{formatCurrency(totalAssets)}</span>
+                        <span style={{ fontWeight:700, color:gaugeColor }}>{formatCurrency(totalAssets)}</span>
                       </div>
                       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                        <span style={{ display:'flex', alignItems:'center', gap:'0.4rem', fontFamily:'Inter, sans-serif', fontSize:'0.8rem' }}>
-                          <span style={{ width:8, height:8, borderRadius:'50%', background:'#f87171', display:'inline-block' }}/> Liabilities
+                        <span style={{ display:'flex', alignItems:'center', gap:'0.4rem', fontSize:'0.8rem' }}>
+                          <span style={{ width:8, height:8, borderRadius:'50%', background:'var(--mm-danger)', display:'inline-block' }}/> Liabilities
                         </span>
-                        <span style={{ fontFamily:'Inter, sans-serif', fontWeight:700, color:'#f87171' }}>{formatCurrency(totalLiabilities)}</span>
+                        <span style={{ fontWeight:700, color:'var(--mm-danger)' }}>{formatCurrency(totalLiabilities)}</span>
                       </div>
                       <div style={{ borderTop:'1px solid rgba(255,255,255,0.06)', paddingTop:'0.5rem', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-                        <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.8rem', color:'var(--text-secondary)' }}>Net Worth</span>
-                        <span style={{ fontFamily:'Inter, sans-serif', fontWeight:700, color: netWorth >= 0 ? '#4ade80' : '#f87171', fontSize:'1rem' }}>{formatCurrency(netWorth)}</span>
+                        <span style={{ fontSize:'0.8rem', color:'var(--text-secondary)' }}>Net Worth</span>
+                        <span style={{ fontWeight:700, color: netWorth >= 0 ? 'var(--mm-success)' : 'var(--mm-danger)', fontSize:'1rem' }}>{formatCurrency(netWorth)}</span>
                       </div>
                     </div>
                   </div>
                   <button onClick={() => setShowNWBreakdown(true)}
-                    style={{ position:'absolute', right:'1.5rem', top:'1rem', background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'1px' }}>
+                    style={{ position:'absolute', right:'1.5rem', top:'1rem', background:'none', border:'none', cursor:'pointer', color:'var(--text-muted)', fontSize:'0.65rem', letterSpacing:'1px' }}>
                     DETAILS ↗
                   </button>
                 </motion.div>
@@ -1537,7 +1533,7 @@ const Dashboard = () => {
             {analytics?.categoryData?.length > 0 && (
               <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.39 }}
                 className="bento-card bento-item bento-6" style={{ flexDirection:'column', marginTop:'0.5rem' }}>
-                <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:'0 0 0.875rem' }}>📊 TOP CATEGORIES THIS MONTH</h3>
+                <h3 style={{ fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:'0 0 0.875rem' }}>📊 TOP CATEGORIES THIS MONTH</h3>
                 <div style={{ display:'flex', flexDirection:'column', gap:'0.4rem' }}>
                   {[...analytics.categoryData].sort((a,b) => b.total - a.total).slice(0,5).map((cat, i) => {
 
@@ -1546,11 +1542,11 @@ const Dashboard = () => {
                     const col = colors[i] || '#aaa';
                     return (
                       <div key={cat.category} style={{ display:'flex', alignItems:'center', gap:'0.5rem' }}>
-                        <div style={{ fontSize:'0.75rem', width:130, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontFamily:'Inter, sans-serif' }}>{cat.category}</div>
+                        <div style={{ fontSize:'0.75rem', width:130, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{cat.category}</div>
                         <div style={{ flex:1, height:6, background:'rgba(255,255,255,0.05)', borderRadius:3, overflow:'hidden' }}>
                           <div style={{ width:`${pct}%`, height:'100%', background:col, borderRadius:3, transition:'width 0.8s ease', boxShadow:`0 0 6px ${col}` }} />
                         </div>
-                        <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', color:col, minWidth:70, textAlign:'right' }}>{formatCurrency(cat.total)}</div>
+                        <div style={{ fontSize:'0.72rem', color:col, minWidth:70, textAlign:'right' }}>{formatCurrency(cat.total)}</div>
                       </div>
                     );
                   })}
@@ -1582,11 +1578,11 @@ const Dashboard = () => {
                 <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.55 }}
                   style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16, padding:'1.25rem 1.5rem', marginTop:'0.75rem' }}>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.875rem' }}>
-                    <h3 style={{ fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.7rem', margin:0, color:'var(--text-secondary)' }}>SPENDING CALENDAR — {MONTHS[mo].toUpperCase()} {yr}</h3>
-                    <span style={{ fontSize:'0.65rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)' }}>darker = more spent</span>
+                    <h3 style={{ letterSpacing:'2px', fontSize:'0.7rem', margin:0, color:'var(--text-secondary)' }}>SPENDING CALENDAR — {MONTHS[mo].toUpperCase()} {yr}</h3>
+                    <span style={{ fontSize:'0.65rem', color:'var(--text-muted)' }}>darker = more spent</span>
                   </div>
                   <div style={{ display:'grid', gridTemplateColumns:'repeat(7,1fr)', gap:3 }}>
-                    {DAYS.map(d => <div key={d} style={{ textAlign:'center', fontSize:'0.6rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', padding:'2px 0' }}>{d}</div>)}
+                    {DAYS.map(d => <div key={d} style={{ textAlign:'center', fontSize:'0.6rem', color:'var(--text-muted)', padding:'2px 0' }}>{d}</div>)}
                     {cells.map((day, i) => {
                       if (!day) return <div key={`e${i}`}/>;
                       const dateStr = `${yr}-${String(mo+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
@@ -1597,7 +1593,7 @@ const Dashboard = () => {
                       const cellColor = amt > 0 ? `rgba(248,113,113,${intensity.toFixed(2)})` : 'rgba(255,255,255,0.03)';
                       return (
                         <div key={day} title={amt > 0 ? `${dateStr}: ${formatCurrency(parseFloat(amt.toFixed(2)))}` : dateStr}
-                          style={{ aspectRatio:'1', borderRadius:4, background: isFuture ? 'transparent' : cellColor, border: isToday ? '1px solid #fbbf24' : '1px solid transparent', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.6rem', fontFamily:'Inter, sans-serif', color: amt > 0 && intensity > 0.5 ? '#fff' : isToday ? '#fbbf24' : '#555', transition:'transform 0.1s', cursor: amt > 0 ? 'default' : 'default' }}>
+                          style={{ aspectRatio:'1', borderRadius:4, background: isFuture ? 'transparent' : cellColor, border: isToday ? '1px solid #fbbf24' : '1px solid transparent', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'0.6rem', color: amt > 0 && intensity > 0.5 ? '#fff' : isToday ? 'var(--mm-warning)' : 'var(--mm-text-3)', transition:'transform 0.1s', cursor: amt > 0 ? 'default' : 'default' }}>
                           {day}
                         </div>
                       );
@@ -1629,19 +1625,19 @@ const Dashboard = () => {
                 <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.38 }}
                   className="bento-card bento-item bento-6" style={{ flexDirection:'column', marginTop:'0.5rem' }}>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.875rem' }}>
-                    <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:0 }}>🔔 UPCOMING BILLS (14d)</h3>
-                    <a href="/bills" style={{ fontSize:'0.68rem', color:'var(--cyan,#00f5ff)', fontFamily:'Inter, sans-serif', textDecoration:'none' }}>VIEW ALL →</a>
+                    <h3 style={{ fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:0 }}>🔔 UPCOMING BILLS (14d)</h3>
+                    <a href="/bills" style={{ fontSize:'0.68rem', color:'var(--cyan,#00f5ff)', textDecoration:'none' }}>VIEW ALL →</a>
                   </div>
                   <div style={{ display:'flex', flexDirection:'column', gap:'0.35rem' }}>
                     {upcoming.map(bill => {
                       const col = bill.days <= 3 ? '#f87171' : bill.days <= 7 ? '#fbbf24' : '#4ade80';
                       return (
                         <div key={bill.id} style={{ display:'flex', alignItems:'center', gap:'0.625rem', padding:'0.5rem 0.75rem', background:`${col}06`, border:`1px solid ${col}18`, borderLeft:`3px solid ${col}`, borderRadius:8 }}>
-                          <div style={{ minWidth:36, textAlign:'center', fontSize:'0.65rem', fontFamily:'Inter, sans-serif', color:col }}>
+                          <div style={{ minWidth:36, textAlign:'center', fontSize:'0.65rem', color:col }}>
                             {bill.days === 0 ? 'TODAY' : `${bill.days}d`}
                           </div>
                           <div style={{ flex:1, fontSize:'0.82rem', fontWeight:600, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{bill.name}</div>
-                          <div style={{ fontWeight:700, color:col, fontFamily:'Inter, sans-serif', fontSize:'0.82rem', flexShrink:0 }}>{formatCurrency(bill.amount)}</div>
+                          <div style={{ fontWeight:700, color:col, fontSize:'0.82rem', flexShrink:0 }}>{formatCurrency(bill.amount)}</div>
                         </div>
                       );
                     })}
@@ -1657,8 +1653,8 @@ const Dashboard = () => {
               <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.4 }}
                 className="bento-card bento-item bento-12" style={{ flexDirection:'column', marginTop:'0.5rem' }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.875rem' }}>
-                  <h3 style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:0 }}>🎯 GOALS PROGRESS</h3>
-                  <a href="/goals" style={{ fontSize:'0.68rem', color:'var(--cyan,#00f5ff)', fontFamily:'Inter, sans-serif', textDecoration:'none' }}>VIEW ALL →</a>
+                  <h3 style={{ fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', margin:0 }}>🎯 GOALS PROGRESS</h3>
+                  <a href="/goals" style={{ fontSize:'0.68rem', color:'var(--cyan,#00f5ff)', textDecoration:'none' }}>VIEW ALL →</a>
                 </div>
                 <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:'0.75rem' }}>
                   {goals.filter(g => !g.is_achieved).slice(0, 4).map(g => {
@@ -1683,10 +1679,10 @@ const Dashboard = () => {
                         </svg>
                         <div style={{ flex:1, minWidth:0 }}>
                           <div style={{ fontWeight:600, fontSize:'0.85rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{g.goal_name || g.name}</div>
-                          <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:2 }}>
+                          <div style={{ fontSize:'0.72rem', color:'var(--text-muted)', marginTop:2 }}>
                             {formatCurrency(g.current_amount || 0)} / {formatCurrency(g.target_amount || 0)}
                           </div>
-                          <div style={{ fontSize:'0.65rem', marginTop:3, fontFamily:'Inter, sans-serif', color: isAtRisk ? '#f87171' : '#4ade80' }}>
+                          <div style={{ fontSize:'0.65rem', marginTop:3, color: isAtRisk ? 'var(--mm-danger)' : 'var(--mm-success)' }}>
                             {isAtRisk ? '⚠ At Risk' : '✓ On Track'}
                           </div>
                         </div>
@@ -1750,7 +1746,7 @@ const Dashboard = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.85rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <span style={{ fontSize: '1rem' }}>🚦</span>
-                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.76rem', fontWeight: 700, letterSpacing: '1.2px', color: 'var(--text-secondary)' }}>
+                      <span style={{ fontSize: '0.76rem', fontWeight: 700, letterSpacing: '1.2px', color: 'var(--text-secondary)' }}>
                         SMART SPEND VELOCITY GUARDRAILS
                       </span>
                       <span style={{
@@ -1758,8 +1754,7 @@ const Dashboard = () => {
                         padding: '0.12rem 0.45rem',
                         borderRadius: 20,
                         background: (dailyLimit > 0 || weeklyLimit > 0) ? 'rgba(74,222,128,0.12)' : 'rgba(255,255,255,0.05)',
-                        color: (dailyLimit > 0 || weeklyLimit > 0) ? '#4ade80' : 'var(--text-muted)',
-                        fontFamily: 'Inter, sans-serif',
+                        color: (dailyLimit > 0 || weeklyLimit > 0) ? 'var(--mm-success)' : 'var(--text-muted)',
                         fontWeight: 600,
                       }}>
                         {(dailyLimit > 0 || weeklyLimit > 0) ? 'Custom Caps Active' : 'Auto Safe-Spend Benchmark'}
@@ -1775,7 +1770,6 @@ const Dashboard = () => {
                         border: '1px solid rgba(251, 146, 60, 0.3)',
                         color: '#fb923c',
                         fontSize: '0.72rem',
-                        fontFamily: 'Inter, sans-serif',
                         fontWeight: 600,
                         cursor: 'pointer',
                       }}
@@ -1796,7 +1790,7 @@ const Dashboard = () => {
                       border: '1px solid rgba(251,146,60,0.2)',
                     }}>
                       <div>
-                        <label style={{ display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 4, fontFamily: 'Inter, sans-serif' }}>
+                        <label style={{ display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 4 }}>
                           {`Daily Spend Cap (${getCurrencyLabel()})`}
                         </label>
                         <input
@@ -1809,7 +1803,7 @@ const Dashboard = () => {
                         />
                       </div>
                       <div>
-                        <label style={{ display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 4, fontFamily: 'Inter, sans-serif' }}>
+                        <label style={{ display: 'block', fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 4 }}>
                           {`7-Day Weekly Cap (${getCurrencyLabel()})`}
                         </label>
                         <input
@@ -1835,7 +1829,6 @@ const Dashboard = () => {
                             fontWeight: 700,
                             fontSize: '0.78rem',
                             cursor: 'pointer',
-                            fontFamily: 'Inter, sans-serif',
                           }}
                         >
                           Save Velocity Caps
@@ -1847,7 +1840,7 @@ const Dashboard = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '1rem' }}>
                     {/* Today's Velocity */}
                     <div style={{ background: 'rgba(255,255,255,0.015)', padding: '0.75rem 0.9rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.04)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', fontFamily: 'Inter, sans-serif', marginBottom: 6 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', marginBottom: 6 }}>
                         <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Today&apos;s Spend Velocity</span>
                         <span style={{ color: dColor, fontWeight: 700 }}>
                           {formatCurrency(todaySpent)} / {formatCurrency(effectiveDaily)}
@@ -1856,7 +1849,7 @@ const Dashboard = () => {
                       <div style={{ height: 7, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
                         <div style={{ width: `${dPct}%`, height: '100%', background: dColor, borderRadius: 4, transition: 'width 0.5s ease' }} />
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: 4, fontFamily: 'Inter, sans-serif' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: 4 }}>
                         <span>{todaySpent > effectiveDaily && effectiveDaily > 0 ? '⚠ Exceeded daily cap' : `${Math.max(0, 100 - dPct)}% daily buffer left`}</span>
                         <span>{dPct}%</span>
                       </div>
@@ -1864,7 +1857,7 @@ const Dashboard = () => {
 
                     {/* 7-Day Rolling Velocity */}
                     <div style={{ background: 'rgba(255,255,255,0.015)', padding: '0.75rem 0.9rem', borderRadius: 10, border: '1px solid rgba(255,255,255,0.04)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', fontFamily: 'Inter, sans-serif', marginBottom: 6 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', marginBottom: 6 }}>
                         <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>7-Day Rolling Velocity</span>
                         <span style={{ color: wColor, fontWeight: 700 }}>
                           {formatCurrency(weekSpent)} / {formatCurrency(effectiveWeekly)}
@@ -1873,7 +1866,7 @@ const Dashboard = () => {
                       <div style={{ height: 7, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
                         <div style={{ width: `${wPct}%`, height: '100%', background: wColor, borderRadius: 4, transition: 'width 0.5s ease' }} />
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: 4, fontFamily: 'Inter, sans-serif' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.66rem', color: 'var(--text-muted)', marginTop: 4 }}>
                         <span>{weekSpent > effectiveWeekly && effectiveWeekly > 0 ? '⚠ Exceeded 7-day cap' : `${Math.max(0, 100 - wPct)}% weekly buffer left`}</span>
                         <span>{wPct}%</span>
                       </div>
@@ -1914,11 +1907,11 @@ const Dashboard = () => {
                   style={{ background:`${col}08`, border:`1px solid ${col}22`, borderLeft:`3px solid ${col}`, borderRadius:12, padding:'1rem 1.25rem', marginTop:'0.5rem', display:'flex', alignItems:'flex-start', gap:'0.875rem' }}>
                   <div style={{ fontSize:'1.25rem', flexShrink:0 }}>{rec.icon || '💡'}</div>
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.7rem', letterSpacing:'1.5px', color:col, marginBottom:'0.3rem', fontWeight:600 }}>INSIGHT</div>
-                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.82rem', fontWeight:600, marginBottom:'0.2rem' }}>{rec.title}</div>
-                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', color:'var(--text-muted)', lineHeight:1.5 }}>{rec.body}</div>
+                    <div style={{ fontSize:'0.7rem', letterSpacing:'1.5px', color:col, marginBottom:'0.3rem', fontWeight:600 }}>INSIGHT</div>
+                    <div style={{ fontSize:'0.82rem', fontWeight:600, marginBottom:'0.2rem' }}>{rec.title}</div>
+                    <div style={{ fontSize:'0.75rem', color:'var(--text-muted)', lineHeight:1.5 }}>{rec.body}</div>
                   </div>
-                  <a href="/analytics" style={{ textDecoration:'none', color:col, fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'1px', flexShrink:0, marginTop:2 }}>DETAILS →</a>
+                  <a href="/analytics" style={{ textDecoration:'none', color:col, fontSize:'0.65rem', letterSpacing:'1px', flexShrink:0, marginTop:2 }}>DETAILS →</a>
                 </motion.div>
               );
             })()}
@@ -1935,8 +1928,8 @@ const Dashboard = () => {
                 <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ delay:0.4 }}
                   style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.06)', borderRadius:16, padding:'1.25rem 1.5rem', marginTop:'0.5rem' }}>
                   <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.875rem' }}>
-                    <h3 style={{ fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.7rem', margin:0, color:'var(--text-secondary)' }}>REFERENCE RATES · {rates._date || 'Unavailable'}</h3>
-                    <span style={{ fontSize:'0.65rem', color:'#444', fontFamily:'Inter, sans-serif' }}>1 {base} =</span>
+                    <h3 style={{ letterSpacing:'2px', fontSize:'0.7rem', margin:0, color:'var(--text-secondary)' }}>REFERENCE RATES · {rates._date || 'Unavailable'}</h3>
+                    <span style={{ fontSize:'0.65rem', color: 'var(--mm-text-3)' }}>1 {base} =</span>
                   </div>
                   <div style={{ display:'flex', gap:'0.6rem', flexWrap:'wrap' }}>
                     {pairs.map(cur => {
@@ -1944,8 +1937,8 @@ const Dashboard = () => {
                       const rate = baseRate / curRate;
                       return (
                         <div key={cur} style={{ flex:'1 1 90px', padding:'0.6rem 0.75rem', background:'rgba(255,255,255,0.02)', borderRadius:10, border:'1px solid rgba(255,255,255,0.05)', textAlign:'center' }}>
-                          <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.62rem', letterSpacing:'1.5px', color:'#555', marginBottom:'0.25rem' }}>{cur}</div>
-                          <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.95rem', color:'#06b6d4' }}>
+                          <div style={{ fontSize:'0.62rem', letterSpacing:'1.5px', color:'var(--mm-text-3)', marginBottom:'0.25rem' }}>{cur}</div>
+                          <div style={{ fontWeight:700, fontSize:'0.95rem', color:'#06b6d4' }}>
                             {!Number.isFinite(rate) ? 'Unavailable' : rate >= 100 ? rate.toFixed(0) : rate >= 1 ? rate.toFixed(2) : rate.toFixed(4)}
                           </div>
                         </div>
@@ -1973,8 +1966,8 @@ const Dashboard = () => {
             {/* Header */}
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.5rem' }}>
               <div>
-                <h2 style={{ margin:0, fontFamily:'Inter, sans-serif', fontSize:'1.1rem', fontWeight:700, color:'var(--text-primary)' }}>Net Worth Breakdown</h2>
-                <p style={{ margin:'0.2rem 0 0', fontSize:'0.75rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>Assets vs Liabilities</p>
+                <h2 style={{ margin:0, fontSize:'1.1rem', fontWeight:700, color:'var(--text-primary)' }}>Net Worth Breakdown</h2>
+                <p style={{ margin:'0.2rem 0 0', fontSize:'0.75rem', color:'var(--text-muted)' }}>Assets vs Liabilities</p>
               </div>
               <button onClick={() => setShowNWBreakdown(false)} style={{ background:'rgba(255,255,255,0.06)', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, color:'#fff', cursor:'pointer', padding:'0.4rem 0.7rem', fontSize:'0.8rem' }}>✕</button>
             </div>
@@ -1987,24 +1980,24 @@ const Dashboard = () => {
                 { label:'NET WORTH', val: netWorth, col: netWorth >= 0 ? '#00f5ff' : '#f87171' },
               ].map(s => (
                 <div key={s.label} style={{ background:'rgba(255,255,255,0.03)', border:`1px solid ${s.col}22`, borderRadius:12, padding:'0.875rem', textAlign:'center' }}>
-                  <div style={{ fontSize:'0.6rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)', letterSpacing:'1.5px', marginBottom:'0.35rem' }}>{s.label}</div>
-                  <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.95rem', color:s.col }}>{formatCurrency(s.val)}</div>
+                  <div style={{ fontSize:'0.6rem', color:'var(--text-muted)', letterSpacing:'1.5px', marginBottom:'0.35rem' }}>{s.label}</div>
+                  <div style={{ fontWeight:700, fontSize:'0.95rem', color:s.col }}>{formatCurrency(s.val)}</div>
                 </div>
               ))}
             </div>
 
             {/* Assets list */}
             <div style={{ marginBottom:'1.25rem' }}>
-              <div style={{ fontSize:'0.7rem', fontFamily:'Inter, sans-serif', letterSpacing:'2px', color:'#4ade80', marginBottom:'0.625rem' }}>ASSETS</div>
+              <div style={{ fontSize:'0.7rem', letterSpacing:'2px', color:'var(--mm-success)', marginBottom:'0.625rem' }}>ASSETS</div>
               <div style={{ display:'flex', flexDirection:'column', gap:'0.4rem' }}>
                 {accounts.filter(a => !isDebtAccount(a)).map(a => {
                   const baseBal = toBase(a.balance, a.currency);
                   const pct = totalAssets > 0 ? Math.min(100, (baseBal / totalAssets) * 100) : 0;
                   return (
                     <div key={a.id}>
-                      <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.2rem', fontSize:'0.82rem', fontFamily:'Inter, sans-serif' }}>
+                      <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.2rem', fontSize:'0.82rem' }}>
                         <span>{a.name} <span style={{ fontSize:'0.65rem', color:'var(--text-muted)' }}>({a.type})</span></span>
-                        <span style={{ color:'#4ade80', fontWeight:600 }}>{formatCurrency(a.balance, { currency: a.currency || baseCurrency })}</span>
+                        <span style={{ color:'var(--mm-success)', fontWeight:600 }}>{formatCurrency(a.balance, { currency: a.currency || baseCurrency })}</span>
                       </div>
                       <div style={{ height:4, background:'rgba(255,255,255,0.05)', borderRadius:2, overflow:'hidden' }}>
                         <div style={{ width:`${Math.max(0,pct)}%`, height:'100%', background:'#4ade80', borderRadius:2, transition:'width 0.8s ease' }}/>
@@ -2018,16 +2011,16 @@ const Dashboard = () => {
             {/* Liabilities list */}
             {loans.filter(l => (l.status || 'Active') === 'Active').length > 0 && (
               <div>
-                <div style={{ fontSize:'0.7rem', fontFamily:'Inter, sans-serif', letterSpacing:'2px', color:'#f87171', marginBottom:'0.625rem' }}>LIABILITIES (LOANS)</div>
+                <div style={{ fontSize:'0.7rem', letterSpacing:'2px', color:'var(--mm-danger)', marginBottom:'0.625rem' }}>LIABILITIES (LOANS)</div>
                 <div style={{ display:'flex', flexDirection:'column', gap:'0.4rem' }}>
                   {loans.filter(l => (l.status || 'Active') === 'Active').map(l => {
                     const owed = toBase((Number(l.principal_amount) || 0) + (Number(l.current_accrued_interest ?? l.unpaid_interest) || 0), l.currency);
                     const pct = totalLiabilities > 0 ? Math.min(100, (owed / totalLiabilities) * 100) : 0;
                     return (
                       <div key={l.id}>
-                        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.2rem', fontSize:'0.82rem', fontFamily:'Inter, sans-serif' }}>
+                        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.2rem', fontSize:'0.82rem' }}>
                           <span>{l.item_name || l.lender_name || l.name}</span>
-                          <span style={{ color:'#f87171', fontWeight:600 }}>{formatCurrency(owed)}</span>
+                          <span style={{ color:'var(--mm-danger)', fontWeight:600 }}>{formatCurrency(owed)}</span>
                         </div>
                         <div style={{ height:4, background:'rgba(255,255,255,0.05)', borderRadius:2, overflow:'hidden' }}>
                           <div style={{ width:`${pct}%`, height:'100%', background:'#f87171', borderRadius:2, transition:'width 0.8s ease' }}/>
@@ -2042,14 +2035,14 @@ const Dashboard = () => {
             {/* Ratio bar */}
             {(totalAssets + totalLiabilities) > 0 && (
               <div style={{ marginTop:'1.25rem' }}>
-                <div style={{ fontSize:'0.7rem', fontFamily:'Inter, sans-serif', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:'0.5rem' }}>ASSET/LIABILITY RATIO</div>
+                <div style={{ fontSize:'0.7rem', letterSpacing:'2px', color:'var(--text-muted)', marginBottom:'0.5rem' }}>ASSET/LIABILITY RATIO</div>
                 <div style={{ height:8, background:'rgba(255,255,255,0.05)', borderRadius:4, overflow:'hidden', display:'flex' }}>
                   <div style={{ width:`${Math.round((totalAssets/(totalAssets+totalLiabilities))*100)}%`, background:'linear-gradient(90deg,#4ade80,#22d3ee)', borderRadius:'4px 0 0 4px', transition:'width 1s ease' }}/>
                   <div style={{ flex:1, background:'rgba(248,113,113,0.4)', borderRadius:'0 4px 4px 0' }}/>
                 </div>
-                <div style={{ display:'flex', justifyContent:'space-between', marginTop:'0.3rem', fontSize:'0.65rem', fontFamily:'Inter, sans-serif', color:'var(--text-muted)' }}>
-                  <span style={{ color:'#4ade80' }}>Assets {Math.round((totalAssets/(totalAssets+totalLiabilities))*100)}%</span>
-                  <span style={{ color:'#f87171' }}>Liabilities {Math.round((totalLiabilities/(totalAssets+totalLiabilities))*100)}%</span>
+                <div style={{ display:'flex', justifyContent:'space-between', marginTop:'0.3rem', fontSize:'0.65rem', color:'var(--text-muted)' }}>
+                  <span style={{ color:'var(--mm-success)' }}>Assets {Math.round((totalAssets/(totalAssets+totalLiabilities))*100)}%</span>
+                  <span style={{ color:'var(--mm-danger)' }}>Liabilities {Math.round((totalLiabilities/(totalAssets+totalLiabilities))*100)}%</span>
                 </div>
               </div>
             )}

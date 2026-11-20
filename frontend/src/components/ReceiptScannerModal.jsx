@@ -211,10 +211,10 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
               <Camera size={26} style={{ color: '#818cf8' }} />
             </div>
             <div>
-              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 Upload or Drop Receipt Image
               </div>
-              <div style={{ fontSize: '0.75rem', color: '#888', marginTop: 4 }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--mm-text-3)', marginTop: 4 }}>
                 Supports PNG, JPG, WebP. Compressed on-device for light storage.
               </div>
             </div>
@@ -268,7 +268,7 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
                   <X size={16} />
                 </button>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: '#777' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--mm-text-3)' }}>
                 <span>{fileName}</span>
                 <span>{fileSize}</span>
               </div>
@@ -287,7 +287,7 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
                     borderRadius: 8,
                     border: 'none',
                     background: mode === 'new' ? 'rgba(74,222,128,0.15)' : 'transparent',
-                    color: mode === 'new' ? '#4ade80' : '#888',
+                    color: mode === 'new' ? 'var(--mm-success)' : 'var(--mm-text-3)',
                     fontWeight: 600,
                     fontSize: '0.78rem',
                     cursor: 'pointer'
@@ -304,7 +304,7 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
                     borderRadius: 8,
                     border: 'none',
                     background: mode === 'existing' ? 'rgba(129,140,248,0.15)' : 'transparent',
-                    color: mode === 'existing' ? '#818cf8' : '#888',
+                    color: mode === 'existing' ? '#818cf8' : 'var(--mm-text-3)',
                     fontWeight: 600,
                     fontSize: '0.78rem',
                     cursor: 'pointer'
@@ -318,17 +318,17 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <div style={{ flex: 1 }}>
-                      <label style={{ display: 'block', fontSize: '0.72rem', color: '#888', marginBottom: 2 }}>Amount ({getCurrencyLabel()})</label>
+                      <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--mm-text-3)', marginBottom: 2 }}>Amount ({getCurrencyLabel()})</label>
                       <input
                         type="number"
                         step="0.01"
                         value={extractedData.amount}
                         onChange={e => setExtractedData({ ...extractedData, amount: e.target.value })}
-                        style={{ width: '100%', padding: '0.55rem', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#4ade80', fontWeight: 700 }}
+                        style={{ width: '100%', padding: '0.55rem', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--mm-success)', fontWeight: 700 }}
                       />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <label style={{ display: 'block', fontSize: '0.72rem', color: '#888', marginBottom: 2 }}>Date</label>
+                      <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--mm-text-3)', marginBottom: 2 }}>Date</label>
                       <input
                         type="date"
                         value={extractedData.date}
@@ -339,7 +339,7 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '0.72rem', color: '#888', marginBottom: 2 }}>Merchant / Note</label>
+                    <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--mm-text-3)', marginBottom: 2 }}>Merchant / Note</label>
                     <input
                       type="text"
                       value={extractedData.merchant}
@@ -350,7 +350,7 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
 
                   <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <div style={{ flex: 1 }}>
-                      <label style={{ display: 'block', fontSize: '0.72rem', color: '#888', marginBottom: 2 }}>Category</label>
+                      <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--mm-text-3)', marginBottom: 2 }}>Category</label>
                       <input
                         type="text"
                         value={extractedData.category}
@@ -359,7 +359,7 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
                       />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <label style={{ display: 'block', fontSize: '0.72rem', color: '#888', marginBottom: 2 }}>Account</label>
+                      <label style={{ display: 'block', fontSize: '0.72rem', color: 'var(--mm-text-3)', marginBottom: 2 }}>Account</label>
                       <select
                         value={selectedAccountId}
                         onChange={e => setSelectedAccountId(e.target.value)}
@@ -379,9 +379,9 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
                       id="taxDedCheck"
                       checked={extractedData.isTaxDeductible}
                       onChange={e => setExtractedData({ ...extractedData, isTaxDeductible: e.target.checked })}
-                      style={{ accentColor: '#4ade80' }}
+                      style={{ accentColor: 'var(--mm-success)' }}
                     />
-                    <label htmlFor="taxDedCheck" style={{ fontSize: '0.78rem', color: '#ddd', cursor: 'pointer' }}>
+                    <label htmlFor="taxDedCheck" style={{ fontSize: '0.78rem', color: 'var(--mm-text-2)', cursor: 'pointer' }}>
                       Mark as Tax Deductible (Auditable)
                     </label>
                   </div>
@@ -397,9 +397,7 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
                       border: 'none',
                       color: 'var(--bg-void)',
                       fontWeight: 700,
-                      cursor: 'pointer',
-                      fontFamily: 'Inter, sans-serif'
-                    }}
+                      cursor: 'pointer' }}
                   >
                     + Save Transaction with Receipt
                   </button>
@@ -407,7 +405,7 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
               ) : (
                 /* Mode: Link to Existing */
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  <label style={{ fontSize: '0.75rem', color: '#aaa' }}>Choose a recent transaction:</label>
+                  <label style={{ fontSize: '0.75rem', color: 'var(--mm-text-2)' }}>Choose a recent transaction:</label>
                   <div style={{ maxHeight: 220, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
                     {recentTransactions.map(tx => (
                       <div
@@ -426,9 +424,9 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
                       >
                         <div>
                           <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)' }}>{tx.notes || tx.category}</div>
-                          <div style={{ fontSize: '0.68rem', color: '#777' }}>{tx.date} • {tx.category}</div>
+                          <div style={{ fontSize: '0.68rem', color: 'var(--mm-text-3)' }}>{tx.date} • {tx.category}</div>
                         </div>
-                        <div style={{ fontSize: '0.84rem', fontWeight: 700, color: tx.type === 'Income' ? '#4ade80' : '#f0f0f5' }}>
+                        <div style={{ fontSize: '0.84rem', fontWeight: 700, color: tx.type === 'Income' ? 'var(--mm-success)' : '#f0f0f5' }}>
                           {formatCurrency(tx.amount)}
                         </div>
                       </div>
@@ -444,9 +442,7 @@ export default function ReceiptScannerModal({ isOpen, onClose, onReceiptProcesse
                       border: 'none',
                       color: '#fff',
                       fontWeight: 700,
-                      cursor: 'pointer',
-                      fontFamily: 'Inter, sans-serif'
-                    }}
+                      cursor: 'pointer' }}
                   >
                     Attach to Selected Transaction
                   </button>

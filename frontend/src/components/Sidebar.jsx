@@ -94,7 +94,7 @@ const TILE_COLORS = {
 };
 
 const Badge = ({ n }) => n > 0 ? (
-  <span style={{ position:'absolute', top:-5, right:-8, background:'#f87171', color:'#fff', borderRadius:10, fontSize:'0.55rem', fontWeight:700, minWidth:15, height:15, display:'flex', alignItems:'center', justifyContent:'center', padding:'0 3px', fontFamily:'Inter, sans-serif', boxShadow:'0 0 6px rgba(248,113,113,0.7)' }}>{n}</span>
+  <span style={{ position:'absolute', top:-5, right:-8, background:'var(--mm-danger)', color:'#fff', borderRadius:10, fontSize:'0.55rem', fontWeight:700, minWidth:15, height:15, display:'flex', alignItems:'center', justifyContent:'center', padding:'0 3px', boxShadow:'0 0 6px rgba(248,113,113,0.7)' }}>{n}</span>
 ) : null;
 
 const MoreSheet = ({ open, onClose, badges }) => {
@@ -174,7 +174,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
               paddingBottom:'0.5rem',
             }}>
               <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem', padding:'0 0.25rem' }}>
-                <span style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.05rem', color:'var(--text-primary)' }}>All sections</span>
+                <span style={{ fontWeight:700, fontSize:'1.05rem', color:'var(--text-primary)' }}>All sections</span>
                 <button onClick={onClose} aria-label="Close" style={{ background:'rgba(255,255,255,0.06)', border:'none', borderRadius:'50%', width:34, height:34, display:'flex', alignItems:'center', justifyContent:'center', color:'var(--text-secondary)', cursor:'pointer' }}>
                   <X size={18} />
                 </button>
@@ -182,7 +182,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
 
               {/* Search shortcut */}
               <button onClick={() => { onClose(); window.dispatchEvent(new Event('vm:open-search')); }}
-                style={{ width:'100%', display:'flex', alignItems:'center', gap:'0.6rem', padding:'0.8rem 1rem', marginBottom:'1rem', borderRadius:14, background:'rgba(0,0,0,0.3)', border:'1px solid rgba(255,255,255,0.07)', color:'var(--text-secondary)', fontFamily:'Inter, sans-serif', fontSize:'0.9rem', cursor:'pointer' }}>
+                style={{ width:'100%', display:'flex', alignItems:'center', gap:'0.6rem', padding:'0.8rem 1rem', marginBottom:'1rem', borderRadius:14, background:'rgba(0,0,0,0.3)', border:'1px solid rgba(255,255,255,0.07)', color:'var(--text-secondary)', fontSize:'0.9rem', cursor:'pointer' }}>
                 <Search size={17} /> Search transactions, accounts…
               </button>
 
@@ -207,7 +207,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                     <Crown size={20} color="#eab308" />
                     <div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                         👑 Super Admin Command Center
                       </div>
                       <div style={{ fontSize: '0.7rem', color: '#eab308' }}>Root Platform Governance</div>
@@ -240,7 +240,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
                       <Smartphone size={20} color="#0d1b2a" strokeWidth={2.4} />
                     </div>
                     <div>
-                      <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                      <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                         📲 Install as Web App
                       </div>
                       <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
@@ -248,13 +248,13 @@ const MoreSheet = ({ open, onClose, badges }) => {
                       </div>
                     </div>
                   </div>
-                  <span style={{ fontSize: '0.75rem', color: '#4ade80', fontWeight: 800 }}>Install →</span>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--mm-success)', fontWeight: 800 }}>Install →</span>
                 </div>
               )}
 
               {/* FinTech Power Suite */}
               <div style={{ marginBottom: '1.25rem' }}>
-                <div style={{ fontSize: '0.72rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, color: '#818cf8', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem', paddingLeft: '0.25rem' }}>
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, color: '#818cf8', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '0.5rem', paddingLeft: '0.25rem' }}>
                   FinTech Power Suite
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
@@ -279,7 +279,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
                       }}
                     >
                       <span style={{ fontSize: '1.3rem' }}>{tool.icon}</span>
-                      <span style={{ fontSize: '0.72rem', fontWeight: 600, color: tool.color, fontFamily: 'Inter, sans-serif' }}>{tool.label}</span>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 600, color: tool.color }}>{tool.label}</span>
                     </button>
                   ))}
                 </div>
@@ -297,14 +297,14 @@ const MoreSheet = ({ open, onClose, badges }) => {
                         <Icon size={20} color={c} />
                         {path === '/bills' && <Badge n={badges.bills} />}
                       </div>
-                      <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.74rem', fontWeight:600, color: active ? c : '#c8c8d8', textAlign:'center', lineHeight:1.15 }}>{t(labelKey)}</span>
+                      <span style={{ fontSize:'0.74rem', fontWeight:600, color: active ? c : '#c8c8d8', textAlign:'center', lineHeight:1.15 }}>{t(labelKey)}</span>
                     </NavLink>
                   );
                 })}
               </div>
 
               <button onClick={logout}
-                style={{ width:'100%', marginTop:'1rem', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem', padding:'0.8rem', borderRadius:14, background:'rgba(248,113,113,0.08)', border:'1px solid rgba(248,113,113,0.2)', color:'#f87171', fontFamily:'Inter, sans-serif', fontWeight:600, fontSize:'0.88rem', cursor:'pointer' }}>
+                style={{ width:'100%', marginTop:'1rem', display:'flex', alignItems:'center', justifyContent:'center', gap:'0.5rem', padding:'0.8rem', borderRadius:14, background:'rgba(248,113,113,0.08)', border:'1px solid rgba(248,113,113,0.2)', color:'var(--mm-danger)', fontWeight:600, fontSize:'0.88rem', cursor:'pointer' }}>
                 <LogOut size={16} /> {t('shell.signOut')}
               </button>
             </div>

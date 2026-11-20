@@ -27,11 +27,11 @@ const COLORS = ['#4ade80','#818cf8','#a78bfa','#f472b6','#fb923c','#fbbf24','#38
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   return (
-    <div style={{ background:'var(--hud-bg, rgba(6,8,20,0.95))', border:'1px solid rgba(74,222,128,0.3)', boxShadow:'0 0 20px rgba(74,222,128,0.15)', padding:'0.875rem 1.1rem', borderRadius:'10px', fontFamily:'Inter, sans-serif', fontSize:'0.8rem' }}>
-      {label && <p style={{ margin:'0 0 0.5rem', color:'#4ade80', fontWeight:700 }}>{label}</p>}
+    <div style={{ background:'var(--hud-bg, rgba(6,8,20,0.95))', border:'1px solid rgba(74,222,128,0.3)', boxShadow:'0 0 20px rgba(74,222,128,0.15)', padding:'0.875rem 1.1rem', borderRadius:'10px', fontSize:'0.8rem' }}>
+      {label && <p style={{ margin:'0 0 0.5rem', color:'var(--mm-success)', fontWeight:700 }}>{label}</p>}
       {payload.map((e,i) => (
         <div key={i} style={{ display:'flex', justifyContent:'space-between', gap:'1.5rem', margin:'0.2rem 0' }}>
-          <span style={{ color: e.color||e.fill||'#aaa' }}>{e.name}:</span>
+          <span style={{ color: e.color||e.fill||'var(--mm-text-2)' }}>{e.name}:</span>
           <span style={{ color:'#fff', fontWeight:600 }}>{formatCurrency(e.value)}</span>
         </div>
       ))}
@@ -44,10 +44,10 @@ const KpiCard = ({ label, value, sub, color, icon: Icon }) => (
     style={{ flexDirection:'column', gap:'0.5rem', border:'1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))', background:'var(--bg-surface)' }}
   >
     <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-      <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.68rem', letterSpacing:'0.04em', fontWeight:600, color:'var(--text-secondary)' }}>{label}</span>
+      <span style={{ fontSize:'0.68rem', letterSpacing:'0.04em', fontWeight:600, color:'var(--text-secondary)' }}>{label}</span>
       <Icon size={17} style={{ color }} />
     </div>
-    <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.5rem', color }}>
+    <div style={{ fontWeight:700, fontSize:'1.5rem', color }}>
       <AnimatedCounter value={value} formatter={formatCurrency} />
     </div>
     {sub && <div style={{ fontSize:'0.75rem', color:'var(--text-secondary)' }}>{sub}</div>}
@@ -63,7 +63,7 @@ const RecommendCard = ({ rec }) => {
     >
       <span style={{ fontSize:'1.4rem', lineHeight:1, flexShrink:0, marginTop:2 }}>{rec.icon}</span>
       <div>
-        <div style={{ fontWeight:700, fontFamily:'Inter, sans-serif', fontSize:'0.82rem', color:c, marginBottom:'0.3rem', letterSpacing:'0.5px' }}>{rec.title.toUpperCase()}</div>
+        <div style={{ fontWeight:700, fontSize:'0.82rem', color:c, marginBottom:'0.3rem', letterSpacing:'0.5px' }}>{rec.title.toUpperCase()}</div>
         <div style={{ fontSize:'0.875rem', color:'#c0c8dc', lineHeight:1.6 }}>{rec.body}</div>
       </div>
     </div>
@@ -499,7 +499,7 @@ const Analytics = () => {
               <div className="filter-scroll-row" style={{ gap: '0.4rem' }}>
                 {visibleTabs.map(tab => (
                   <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-                    padding:'0.45rem 0.95rem', fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'0.04em', fontWeight: activeTab===tab.id ? 600 : 500,
+                    padding:'0.45rem 0.95rem', fontSize:'0.72rem', letterSpacing:'0.04em', fontWeight: activeTab===tab.id ? 600 : 500,
                     border:'1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))', borderRadius:'8px', cursor:'pointer',
                     background: activeTab===tab.id ? 'var(--bg-surface-hover)' : 'transparent',
                     color: activeTab===tab.id ? 'var(--accent-primary, #4ade80)' : 'var(--text-secondary)',
@@ -516,10 +516,10 @@ const Analytics = () => {
                     <div className="bento-item col-span-12" style={{ flexDirection:'column', minHeight:320 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
                         <Activity className="text-cyan" size={20}/>
-                        <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>CASH FLOW TIMELINE</h3>
+                        <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>CASH FLOW TIMELINE</h3>
                       </div>
                       {(data.monthlyTrends||[]).length===0 ? (
-                        <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}><p className="text-muted" style={{ fontFamily:'Inter, sans-serif' }}>NO DATA</p></div>
+                        <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}><p className="text-muted" >NO DATA</p></div>
                       ) : (
                         <ResponsiveContainer width="100%" height={260}>
                           <AreaChart data={data.monthlyTrends} margin={{ top:10, right:10, left:0, bottom:0 }}>
@@ -623,22 +623,22 @@ const Analytics = () => {
                             <div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
                                 <span style={{ fontSize: '1.15rem' }}>🌊</span>
-                                <h3 style={{ margin: 0, fontFamily: 'Inter, sans-serif', letterSpacing: '0.4px', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                                <h3 style={{ margin: 0, letterSpacing: '0.4px', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                                   WHERE DID MY MONEY GO? — MONTHLY CASH-FLOW WATERFALL
                                 </h3>
                               </div>
-                              <p style={{ margin: '0.25rem 0 0', fontSize: '0.76rem', color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' }}>
+                              <p style={{ margin: '0.25rem 0 0', fontSize: '0.76rem', color: 'var(--text-muted)' }}>
                                 Step-by-step cascade from Total Income down to Net Retained Savings &amp; 50/30/20 benchmark check
                               </p>
                             </div>
                             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                              <span style={{ padding: '0.28rem 0.65rem', borderRadius: 999, fontSize: '0.7rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, background: needsPct <= 50 ? 'rgba(74,222,128,0.12)' : 'rgba(251,191,36,0.12)', color: needsPct <= 50 ? '#4ade80' : '#fbbf24', border: `1px solid ${needsPct <= 50 ? 'rgba(74,222,128,0.3)' : 'rgba(251,191,36,0.3)'}` }}>
+                              <span style={{ padding: '0.28rem 0.65rem', borderRadius: 999, fontSize: '0.7rem', fontWeight: 700, background: needsPct <= 50 ? 'rgba(74,222,128,0.12)' : 'rgba(251,191,36,0.12)', color: needsPct <= 50 ? '#4ade80' : '#fbbf24', border: `1px solid ${needsPct <= 50 ? 'rgba(74,222,128,0.3)' : 'rgba(251,191,36,0.3)'}` }}>
                                 Needs: {needsPct}% (Target ≤50%)
                               </span>
-                              <span style={{ padding: '0.28rem 0.65rem', borderRadius: 999, fontSize: '0.7rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, background: wantsPct <= 30 ? 'rgba(167,139,250,0.12)' : 'rgba(248,113,113,0.12)', color: wantsPct <= 30 ? '#a78bfa' : '#f87171', border: `1px solid ${wantsPct <= 30 ? 'rgba(167,139,250,0.3)' : 'rgba(248,113,113,0.3)'}` }}>
+                              <span style={{ padding: '0.28rem 0.65rem', borderRadius: 999, fontSize: '0.7rem', fontWeight: 700, background: wantsPct <= 30 ? 'rgba(167,139,250,0.12)' : 'rgba(248,113,113,0.12)', color: wantsPct <= 30 ? '#a78bfa' : '#f87171', border: `1px solid ${wantsPct <= 30 ? 'rgba(167,139,250,0.3)' : 'rgba(248,113,113,0.3)'}` }}>
                                 Wants: {wantsPct}% (Target ≤30%)
                               </span>
-                              <span style={{ padding: '0.28rem 0.65rem', borderRadius: 999, fontSize: '0.7rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, background: savedPct >= 20 ? 'rgba(56,189,248,0.14)' : 'rgba(248,113,113,0.12)', color: savedPct >= 20 ? '#38bdf8' : '#f87171', border: `1px solid ${savedPct >= 20 ? 'rgba(56,189,248,0.3)' : 'rgba(248,113,113,0.3)'}` }}>
+                              <span style={{ padding: '0.28rem 0.65rem', borderRadius: 999, fontSize: '0.7rem', fontWeight: 700, background: savedPct >= 20 ? 'rgba(56,189,248,0.14)' : 'rgba(248,113,113,0.12)', color: savedPct >= 20 ? '#38bdf8' : '#f87171', border: `1px solid ${savedPct >= 20 ? 'rgba(56,189,248,0.3)' : 'rgba(248,113,113,0.3)'}` }}>
                                 Saved: {savedPct}% (Target ≥20%)
                               </span>
                             </div>
@@ -682,24 +682,24 @@ const Analytics = () => {
                                 }}
                               >
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                  <span style={{ fontSize: '0.6rem', fontFamily: 'Inter, sans-serif', fontWeight: 800, letterSpacing: '1.2px', color: step.color, background: `${step.color}18`, padding: '2px 6px', borderRadius: 5 }}>
+                                  <span style={{ fontSize: '0.6rem', fontWeight: 800, letterSpacing: '1.2px', color: step.color, background: `${step.color}18`, padding: '2px 6px', borderRadius: 5 }}>
                                     {idx + 1}. {step.badge}
                                   </span>
-                                  <span style={{ fontSize: '0.72rem', fontFamily: 'Inter, sans-serif', fontWeight: 700, color: 'var(--text-secondary)' }}>
+                                  <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-secondary)' }}>
                                     {step.pct}%
                                   </span>
                                 </div>
-                                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>
+                                <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: 2 }}>
                                   {step.name}
                                 </div>
-                                <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '1.15rem', fontWeight: 800, color: step.color }}>
+                                <div style={{ fontSize: '1.15rem', fontWeight: 800, color: step.color }}>
                                   {idx === 0 ? '+' : idx === 4 ? (step.amount >= 0 ? '=' : '') : '-'}{formatCurrency(Math.abs(step.amount))}
                                 </div>
                                 <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', lineHeight: 1.35 }}>
                                   {step.desc}
                                 </div>
                                 {idx > 0 && idx < 4 && monthIncome > 0 && (
-                                  <div style={{ fontSize: '0.66rem', color: 'var(--text-secondary)', fontFamily: 'Inter, sans-serif', marginTop: '0.2rem', paddingTop: '0.3rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                                  <div style={{ fontSize: '0.66rem', color: 'var(--text-secondary)', marginTop: '0.2rem', paddingTop: '0.3rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                                     Left after step: <strong style={{ color: 'var(--text-primary)' }}>{formatCurrency(step.remaining)}</strong>
                                   </div>
                                 )}
@@ -713,10 +713,10 @@ const Analytics = () => {
                     <div className="bento-item col-span-6" style={{ flexDirection:'column', minHeight:300 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
                         <PieIcon className="text-purple" size={18}/>
-                        <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>EXPENSE DISTRIBUTION</h3>
+                        <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>EXPENSE DISTRIBUTION</h3>
                       </div>
                       {monthCatData.length===0 ? (
-                        <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}><p className="text-muted" style={{ fontFamily:'Inter, sans-serif' }}>NO DATA</p></div>
+                        <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}><p className="text-muted" >NO DATA</p></div>
                       ) : (
                         <ResponsiveContainer width="100%" height={240}>
                           <PieChart>
@@ -732,10 +732,10 @@ const Analytics = () => {
                     <div className="bento-item col-span-6" style={{ flexDirection:'column', minHeight:300 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
                         <TrendingUp className="text-success" size={18}/>
-                        <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>INCOME SOURCES</h3>
+                        <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>INCOME SOURCES</h3>
                       </div>
                       {(data.incomeSourceData||[]).length===0 ? (
-                        <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}><p className="text-muted" style={{ fontFamily:'Inter, sans-serif' }}>NO DATA</p></div>
+                        <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}><p className="text-muted" >NO DATA</p></div>
                       ) : (
                         <ResponsiveContainer width="100%" height={240}>
                           <PieChart>
@@ -757,25 +757,25 @@ const Analytics = () => {
                       return (
                         <>
                           <div className="bento-item col-span-4 holographic-card" style={{ flexDirection:'column', gap:'0.5rem' }}>
-                            <div style={{ fontSize:'0.65rem', fontFamily:'Inter, sans-serif', letterSpacing:'2px', color:'var(--text-muted)' }}>BIGGEST INCOME SHIFT</div>
-                            <div style={{ fontSize:'1.3rem', fontWeight:700, color: (biggestIncomeMonth?.incomeDelta||0) >= 0 ? '#4ade80' : '#f87171' }}>
+                            <div style={{ fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-muted)' }}>BIGGEST INCOME SHIFT</div>
+                            <div style={{ fontSize:'1.3rem', fontWeight:700, color: (biggestIncomeMonth?.incomeDelta||0) >= 0 ? 'var(--mm-success)' : 'var(--mm-danger)' }}>
                               {(biggestIncomeMonth?.incomeDelta||0) > 0 ? '▲' : '▼'} {Math.abs(biggestIncomeMonth?.incomeDelta||0)}%
                             </div>
-                            <div style={{ fontSize:'0.8rem', color:'var(--text-secondary)', fontFamily:'Inter, sans-serif' }}>{biggestIncomeMonth?.month}</div>
+                            <div style={{ fontSize:'0.8rem', color:'var(--text-secondary)' }}>{biggestIncomeMonth?.month}</div>
                           </div>
                           <div className="bento-item col-span-4 holographic-card" style={{ flexDirection:'column', gap:'0.5rem' }}>
-                            <div style={{ fontSize:'0.65rem', fontFamily:'Inter, sans-serif', letterSpacing:'2px', color:'var(--text-muted)' }}>BIGGEST EXPENSE SHIFT</div>
-                            <div style={{ fontSize:'1.3rem', fontWeight:700, color: (biggestExpenseMonth?.expenseDelta||0) <= 0 ? '#4ade80' : '#f87171' }}>
+                            <div style={{ fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-muted)' }}>BIGGEST EXPENSE SHIFT</div>
+                            <div style={{ fontSize:'1.3rem', fontWeight:700, color: (biggestExpenseMonth?.expenseDelta||0) <= 0 ? 'var(--mm-success)' : 'var(--mm-danger)' }}>
                               {(biggestExpenseMonth?.expenseDelta||0) > 0 ? '▲' : '▼'} {Math.abs(biggestExpenseMonth?.expenseDelta||0)}%
                             </div>
-                            <div style={{ fontSize:'0.8rem', color:'var(--text-secondary)', fontFamily:'Inter, sans-serif' }}>{biggestExpenseMonth?.month}</div>
+                            <div style={{ fontSize:'0.8rem', color:'var(--text-secondary)' }}>{biggestExpenseMonth?.month}</div>
                           </div>
                           {topCat && (
                             <div className="bento-item col-span-4 holographic-card" style={{ flexDirection:'column', gap:'0.5rem', cursor:'pointer' }}
                               onClick={() => { setDrillCat(topCat.category); setActiveTab('categories'); }}>
-                              <div style={{ fontSize:'0.65rem', fontFamily:'Inter, sans-serif', letterSpacing:'2px', color:'var(--text-muted)' }}>TOP EXPENSE CATEGORY</div>
+                              <div style={{ fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-muted)' }}>TOP EXPENSE CATEGORY</div>
                               <div style={{ fontSize:'1.3rem', fontWeight:700, color:'#fb923c' }}>{getCategoryEmoji(topCat.category)} {topCat.category}</div>
-                              <div style={{ fontSize:'0.8rem', color:'var(--text-secondary)', fontFamily:'Inter, sans-serif' }}>{topCat.pct}% of all expenses — tap to drill in</div>
+                              <div style={{ fontSize:'0.8rem', color:'var(--text-secondary)' }}>{topCat.pct}% of all expenses — tap to drill in</div>
                             </div>
                           )}
                         </>
@@ -792,17 +792,17 @@ const Analytics = () => {
                         <div className="bento-item col-span-12" style={{ flexDirection:'column', padding:'1.5rem' }}>
                           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1rem', flexWrap:'wrap', gap:'0.5rem' }}>
                             <div>
-                              <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)' }}>📈 SAVINGS RATE TREND</div>
-                              <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.7rem', color:'var(--text-muted)', marginTop:'0.2rem' }}>Monthly % of income saved</div>
+                              <div style={{ fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)' }}>📈 SAVINGS RATE TREND</div>
+                              <div style={{ fontSize:'0.7rem', color:'var(--text-muted)', marginTop:'0.2rem' }}>Monthly % of income saved</div>
                             </div>
                             <div style={{ display:'flex', gap:'1.5rem' }}>
                               <div style={{ textAlign:'right' }}>
-                                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.62rem', color:'var(--text-muted)', letterSpacing:'1px' }}>AVG RATE</div>
-                                <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.1rem', color:avg>=20?'#4ade80':avg>=10?'#fbbf24':'#f87171' }}>{avg}%</div>
+                                <div style={{ fontSize:'0.62rem', color:'var(--text-muted)', letterSpacing:'1px' }}>AVG RATE</div>
+                                <div style={{ fontWeight:700, fontSize:'1.1rem', color:avg>=20?'var(--mm-success)':avg>=10?'var(--mm-warning)':'var(--mm-danger)' }}>{avg}%</div>
                               </div>
                               <div style={{ textAlign:'right' }}>
-                                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.62rem', color:'var(--text-muted)', letterSpacing:'1px' }}>BEST MONTH</div>
-                                <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.1rem', color:'#4ade80' }}>{best?.rate}%</div>
+                                <div style={{ fontSize:'0.62rem', color:'var(--text-muted)', letterSpacing:'1px' }}>BEST MONTH</div>
+                                <div style={{ fontWeight:700, fontSize:'1.1rem', color:'var(--mm-success)' }}>{best?.rate}%</div>
                               </div>
                             </div>
                           </div>
@@ -837,8 +837,8 @@ const Analytics = () => {
                     <div className="bento-item col-span-8" style={{ flexDirection:'column', minHeight:400 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
                         <BarChart2 className="text-cyan" size={18}/>
-                        <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>TOP EXPENSE CATEGORIES</h3>
-                        <span style={{ fontSize:'0.72rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginLeft:'auto' }}>Tap a bar to drill in</span>
+                        <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>TOP EXPENSE CATEGORIES</h3>
+                        <span style={{ fontSize:'0.72rem', color:'var(--text-muted)', marginLeft:'auto' }}>Tap a bar to drill in</span>
                       </div>
                       <ResponsiveContainer width="100%" height={360}>
                         <BarChart data={monthCatData.slice(0,10)} layout="vertical" margin={{ left:10, right:30 }}
@@ -858,8 +858,8 @@ const Analytics = () => {
                     </div>
                     <div className="bento-item col-span-4" style={{ flexDirection:'column', padding:'1.5rem' }}>
                       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1rem' }}>
-                        <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600, color:'#4ade80' }}>BREAKDOWN</h3>
-                        {drillCat && <button onClick={() => setDrillCat(null)} style={{ background:'none', border:'none', color:'var(--text-muted)', cursor:'pointer', fontSize:'0.75rem', fontFamily:'Inter, sans-serif' }}>✕ Clear</button>}
+                        <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600, color:'var(--mm-success)' }}>BREAKDOWN</h3>
+                        {drillCat && <button onClick={() => setDrillCat(null)} style={{ background:'none', border:'none', color:'var(--text-muted)', cursor:'pointer', fontSize:'0.75rem' }}>✕ Clear</button>}
                       </div>
                       <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem', overflowY:'auto', maxHeight:380 }}>
                         {(() => {
@@ -872,8 +872,8 @@ const Analytics = () => {
                             style={{ cursor:'pointer', padding:'0.25rem 0.4rem', borderRadius:6, background: drillCat===cat.category ? `${COLORS[i%COLORS.length]}18` : 'transparent',
                               border: drillCat===cat.category ? `1px solid ${COLORS[i%COLORS.length]}44` : '1px solid transparent' }}>
                             <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.2rem', fontSize:'0.82rem' }}>
-                              <span style={{ fontFamily:'Inter, sans-serif', color:COLORS[i%COLORS.length] }}>{getCategoryEmoji(cat.category)} {cat.category}</span>
-                              <span style={{ fontFamily:'Inter, sans-serif', color:'#aaa' }}>{pct}%</span>
+                              <span style={{ color:COLORS[i%COLORS.length] }}>{getCategoryEmoji(cat.category)} {cat.category}</span>
+                              <span style={{ color:'var(--mm-text-2)' }}>{pct}%</span>
                             </div>
                             <div style={{ height:5, background:'rgba(255,255,255,0.06)', borderRadius:3, overflow:'hidden' }}>
                               <motion.div initial={{width:0}} animate={{width:`${pct}%`}} transition={{ duration:0.8, delay:i*0.05 }}
@@ -909,13 +909,13 @@ const Analytics = () => {
                           style={{ flexDirection:'column', padding:'1.5rem', border:`1px solid ${catColor}44`, background:`${catColor}08` }}>
                           <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'1.25rem', flexWrap:'wrap' }}>
                             <span style={{ fontSize:'1.5rem' }}>{getCategoryEmoji(drillCat)}</span>
-                            <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', fontSize:'1rem', fontWeight:700, color:catColor }}>{drillCat}</h3>
-                            <span style={{ fontSize:'0.75rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>{txs.length} transactions</span>
+                            <h3 style={{ margin:0, fontSize:'1rem', fontWeight:700, color:catColor }}>{drillCat}</h3>
+                            <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>{txs.length} transactions</span>
                             <div style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:'0.5rem', flexWrap:'wrap' }}>
                               <button
                                 type="button"
                                 onClick={() => navigate(`/transactions?q=${encodeURIComponent(drillCat)}`)}
-                                style={{ padding:'0.32rem 0.7rem', borderRadius:8, background:'rgba(56,189,248,0.12)', border:'1px solid rgba(56,189,248,0.3)', color:'#38bdf8', fontSize:'0.74rem', fontWeight:600, fontFamily:'Inter, sans-serif', cursor:'pointer' }}
+                                style={{ padding:'0.32rem 0.7rem', borderRadius:8, background:'rgba(56,189,248,0.12)', border:'1px solid rgba(56,189,248,0.3)', color:'#38bdf8', fontSize:'0.74rem', fontWeight:600, cursor:'pointer' }}
                               >
                                 View in Transactions →
                               </button>
@@ -940,7 +940,7 @@ const Analytics = () => {
                                     toast.error('Failed to save budget');
                                   }
                                 }}
-                                style={{ padding:'0.32rem 0.7rem', borderRadius:8, background:'rgba(74,222,128,0.12)', border:'1px solid rgba(74,222,128,0.3)', color:'#4ade80', fontSize:'0.74rem', fontWeight:600, fontFamily:'Inter, sans-serif', cursor:'pointer' }}
+                                style={{ padding:'0.32rem 0.7rem', borderRadius:8, background:'rgba(74,222,128,0.12)', border:'1px solid rgba(74,222,128,0.3)', color:'var(--mm-success)', fontSize:'0.74rem', fontWeight:600, cursor:'pointer' }}
                               >
                                 🎯 Set / Tune Budget
                               </button>
@@ -948,10 +948,10 @@ const Analytics = () => {
                             </div>
                           </div>
                           {txs.length === 0 ? (
-                            <p style={{ color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.85rem' }}>No transactions in this category.</p>
+                            <p style={{ color:'var(--text-muted)', fontSize:'0.85rem' }}>No transactions in this category.</p>
                           ) : (
                             <div style={{ overflowX:'auto' }}>
-                              <table style={{ width:'100%', borderCollapse:'collapse', fontFamily:'Inter, sans-serif', fontSize:'0.82rem' }}>
+                              <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.82rem' }}>
                                 <thead><tr style={{ borderBottom:`1px solid ${catColor}33` }}>
                                   {['Date','Notes','Amount'].map(h=><th key={h} style={{ textAlign:'left', padding:'0.5rem 1rem', color:'var(--text-secondary)', fontWeight:600, letterSpacing:'1px', fontSize:'0.7rem' }}>{h}</th>)}
                                 </tr></thead>
@@ -981,7 +981,7 @@ const Analytics = () => {
                     <div className="bento-item col-span-12" style={{ flexDirection:'column', minHeight:320 }}>
                       <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
                         <BarChart2 className="text-success" size={18}/>
-                        <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>INCOME VS EXPENSES</h3>
+                        <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>INCOME VS EXPENSES</h3>
                       </div>
                       <ResponsiveContainer width="100%" height={280}>
                         <BarChart data={data.monthlyTrends||[]} margin={{ top:10, right:10, left:0, bottom:0 }}>
@@ -996,9 +996,9 @@ const Analytics = () => {
                       </ResponsiveContainer>
                     </div>
                     <div className="bento-item col-span-12" style={{ flexDirection:'column', padding:'1.5rem' }}>
-                      <h3 style={{ margin:'0 0 1.25rem', fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600, color:'#4ade80' }}>MONTH-OVER-MONTH</h3>
+                      <h3 style={{ margin:'0 0 1.25rem', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600, color:'var(--mm-success)' }}>MONTH-OVER-MONTH</h3>
                       <div style={{ overflowX:'auto' }}>
-                        <table style={{ width:'100%', borderCollapse:'collapse', fontFamily:'Inter, sans-serif', fontSize:'0.8rem' }}>
+                        <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.8rem' }}>
                           <thead><tr style={{ borderBottom:'1px solid rgba(74,222,128,0.15)' }}>
                             {['Month','Income','Expense','Net','Income Δ','Expense Δ'].map(h=>(
                               <th key={h} style={{ textAlign:'left', padding:'0.6rem 1rem', color:'var(--text-secondary)', fontWeight:600, letterSpacing:'1px', fontSize:'0.7rem' }}>{h}</th>
@@ -1008,17 +1008,17 @@ const Analytics = () => {
                             {(data.momComparison||[]).map((m,i)=>(
                               <motion.tr key={m.month} initial={{opacity:0,x:-10}} animate={{opacity:1,x:0}} transition={{ delay:i*0.05 }}
                                 style={{ borderBottom:'1px solid rgba(255,255,255,0.04)', background:i%2===0?'rgba(255,255,255,0.01)':'transparent' }}>
-                                <td style={{ padding:'0.75rem 1rem', color:'#4ade80' }}>{m.month}</td>
-                                <td style={{ padding:'0.75rem 1rem', color:'#4ade80' }}>{formatCurrency(m.income)}</td>
-                                <td style={{ padding:'0.75rem 1rem', color:'#f87171' }}>{formatCurrency(m.expense)}</td>
-                                <td style={{ padding:'0.75rem 1rem', color:m.net>=0?'#4ade80':'#f87171', fontWeight:700 }}>{formatCurrency(m.net)}</td>
-                                <td style={{ padding:'0.75rem 1rem', color:m.incomeDelta>=0?'#4ade80':'#f87171' }}>{m.incomeDelta>0?'+':''}{m.incomeDelta}%</td>
-                                <td style={{ padding:'0.75rem 1rem', color:m.expenseDelta>0?'#f87171':'#4ade80' }}>{m.expenseDelta>0?'▲':'▼'} {Math.abs(m.expenseDelta)}%</td>
+                                <td style={{ padding:'0.75rem 1rem', color:'var(--mm-success)' }}>{m.month}</td>
+                                <td style={{ padding:'0.75rem 1rem', color:'var(--mm-success)' }}>{formatCurrency(m.income)}</td>
+                                <td style={{ padding:'0.75rem 1rem', color:'var(--mm-danger)' }}>{formatCurrency(m.expense)}</td>
+                                <td style={{ padding:'0.75rem 1rem', color:m.net>=0?'var(--mm-success)':'var(--mm-danger)', fontWeight:700 }}>{formatCurrency(m.net)}</td>
+                                <td style={{ padding:'0.75rem 1rem', color:m.incomeDelta>=0?'var(--mm-success)':'var(--mm-danger)' }}>{m.incomeDelta>0?'+':''}{m.incomeDelta}%</td>
+                                <td style={{ padding:'0.75rem 1rem', color:m.expenseDelta>0?'var(--mm-danger)':'var(--mm-success)' }}>{m.expenseDelta>0?'▲':'▼'} {Math.abs(m.expenseDelta)}%</td>
                               </motion.tr>
                             ))}
                           </tbody>
                         </table>
-                        {(data.momComparison||[]).length===0 && <p className="text-muted" style={{ textAlign:'center', padding:'2rem', fontFamily:'Inter, sans-serif' }}>NO DATA</p>}
+                        {(data.momComparison||[]).length===0 && <p className="text-muted" style={{ textAlign:'center', padding:'2rem' }}>NO DATA</p>}
                       </div>
                     </div>
 
@@ -1058,7 +1058,7 @@ const Analytics = () => {
                         <div className="bento-item col-span-12" style={{ flexDirection:'column', marginTop:'0.75rem' }}>
                           <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
                             <span style={{ fontSize:'1.1rem' }}>🎯</span>
-                            <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>
+                            <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>
                               BUDGET VS ACTUAL {selectedMonth ? `— ${new Date(selectedMonth+'-01').toLocaleDateString('en-US',{month:'long',year:'numeric'})}` : '(All Time)'}
                             </h3>
                           </div>
@@ -1067,11 +1067,11 @@ const Analytics = () => {
                               <div key={r.id}>
                                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.35rem' }}>
                                   <div style={{ display:'flex', alignItems:'center', gap:'0.5rem' }}>
-                                    <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.85rem', fontWeight:600 }}>{r.category}</span>
-                                    {r.over && <span style={{ fontSize:'0.65rem', background:'rgba(248,113,113,0.15)', color:'#f87171', border:'1px solid rgba(248,113,113,0.3)', borderRadius:100, padding:'0.1rem 0.45rem' }}>OVER BUDGET</span>}
-                                    {r.warn && <span style={{ fontSize:'0.65rem', background:'rgba(251,191,36,0.12)', color:'#fbbf24', border:'1px solid rgba(251,191,36,0.25)', borderRadius:100, padding:'0.1rem 0.45rem' }}>⚠ {r.pct}%</span>}
+                                    <span style={{ fontSize:'0.85rem', fontWeight:600 }}>{r.category}</span>
+                                    {r.over && <span style={{ fontSize:'0.65rem', background:'rgba(248,113,113,0.15)', color:'var(--mm-danger)', border:'1px solid rgba(248,113,113,0.3)', borderRadius:100, padding:'0.1rem 0.45rem' }}>OVER BUDGET</span>}
+                                    {r.warn && <span style={{ fontSize:'0.65rem', background:'rgba(251,191,36,0.12)', color:'var(--mm-warning)', border:'1px solid rgba(251,191,36,0.25)', borderRadius:100, padding:'0.1rem 0.45rem' }}>⚠ {r.pct}%</span>}
                                   </div>
-                                  <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.82rem', color:r.col }}>
+                                  <div style={{ fontSize:'0.82rem', color:r.col }}>
                                     {formatCurrency(r.actual)} <span style={{ color:'var(--text-muted)', fontWeight:400 }}>/ {formatCurrency(r.amount)}</span>
                                   </div>
                                 </div>
@@ -1092,13 +1092,13 @@ const Analytics = () => {
                 <motion.div key="top10" initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}} transition={{duration:0.25}}>
                   <div className="bento-item col-span-12" style={{ flexDirection:'column', padding:'1.5rem' }}>
                     <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
-                      <Flame size={20} style={{ color:'#f87171' }}/>
-                      <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>
+                      <Flame size={20} style={{ color:'var(--mm-danger)' }}/>
+                      <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>
                         TOP 10 LARGEST TRANSACTIONS {selectedMonth ? `— ${new Date(selectedMonth+'-01').toLocaleDateString('en-US',{month:'short',year:'numeric'})}` : '(All Time)'}
                       </h3>
                     </div>
                     <div style={{ overflowX:'auto' }}>
-                      <table style={{ width:'100%', borderCollapse:'collapse', fontFamily:'Inter, sans-serif', fontSize:'0.82rem' }}>
+                      <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.82rem' }}>
                         <thead><tr style={{ borderBottom:'1px solid rgba(74,222,128,0.15)' }}>
                           {['#','Date','Type','Category','Amount','Notes'].map(h=>(
                             <th key={h} style={{ textAlign:'left', padding:'0.6rem 1rem', color:'var(--text-secondary)', fontWeight:600, letterSpacing:'1px', fontSize:'0.7rem' }}>{h}</th>
@@ -1111,9 +1111,9 @@ const Analytics = () => {
                               <motion.tr key={tx.id||i} initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{ delay:i*0.04 }}
                                 style={{ borderBottom:'1px solid rgba(255,255,255,0.04)', background:i%2===0?'rgba(255,255,255,0.01)':'transparent' }}>
                                 <td style={{ padding:'0.75rem 1rem', color:'var(--text-muted)' }}>#{i+1}</td>
-                                <td style={{ padding:'0.75rem 1rem', color:'#aaa' }}>{tx.date}</td>
+                                <td style={{ padding:'0.75rem 1rem', color:'var(--mm-text-2)' }}>{tx.date}</td>
                                 <td style={{ padding:'0.75rem 1rem' }}><span style={{ color:typeColor, background:`${typeColor}18`, padding:'0.2rem 0.6rem', borderRadius:6, fontSize:'0.72rem' }}>{tx.type}</span></td>
-                                <td style={{ padding:'0.75rem 1rem', color:'#ccc' }}>{getCategoryEmoji(tx.category)} {tx.category||'--'}</td>
+                                <td style={{ padding:'0.75rem 1rem', color:'var(--mm-text-2)' }}>{getCategoryEmoji(tx.category)} {tx.category||'--'}</td>
                                 <td style={{ padding:'0.75rem 1rem', color:typeColor, fontWeight:700, fontSize:'0.9rem' }}>{formatCurrency(tx.amount)}</td>
                                 <td style={{ padding:'0.75rem 1rem', color:'var(--text-secondary)', maxWidth:180, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{tx.notes||'--'}</td>
                               </motion.tr>
@@ -1121,7 +1121,7 @@ const Analytics = () => {
                           })}
                         </tbody>
                       </table>
-                      {(data.top10Transactions||[]).length===0 && <p className="text-muted" style={{ textAlign:'center', padding:'2rem', fontFamily:'Inter, sans-serif' }}>NO TRANSACTIONS</p>}
+                      {(data.top10Transactions||[]).length===0 && <p className="text-muted" style={{ textAlign:'center', padding:'2rem' }}>NO TRANSACTIONS</p>}
                     </div>
                   </div>
                 </motion.div>
@@ -1132,15 +1132,15 @@ const Analytics = () => {
                   <div className="bento-grid">
                     {!forecast ? (
                       <div className="bento-item col-span-12" style={{ alignItems:'center', justifyContent:'center', padding:'3rem' }}>
-                        <p className="text-muted" style={{ fontFamily:'Inter, sans-serif', textAlign:'center' }}>ADD AT LEAST 2 MONTHS OF TRANSACTIONS TO SEE A FORECAST</p>
+                        <p className="text-muted" style={{ textAlign:'center' }}>ADD AT LEAST 2 MONTHS OF TRANSACTIONS TO SEE A FORECAST</p>
                       </div>
                     ) : (
                       <>
                         <div className="bento-item col-span-12" style={{ flexDirection:'column', padding:'1.75rem' }}>
                           <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'1.75rem' }}>
-                            <Zap size={22} style={{ color:'#fbbf24' }}/>
+                            <Zap size={22} style={{ color:'var(--mm-warning)' }}/>
                             <div>
-                              <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', fontSize:'0.88rem', letterSpacing:'0.3px', fontWeight:600, color:'#fbbf24' }}>CASH FLOW FORECAST — {forecast.nextMonth}</h3>
+                              <h3 style={{ margin:0, fontSize:'0.88rem', letterSpacing:'0.3px', fontWeight:600, color:'var(--mm-warning)' }}>CASH FLOW FORECAST — {forecast.nextMonth}</h3>
                               <p style={{ margin:'0.2rem 0 0', fontSize:'0.78rem', color:'var(--text-secondary)' }}>Based on 3-month rolling average</p>
                             </div>
                           </div>
@@ -1153,17 +1153,17 @@ const Analytics = () => {
                               <motion.div key={c.label} className="bento-item col-span-4" initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} transition={{ delay:i*0.1 }}
                                 style={{ flexDirection:'column', gap:'0.5rem', border:`1px solid ${c.color}22`, background:`linear-gradient(135deg,${c.color}10,transparent)` }}>
                                 <div style={{ display:'flex', justifyContent:'space-between' }}>
-                                  <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-secondary)' }}>{c.label}</span>
+                                  <span style={{ fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-secondary)' }}>{c.label}</span>
                                   <span style={{ fontSize:'1.2rem' }}>{c.icon}</span>
                                 </div>
-                                <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.6rem', color:c.color }}>{formatCurrency(c.val)}</div>
+                                <div style={{ fontWeight:700, fontSize:'1.6rem', color:c.color }}>{formatCurrency(c.val)}</div>
                               </motion.div>
                             ))}
                           </div>
 
                           {/* Visual forecast bar */}
                           <div style={{ background:'rgba(255,255,255,0.03)', borderRadius:12, padding:'1.5rem', border:'1px solid rgba(255,255,255,0.06)' }}>
-                            <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', color:'var(--text-secondary)', marginBottom:'1rem', letterSpacing:'1px' }}>INCOME vs EXPENSE PROJECTION</div>
+                            <div style={{ fontSize:'0.72rem', color:'var(--text-secondary)', marginBottom:'1rem', letterSpacing:'1px' }}>INCOME vs EXPENSE PROJECTION</div>
                             {['Projected Income','Projected Expense'].map((label, idx) => {
                               const val = idx === 0 ? forecast.avgIncome : forecast.avgExpense;
                               const max = Math.max(forecast.avgIncome, forecast.avgExpense);
@@ -1172,8 +1172,8 @@ const Analytics = () => {
                               return (
                                 <div key={label} style={{ marginBottom:'1rem' }}>
                                   <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.4rem', fontSize:'0.8rem' }}>
-                                    <span style={{ fontFamily:'Inter, sans-serif', color:'var(--text-secondary)' }}>{label}</span>
-                                    <span style={{ fontFamily:'Inter, sans-serif', color, fontWeight:700 }}>{formatCurrency(val)}</span>
+                                    <span style={{ color:'var(--text-secondary)' }}>{label}</span>
+                                    <span style={{ color, fontWeight:700 }}>{formatCurrency(val)}</span>
                                   </div>
                                   <div style={{ height:10, background:'rgba(255,255,255,0.06)', borderRadius:5, overflow:'hidden' }}>
                                     <motion.div initial={{width:0}} animate={{width:`${pct}%`}} transition={{ duration:1, ease:'easeOut' }}
@@ -1183,8 +1183,8 @@ const Analytics = () => {
                               );
                             })}
                             <div style={{ marginTop:'1.25rem', padding:'1rem', background:`${forecast.projected>=0?'rgba(16,185,129,0.08)':'rgba(244,63,94,0.08)'}`, borderRadius:8, border:`1px solid ${forecast.projected>=0?'rgba(16,185,129,0.2)':'rgba(244,63,94,0.2)'}` }}>
-                              <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', color:'var(--text-secondary)', marginBottom:4 }}>ESTIMATED NET NEXT MONTH</div>
-                              <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.5rem', color:forecast.projected>=0?'#4ade80':'#f87171' }}>
+                              <div style={{ fontSize:'0.78rem', color:'var(--text-secondary)', marginBottom:4 }}>ESTIMATED NET NEXT MONTH</div>
+                              <div style={{ fontWeight:700, fontSize:'1.5rem', color:forecast.projected>=0?'var(--mm-success)':'var(--mm-danger)' }}>
                                 {forecast.projected>=0?'+':''}{formatCurrency(forecast.projected)}
                               </div>
                               <div style={{ fontSize:'0.78rem', color:'var(--text-secondary)', marginTop:4 }}>
@@ -1205,7 +1205,7 @@ const Analytics = () => {
                   <div className="bento-grid">
                     {forecastLoading ? (
                       <div className="bento-item col-span-12" style={{ alignItems:'center', justifyContent:'center', padding:'3rem' }}>
-                        <p className="text-muted" style={{ fontFamily:'Inter, sans-serif', textAlign:'center' }}>BUILDING FORECAST...</p>
+                        <p className="text-muted" style={{ textAlign:'center' }}>BUILDING FORECAST...</p>
                       </div>
                     ) : (
                       <>
@@ -1223,10 +1223,10 @@ const Analytics = () => {
                               initial={{opacity:0,scale:0.95}} animate={{opacity:1,scale:1}} transition={{delay:i*0.08}}
                               style={{ flexDirection:'column', gap:'0.4rem', border:`1px solid ${c.color}22`, background:`linear-gradient(135deg,${c.color}10,transparent)` }}>
                               <div style={{ display:'flex', justifyContent:'space-between' }}>
-                                <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-secondary)' }}>{c.label}</span>
+                                <span style={{ fontSize:'0.65rem', letterSpacing:'2px', color:'var(--text-secondary)' }}>{c.label}</span>
                                 <span style={{ fontSize:'1.1rem' }}>{c.icon}</span>
                               </div>
-                              <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.5rem', color:c.color }}>{c.val}</div>
+                              <div style={{ fontWeight:700, fontSize:'1.5rem', color:c.color }}>{c.val}</div>
                               {c.sub && <div style={{ fontSize:'0.7rem', color:'var(--text-secondary)' }}>{c.sub}</div>}
                             </motion.div>
                           ));
@@ -1235,13 +1235,13 @@ const Analytics = () => {
                         {/* 60-day area chart */}
                         <div className="bento-item col-span-12" style={{ flexDirection:'column', minHeight:340 }}>
                           <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
-                            <CalendarDays size={20} style={{ color:'#4ade80' }}/>
-                            <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>60-DAY DAILY BALANCE PROJECTION</h3>
-                            <span style={{ marginLeft:'auto', fontFamily:'Inter, sans-serif', fontSize:'0.68rem', color:'var(--text-secondary)', letterSpacing:'1px' }}>BILLS + RECURRING TRANSACTIONS APPLIED</span>
+                            <CalendarDays size={20} style={{ color:'var(--mm-success)' }}/>
+                            <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>60-DAY DAILY BALANCE PROJECTION</h3>
+                            <span style={{ marginLeft:'auto', fontSize:'0.68rem', color:'var(--text-secondary)', letterSpacing:'1px' }}>BILLS + RECURRING TRANSACTIONS APPLIED</span>
                           </div>
                           {dailyForecast.length === 0 ? (
                             <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}>
-                              <p className="text-muted" style={{ fontFamily:'Inter, sans-serif' }}>NO ACCOUNT DATA — ADD ACCOUNTS TO SEE FORECAST</p>
+                              <p className="text-muted" >NO ACCOUNT DATA — ADD ACCOUNTS TO SEE FORECAST</p>
                             </div>
                           ) : (
                             <ResponsiveContainer width="100%" height={300}>
@@ -1274,9 +1274,9 @@ const Analytics = () => {
                                     const bal = payload[0]?.value ?? 0;
                                     const isNeg = bal < 0;
                                     return (
-                                      <div style={{ background:'var(--hud-bg, rgba(6,8,20,0.95))', border:`1px solid ${isNeg?'rgba(244,63,94,0.4)':'rgba(74,222,128,0.3)'}`, boxShadow:`0 0 20px ${isNeg?'rgba(244,63,94,0.15)':'rgba(74,222,128,0.15)'}`, padding:'0.875rem 1.1rem', borderRadius:'10px', fontFamily:'Inter, sans-serif', fontSize:'0.8rem' }}>
-                                        <p style={{ margin:'0 0 0.4rem', color: isNeg?'#f87171':'#4ade80', fontWeight:700 }}>{label}</p>
-                                        <div style={{ color: isNeg?'#f87171':'#fff', fontWeight:600 }}>{isNeg ? '⚠ ' : ''}{formatCurrency(bal)}</div>
+                                      <div style={{ background:'var(--hud-bg, rgba(6,8,20,0.95))', border:`1px solid ${isNeg?'rgba(244,63,94,0.4)':'rgba(74,222,128,0.3)'}`, boxShadow:`0 0 20px ${isNeg?'rgba(244,63,94,0.15)':'rgba(74,222,128,0.15)'}`, padding:'0.875rem 1.1rem', borderRadius:'10px', fontSize:'0.8rem' }}>
+                                        <p style={{ margin:'0 0 0.4rem', color: isNeg?'var(--mm-danger)':'var(--mm-success)', fontWeight:700 }}>{label}</p>
+                                        <div style={{ color: isNeg?'var(--mm-danger)':'#fff', fontWeight:600 }}>{isNeg ? '⚠ ' : ''}{formatCurrency(bal)}</div>
                                       </div>
                                     );
                                   }}
@@ -1296,8 +1296,8 @@ const Analytics = () => {
                           )}
                           {/* Red zone legend */}
                           <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', marginTop:'0.75rem', paddingLeft:'0.5rem' }}>
-                            <div style={{ width:10, height:10, borderRadius:'50%', background:'#f87171', boxShadow:'0 0 6px #f87171' }}/>
-                            <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.68rem', color:'var(--text-secondary)' }}>RED DOTS = NEGATIVE BALANCE DAYS</span>
+                            <div style={{ width:10, height:10, borderRadius:'50%', background:'var(--mm-danger)', boxShadow:'0 0 6px #f87171' }}/>
+                            <span style={{ fontSize:'0.68rem', color:'var(--text-secondary)' }}>RED DOTS = NEGATIVE BALANCE DAYS</span>
                           </div>
                         </div>
                       </>
@@ -1313,7 +1313,7 @@ const Analytics = () => {
                     {tagData.length === 0 ? (
                       <div className="bento-item col-span-12" style={{ flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'4rem 2rem', gap:'1rem' }}>
                         <Tag size={40} style={{ color:'var(--text-muted)' }}/>
-                        <p style={{ fontFamily:'Inter, sans-serif', fontSize:'0.82rem', color:'var(--text-secondary)', textAlign:'center', letterSpacing:'1px', lineHeight:1.8 }}>
+                        <p style={{ fontSize:'0.82rem', color:'var(--text-secondary)', textAlign:'center', letterSpacing:'1px', lineHeight:1.8 }}>
                           ADD TAGS TO TRANSACTIONS TO SEE TAG ANALYTICS
                         </p>
                         <p style={{ fontSize:'0.78rem', color:'var(--text-muted)', textAlign:'center', maxWidth:400 }}>
@@ -1326,7 +1326,7 @@ const Analytics = () => {
                         <div className="bento-item col-span-8" style={{ flexDirection:'column', minHeight:400 }}>
                           <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
                             <Tag size={18} style={{ color:'#a78bfa' }}/>
-                            <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>SPENDING BY TAG</h3>
+                            <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>SPENDING BY TAG</h3>
                           </div>
                           <ResponsiveContainer width="100%" height={Math.max(280, tagData.length * 44)}>
                             <BarChart data={tagData.slice(0, 15)} layout="vertical" margin={{ left:10, right:30 }}>
@@ -1349,7 +1349,7 @@ const Analytics = () => {
 
                         {/* Tag breakdown list */}
                         <div className="bento-item col-span-4" style={{ flexDirection:'column', padding:'1.5rem' }}>
-                          <h3 style={{ margin:'0 0 1rem', fontFamily:'Inter, sans-serif', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600, color:'#a78bfa' }}>TAG TOTALS</h3>
+                          <h3 style={{ margin:'0 0 1rem', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600, color:'#a78bfa' }}>TAG TOTALS</h3>
                           <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem', overflowY:'auto', maxHeight:400 }}>
                             {tagData.map((t, i) => {
                               const totalAll = tagData.reduce((s, x) => s + x.total, 0);
@@ -1358,14 +1358,14 @@ const Analytics = () => {
                               return (
                                 <motion.div key={t.tag} initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} transition={{ delay:i*0.05 }}>
                                   <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'0.2rem', fontSize:'0.82rem' }}>
-                                    <span style={{ fontFamily:'Inter, sans-serif', color }}># {t.tag}</span>
-                                    <span style={{ fontFamily:'Inter, sans-serif', color:'#aaa' }}>{pct}%</span>
+                                    <span style={{ color }}># {t.tag}</span>
+                                    <span style={{ color:'var(--mm-text-2)' }}>{pct}%</span>
                                   </div>
                                   <div style={{ height:5, background:'rgba(255,255,255,0.06)', borderRadius:3, overflow:'hidden' }}>
                                     <motion.div initial={{width:0}} animate={{width:`${pct}%`}} transition={{ duration:0.8, delay:i*0.05 }}
                                       style={{ height:'100%', background:color, borderRadius:3, boxShadow:`0 0 6px ${color}` }}/>
                                   </div>
-                                  <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', color:'var(--text-secondary)', marginTop:'0.15rem' }}>{formatCurrency(t.total)}</div>
+                                  <div style={{ fontSize:'0.72rem', color:'var(--text-secondary)', marginTop:'0.15rem' }}>{formatCurrency(t.total)}</div>
                                 </motion.div>
                               );
                             })}
@@ -1380,7 +1380,7 @@ const Analytics = () => {
               {activeTab==='heatmap' && (
                 <motion.div key="heatmap" initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:0.35}}>
                   <div className="bento-item col-span-12" style={{ flexDirection:'column', padding:'1.75rem', marginBottom:'1.25rem' }}>
-                    <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', letterSpacing:'0.3px', fontWeight:600, color:'var(--text-secondary)', marginBottom:'1.25rem' }}>SPENDING ACTIVITY — LAST 12 MONTHS</div>
+                    <div style={{ fontSize:'0.75rem', letterSpacing:'0.3px', fontWeight:600, color:'var(--text-secondary)', marginBottom:'1.25rem' }}>SPENDING ACTIVITY — LAST 12 MONTHS</div>
                     <SpendingHeatmap dailyData={(data?.allTransactions || []).filter(t => t.type === 'Expense' || t.type === 'Loan Payment').map(t => ({ date: t.date, amount: t.amount }))} />
                     <div style={{ marginTop:'1.5rem', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px,1fr))', gap:'1rem' }}>
                       {(() => {
@@ -1398,8 +1398,8 @@ const Analytics = () => {
                           { label:'ACTIVE SPENDING DAYS', val:activeDays, color:'#4ade80' },
                         ].map(k => (
                           <div key={k.label} style={{ padding:'1rem', background:'rgba(255,255,255,0.02)', borderRadius:10, border:`1px solid ${k.color}20` }}>
-                            <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.62rem', letterSpacing:'1.5px', color:'var(--text-muted)', marginBottom:'0.4rem' }}>{k.label}</div>
-                            <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.2rem', color:k.color }}>{k.val}</div>
+                            <div style={{ fontSize:'0.62rem', letterSpacing:'1.5px', color:'var(--text-muted)', marginBottom:'0.4rem' }}>{k.label}</div>
+                            <div style={{ fontWeight:700, fontSize:'1.2rem', color:k.color }}>{k.val}</div>
                             {k.sub && <div style={{ fontSize:'0.7rem', color:'var(--text-secondary)', marginTop:'0.2rem' }}>{k.sub}</div>}
                           </div>
                         ));
@@ -1413,7 +1413,7 @@ const Analytics = () => {
                 <motion.div key="weekday" initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:0.35}}>
                   <div className="bento-grid">
                     <div className="bento-item col-span-8" style={{ flexDirection:'column', padding:'1.75rem' }}>
-                      <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', letterSpacing:'0.3px', fontWeight:600, color:'var(--text-secondary)', marginBottom:'1.25rem' }}>AVERAGE SPENDING BY DAY OF WEEK</div>
+                      <div style={{ fontSize:'0.75rem', letterSpacing:'0.3px', fontWeight:600, color:'var(--text-secondary)', marginBottom:'1.25rem' }}>AVERAGE SPENDING BY DAY OF WEEK</div>
                       {(() => {
                         const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
                         const totals = [0,0,0,0,0,0,0], counts = [0,0,0,0,0,0,0];
@@ -1428,12 +1428,12 @@ const Analytics = () => {
                               const color=avgs[i]===maxAvg?'#f87171':isWeekend?'#fbbf24':'#818cf8';
                               return (
                                 <div key={day} style={{ display:'flex', alignItems:'center', gap:'0.75rem' }}>
-                                  <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', color:avgs[i]===maxAvg?'#f87171':isWeekend?'#fbbf24':'#555', width:80, flexShrink:0 }}>{day.slice(0,3).toUpperCase()}</div>
+                                  <div style={{ fontSize:'0.75rem', color:avgs[i]===maxAvg?'var(--mm-danger)':isWeekend?'var(--mm-warning)':'var(--mm-text-3)', width:80, flexShrink:0 }}>{day.slice(0,3).toUpperCase()}</div>
                                   <div style={{ flex:1, height:22, background:'rgba(255,255,255,0.03)', borderRadius:4, overflow:'hidden' }}>
                                     <motion.div initial={{width:0}} animate={{width:`${pct}%`}} transition={{duration:0.8,delay:i*0.06,ease:'easeOut'}}
                                       style={{ height:'100%', background:`linear-gradient(90deg,${color}80,${color})`, borderRadius:4, minWidth:2 }}/>
                                   </div>
-                                  <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', fontWeight:600, color, width:100, textAlign:'right', flexShrink:0 }}>
+                                  <div style={{ fontSize:'0.78rem', fontWeight:600, color, width:100, textAlign:'right', flexShrink:0 }}>
                                     {avgs[i]>0?formatCurrency(avgs[i]):'—'}
                                   </div>
                                 </div>
@@ -1444,7 +1444,7 @@ const Analytics = () => {
                       })()}
                     </div>
                     <div className="bento-item col-span-4" style={{ flexDirection:'column', padding:'1.75rem' }}>
-                      <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', letterSpacing:'0.3px', fontWeight:600, color:'var(--text-secondary)', marginBottom:'1.25rem' }}>WEEKEND vs WEEKDAY</div>
+                      <div style={{ fontSize:'0.75rem', letterSpacing:'0.3px', fontWeight:600, color:'var(--text-secondary)', marginBottom:'1.25rem' }}>WEEKEND vs WEEKDAY</div>
                       {(() => {
                         let weekdayTotal=0,weekendTotal=0,weekdayCount=0,weekendCount=0;
                         (data?.allTransactions || []).filter(t=>t.type==='Expense'||t.type==='Loan Payment').forEach(t=>{
@@ -1460,11 +1460,11 @@ const Analytics = () => {
                           <div style={{ display:'flex', flexDirection:'column', gap:'1rem' }}>
                             {[{label:'WEEKDAYS (avg/day)',val:wdAvg,color:'#818cf8'},{label:'WEEKENDS (avg/day)',val:weAvg,color:'#fbbf24'}].map(k=>(
                               <div key={k.label} style={{ padding:'1rem', background:`${k.color}10`, border:`1px solid ${k.color}25`, borderRadius:10 }}>
-                                <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.62rem', letterSpacing:'1px', color:'var(--text-muted)', marginBottom:'0.4rem' }}>{k.label}</div>
-                                <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.1rem', color:k.color }}>{formatCurrency(k.val)}</div>
+                                <div style={{ fontSize:'0.62rem', letterSpacing:'1px', color:'var(--text-muted)', marginBottom:'0.4rem' }}>{k.label}</div>
+                                <div style={{ fontWeight:700, fontSize:'1.1rem', color:k.color }}>{formatCurrency(k.val)}</div>
                               </div>
                             ))}
-                            <div style={{ padding:'1rem', background:'rgba(255,255,255,0.02)', borderRadius:10, border:'1px solid rgba(255,255,255,0.06)', fontFamily:'Inter, sans-serif', fontSize:'0.78rem', color:ratio>1.2?'#fbbf24':'#4ade80' }}>
+                            <div style={{ padding:'1rem', background:'rgba(255,255,255,0.02)', borderRadius:10, border:'1px solid rgba(255,255,255,0.06)', fontSize:'0.78rem', color:ratio>1.2?'var(--mm-warning)':'var(--mm-success)' }}>
                               {ratio>1.2?`⚠ You spend ${((ratio-1)*100).toFixed(0)}% more on weekends`:'✓ Weekend spending looks controlled'}
                             </div>
                           </div>
@@ -1476,10 +1476,10 @@ const Analytics = () => {
                     <div className="bento-item col-span-12" style={{ flexDirection:'column', padding:'1.75rem' }}>
                       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'1.25rem' }}>
                         <div>
-                          <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.75rem', letterSpacing:'0.3px', fontWeight:600, color:'var(--text-secondary)' }}>TOP WEEKEND SPLURGE CATEGORIES</div>
-                          <div style={{ fontSize:'0.72rem', color:'#666', marginTop:2 }}>Where discretionary weekend burn rate accumulates</div>
+                          <div style={{ fontSize:'0.75rem', letterSpacing:'0.3px', fontWeight:600, color:'var(--text-secondary)' }}>TOP WEEKEND SPLURGE CATEGORIES</div>
+                          <div style={{ fontSize:'0.72rem', color:'var(--mm-text-3)', marginTop:2 }}>Where discretionary weekend burn rate accumulates</div>
                         </div>
-                        <span style={{ fontSize:'0.72rem', padding:'2px 8px', borderRadius:20, background:'rgba(251,191,36,0.15)', color:'#fbbf24', fontWeight:700 }}>SAT & SUN INSIGHTS</span>
+                        <span style={{ fontSize:'0.72rem', padding:'2px 8px', borderRadius:20, background:'rgba(251,191,36,0.15)', color:'var(--mm-warning)', fontWeight:700 }}>SAT & SUN INSIGHTS</span>
                       </div>
 
                       {(() => {
@@ -1499,7 +1499,7 @@ const Analytics = () => {
                           .slice(0, 4);
 
                         if (sorted.length === 0) {
-                          return <div style={{ color:'#666', fontSize:'0.8rem', fontStyle:'italic' }}>Add weekend transactions to unlock lifestyle splurge analysis.</div>;
+                          return <div style={{ color:'var(--mm-text-3)', fontSize:'0.8rem', fontStyle:'italic' }}>Add weekend transactions to unlock lifestyle splurge analysis.</div>;
                         }
 
                         return (
@@ -1532,14 +1532,14 @@ const Analytics = () => {
       }}>{cat}</div>
                                     <div style={{
         fontSize: '0.72rem',
-        color: '#888',
+        color: 'var(--mm-text-3)',
         marginTop: 2
       }}>{share}% of all weekend spend</div>
                                   </div>
                                   <div style={{
       fontWeight: 700,
       fontSize: '0.92rem',
-      color: '#fbbf24',
+      color: 'var(--mm-warning)',
       textAlign: 'right'
     }}>
                                     {formatCurrency(total)}
@@ -1559,29 +1559,29 @@ const Analytics = () => {
                   <div className="bento-grid">
                     <div className="bento-item col-span-12" style={{ flexDirection:'column', padding:'1.75rem 1.5rem' }}>
                       <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'1.5rem' }}>
-                        <Lightbulb size={22} style={{ color:'#fbbf24' }}/>
+                        <Lightbulb size={22} style={{ color:'var(--mm-warning)' }}/>
                         <div>
-                          <h3 style={{ margin:0, fontFamily:'Inter, sans-serif', letterSpacing:'2px', fontSize:'0.85rem', color:'#fbbf24' }}>AI FINANCIAL INSIGHTS</h3>
+                          <h3 style={{ margin:0, letterSpacing:'2px', fontSize:'0.85rem', color:'var(--mm-warning)' }}>AI FINANCIAL INSIGHTS</h3>
                           <p style={{ margin:'0.2rem 0 0', fontSize:'0.78rem', color:'var(--text-secondary)' }}>Personalized recommendations from your data</p>
                         </div>
                       </div>
                       <div style={{ display:'flex', flexDirection:'column', gap:'0.875rem' }}>
                         {(data.recommendations||[]).length===0 ? (
-                          <p className="text-muted" style={{ fontFamily:'Inter, sans-serif', textAlign:'center', padding:'2rem' }}>ADD MORE TRANSACTIONS TO UNLOCK INSIGHTS.</p>
+                          <p className="text-muted" style={{ textAlign:'center', padding:'2rem' }}>ADD MORE TRANSACTIONS TO UNLOCK INSIGHTS.</p>
                         ) : (data.recommendations||[]).map((rec,i) => <RecommendCard key={i} rec={rec} index={i}/>)}
                       </div>
                       {(data.totalIncome||0)>0 && (
                         <div style={{ marginTop:'2rem', padding:'1.5rem', background:'rgba(74,222,128,0.04)', border:'1px solid rgba(74,222,128,0.1)', borderRadius:'12px' }}>
                           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:'0.75rem' }}>
-                            <span style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', letterSpacing:'1px', color:'var(--text-secondary)' }}>SAVINGS RATE GAUGE</span>
-                            <span style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'1.1rem', color:(data.savingsRate||0)>=20?'#4ade80':(data.savingsRate||0)>=10?'#fbbf24':'#f87171' }}>{data.savingsRate||0}%</span>
+                            <span style={{ fontSize:'0.78rem', letterSpacing:'1px', color:'var(--text-secondary)' }}>SAVINGS RATE GAUGE</span>
+                            <span style={{ fontWeight:700, fontSize:'1.1rem', color:(data.savingsRate||0)>=20?'var(--mm-success)':(data.savingsRate||0)>=10?'var(--mm-warning)':'var(--mm-danger)' }}>{data.savingsRate||0}%</span>
                           </div>
                           <div style={{ position:'relative', height:12, background:'rgba(255,255,255,0.06)', borderRadius:6, overflow:'hidden' }}>
                             <motion.div initial={{width:0}} animate={{width:`${Math.min(data.savingsRate||0,100)}%`}} transition={{ duration:1.2, ease:'easeOut' }}
                               style={{ height:'100%', borderRadius:6, background:(data.savingsRate||0)>=20?'linear-gradient(90deg,#4ade80,#14b8a6)':(data.savingsRate||0)>=10?'linear-gradient(90deg,#fbbf24,#fb923c)':'linear-gradient(90deg,#f87171,#fb7185)', boxShadow:(data.savingsRate||0)>=20?'0 0 12px #4ade80':(data.savingsRate||0)>=10?'0 0 12px #fbbf24':'0 0 12px #f87171' }}/>
                             <div style={{ position:'absolute', top:0, left:'20%', width:2, height:'100%', background:'rgba(255,255,255,0.3)' }}/>
                           </div>
-                          <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.68rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', marginTop:'0.4rem' }}>
+                          <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.68rem', color:'var(--text-muted)', marginTop:'0.4rem' }}>
                             <span>0%</span><span style={{ color:'var(--text-secondary)' }}>20% TARGET</span><span>100%</span>
                           </div>
                         </div>
@@ -1633,8 +1633,8 @@ const Analytics = () => {
                           { label:'Expense Growth', val:`${expChg >= 0 ? '+' : ''}${expChg.toFixed(1)}%`, col: expChg <= 0 ? '#4ade80' : '#f87171', isText:true },
                         ].map(s => (
                           <div key={s.label} style={{ textAlign:'center', minWidth:110 }}>
-                            <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.65rem', letterSpacing:'1px', color:'var(--text-muted)', marginBottom:'0.3rem' }}>{s.label.toUpperCase()}</div>
-                            <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:s.isText?'1.1rem':'0.95rem', color:s.col }}>
+                            <div style={{ fontSize:'0.65rem', letterSpacing:'1px', color:'var(--text-muted)', marginBottom:'0.3rem' }}>{s.label.toUpperCase()}</div>
+                            <div style={{ fontWeight:700, fontSize:s.isText?'1.1rem':'0.95rem', color:s.col }}>
                               {s.isText ? s.val : formatCurrency(s.val)}
                             </div>
                           </div>
@@ -1643,7 +1643,7 @@ const Analytics = () => {
 
                       {/* YoY bar chart */}
                       <div className="bento-item col-span-12" style={{ flexDirection:'column', padding:'1.5rem' }}>
-                        <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', marginBottom:'1rem' }}>
+                        <div style={{ fontSize:'0.72rem', letterSpacing:'2px', color:'var(--text-secondary)', marginBottom:'1rem' }}>
                           📅 {lastYear} vs {thisYear} — MONTHLY INCOME & EXPENSE
                         </div>
                         {hasData ? (
@@ -1662,7 +1662,7 @@ const Analytics = () => {
                             </ResponsiveContainer>
                           </div>
                         ) : (
-                          <div style={{ textAlign:'center', padding:'3rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif' }}>
+                          <div style={{ textAlign:'center', padding:'3rem', color:'var(--text-muted)' }}>
                             Need data from at least two years for comparison.
                           </div>
                         )}
@@ -1674,7 +1674,7 @@ const Analytics = () => {
                             { col:'#4ade80', label:`${thisYear} Income` },
                             { col:'#f87171', label:`${thisYear} Expense` },
                           ].map(l => (
-                            <div key={l.label} style={{ display:'flex', alignItems:'center', gap:6, fontFamily:'Inter, sans-serif', fontSize:'0.72rem', color:'var(--text-muted)' }}>
+                            <div key={l.label} style={{ display:'flex', alignItems:'center', gap:6, fontSize:'0.72rem', color:'var(--text-muted)' }}>
                               <div style={{ width:12, height:12, borderRadius:3, background:l.col }}/>
                               {l.label}
                             </div>
@@ -1731,7 +1731,7 @@ const Analytics = () => {
                       <div className="bento-item col-span-12" style={{ flexDirection:'column', padding:'1.5rem', background:'linear-gradient(135deg, rgba(74,222,128,0.06), rgba(129,140,248,0.05))', border:'1px solid rgba(74,222,128,0.2)' }}>
                         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:'1rem', marginBottom:'1.25rem' }}>
                           <div>
-                            <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.78rem', fontWeight:700, letterSpacing:'1.5px', color:'#4ade80' }}>
+                            <div style={{ fontSize:'0.78rem', fontWeight:700, letterSpacing:'1.5px', color:'var(--mm-success)' }}>
                               🧾 ANNUAL TAX &amp; DEDUCTION SUMMARY ({targetYear})
                             </div>
                             <div style={{ fontSize:'0.75rem', color:'var(--text-muted)', marginTop:3 }}>
@@ -1745,33 +1745,33 @@ const Analytics = () => {
 
                         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(190px, 1fr))', gap:'0.85rem', marginBottom:'1.25rem' }}>
                           <div style={{ padding:'1rem', borderRadius:12, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
-                            <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', letterSpacing:'1px' }}>GROSS INCOME ({targetYear})</div>
-                            <div style={{ fontSize:'1.25rem', fontWeight:700, color:'#4ade80', fontFamily:'Inter, sans-serif', marginTop:4 }}>{formatCurrency(grossIncome)}</div>
+                            <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', letterSpacing:'1px' }}>GROSS INCOME ({targetYear})</div>
+                            <div style={{ fontSize:'1.25rem', fontWeight:700, color:'var(--mm-success)', marginTop:4 }}>{formatCurrency(grossIncome)}</div>
                           </div>
                           <div style={{ padding:'1rem', borderRadius:12, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(74,222,128,0.2)' }}>
-                            <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', letterSpacing:'1px' }}>DEDUCTIBLE EXPENSES</div>
-                            <div style={{ fontSize:'1.25rem', fontWeight:700, color:'#38bdf8', fontFamily:'Inter, sans-serif', marginTop:4 }}>{formatCurrency(deductibleTotal)}</div>
+                            <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', letterSpacing:'1px' }}>DEDUCTIBLE EXPENSES</div>
+                            <div style={{ fontSize:'1.25rem', fontWeight:700, color:'#38bdf8', marginTop:4 }}>{formatCurrency(deductibleTotal)}</div>
                             <div style={{ fontSize:'0.68rem', color:'var(--text-muted)', marginTop:2 }}>{deductibleTx.length} qualifying items</div>
                           </div>
                           <div style={{ padding:'1rem', borderRadius:12, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
-                            <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', letterSpacing:'1px' }}>NET TAXABLE INCOME</div>
-                            <div style={{ fontSize:'1.25rem', fontWeight:700, color:'var(--text-primary)', fontFamily:'Inter, sans-serif', marginTop:4 }}>{formatCurrency(netTaxable)}</div>
+                            <div style={{ fontSize:'0.65rem', color:'var(--text-muted)', letterSpacing:'1px' }}>NET TAXABLE INCOME</div>
+                            <div style={{ fontSize:'1.25rem', fontWeight:700, color:'var(--text-primary)', marginTop:4 }}>{formatCurrency(netTaxable)}</div>
                           </div>
                           <div style={{ padding:'1rem', borderRadius:12, background:'rgba(251,191,36,0.06)', border:'1px solid rgba(251,191,36,0.2)' }}>
-                            <div style={{ fontSize:'0.65rem', color:'#fbbf24', fontFamily:'Inter, sans-serif', letterSpacing:'1px' }}>EST. TAX (@ {taxRate}%)</div>
-                            <div style={{ fontSize:'1.25rem', fontWeight:700, color:'#fbbf24', fontFamily:'Inter, sans-serif', marginTop:4 }}>{formatCurrency(estimatedTax)}</div>
-                            <div style={{ fontSize:'0.68rem', color:'#4ade80', marginTop:2 }}>Saved {formatCurrency(taxSaved)} via deductions</div>
+                            <div style={{ fontSize:'0.65rem', color:'var(--mm-warning)', letterSpacing:'1px' }}>EST. TAX (@ {taxRate}%)</div>
+                            <div style={{ fontSize:'1.25rem', fontWeight:700, color:'var(--mm-warning)', marginTop:4 }}>{formatCurrency(estimatedTax)}</div>
+                            <div style={{ fontSize:'0.68rem', color:'var(--mm-success)', marginTop:2 }}>Saved {formatCurrency(taxSaved)} via deductions</div>
                           </div>
                         </div>
 
                         <div style={{ display:'flex', alignItems:'center', gap:'1rem', flexWrap:'wrap', padding:'0.85rem 1rem', borderRadius:10, background:'rgba(0,0,0,0.25)', marginBottom:'1.25rem' }}>
-                          <span style={{ fontSize:'0.76rem', color:'var(--text-secondary)', fontFamily:'Inter, sans-serif' }}>
-                            Effective Tax Rate Bracket: <strong style={{ color:'#fbbf24' }}>{taxRate}%</strong>
+                          <span style={{ fontSize:'0.76rem', color:'var(--text-secondary)' }}>
+                            Effective Tax Rate Bracket: <strong style={{ color:'var(--mm-warning)' }}>{taxRate}%</strong>
                           </span>
-                          <input type="range" min="0" max="45" step="1" value={taxRate} onChange={e => setTaxRate(Number(e.target.value))} style={{ flex:1, minWidth:160, accentColor:'#4ade80' }} />
+                          <input type="range" min="0" max="45" step="1" value={taxRate} onChange={e => setTaxRate(Number(e.target.value))} style={{ flex:1, minWidth:160, accentColor:'var(--mm-success)' }} />
                         </div>
 
-                        <div style={{ fontFamily:'Inter, sans-serif', fontSize:'0.72rem', letterSpacing:'1px', color:'var(--text-secondary)', marginBottom:'0.75rem' }}>
+                        <div style={{ fontSize:'0.72rem', letterSpacing:'1px', color:'var(--text-secondary)', marginBottom:'0.75rem' }}>
                           DEDUCTIBLE EXPENSE LEDGER ({deductibleTx.length})
                         </div>
                         {deductibleTx.length === 0 ? (
@@ -1785,13 +1785,13 @@ const Analytics = () => {
                                 <div>
                                   <div style={{ fontSize:'0.82rem', fontWeight:600, color:'var(--text-primary)', display:'flex', alignItems:'center', gap:'0.4rem' }}>
                                     <span>{getCategoryEmoji(tx.category)} {tx.category || 'Expense'}</span>
-                                    {(tx.is_tax_deductible || tx.tax_deductible) && <span style={{ fontSize:'0.62rem', padding:'0.1rem 0.4rem', borderRadius:6, background:'rgba(74,222,128,0.14)', color:'#4ade80' }}>🧾 Explicit</span>}
+                                    {(tx.is_tax_deductible || tx.tax_deductible) && <span style={{ fontSize:'0.62rem', padding:'0.1rem 0.4rem', borderRadius:6, background:'rgba(74,222,128,0.14)', color:'var(--mm-success)' }}>🧾 Explicit</span>}
                                   </div>
                                   <div style={{ fontSize:'0.72rem', color:'var(--text-muted)' }}>
                                     {tx.date} {tx.notes ? `• ${tx.notes}` : ''}
                                   </div>
                                 </div>
-                                <div style={{ fontFamily:'Inter, sans-serif', fontWeight:700, fontSize:'0.9rem', color:'#38bdf8' }}>
+                                <div style={{ fontWeight:700, fontSize:'0.9rem', color:'#38bdf8' }}>
                                   {formatCurrency(tx.amount)}
                                 </div>
                               </div>
@@ -1806,7 +1806,7 @@ const Analytics = () => {
             </div>
           </>
         ) : (
-          <p className="text-muted" style={{ fontFamily:'Inter, sans-serif', textAlign:'center', padding:'3rem' }}>FAILED TO LOAD DATA</p>
+          <p className="text-muted" style={{ textAlign:'center', padding:'3rem' }}>FAILED TO LOAD DATA</p>
         )}
       </div>
 

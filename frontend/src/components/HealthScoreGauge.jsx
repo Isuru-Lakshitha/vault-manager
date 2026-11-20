@@ -33,13 +33,13 @@ const HealthScoreGauge = ({ score = 0, breakdown = {} }) => {
           <text x="70" y="70" textAnchor="middle" fill={color} fontSize="24" fontFamily="Outfit, sans-serif" fontWeight="700">{clamp}</text>
         </svg>
       </div>
-      <div style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', letterSpacing: '2px', color, fontWeight: 700 }}>{label}</div>
+      <div style={{ fontSize: '0.72rem', letterSpacing: '2px', color, fontWeight: 700 }}>{label}</div>
       {Object.keys(breakdown).length > 0 && (
         <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '0.4rem', marginTop: '0.5rem' }}>
           {Object.entries(breakdown).map(([key, val]) => (
-            <div key={key} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', fontFamily: 'Inter, sans-serif' }}>
-              <span style={{ color: '#555' }}>{key}</span>
-              <span style={{ color: val >= 7 ? '#4ade80' : val >= 4 ? '#fbbf24' : '#f87171', fontWeight: 600 }}>{val}/10</span>
+            <div key={key} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem' }}>
+              <span style={{ color: 'var(--mm-text-3)' }}>{key}</span>
+              <span style={{ color: val >= 7 ? 'var(--mm-success)' : val >= 4 ? 'var(--mm-warning)' : 'var(--mm-danger)', fontWeight: 600 }}>{val}/10</span>
             </div>
           ))}
         </div>

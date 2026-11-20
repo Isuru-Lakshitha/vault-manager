@@ -57,7 +57,7 @@ const SpendingHeatmap = ({ dailyData = [] }) => {
   };
 
   if (!dailyData.length) return (
-    <div style={{ textAlign:'center', padding:'2rem', color:'var(--text-muted)', fontFamily:'Inter, sans-serif', fontSize:'0.8rem' }}>
+    <div style={{ textAlign:'center', padding:'2rem', color:'var(--text-muted)', fontSize:'0.8rem' }}>
       NO SPENDING DATA YET
     </div>
   );
@@ -69,14 +69,14 @@ const SpendingHeatmap = ({ dailyData = [] }) => {
         {/* Month labels */}
         <div style={{ display:'flex', marginLeft:28, marginBottom:4, position:'relative', height:16 }}>
           {monthLabels.map(({ weekIdx, label }) => (
-            <div key={label+weekIdx} style={{ position:'absolute', left: weekIdx * 14, fontFamily:'Inter, sans-serif', fontSize:'0.65rem', color:'var(--text-secondary)', letterSpacing:'0.5px' }}>{label}</div>
+            <div key={label+weekIdx} style={{ position:'absolute', left: weekIdx * 14, fontSize:'0.65rem', color:'var(--text-secondary)', letterSpacing:'0.5px' }}>{label}</div>
           ))}
         </div>
         <div style={{ display:'flex', gap:2 }}>
           {/* Day labels */}
           <div style={{ display:'flex', flexDirection:'column', gap:2, marginRight:4, paddingTop:0 }}>
             {DAYS.map((d,i) => (
-              <div key={d} style={{ height:12, fontSize:'0.6rem', fontFamily:'Inter, sans-serif', color: i%2===0?'#555':'transparent', lineHeight:'12px', width:24 }}>{d}</div>
+              <div key={d} style={{ height:12, fontSize:'0.6rem', color: i%2===0?'var(--mm-text-3)':'transparent', lineHeight:'12px', width:24 }}>{d}</div>
             ))}
           </div>
           {/* Weeks */}
@@ -97,7 +97,7 @@ const SpendingHeatmap = ({ dailyData = [] }) => {
           ))}
         </div>
         {/* Legend */}
-        <div style={{ display:'flex', alignItems:'center', gap:'0.4rem', marginTop:'0.75rem', marginLeft:28, fontSize:'0.65rem', fontFamily:'Inter, sans-serif', color:'var(--text-secondary)' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:'0.4rem', marginTop:'0.75rem', marginLeft:28, fontSize:'0.65rem', color:'var(--text-secondary)' }}>
           <span>Less</span>
           {['rgba(255,255,255,0.04)','rgba(74,222,128,0.15)','rgba(74,222,128,0.35)','rgba(74,222,128,0.65)','#4ade80'].map((c,i) => (
             <div key={i} style={{ width:12, height:12, borderRadius:2, background:c }}/>

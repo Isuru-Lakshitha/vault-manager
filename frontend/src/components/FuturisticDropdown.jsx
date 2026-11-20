@@ -34,7 +34,6 @@ const FuturisticDropdown = ({ options, value, onChange, placeholder = "Select op
           border: isOpen ? '1px solid var(--neon-cyan)' : '1px solid var(--border-color)',
           borderRadius: 'var(--radius-sm)',
           color: 'var(--text-primary)',
-          fontFamily: 'Inter, sans-serif',
           fontSize: '0.95rem',
           cursor: 'pointer',
           boxShadow: isOpen ? '0 0 10px rgba(0, 255, 255, 0.2)' : 'none',

@@ -295,23 +295,23 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
           border: '1px solid rgba(255,255,255,0.06)'
         }}>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#777', fontFamily: 'Inter, sans-serif' }}>LIQUID RESERVES</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--mm-text-3)' }}>LIQUID RESERVES</div>
             <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: 2 }}>{formatCurrency(initialLiquid)}</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#4ade80', fontFamily: 'Inter, sans-serif' }}>PROJECTED INFLOW</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#4ade80', marginTop: 2 }}>+{formatCurrency(totalInflowMonth)}</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--mm-success)' }}>PROJECTED INFLOW</div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--mm-success)', marginTop: 2 }}>+{formatCurrency(totalInflowMonth)}</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.72rem', color: '#f87171', fontFamily: 'Inter, sans-serif' }}>COMMITTED OUTFLOW</div>
-            <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f87171', marginTop: 2 }}>-{formatCurrency(totalOutflowMonth)}</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--mm-danger)' }}>COMMITTED OUTFLOW</div>
+            <div style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--mm-danger)', marginTop: 2 }}>-{formatCurrency(totalOutflowMonth)}</div>
           </div>
           <div>
-            <div style={{ fontSize: '0.72rem', color: netCashFlowMonth >= 0 ? '#38bdf8' : '#fbbf24', fontFamily: 'Inter, sans-serif' }}>NET MONTHLY DELTA</div>
+            <div style={{ fontSize: '0.72rem', color: netCashFlowMonth >= 0 ? '#38bdf8' : 'var(--mm-warning)' }}>NET MONTHLY DELTA</div>
             <div style={{
               fontSize: '1.15rem',
               fontWeight: 700,
-              color: netCashFlowMonth >= 0 ? '#38bdf8' : '#fbbf24',
+              color: netCashFlowMonth >= 0 ? '#38bdf8' : 'var(--mm-warning)',
               marginTop: 2
             }}>
               {netCashFlowMonth >= 0 ? '+' : ''}{formatCurrency(netCashFlowMonth)}
@@ -324,16 +324,16 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <button
               onClick={prevMonth}
-              style={{ padding: '0.45rem', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: '#ccc', cursor: 'pointer' }}
+              style={{ padding: '0.45rem', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--mm-text-2)', cursor: 'pointer' }}
             >
               <ChevronLeft size={18} />
             </button>
-            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif', minWidth: 160, textAlign: 'center' }}>
+            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-primary)', minWidth: 160, textAlign: 'center' }}>
               {MONTH_NAMES[month]} {year}
             </h3>
             <button
               onClick={nextMonth}
-              style={{ padding: '0.45rem', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: '#ccc', cursor: 'pointer' }}
+              style={{ padding: '0.45rem', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'var(--mm-text-2)', cursor: 'pointer' }}
             >
               <ChevronRight size={18} />
             </button>
@@ -341,10 +341,10 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
             {/* Legend chips */}
-            <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.68rem', color: '#888' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4ade80' }} /> Inflow</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 7, height: 7, borderRadius: '50%', background: '#f87171' }} /> Bill</span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 7, height: 7, borderRadius: '50%', background: '#fbbf24' }} /> Loan</span>
+            <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.68rem', color: 'var(--mm-text-3)' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--mm-success)' }} /> Inflow</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--mm-danger)' }} /> Bill</span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--mm-warning)' }} /> Loan</span>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><span style={{ width: 7, height: 7, borderRadius: '50%', background: '#c084fc' }} /> Recurring</span>
             </div>
             <button
@@ -373,7 +373,7 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
             {/* Weekday headers */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', textAlign: 'center', marginBottom: '0.4rem' }}>
               {DAYS_OF_WEEK.map(d => (
-                <div key={d} style={{ fontSize: '0.72rem', color: '#666', fontWeight: 600, padding: '0.25rem 0', fontFamily: 'Inter, sans-serif' }}>
+                <div key={d} style={{ fontSize: '0.72rem', color: 'var(--mm-text-3)', fontWeight: 600, padding: '0.25rem 0' }}>
                   {d}
                 </div>
               ))}
@@ -425,13 +425,11 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
                       <span style={{
                         fontSize: '0.78rem',
                         fontWeight: isSelected || isToday ? 700 : 500,
-                        color: isSelected ? '#818cf8' : isToday ? '#4ade80' : '#ddd',
-                        fontFamily: 'Inter, sans-serif'
-                      }}>
+                        color: isSelected ? '#818cf8' : isToday ? 'var(--mm-success)' : 'var(--mm-text-2)' }}>
                         {cd.day}
                       </span>
                       {isToday && (
-                        <span style={{ fontSize: '0.55rem', background: '#4ade80', color: 'var(--bg-void)', padding: '1px 3px', borderRadius: 4, fontWeight: 700 }}>
+                        <span style={{ fontSize: '0.55rem', background: 'var(--mm-success)', color: 'var(--bg-void)', padding: '1px 3px', borderRadius: 4, fontWeight: 700 }}>
                           NOW
                         </span>
                       )}
@@ -439,12 +437,12 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
 
                     {/* Indicator dots */}
                     <div style={{ display: 'flex', gap: '3px', flexWrap: 'wrap', marginTop: 2 }}>
-                      {hasInflow && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80' }} />}
-                      {hasBills && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f87171' }} />}
-                      {hasLoans && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#fbbf24' }} />}
+                      {hasInflow && <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mm-success)' }} />}
+                      {hasBills && <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mm-danger)' }} />}
+                      {hasLoans && <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mm-warning)' }} />}
                       {hasRecurring && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#c084fc' }} />}
                       {!hasBills && !hasLoans && !hasRecurring && hasExpenses && (
-                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#ef4444' }} />
+                        <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mm-danger)' }} />
                       )}
                     </div>
                   </button>
@@ -466,8 +464,8 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', paddingBottom: '0.5rem', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
               <div>
-                <div style={{ fontSize: '0.7rem', color: '#777', textTransform: 'uppercase', letterSpacing: 1 }}>Selected Date</div>
-                <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)', fontFamily: 'Inter, sans-serif' }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)', textTransform: 'uppercase', letterSpacing: 1 }}>Selected Date</div>
+                <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   {new Date(selectedDateStr + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>
               </div>
@@ -475,10 +473,10 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
               {(selectedDayData.totalInflow > 0 || selectedDayData.totalOutflow > 0) && (
                 <div style={{ textAlign: 'right' }}>
                   {selectedDayData.totalInflow > 0 && (
-                    <div style={{ fontSize: '0.75rem', color: '#4ade80', fontWeight: 600 }}>+{formatCurrency(selectedDayData.totalInflow)}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--mm-success)', fontWeight: 600 }}>+{formatCurrency(selectedDayData.totalInflow)}</div>
                   )}
                   {selectedDayData.totalOutflow > 0 && (
-                    <div style={{ fontSize: '0.75rem', color: '#f87171', fontWeight: 600 }}>-{formatCurrency(selectedDayData.totalOutflow)}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--mm-danger)', fontWeight: 600 }}>-{formatCurrency(selectedDayData.totalOutflow)}</div>
                   )}
                 </div>
               )}
@@ -505,13 +503,13 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
                     <span style={{ fontSize: '1.1rem' }}>🧾</span>
                     <div>
                       <div style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-primary)' }}>{b.name}</div>
-                      <div style={{ fontSize: '0.7rem', color: '#888' }}>Bill • {b.category || 'General'}</div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)' }}>Bill • {b.category || 'General'}</div>
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#f87171' }}>-{formatCurrency(b.amount)}</div>
-                      <div style={{ fontSize: '0.68rem', color: b.paid ? '#4ade80' : '#fbbf24' }}>{b.paid ? 'Paid' : 'Unpaid'}</div>
+                      <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--mm-danger)' }}>-{formatCurrency(b.amount)}</div>
+                      <div style={{ fontSize: '0.68rem', color: b.paid ? 'var(--mm-success)' : 'var(--mm-warning)' }}>{b.paid ? 'Paid' : 'Unpaid'}</div>
                     </div>
                     <button
                       onClick={() => handlePayBill(b)}
@@ -521,7 +519,7 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
                         borderRadius: 6,
                         border: 'none',
                         background: b.paid ? 'rgba(255,255,255,0.06)' : 'rgba(74,222,128,0.2)',
-                        color: b.paid ? '#888' : '#4ade80',
+                        color: b.paid ? 'var(--mm-text-3)' : 'var(--mm-success)',
                         fontSize: '0.72rem',
                         fontWeight: 600,
                         cursor: 'pointer'
@@ -551,10 +549,10 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
                     <span style={{ fontSize: '1.1rem' }}>🏛️</span>
                     <div>
                       <div style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-primary)' }}>{l.name}</div>
-                      <div style={{ fontSize: '0.7rem', color: '#888' }}>Loan Installment</div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)' }}>Loan Installment</div>
                     </div>
                   </div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#fbbf24' }}>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--mm-warning)' }}>
                     -{formatCurrency(l.amount)}
                   </div>
                 </div>
@@ -578,10 +576,10 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
                     <span style={{ fontSize: '1.1rem' }}>🔄</span>
                     <div>
                       <div style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-primary)' }}>{r.notes || r.category || 'Recurring Item'}</div>
-                      <div style={{ fontSize: '0.7rem', color: '#888' }}>{r.frequency || 'Monthly'} Cycle</div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)' }}>{r.frequency || 'Monthly'} Cycle</div>
                     </div>
                   </div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: r.type === 'Income' ? '#4ade80' : '#c084fc' }}>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: r.type === 'Income' ? 'var(--mm-success)' : '#c084fc' }}>
                     {r.type === 'Income' ? '+' : '-'}{formatCurrency(r.amount)}
                   </div>
                 </div>
@@ -605,10 +603,10 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
                     <span style={{ fontSize: '1.1rem' }}>{t.type === 'Income' ? '💰' : '💸'}</span>
                     <div>
                       <div style={{ fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-primary)' }}>{t.notes || t.category || 'Transaction'}</div>
-                      <div style={{ fontSize: '0.7rem', color: '#888' }}>{t.category} • {t.type}</div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--mm-text-3)' }}>{t.category} • {t.type}</div>
                     </div>
                   </div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: t.type === 'Income' ? '#4ade80' : '#f0f0f5' }}>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: t.type === 'Income' ? 'var(--mm-success)' : '#f0f0f5' }}>
                     {t.type === 'Income' ? '+' : '-'}{formatCurrency(t.amount)}
                   </div>
                 </div>
@@ -619,7 +617,7 @@ export default function CashFlowCalendarModal({ isOpen, onClose }) {
                selectedDayData.loans.length === 0 &&
                selectedDayData.recurring.length === 0 &&
                selectedDayData.transactions.length === 0 && (
-                <div style={{ textAlign: 'center', padding: '2rem 1rem', color: '#666', fontSize: '0.82rem' }}>
+                <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--mm-text-3)', fontSize: '0.82rem' }}>
                   No scheduled bills, recurring cycles, or recorded transactions on this date.
                 </div>
               )}

@@ -25,7 +25,7 @@ const PWAUpdateBanner = () => {
           background: 'linear-gradient(135deg, #818cf8, #a78bfa)',
           color: '#fff', padding: '0.625rem 1rem',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          gap: '0.75rem', fontFamily: 'Inter, sans-serif', fontSize: '0.82rem',
+          gap: '0.75rem', fontSize: '0.82rem',
         }}
       >
         <span style={{ fontWeight: 500 }}>🆕 New version available</span>
@@ -33,8 +33,7 @@ const PWAUpdateBanner = () => {
           onClick={() => updateServiceWorker(true)}
           style={{
             background: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.4)',
-            borderRadius: 8, color: '#fff', cursor: 'pointer', padding: '0.3rem 0.75rem',
-            fontFamily: 'Inter, sans-serif', fontSize: '0.78rem', fontWeight: 700,
+            borderRadius: 8, color: '#fff', cursor: 'pointer', padding: '0.3rem 0.75rem', fontSize: '0.78rem', fontWeight: 700,
             display: 'flex', alignItems: 'center', gap: '0.35rem'
           }}
         >
