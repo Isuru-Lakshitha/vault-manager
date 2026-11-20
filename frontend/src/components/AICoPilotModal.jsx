@@ -24,7 +24,7 @@ export default function AICoPilotModal({ isOpen, onClose }) {
     {
       id: 'welcome',
       role: 'assistant',
-      text: `Hello! I am your **Financial AI Co-Pilot**. I analyze your live ledger in real time to give you instant scenario projections, leak audits, and savings strategies.\n\nAsk me anything or select a scenario below:`,
+      text: `Hi! I'm your **Money Assistant**. I answer from your own transactions: spending breakdowns, runway, tax-deductible spending and whether you can afford something.\n\nPick a question below or type one:`,
       cards: null,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     }
@@ -133,7 +133,7 @@ export default function AICoPilotModal({ isOpen, onClose }) {
         `• **Highest Spending Category:** **${topCat?.name || 'General'}** consumed **${formatCurrency(topCat?.total || 0)}** (${topCat && expense30d > 0 ? ((topCat.total / expense30d) * 100).toFixed(0) : 0}% of all spending).\n` +
         `• **Secondary Outflow:** **${secondCat?.name || 'None'}** at **${formatCurrency(secondCat?.total || 0)}**.\n` +
         `• **Fixed Bill Drain:** You have **${bills.length} recurring commitments** totaling **${formatCurrency(recurringSum)}/month**.\n\n` +
-        `💡 **Co-Pilot Recommendation:** Trimming just 15% from ${topCat?.name || 'top category'} saves approximately **${formatCurrency((topCat?.total || 0) * 0.15)}** next month!`;
+        `💡 **Suggestion:** Trimming just 15% from ${topCat?.name || 'top category'} saves approximately **${formatCurrency((topCat?.total || 0) * 0.15)}** next month!`;
 
       addMessage('assistant', reply, [
         { title: 'Top Category', value: topCat ? `${topCat.name} (${formatCurrency(topCat.total)})` : 'None', color: '#f87171' },
@@ -299,7 +299,7 @@ export default function AICoPilotModal({ isOpen, onClose }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="🧠 AI Financial Co-Pilot" maxWidth="720px">
+    <Modal isOpen={isOpen} onClose={onClose} title="🧠 Money Assistant" maxWidth="720px">
       <div style={{ display: 'flex', flexDirection: 'column', height: '620px', maxHeight: '75vh', color: 'var(--text-primary)' }}>
 
         {/* Top Status Bar */}

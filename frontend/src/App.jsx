@@ -634,7 +634,7 @@ function App() {
             </button>
             <ThemeToggle />
             <button className="menu-toggle" onClick={() => setCurrencyConverterOpen(true)} aria-label="Currency Converter" title="Currency Converter">💱</button>
-            <button className="menu-toggle" onClick={() => setAiCoPilotOpen(true)} aria-label="AI Co-Pilot" title="AI Financial Co-Pilot"><Sparkles size={17} /></button>
+            <button className="menu-toggle" onClick={() => setAiCoPilotOpen(true)} aria-label="Money Assistant" title="Money Assistant · quick answers from your data"><Sparkles size={17} /></button>
             <Suspense fallback={null}><AlertCenter /></Suspense>
             <button className="shell-primary" onClick={() => window.dispatchEvent(new Event('vm:quick-add'))}>
               <Plus size={15} strokeWidth={2.6} /> Quick Add
@@ -729,12 +729,12 @@ function App() {
               {isStealth ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
 
-            {/* AI Financial Co-Pilot (Desktop / More sheet on mobile) */}
+            {/* Money Assistant (Desktop / More sheet on mobile) */}
             <button
               className="menu-toggle header-secondary-tool"
               onClick={() => setAiCoPilotOpen(true)}
-              title="AI Financial Co-Pilot"
-              aria-label="AI Co-Pilot"
+              title="Money Assistant · quick answers from your data"
+              aria-label="Money Assistant"
               style={{
                 background: 'linear-gradient(135deg, rgba(129,140,248,0.2), rgba(167,139,250,0.2))',
                 border: '1px solid rgba(129,140,248,0.4)',

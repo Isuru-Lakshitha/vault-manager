@@ -928,7 +928,7 @@ const Settings = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.65rem' }}>
               {[
                 { title: 'Transaction Rules', desc: 'Auto-categorization & tagging', icon: '⚡', event: 'vm:open-rules-manager', color: '#fbbf24' },
-                { title: 'AI Co-Pilot', desc: 'Ledger audit & affordability simulator', icon: '🧠', event: 'vm:open-ai-copilot', color: '#818cf8' },
+                { title: 'Money Assistant', desc: 'Ledger audit & affordability simulator', icon: '🧠', event: 'vm:open-ai-copilot', color: '#818cf8' },
                 { title: 'Cash Flow Calendar', desc: 'Monthly bill & liquidity timeline', icon: '📅', event: 'vm:open-cash-calendar', color: '#38bdf8' },
                 { title: 'FIRE & Retirement', desc: 'Freedom age & compound forecast', icon: '🔥', event: 'vm:open-fire-planner', color: '#fb923c' },
                 { title: 'Receipt Scanner', desc: 'On-device camera & OCR matching', icon: '🧾', event: 'vm:open-receipt-scanner', color: '#a78bfa' },

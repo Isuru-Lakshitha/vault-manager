@@ -652,7 +652,7 @@ const Dashboard = () => {
                 <span className="dash-tool-icon" aria-hidden="true">✨</span> Wrapped
               </button>
               <button type="button" className="btn header-secondary-tool dash-tool" onClick={() => window.dispatchEvent(new Event('vm:open-ai-copilot'))}>
-                <span className="dash-tool-icon" aria-hidden="true">🧠</span> Co-Pilot
+                <span className="dash-tool-icon" aria-hidden="true">🧠</span> Assistant
               </button>
             </ToolMenu>
             <button type="button" className="btn btn-secondary dash-tool dash-refresh" onClick={loadData}>

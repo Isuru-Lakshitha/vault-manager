@@ -256,7 +256,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem' }}>
                   {[
-                    { label: 'AI Co-Pilot', icon: '🧠', event: 'vm:open-ai-copilot', color: '#c4b5fd', bg: 'rgba(167,139,250,0.12)' },
+                    { label: 'Assistant', icon: '🧠', event: 'vm:open-ai-copilot', color: '#c4b5fd', bg: 'rgba(167,139,250,0.12)' },
                     { label: 'Cash Calendar', icon: '📅', event: 'vm:open-cash-calendar', color: '#38bdf8', bg: 'rgba(56,189,248,0.12)' },
                     { label: 'FIRE Planner', icon: '🔥', event: 'vm:open-fire-planner', color: '#fb923c', bg: 'rgba(251,146,60,0.12)' },
                     { label: 'Receipts', icon: '🧾', event: 'vm:open-receipt-scanner', color: '#a78bfa', bg: 'rgba(167,139,250,0.12)' },

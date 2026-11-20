@@ -61,8 +61,8 @@ const GlobalSearch = ({ open, onClose }) => {
       },
       {
         type: 'command', id: 'cmd_ai_copilot', emoji: '🤖',
-        label: 'AI Financial Co-Pilot',
-        sub: 'Ask questions or get personalized cash-flow advice',
+        label: 'Money Assistant',
+        sub: 'Quick answers about spending, runway and affordability from your data',
         action: () => window.dispatchEvent(new Event('vm:open-ai-copilot')),
       },
       {
