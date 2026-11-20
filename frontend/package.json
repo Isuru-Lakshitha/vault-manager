@@ -11,8 +11,9 @@
     "test": "node --test test/*test.js",
     "test:rules": "node --test test/rules.emulator.mjs",
     "verify": "npm test && npm run lint && npm run build",
-    "deploy:preview": "npm run verify && npx firebase-tools hosting:channel:deploy preview --expires 7d",
-    "deploy:live": "npm run verify && npx firebase-tools deploy --only firestore:rules,hosting",
+    "verify:full": "npm run verify && npm run test:browser",
+    "deploy:preview": "npm run verify:full && npx firebase-tools hosting:channel:deploy preview --expires 7d",
+    "deploy:live": "npm run verify:full && npx firebase-tools deploy --only firestore:rules,hosting",
     "dev:test": "vite --config vite.browser.config.js",
     "test:browser": "playwright test"
   },

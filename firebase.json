@@ -11,7 +11,7 @@
     "site": "money-manager-isuru",
     "public": "frontend/dist",
     "predeploy": [
-      "npm --prefix frontend run verify"
+      "npm --prefix frontend run verify:full"
     ],
     "ignore": [
       "firebase.json",
