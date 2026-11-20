@@ -633,18 +633,18 @@ const Dashboard = () => {
         <header className="dash-header">
           <div>
             <h1 className="dash-title">{t('nav.dashboard')}</h1>
-            <p className="dash-subtitle">Your financial overview · Updated {now}</p>
+            <p className="dash-subtitle">{t('dash.subtitle', { time: now })}</p>
           </div>
           <div className="dash-actions">
             <div className="dash-seg" role="group" aria-label="Dashboard view">
-              {[['Overview', true], ['Detailed', false]].map(([label, minimal]) => (
+              {[[t('dash.overview'), true], [t('dash.detailed'), false]].map(([label, minimal]) => (
                 <button key={label} type="button" aria-pressed={isMinimalistView === minimal} onClick={() => toggleMinimalistView(minimal)}>
                   {isMinimalistView === minimal && <motion.span layoutId="dash-seg-pill" className="dash-seg-pill" transition={spring.liquid} />}
                   {label}
                 </button>
               ))}
             </div>
-            <ToolMenu>
+            <ToolMenu label={t('dash.moreTools')}>
               <button type="button" className="btn header-secondary-tool dash-tool" onClick={() => setAchievementsOpen(true)}>
                 <span className="dash-tool-icon" aria-hidden="true">🏆</span> Level {achievementData.currentRank.level} · {achievementData.totalXp} XP
               </button>
@@ -752,7 +752,7 @@ const Dashboard = () => {
                       <div className="dash-nw-orb is-alt" />
                     </div>
                     <div className="dash-card-head z1">
-                      <span className="dash-eyebrow">Total net worth</span>
+                      <span className="dash-eyebrow">{t('dash.netWorth')}</span>
                       <span className="dash-icon-chip"><Landmark size={18} /></span>
                     </div>
                     <div className="dash-nw-value dash-num z3">
@@ -778,7 +778,7 @@ const Dashboard = () => {
                         </ResponsiveContainer>
                       </div>
                     )}
-                    <span className="dash-hint z1">View breakdown <ArrowRight size={13} /></span>
+                    <span className="dash-hint z1">{t('dash.breakdown')} <ArrowRight size={13} /></span>
                   </div>
 
                   {(() => {
@@ -793,15 +793,15 @@ const Dashboard = () => {
                       <div className="dash-3d dash-safe" data-tilt>
                         <div className="dash-3d-bg" aria-hidden="true" />
                         <div className="dash-card-head z1">
-                          <span className="dash-eyebrow">Today&apos;s safe to spend</span>
-                          <span className="dash-pill" style={{ '--tone': ok ? 'var(--dash-pos)' : 'var(--dash-neg)' }}>{ok ? '✓ On track' : '⚠ Caution'}</span>
+                          <span className="dash-eyebrow">{t('dash.safe')}</span>
+                          <span className="dash-pill" style={{ '--tone': ok ? 'var(--dash-pos)' : 'var(--dash-neg)' }}>{ok ? t('dash.onTrack') : t('dash.caution')}</span>
                         </div>
                         <div className="z3">
                           <div className={`dash-safe-value dash-num${ok ? '' : ' is-neg'}`}>
                             <AnimatedCounter value={allowance} formatter={formatCurrency} />
                           </div>
                           <div className="dash-safe-meta">
-                            Free cash this month <b>{formatCurrency(safeToSpendData?.safeToSpend || 0)}</b>
+                            {t('dash.freeCash')} <b>{formatCurrency(safeToSpendData?.safeToSpend || 0)}</b>
                           </div>
                         </div>
                         <div className="dash-safe-ring z2" role="img" aria-label={`${daysLeft} of ${daysInMonth} days left this month`}>
@@ -810,11 +810,11 @@ const Dashboard = () => {
                             <circle className="fill" cx="44" cy="44" r={R} fill="none" strokeWidth="7"
                               strokeDasharray={C} strokeDashoffset={C * (1 - frac)} transform="rotate(-90 44 44)" />
                             <text x="44" y="46" textAnchor="middle">{daysLeft}</text>
-                            <text className="sub" x="44" y="58" textAnchor="middle">DAYS LEFT</text>
+                            <text className="sub" x="44" y="58" textAnchor="middle">{t('dash.daysLeft')}</text>
                           </svg>
                         </div>
                         <button type="button" onClick={() => navigate('/transactions')} className="btn btn-primary z1" style={{ padding: '0.45rem 0.95rem', fontSize: '0.78rem' }}>
-                          + Add transaction
+                          {t('dash.addTx')}
                         </button>
                       </div>
                     );
@@ -824,9 +824,9 @@ const Dashboard = () => {
                 {/* 2. Monthly cash flow KPIs */}
                 <section className="dash-kpis" aria-label="This month">
                   {[
-                    { key: 'in', label: 'Income this month', value: `+${formatCurrency(monthlyIncome)}`, tone: 'var(--dash-pos)', Icon: TrendingUp, onClick: () => setSummaryPopup({ type: 'Income', title: 'This Month Income' }) },
-                    { key: 'out', label: 'Expenses this month', value: `-${formatCurrency(monthlyExpense)}`, tone: 'var(--dash-neg)', Icon: TrendingDown, onClick: () => setSummaryPopup({ type: 'Expense', title: 'This Month Expenses' }) },
-                    { key: 'net', label: `Net saved · ${savingsRate}%`, value: `${(monthlyIncome - monthlyExpense) >= 0 ? '+' : ''}${formatCurrency(monthlyIncome - monthlyExpense)}`, tone: (monthlyIncome - monthlyExpense) >= 0 ? 'var(--dash-accent)' : 'var(--dash-neg)', Icon: Activity },
+                    { key: 'in', label: t('dash.incomeMonth'), value: `+${formatCurrency(monthlyIncome)}`, tone: 'var(--dash-pos)', Icon: TrendingUp, onClick: () => setSummaryPopup({ type: 'Income', title: 'This Month Income' }) },
+                    { key: 'out', label: t('dash.expenseMonth'), value: `-${formatCurrency(monthlyExpense)}`, tone: 'var(--dash-neg)', Icon: TrendingDown, onClick: () => setSummaryPopup({ type: 'Expense', title: 'This Month Expenses' }) },
+                    { key: 'net', label: t('dash.netSaved', { rate: savingsRate }), value: `${(monthlyIncome - monthlyExpense) >= 0 ? '+' : ''}${formatCurrency(monthlyIncome - monthlyExpense)}`, tone: (monthlyIncome - monthlyExpense) >= 0 ? 'var(--dash-accent)' : 'var(--dash-neg)', Icon: Activity },
                   ].map(({ key, label, value, tone, Icon, onClick }) => {
                     const Tag = onClick ? 'button' : 'div';
                     return (
@@ -975,11 +975,11 @@ const Dashboard = () => {
                 })()}
 
                 {/* 3. Recent activity (top 5) */}
-                <section className="dash-3d dash-panel" aria-label="Recent activity">
+                <section className="dash-3d dash-panel" aria-label={t('dash.recent')}>
                   <div className="dash-panel-head">
-                    <h3>Recent activity</h3>
+                    <h3>{t('dash.recent')}</h3>
                     <button type="button" className="dash-link" onClick={() => navigate('/transactions')}>
-                      View all <ArrowRight size={13} />
+                      {t('dash.viewAll')} <ArrowRight size={13} />
                     </button>
                   </div>
                   {recentTxns.length === 0 ? (
@@ -1200,7 +1200,7 @@ const Dashboard = () => {
             )}
 
             <section className="dash-group">
-            <h2 className="dash-section-title">This month</h2>
+            <h2 className="dash-section-title">{t('dash.thisMonth')}</h2>
             {/* Monthly Summary Strip */}
             <motion.div className="monthly-strip" initial={{ opacity:0, y:-10 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.4 }} style={{ marginBottom:'0.75rem' }}>
               {[

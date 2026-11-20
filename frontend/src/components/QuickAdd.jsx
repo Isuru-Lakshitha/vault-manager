@@ -1,3 +1,4 @@
+import { useT } from '../i18n';
 import { saveDraft } from '../utils/offlineDrafts.js';
 import { auth } from '../utils/firebase';
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -19,6 +20,8 @@ const TYPE_BG    = { Income: 'rgba(16,185,129,0.12)', Expense: 'rgba(244,63,94,0
 const QUICK_CATS = ['🍔 Food','🚗 Transport','🏠 Rent','⚡ Utilities','🛍️ Shopping','💊 Health','💰 Salary','💼 Business','📱 Phone','🎭 Entertainment','✈️ Travel','🐷 Savings'];
 
 const QuickAdd = ({ open, onClose }) => {
+  const t = useT();
+  const tr = t; // inside .map(t => …) the outer t is shadowed
   const [accounts, setAccounts] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [saving, setSaving] = useState(false);
@@ -210,7 +213,7 @@ const QuickAdd = ({ open, onClose }) => {
   };
 
   return (
-    <Modal isOpen={open} onClose={onClose} title="⚡ Quick Add">
+    <Modal isOpen={open} onClose={onClose} title={t('qa.title')}>
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
         {/* Bank SMS & Voice 1-Tap Parser */}
         <SMSParserBox accounts={accounts} onApply={handleApplySMS} />
@@ -234,9 +237,9 @@ const QuickAdd = ({ open, onClose }) => {
               letterSpacing: '0.4px'
             }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: 'var(--mm-warning)' }}>
-                <Zap size={11} /> 1-TAP FREQUENT REPEAT
+                <Zap size={11} /> {t('qa.repeat')}
               </span>
-              <span>Tap to fill all fields</span>
+              <span>{t('qa.tapFill')}</span>
             </div>
             <div style={{
               display: 'flex',
@@ -299,18 +302,18 @@ const QuickAdd = ({ open, onClose }) => {
                 background: form.type === t ? TYPE_BG[t] : 'rgba(255,255,255,0.04)',
                 color: form.type === t ? TYPE_COLOR[t] : '#555',
                 borderBottom: form.type === t ? `2px solid ${TYPE_COLOR[t]}` : '2px solid transparent' }}
-            >{t === 'Expense' ? '💸 Expense' : t === 'Income' ? '💰 Income' : '🔄 Transfer'}</button>
+            >{tr(t === 'Expense' ? 'qa.expense' : t === 'Income' ? 'qa.income' : 'qa.transfer')}</button>
           ))}
         </div>
 
         {/* Amount + Date */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{`Amount (${getCurrencyLabel()})`}</label>
+            <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{t('qa.amount', { currency: getCurrencyLabel() })}</label>
             <CurrencyInput aria-label="Transaction amount" required value={form.amount} onChange={v => setForm(f => ({ ...f, amount: v }))} />
           </div>
           <div>
-            <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Date</label>
+            <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{t('qa.date')}</label>
             <input type="date" required value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} style={{ width: '100%' }} />
           </div>
         </div>
@@ -351,7 +354,7 @@ const QuickAdd = ({ open, onClose }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>From Account</label>
+                  <label style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>{t('qa.from')}</label>
                   <select
                     aria-label="From Account"
                     value={form.from_account_id}
@@ -362,7 +365,7 @@ const QuickAdd = ({ open, onClose }) => {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>To Account</label>
+                  <label style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>{t('qa.to')}</label>
                   <select
                     aria-label="To Account"
                     value={form.to_account_id}
@@ -375,7 +378,7 @@ const QuickAdd = ({ open, onClose }) => {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>Transfer Fee (optional)</label>
+                  <label style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t('qa.fee')}</label>
                   <CurrencyInput aria-label="Transfer fee" value={form.fee_amount} onChange={v => setForm(f => ({ ...f, fee_amount: v }))} />
                 </div>
                 {(() => {
@@ -411,7 +414,7 @@ const QuickAdd = ({ open, onClose }) => {
         <div ref={noteContainerRef} style={{ position: 'relative' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              <span>Merchant / Note</span>
+              <span>{t('qa.note')}</span>
               <Brain size={13} style={{ color: 'var(--mm-success)' }} />
             </label>
             {rememberedNotes.length > 0 && (
@@ -462,7 +465,7 @@ const QuickAdd = ({ open, onClose }) => {
               value={form.notes}
               onChange={handleNotesChange}
               onFocus={() => setNoteDropOpen(true)}
-              placeholder="e.g. Uber, Keells, Starbucks, Netflix..."
+              placeholder={t('qa.notePh')}
               style={{ width: '100%', paddingRight: form.notes ? '2rem' : undefined }}
             />
             {form.notes && (
@@ -567,9 +570,9 @@ const QuickAdd = ({ open, onClose }) => {
           <>
             {/* Category */}
             <div>
-              <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Category</label>
+              <label style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{t('qa.category')}</label>
               <input value={form.category} onChange={e => { setForm(f => ({ ...f, category: e.target.value })); setAutoCatSuggestion(null); }}
-                placeholder="Type or pick below…" style={{ width: '100%', marginBottom: '0.5rem' }} />
+                placeholder={t('qa.categoryPh')} style={{ width: '100%', marginBottom: '0.5rem' }} />
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem' }}>
                 {QUICK_CATS.map(c => {
                   const name = c.split(' ').slice(1).join(' ');
@@ -608,7 +611,7 @@ const QuickAdd = ({ open, onClose }) => {
         )}
 
         <button type="submit" disabled={saving} className="btn btn-primary" style={{ marginTop: '0.5rem' }}>
-          {saving ? 'Saving…' : '+ Save Transaction'}
+          {saving ? t('qa.saving') : t('qa.save')}
         </button>
       </form>
     </Modal>
