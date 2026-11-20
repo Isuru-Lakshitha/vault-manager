@@ -1,4 +1,5 @@
 import { useT, useLang, setLang, LANGUAGES } from '../i18n';
+import { backupToDrive, isDriveBackupAvailable, lastDriveBackup } from '../utils/driveBackup';
 import { PageHeader, Segmented } from '../components/ui';
 import { backupFingerprint, planBackupImport } from '../utils/backupPlan';
 import { useState, useEffect, useCallback } from 'react';
@@ -95,6 +96,9 @@ const hashPin = async (pin) => {
 const Settings = () => {
   const t = useT();
   const lang = useLang();
+  const driveAvailable = isDriveBackupAvailable();
+  const [driveBusy, setDriveBusy] = useState(false);
+  const [driveLast, setDriveLast] = useState(lastDriveBackup);
   const navigate = useNavigate();
   const [theme, setTheme] = useState(getThemePref);
   useEffect(() => {
@@ -1236,6 +1240,28 @@ const Settings = () => {
               >
                 🔒 AES-256 Encrypted Export
               </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                disabled={!driveAvailable || driveBusy}
+                title={driveAvailable ? 'Upload a backup to a "Vault Manager backups" folder in your Google Drive (uses the passphrase above if set)' : 'Google Drive backup is not set up for this app (see README)'}
+                onClick={async () => {
+                  setDriveBusy(true);
+                  const id = toast.loading('Backing up to Google Drive…');
+                  try {
+                    const r = await backupToDrive(backupPassphrase.trim());
+                    setDriveLast(r.at);
+                    setBackupHealth(getBackupHealthStatus());
+                    toast.success(`Saved to Google Drive${r.encrypted ? ' (encrypted)' : ''}: ${r.name}`, { id });
+                  } catch (err) {
+                    toast.error(err?.message || 'Google Drive backup failed', { id });
+                  } finally { setDriveBusy(false); }
+                }}
+                style={{ fontSize: '0.8rem', fontWeight: 700 }}
+              >
+                ☁️ {driveBusy ? 'Uploading…' : 'Back up to Google Drive'}
+              </button>
+              {driveLast && <span className="ui-header-note">Last Drive backup {new Date(driveLast).toLocaleDateString()}</span>}
               <label style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.76rem', color: 'var(--text-secondary)' }}>
                 Remind every
                 <input

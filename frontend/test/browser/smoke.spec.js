@@ -80,3 +80,12 @@ test('language switch: Settings changes menus and headings to Sinhala, then Tami
   await page.getByRole('tablist', { name: 'மொழி' }).getByRole('tab', { name: 'English' }).click();
   await expect(page.locator('main h1').first()).toHaveText('Settings');
 });
+
+test('Google Drive backup is shown but disabled until a client ID is configured', async ({ page }) => {
+  await page.goto('/test/browser/settings');
+  await page.locator('summary').filter({ hasText: 'Backup & data management' }).click();
+  const btn = page.getByRole('button', { name: /Back up to Google Drive/ });
+  await expect(btn).toBeVisible();
+  await expect(btn).toBeDisabled();
+  await expect(btn).toHaveAttribute('title', /not set up/);
+});

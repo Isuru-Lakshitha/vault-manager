@@ -167,8 +167,8 @@ export function getBackupHealthStatus() {
  * 1-Tap Full Vault Backup Exporter (Plain JSON or AES-256-GCM Encrypted)
  * Accepts either a string passphrase or an options object `{ password }`.
  */
-export async function exportFullVaultBackup(arg = '') {
-  const password = typeof arg === 'string' ? arg : (arg?.password || '');
+/** Collects every collection into one backup object (optionally encrypted). */
+export async function buildVaultBackup(password = '') {
 
   const [
     accounts,
@@ -227,6 +227,19 @@ export async function exportFullVaultBackup(arg = '') {
     filename = `vault_encrypted_${dateStr}.vault.json`;
   }
 
+  const counts = {
+    accounts: rawPayload.accounts.length,
+    transactions: rawPayload.transactions.length,
+    budgets: rawPayload.budgets.length,
+    goals: rawPayload.goals.length,
+  };
+  return { payload: finalPayload, filename, encrypted: finalPayload !== rawPayload, counts };
+}
+
+/** Builds the backup and downloads it as a file. */
+export async function exportFullVaultBackup(arg = '') {
+  const password = typeof arg === 'string' ? arg : (arg?.password || '');
+  const { payload: finalPayload, filename, counts } = await buildVaultBackup(password);
   const blob = new Blob([JSON.stringify(finalPayload, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -238,14 +251,5 @@ export async function exportFullVaultBackup(arg = '') {
   URL.revokeObjectURL(url);
 
   markBackupCompleted();
-  return {
-    encrypted: !!(password && password.trim().length > 0),
-    filename,
-    counts: {
-      accounts: (accounts || []).length,
-      transactions: (transactions || []).length,
-      budgets: (budgets || []).length,
-      goals: (goals || []).length,
-    },
-  };
+  return { encrypted: !!(password && password.trim().length > 0), filename, counts };
 }
