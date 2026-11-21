@@ -295,7 +295,7 @@ const CreditCards = () => {
     <PageWrapper>
       <div>
         {/* Header */}
-        <PageHeader title={t('nav.creditCards')} subtitle="Utilization tracking, statement cycles, and payoff projections">
+        <PageHeader title={t('nav.creditCards')} subtitle={t('sub.cards')}>
           <button className="btn btn-primary" onClick={openAdd}><Plus size={16}/> Add Card</button>
         </PageHeader>
 
@@ -395,8 +395,8 @@ const CreditCards = () => {
             {/* Empty state */}
             {cards.length === 0 && (
               <div className="bento-item col-span-12">
-                <EmptyState icon={CreditCard} title="No credit cards yet" action={<Button variant="primary" icon={Plus} onClick={openAdd}>Add a card</Button>}>
-                  Track balances, due dates and utilisation so you never pay interest by accident.
+                <EmptyState icon={CreditCard} title={t('empty.cards.title')} action={<Button variant="primary" icon={Plus} onClick={openAdd}>{t('empty.cards.action')}</Button>}>
+                  {t('empty.cards.body')}
                 </EmptyState>
               </div>
             )}

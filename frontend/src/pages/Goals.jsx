@@ -557,7 +557,7 @@ const Goals = () => {
       />
 
       <div style={{ maxWidth: 1240, margin: '0 auto', width: '100%' }}>
-        <PageHeader title={t('nav.goals')} subtitle="Track what you have now, your target date and the daily amount to get there.">
+        <PageHeader title={t('nav.goals')} subtitle={t('sub.goals')}>
           <Button
             icon={Sparkles}
             onClick={() => {
@@ -565,9 +565,9 @@ const Goals = () => {
               if (goals.length > 0 && !roundUpGoalId) setRoundUpGoalId(goals[0].id);
             }}
           >
-            Round-up simulator
+            {t('btn.roundUp')}
           </Button>
-          <Button variant="primary" icon={Plus} onClick={openAddModal}>New goal</Button>
+          <Button variant="primary" icon={Plus} onClick={openAddModal}>{t('btn.newGoal')}</Button>
         </PageHeader>
 
         {/* Top Summary KPIs Strip: What You Have Right Now + End Goal + Daily Needed */}
@@ -834,10 +834,10 @@ const Goals = () => {
           <div className="bento-item" style={{ marginTop: '1rem' }}>
             <EmptyState
               icon={Wallet}
-              title={searchQuery ? 'No matching goals' : 'No goals yet'}
-              action={searchQuery ? null : <Button variant="primary" icon={Plus} onClick={openAddModal}>Create a goal</Button>}
+              title={searchQuery ? t('empty.goals.none') : t('empty.goals.title')}
+              action={searchQuery ? null : <Button variant="primary" icon={Plus} onClick={openAddModal}>{t('empty.goals.action')}</Button>}
             >
-              {searchQuery ? 'Try a different search.' : 'Save towards something: an emergency fund, a trip, a new laptop.'}
+              {searchQuery ? t('empty.goals.search') : t('empty.goals.body')}
             </EmptyState>
           </div>
         ) : (

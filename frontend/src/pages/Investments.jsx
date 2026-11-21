@@ -223,10 +223,10 @@ const Investments = () => {
   return (
     <PageWrapper>
       <div>
-        <PageHeader title={t('nav.investments')} subtitle="Portfolio holdings, asset allocation, and compound growth">
+        <PageHeader title={t('nav.investments')} subtitle={t('sub.investments')}>
           {pricesUpdatedAt && <span className="ui-header-note">Updated {pricesUpdatedAt}</span>}
-          <Button icon={RefreshCw} loading={priceRefreshing} onClick={refreshPrices}>{priceRefreshing ? 'Refreshing…' : 'Refresh prices'}</Button>
-          <Button variant="primary" icon={Plus} onClick={openAdd}>Add investment</Button>
+          <Button icon={RefreshCw} loading={priceRefreshing} onClick={refreshPrices}>{priceRefreshing ? t('btn.refreshing') : t('btn.refreshPrices')}</Button>
+          <Button variant="primary" icon={Plus} onClick={openAdd}>{t('btn.addInvestment')}</Button>
         </PageHeader>
 
         {loading ? <SkeletonLoader rows={4} height={100} /> : (

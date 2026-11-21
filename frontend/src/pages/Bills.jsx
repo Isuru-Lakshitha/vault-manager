@@ -208,15 +208,15 @@ const Bills = () => {
   return (
     <PageWrapper>
       <div>
-        <PageHeader title={t('page.bills')} subtitle="Upcoming due dates, subscription burn rate, and 1-tap payments">
+        <PageHeader title={t('page.bills')} subtitle={t('sub.bills')}>
           <Segmented
             label="Bills view"
             value={billsView}
             onChange={setBillsView}
-            options={[{ value: 'list', label: 'List' }, { value: 'calendar', label: 'Calendar' }]}
+            options={[{ value: 'list', label: t('seg.list') }, { value: 'calendar', label: t('seg.calendar') }]}
           />
-          {bills.some(b => !b.paid) && <Button icon={CheckCircle} onClick={markAllPaid}>Mark all paid</Button>}
-          <Button variant="primary" icon={Plus} onClick={openAdd}>Add bill</Button>
+          {bills.some(b => !b.paid) && <Button icon={CheckCircle} onClick={markAllPaid}>{t('btn.markAllPaid')}</Button>}
+          <Button variant="primary" icon={Plus} onClick={openAdd}>{t('btn.addBill')}</Button>
         </PageHeader>
 
         {!loading && <InsightBills bills={bills} />}
@@ -445,8 +445,8 @@ const Bills = () => {
             )}
             {bills.length === 0 && (
               <div className="bento-item col-span-12">
-                <EmptyState icon={Bell} title="No bills yet" action={<Button variant="primary" icon={Plus} onClick={openAdd}>Add your first bill</Button>}>
-                  Add rent, utilities and subscriptions to see what's due and pay them in one tap.
+                <EmptyState icon={Bell} title={t('empty.bills.title')} action={<Button variant="primary" icon={Plus} onClick={openAdd}>{t('empty.bills.action')}</Button>}>
+                  {t('empty.bills.body')}
                 </EmptyState>
               </div>
             )}

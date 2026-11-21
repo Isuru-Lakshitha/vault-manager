@@ -1363,18 +1363,18 @@ const Recurring = () => {
     <PageWrapper>
       <div>
         {/* Clean Minimalist Header */}
-        <PageHeader title={t('page.recurring')} subtitle="Reminder-only monthly commitments, variable bills & loan schedules — never auto-deducted">
+        <PageHeader title={t('page.recurring')} subtitle={t('sub.recurring')}>
           {cycleStats.unpaidCount > 0 && (
-            <Button icon={CheckCircle2} onClick={handleMarkAllStartNextMonth} title="Mark all current month reminders as paid without deducting from any account">Mark all paid</Button>
+            <Button icon={CheckCircle2} onClick={handleMarkAllStartNextMonth} title="Mark all current month reminders as paid without deducting from any account">{t('btn.markAllPaid')}</Button>
           )}
           {cycleStats.paidCount > 0 && (
-            <Button icon={RotateCcw} onClick={handleResetMonthCycle} title="Reset all reminders to Unpaid / Due for this month">Reset cycle</Button>
+            <Button icon={RotateCcw} onClick={handleResetMonthCycle} title="Reset all reminders to Unpaid / Due for this month">{t('btn.resetCycle')}</Button>
           )}
-          <Button icon={Landmark} onClick={() => openAddLoanModal()}>Track loan</Button>
+          <Button icon={Landmark} onClick={() => openAddLoanModal()}>{t('btn.trackLoan')}</Button>
           {rules.length > 0 && (
-            <Button variant="ghost" icon={Trash2} onClick={() => setClearAllConfirm(true)} title="Remove all recurring rules">Clear all</Button>
+            <Button variant="ghost" icon={Trash2} onClick={() => setClearAllConfirm(true)} title="Remove all recurring rules">{t('btn.clearAll')}</Button>
           )}
-          <Button variant="primary" icon={Plus} onClick={() => openAdd()}>Add reminder</Button>
+          <Button variant="primary" icon={Plus} onClick={() => openAdd()}>{t('btn.addReminder')}</Button>
         </PageHeader>
 
         {loading ? <SkeletonLoader rows={4} height={80} /> : (
@@ -1963,13 +1963,13 @@ const Recurring = () => {
               <div className="bento-item col-span-12">
                 <EmptyState
                   icon={RefreshCw}
-                  title="No monthly reminders yet"
+                  title={t('empty.recurring.title')}
                   action={<>
-                    <Button icon={Landmark} onClick={() => openAddLoanModal()}>Track a loan payment</Button>
-                    <Button variant="primary" icon={Plus} onClick={() => openAdd()}>Add a reminder</Button>
+                    <Button icon={Landmark} onClick={() => openAddLoanModal()}>{t('empty.recurring.loan')}</Button>
+                    <Button variant="primary" icon={Plus} onClick={() => openAdd()}>{t('empty.recurring.add')}</Button>
                   </>}
                 >
-                  Add monthly bills like electricity, internet or rent, or link a loan. They're set aside in your safe-to-spend.
+                  {t('empty.recurring.body')}
                 </EmptyState>
               </div>
             )}

@@ -283,20 +283,20 @@ const Budgets = () => {
   return (
     <PageWrapper>
       <div>
-        <PageHeader title={t('nav.budgets')} subtitle="Monthly category limits, pacing, and 50/30/20 allocation">
+        <PageHeader title={t('nav.budgets')} subtitle={t('sub.budgets')}>
           <Segmented
             label="Budget view"
             value={activeView}
             onChange={setActiveView}
             options={[
-              { value: 'categories', label: 'Categories', count: budgets.length },
-              { value: 'rule503020', label: '50/30/20 rule' },
+              { value: 'categories', label: t('seg.categories'), count: budgets.length },
+              { value: 'rule503020', label: t('seg.rule') },
             ]}
           />
           {activeView === 'categories' && (
             <>
               <Button icon={RefreshCw} disabled={copyingBudgets} onClick={handleCopyPreviousMonth} title="Carry over last month's budgets (or auto-create from spending)">
-                {copyingBudgets ? 'Copying…' : 'Carry over last month'}
+                {copyingBudgets ? t('btn.copying') : t('btn.carryOver')}
               </Button>
               {visibleBudgets.some(b => {
                 const avg = getThreeMonthAvg(b.category);
@@ -315,10 +315,10 @@ const Budgets = () => {
                         toast.error('Failed to tune budgets');
                       }
                     }}>
-                  Tune to 3-month average
+                  {t('btn.tune')}
                 </Button>
               )}
-              <Button variant="primary" icon={Plus} onClick={openAddModal}>New budget</Button>
+              <Button variant="primary" icon={Plus} onClick={openAddModal}>{t('btn.newBudget')}</Button>
             </>
           )}
         </PageHeader>
@@ -685,13 +685,13 @@ const Budgets = () => {
               <div className="bento-item col-span-12">
                 <EmptyState
                   icon={Target}
-                  title="No budgets yet"
+                  title={t('empty.budgets.title')}
                   action={<>
-                    <Button icon={Sparkles} loading={copyingBudgets} onClick={handleCopyPreviousMonth}>{copyingBudgets ? 'Creating…' : 'Create from my spending'}</Button>
+                    <Button icon={Sparkles} loading={copyingBudgets} onClick={handleCopyPreviousMonth}>{copyingBudgets ? t('empty.budgets.creating') : t('empty.budgets.auto')}</Button>
                     <Button variant="primary" icon={Plus} onClick={openAddModal}>New budget</Button>
                   </>}
                 >
-                  Set a monthly limit per category and you'll get a heads-up at 80% and 100%.
+                  {t('empty.budgets.body')}
                 </EmptyState>
               </div>
             )}

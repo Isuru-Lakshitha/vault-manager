@@ -1084,7 +1084,7 @@ const Transactions = () => {
             </div>
 
             {/* Primary Action */}
-            <Button variant="primary" icon={Plus} onClick={openAddModal}>New transaction</Button>
+            <Button variant="primary" icon={Plus} onClick={openAddModal}>{t('btn.newTransaction')}</Button>
           </div>
         </div>
 
@@ -1164,8 +1164,8 @@ const Transactions = () => {
             value={activeTab}
             onChange={setActiveTab}
             options={[
-              { value: 'all', label: 'All transactions' },
-              { value: 'recurring', label: 'Recurring rules', count: recurringRules.length },
+              { value: 'all', label: t('seg.allTx') },
+              { value: 'recurring', label: t('seg.recurringRules'), count: recurringRules.length },
             ]}
           />
         </div>
