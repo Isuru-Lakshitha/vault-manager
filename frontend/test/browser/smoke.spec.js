@@ -89,3 +89,23 @@ test('Google Drive backup is shown but disabled until a client ID is configured'
   await expect(btn).toBeDisabled();
   await expect(btn).toHaveAttribute('title', /not set up/);
 });
+
+// Sinhala and Tamil strings run longer than English: every page must still
+// render without errors and without sideways scrolling on a phone.
+for (const lang of ['si', 'ta']) {
+  for (const [path] of PAGES) {
+    test(`i18n ${lang}: ${path} renders and fits`, async ({ page }, info) => {
+      const errors = watchErrors(page);
+      await page.addInitScript((l) => { try { localStorage.setItem('vm_lang', l); } catch { /* ignore */ } }, lang);
+      await page.goto(`/test/browser/${path}`);
+      await expect(page.locator('main h1').first()).toBeVisible();
+      await expect(page.locator('html')).toHaveAttribute('lang', lang);
+      await page.waitForTimeout(400);
+      if (info.project.name === 'mobile') {
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        expect(overflow, 'page scrolls sideways').toBeLessThanOrEqual(1);
+      }
+      expect(errors).toEqual([]);
+    });
+  }
+}
