@@ -1,6 +1,6 @@
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useT } from '../i18n';
-import { LayoutDashboard, CreditCard, ArrowRightLeft, Landmark, BarChart2, Target, Wallet, Settings, LogOut, Receipt, TrendingUp, BadgeDollarSign, MoreHorizontal, Search, X, Eye, EyeOff, Plus, Crown, Smartphone, ChevronLeft } from 'lucide-react';
+import { LayoutDashboard, CreditCard, ArrowRightLeft, Landmark, BarChart2, Target, Wallet, Settings, LogOut, Receipt, TrendingUp, BadgeDollarSign, MoreHorizontal, Search, X, Eye, EyeOff, Plus, Crown, Smartphone, Pin, PinOff } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
@@ -35,16 +35,21 @@ const Sidebar = ({ isOpen, onSearchOpen }) => {
     await auth.signOut();
     navigate('/');
   };
-  const [collapsed, setCollapsed] = useState(() => localStorage.getItem('vm_sidebar_collapsed') === '1');
+  // Desktop with a mouse: an icon rail that opens on hover/focus (overlaying
+  // the page) unless pinned open. Touch devices always get the full sidebar.
+  const [pinned, setPinned] = useState(() => {
+    try { return localStorage.getItem('vm_sidebar_pinned') === '1'; } catch { return false; }
+  });
   useEffect(() => {
-    document.body.classList.toggle('sidebar-collapsed', collapsed);
-    localStorage.setItem('vm_sidebar_collapsed', collapsed ? '1' : '0');
-  }, [collapsed]);
+    document.body.classList.toggle('sidebar-rail', !pinned);
+    document.body.classList.remove('sidebar-collapsed'); // legacy mode
+    try { localStorage.setItem('vm_sidebar_pinned', pinned ? '1' : '0'); } catch { /* private mode */ }
+  }, [pinned]);
   return (
     <>
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-        <button className="sidebar-collapse-btn" onClick={() => setCollapsed(c => !c)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} aria-pressed={collapsed}>
-          <ChevronLeft size={14} />
+        <button className="sidebar-pin-btn" onClick={() => setPinned(p => !p)} aria-label={pinned ? 'Unpin sidebar (show icons only)' : 'Pin sidebar open'} title={pinned ? 'Unpin: show icons, open on hover' : 'Keep the sidebar open'} aria-pressed={pinned}>
+          {pinned ? <PinOff size={13} /> : <Pin size={13} />}
         </button>
         <NavLink to="/dashboard" className="workspace-brand" title="Dashboard">
           <span className="workspace-brand-icon"><Landmark size={22} /></span>

@@ -4,34 +4,66 @@
    Loaded after minimal.css so it can refine the base layout.
    ============================================================ */
 
-/* ---------- Collapsible sidebar (desktop) ---------- */
-.sidebar { transition: width .22s var(--ease-out-expo), transform .32s var(--ease-out-expo); }
-.sidebar-collapse-btn { display: none; }
+/* ---------- Sidebar: icon rail that opens on hover (desktop + mouse) ----------
+   body.sidebar-rail (default; Sidebar.jsx): the sidebar is a fixed 68px rail
+   of icons. Hovering it (or tabbing into it) slides it open to full width as
+   an overlay, so the page never moves. Icons keep the same position in both
+   states; labels fade in. Pinning (the edge button) restores the full,
+   in-flow sidebar. Touch-only screens always get the full sidebar. */
+.sidebar-pin-btn { display: none; }
 
 @media (min-width: 901px) {
-  .sidebar-collapse-btn {
-    display: grid; place-items: center; position: absolute; top: 30px; right: -12px;
-    width: 24px; height: 24px; border-radius: 50%; padding: 0; cursor: pointer; z-index: 5;
-    background: var(--mm-panel, var(--bg-surface)); color: var(--text-secondary);
+  .sidebar-pin-btn {
+    display: grid; place-items: center; position: absolute; top: 34px; right: -12px; z-index: 6;
+    width: 24px; height: 24px; border-radius: 50%; padding: 0; cursor: pointer;
+    background: var(--mm-surface, var(--bg-surface)); color: var(--mm-text-2, var(--text-secondary));
     border: 1px solid var(--mm-border, var(--border-glass));
-    transition: transform .22s var(--ease-out-expo), color .15s;
+    transition: color .15s, opacity .2s, scale .3s var(--lg-spring, ease);
   }
-  .sidebar-collapse-btn:hover { color: var(--text-primary); }
-  body.sidebar-collapsed { --sidebar-width: 68px; }
-  body.sidebar-collapsed .sidebar { padding: 0 10px; }
-  body.sidebar-collapsed .sidebar-collapse-btn { transform: rotate(180deg); }
-  body.sidebar-collapsed .workspace-brand > span:last-child,
-  body.sidebar-collapsed .workspace-link > span,
-  body.sidebar-collapsed .workspace-search > span,
-  body.sidebar-collapsed .workspace-search > kbd,
-  body.sidebar-collapsed .workspace-section,
-  body.sidebar-collapsed .quiet-nav-group > summary { display: none; }
-  body.sidebar-collapsed .workspace-brand,
-  body.sidebar-collapsed .workspace-link,
-  body.sidebar-collapsed .workspace-search { justify-content: center; padding-inline: 0; }
-  body.sidebar-collapsed .workspace-link { gap: 0; }
+  .sidebar-pin-btn:hover { color: var(--mm-text, var(--text-primary)); scale: 1.08; }
   .sidebar { overflow: visible; }
   .workspace-nav { overflow-x: hidden; }
+}
+
+@media (min-width: 901px) and (hover: hover) and (pointer: fine) {
+  body.sidebar-rail { --rail-w: 68px; --rail-open-w: 248px; }
+  body.sidebar-rail .app-container { padding-left: var(--rail-w); }
+  html body.sidebar-rail .sidebar {
+    position: fixed; top: 0; bottom: 0; left: 0; z-index: 120;
+    width: var(--rail-w) !important; overflow: hidden;
+    transition: width .32s var(--lg-spring-soft, cubic-bezier(.2,.8,.2,1)) .2s, box-shadow .3s ease .2s;
+  }
+  /* Open: short delay so a cursor passing by doesn't trigger it. */
+  html body.sidebar-rail .sidebar:is(:hover, :has(:focus-visible)) {
+    width: var(--rail-open-w) !important;
+    box-shadow: 18px 0 48px -16px rgba(0, 0, 0, .55);
+    transition-delay: .12s;
+  }
+  body.sidebar-rail .sidebar-pin-btn { opacity: 0; right: 10px; top: 12px; }
+  body.sidebar-rail .sidebar:is(:hover, :has(:focus-visible)) .sidebar-pin-btn { opacity: 1; }
+
+  /* Fixed geometry so icons never jump: content keeps its open-state width
+     and is simply clipped by the rail. */
+  body.sidebar-rail .sidebar > :not(.sidebar-pin-btn) { width: calc(var(--rail-open-w) - 28px); flex-shrink: 0; }
+  body.sidebar-rail .workspace-brand { padding-left: 0; padding-right: 0; }
+  body.sidebar-rail :is(.workspace-link, .workspace-search, .workspace-brand) { white-space: nowrap; }
+
+  /* Labels fade in once open; headings keep their space (they act as group
+     gaps in the rail). */
+  body.sidebar-rail :is(.workspace-brand > span:last-child, .workspace-link > span, .workspace-search > span,
+    .workspace-search > kbd, .workspace-section, .quiet-nav-group > summary) {
+    opacity: 0; transition: opacity .15s ease;
+  }
+  body.sidebar-rail .sidebar:is(:hover, :has(:focus-visible)) :is(.workspace-brand > span:last-child, .workspace-link > span,
+    .workspace-search > span, .workspace-search > kbd, .workspace-section, .quiet-nav-group > summary) {
+    opacity: 1; transition: opacity .22s ease .2s;
+  }
+  body.sidebar-rail .workspace-nav { overflow-y: auto; scrollbar-width: none; }
+  body.sidebar-rail .workspace-nav::-webkit-scrollbar { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body.sidebar-rail .sidebar, html body.sidebar-rail .sidebar * { transition-duration: 0s !important; transition-delay: 0s !important; }
 }
 
 /* ---------- Desktop top bar ---------- */
