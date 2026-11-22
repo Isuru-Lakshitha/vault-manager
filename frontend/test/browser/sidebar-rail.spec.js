@@ -11,6 +11,9 @@ test('sidebar: icon rail opens on hover and focus, pin keeps it open', async ({ 
   const width = async (loc) => Math.round((await loc.boundingBox()).width);
   const left = async (loc) => Math.round((await loc.boundingBox()).x);
 
+  // Playwright's mouse starts at (0, 0), inside the rail; Chromium on Linux
+  // applies :hover there, so start with the pointer over the page instead.
+  await page.mouse.move(800, 400);
   await expect.poll(() => width(sidebar)).toBe(68);
   expect(await left(main)).toBe(68);
 
