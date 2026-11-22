@@ -1,6 +1,6 @@
 import { useT } from '../i18n';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
-import { PageHeader, StatCard, StatGrid } from '../components/ui';
+import { PageHeader, StatCard, StatGrid, Segmented, Button } from '../components/ui';
 import { InsightLoans } from '../components/InsightPanels';
 import { useState, useEffect } from 'react';
 import useLiveData from '../utils/useLiveData';
@@ -702,17 +702,17 @@ const Loans = () => {
   const totalInterest = loans.reduce((s, l) => s + (l.current_accrued_interest || l.unpaid_interest || 0), 0);
 
   const TABS = [
-    { id:'loans', label:'MY LOANS' },
-    { id:'ious', label:'🤝 SPLIT & IOUs' },
-    { id:'planner', label:'DEBT PAYOFF PLANNER' },
-    { id:'emi', label:'EMI CALCULATOR' }
+    { id:'loans', label:'My loans' },
+    { id:'ious', label:'Split & IOUs' },
+    { id:'planner', label:'Payoff planner' },
+    { id:'emi', label:'EMI calculator' }
   ];
 
   return (
     <PageWrapper>
       <div>
         <PageHeader title={t('nav.loans')} subtitle="Principal tracking, accrued interest, and payoff schedules">
-          <button className="btn btn-primary" onClick={openAddModal}><Plus size={16}/> New Liability</button>
+          <Button variant="primary" icon={Plus} onClick={openAddModal}>New liability</Button>
         </PageHeader>
 
         {/* Summary strip */}
@@ -727,17 +727,8 @@ const Loans = () => {
         {!loading && activeTab === 'loans' && <InsightLoans loans={loans} />}
 
         {/* Tabs */}
-        <div style={{ display:'flex', gap:'0.35rem', marginBottom:'1.5rem', borderBottom:'1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))', paddingBottom:'0.65rem', flexWrap:'wrap' }}>
-          {TABS.map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-              style={{ padding:'0.45rem 0.95rem', borderRadius:8, cursor:'pointer', fontSize:'0.76rem', fontWeight: activeTab===tab.id ? 600 : 500,
-                background: activeTab===tab.id ? 'var(--mm-accent-soft, rgba(59,130,246,0.14))' : 'transparent',
-                color: activeTab===tab.id ? 'var(--mm-accent-text, #60a5fa)' : 'var(--text-secondary)',
-                border: activeTab===tab.id ? '1px solid rgba(59,130,246,0.35)' : '1px solid transparent',
-                transition:'all 0.15s' }}>
-              {tab.label}
-            </button>
-          ))}
+        <div className="ui-tabs-row">
+          <Segmented label="Loans view" value={activeTab} onChange={setActiveTab} options={TABS.map(tab => ({ value: tab.id, label: tab.label }))} />
         </div>
 
         {loading ? <SkeletonLoader rows={2} height={280}/> : (
