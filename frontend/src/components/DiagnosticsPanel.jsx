@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Bug, Copy, Trash2, MessageSquareWarning, RefreshCw } from 'lucide-react';
 import { Button, EmptyState } from './ui';
+import { useT } from '../i18n';
 import { fetchMyErrorLogs, clearMyErrorLogs, buildDiagnosticsReport, problemReportUrl } from '../utils/errorLogger';
 
 const APP_VERSION = import.meta.env.VITE_BUILD_STAMP || 'dev';
@@ -16,6 +17,7 @@ const when = (ts) => {
  * and opens a pre-filled problem report on GitHub (you review it first).
  */
 export default function DiagnosticsPanel() {
+  const t = useT();
   const [logs, setLogs] = useState(null);
   const [busy, setBusy] = useState(false);
 
@@ -42,17 +44,17 @@ export default function DiagnosticsPanel() {
     <div className="diag">
       <div className="diag-actions">
         <Button size="sm" icon={MessageSquareWarning} variant="primary" onClick={() => window.open(problemReportUrl(report()), '_blank', 'noopener')}>
-          Report a problem
+          {t('diag.report')}
         </Button>
-        <Button size="sm" icon={Copy} onClick={copy}>Copy report</Button>
-        <Button size="sm" icon={RefreshCw} variant="ghost" onClick={load}>Refresh</Button>
-        {logs?.length > 0 && <Button size="sm" icon={Trash2} variant="ghost" loading={busy} onClick={clear}>Clear</Button>}
+        <Button size="sm" icon={Copy} onClick={copy}>{t('diag.copy')}</Button>
+        <Button size="sm" icon={RefreshCw} variant="ghost" onClick={load}>{t('diag.refresh')}</Button>
+        {logs?.length > 0 && <Button size="sm" icon={Trash2} variant="ghost" loading={busy} onClick={clear}>{t('diag.clear')}</Button>}
       </div>
-      <p className="diag-note">App version {APP_VERSION}. Reports include the app version, your browser and error messages, never your email or financial data. You review the report on GitHub before it's posted.</p>
+      <p className="diag-note">{t('diag.note', { version: APP_VERSION })}</p>
       {logs === null ? (
         <p className="diag-note">Loading…</p>
       ) : logs.length === 0 ? (
-        <EmptyState icon={Bug} title="No problems recorded">If something goes wrong, it shows up here so you can report it.</EmptyState>
+        <EmptyState icon={Bug} title={t('diag.none')}>{t('diag.noneBody')}</EmptyState>
       ) : (
         <ol className="diag-list">
           {logs.map((l) => (

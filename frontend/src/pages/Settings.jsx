@@ -1389,7 +1389,7 @@ const Settings = () => {
 
           {/* DATA STATISTICS */}
           </div></details>
-          <details className="quiet-section settings-disclosure"><summary>Diagnostics &amp; problem reports</summary><div className="quiet-section-content">
+          <details className="quiet-section settings-disclosure"><summary>{t('diag.title')}</summary><div className="quiet-section-content">
             <DiagnosticsPanel />
           </div></details>
           <details className="quiet-section settings-disclosure"><summary>Data statistics</summary><div className="quiet-section-content">

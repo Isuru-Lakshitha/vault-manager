@@ -1,5 +1,6 @@
 import toast from 'react-hot-toast';
 import { scheduleUndoable } from '../utils/undoDelete';
+import { translate, getLang } from '../i18n';
 
 /*
  * Delete with an Undo toast.
@@ -27,7 +28,7 @@ export function deleteWithUndo({ key, label, hide, restore, commit, onCommitted,
     onUndo: () => {
       toast.dismiss(toastId);
       restore?.();
-      toast.success('Restored', { duration: 1600 });
+      toast.success(translate(getLang(), 'undo.restored'), { duration: 1600 });
     },
     onError: (err) => {
       restore?.();
@@ -44,7 +45,7 @@ export function deleteWithUndo({ key, label, hide, restore, commit, onCommitted,
           className="undo-toast-btn"
           onClick={() => { entry.undo(); toast.dismiss(t.id); }}
         >
-          Undo
+          {translate(getLang(), 'undo.undo')}
         </button>
         <span className="undo-toast-timer" style={{ animationDuration: `${delay}ms` }} aria-hidden="true" />
       </span>

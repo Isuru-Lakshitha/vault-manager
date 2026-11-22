@@ -35,7 +35,7 @@ const Sidebar = ({ isOpen, onSearchOpen }) => {
   return (
     <>
       <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
-        <button className="sidebar-pin-btn" onClick={() => setPinned(p => !p)} aria-label={pinned ? 'Unpin sidebar (show icons only)' : 'Pin sidebar open'} title={pinned ? 'Unpin: show icons, open on hover' : 'Keep the sidebar open'} aria-pressed={pinned}>
+        <button className="sidebar-pin-btn" onClick={() => setPinned(p => !p)} aria-label={pinned ? t('side.unpin') : t('side.pin')} title={pinned ? 'Unpin: show icons, open on hover' : 'Keep the sidebar open'} aria-pressed={pinned}>
           {pinned ? <PinOff size={13} /> : <Pin size={13} />}
         </button>
         <NavLink to="/dashboard" className="workspace-brand" title="Dashboard">
