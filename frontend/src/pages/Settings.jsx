@@ -21,6 +21,7 @@ import { exportFullVaultBackup, decryptVaultBackup, getBackupHealthStatus } from
 import { getBackupReminderDays, setBackupReminderDays } from '../utils/alertEngine';
 import TotpMfaPanel from '../components/TotpMfaPanel';
 import AccountDataRightsPanel from '../components/AccountDataRightsPanel';
+import DiagnosticsPanel from '../components/DiagnosticsPanel';
 import { getSessionTimeoutMinutes, setSessionTimeoutMinutes, SESSION_TIMEOUT_OPTIONS } from '../utils/sessionTimeout';
 
 
@@ -1387,6 +1388,9 @@ const Settings = () => {
           <AccountDataRightsPanel />
 
           {/* DATA STATISTICS */}
+          </div></details>
+          <details className="quiet-section settings-disclosure"><summary>Diagnostics &amp; problem reports</summary><div className="quiet-section-content">
+            <DiagnosticsPanel />
           </div></details>
           <details className="quiet-section settings-disclosure"><summary>Data statistics</summary><div className="quiet-section-content">
           {dataStats && (

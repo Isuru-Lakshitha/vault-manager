@@ -433,3 +433,18 @@ test('transfer normalization strips same-currency destination_amount, enforces c
  assert.equal(records.get('accounts/cash_lkr').last_ledger_ref, `${expId}_reversal`);
  assert.equal(records.get('accounts/cash_lkr').last_ledger_op, 'reverse');
 });
+
+import { buildDiagnosticsReport, problemReportUrl } from '../src/utils/errorLogger.js';
+
+test('diagnostics report carries version and errors but no account details', () => {
+  const report = buildDiagnosticsReport(
+    [{ level: 'error', message: 'Boom', context: 'App.jsx:10', ts: '2026-11-22T10:00:00Z', uid: 'secret-uid', url: 'x' }],
+    { appVersion: '2026.11.22', userAgent: 'TestUA', page: '/budgets' },
+  );
+  assert.match(report, /App version: 2026\.11\.22/);
+  assert.match(report, /1\. \[error\] 2026-11-22T10:00:00\.000Z Boom/);
+  assert.doesNotMatch(report, /secret-uid/);
+  const url = problemReportUrl(report);
+  assert.ok(url.startsWith('https://github.com/Isuru-Lakshitha/vault-manager/issues/new?'));
+  assert.match(decodeURIComponent(url), /Boom/);
+});

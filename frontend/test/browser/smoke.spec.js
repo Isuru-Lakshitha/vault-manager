@@ -109,3 +109,18 @@ for (const lang of ['si', 'ta']) {
     });
   }
 }
+
+test('Diagnostics lists logged errors, offers a report and can clear them', async ({ page }) => {
+  await page.goto('/test/browser/settings');
+  await page.locator('summary').filter({ hasText: 'Diagnostics' }).click();
+  await expect(page.getByText('No problems recorded')).toBeVisible();
+  await page.evaluate(async () => {
+    const { logError } = await import('/src/utils/errorLogger.js');
+    await logError(new Error('Test failure for diagnostics'), { context: 'smoke-test' });
+  });
+  await page.getByRole('button', { name: 'Refresh' }).click();
+  await expect(page.getByText('Test failure for diagnostics')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Report a problem' })).toBeEnabled();
+  await page.getByRole('button', { name: 'Clear' }).click();
+  await expect(page.getByText('No problems recorded')).toBeVisible();
+});

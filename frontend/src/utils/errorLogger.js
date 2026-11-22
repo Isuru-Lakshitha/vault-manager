@@ -119,3 +119,51 @@ export function installGlobalErrorHandlers() {
     });
   });
 }
+
+// ── Reading your own logs (Settings → Diagnostics) ─────────────────────
+const REPO_ISSUES = 'https://github.com/Isuru-Lakshitha/vault-manager/issues/new';
+
+/** The signed-in user's most recent logged errors (newest first). */
+export async function fetchMyErrorLogs(max = 25) {
+  const uid = auth?.currentUser?.uid;
+  if (!uid) return [];
+  const { getDocs, query, orderBy, limit } = await import('firebase/firestore');
+  const snap = await getDocs(query(collection(db, 'users', uid, 'error_logs'), orderBy('ts', 'desc'), limit(max)));
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+/** Deletes the given logs (owner-only per firestore.rules). */
+export async function clearMyErrorLogs(ids) {
+  const uid = auth?.currentUser?.uid;
+  if (!uid) return 0;
+  const { doc, deleteDoc } = await import('firebase/firestore');
+  await Promise.all(ids.map((id) => deleteDoc(doc(db, 'users', uid, 'error_logs', id))));
+  return ids.length;
+}
+
+const tsText = (ts) => {
+  const d = ts?.toDate ? ts.toDate() : (ts ? new Date(ts) : null);
+  return d && !Number.isNaN(d.getTime()) ? d.toISOString() : 'unknown time';
+};
+
+/**
+ * Plain-text diagnostics for a support request. Contains app version, browser
+ * and error messages, never the user's email, uid or financial data.
+ */
+export function buildDiagnosticsReport(logs, { appVersion = 'unknown', userAgent = '', page = '' } = {}) {
+  const lines = [
+    `App version: ${appVersion}`,
+    `Browser: ${userAgent}`.slice(0, 300),
+    page ? `Page: ${page}` : null,
+    `Recent errors: ${logs.length}`,
+    '',
+    ...logs.slice(0, 10).map((l, i) => `${i + 1}. [${l.level || 'error'}] ${tsText(l.ts)} ${String(l.message || '').slice(0, 300)}${l.context ? `\n   at ${String(l.context).slice(0, 160)}` : ''}`),
+  ];
+  return lines.filter((x) => x !== null).join('\n');
+}
+
+/** A GitHub "new issue" link pre-filled with the report (the user reviews it before posting). */
+export function problemReportUrl(report, title = 'Problem report') {
+  const body = `**What happened?**\n\n\n**What did you expect?**\n\n\n<details><summary>Diagnostics</summary>\n\n\`\`\`\n${report.slice(0, 5000)}\n\`\`\`\n</details>\n`;
+  return `${REPO_ISSUES}?labels=bug&title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
+}
