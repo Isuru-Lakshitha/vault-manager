@@ -156,3 +156,32 @@ body.light-mode .set-row-icon { color: color-mix(in srgb, var(--row-color, var(-
 .diag-list strong { display: block; font-size: 0.82rem; color: var(--mm-text); word-break: break-word; }
 .diag-list small { font-size: 0.72rem; color: var(--mm-text-2); }
 .diag-level { flex-shrink: 0; text-transform: uppercase; font-size: 0.62rem; }
+
+/* ---------- Three.js stages (src/three) ---------- */
+.three-stage { position: relative; width: 100%; height: 100%; }
+.three-canvas { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity .8s ease; }
+.three-stage[data-status='ready'] .three-canvas { opacity: 1; }
+.three-stage[data-status='unsupported'] .three-canvas { display: none; }
+.login-vault { width: min(520px, 100%); aspect-ratio: 1 / 1; }
+.dash-nw-3d { position: absolute; top: 4%; right: 0; width: 31%; height: 92%; pointer-events: none; z-index: 0; }
+/* When the coin stacks are showing, text keeps to the left of them so the
+   numbers are never covered. */
+@media (min-width: 421px) {
+  .dash-nw:has(.dash-nw-3d[data-status='ready']) > :is(.dash-card-head, .dash-nw-value, .dash-nw-split, .dash-hint) { margin-right: 30%; }
+  .dash-nw:has(.dash-nw-3d[data-status='ready']) .dash-icon-chip { display: none; }
+}
+@media (max-width: 420px) { .dash-nw-3d { display: none; } }
+
+/* Analytics 3D card */
+.an3d-card { flex-direction: column; margin: 0; gap: 0.5rem; }
+.an3d-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.an3d-head h3 { margin: 0; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.3px; color: var(--mm-text); }
+.an3d-legend { display: inline-flex; gap: 1rem; font: 500 0.76rem Inter, sans-serif; color: var(--mm-text-2); }
+.an3d-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+.an3d-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.an3d-legend .is-income { background: var(--mm-success); }
+.an3d-legend .is-spending { background: var(--mm-danger); }
+.an3d-stage { width: 100%; height: clamp(220px, 32vw, 320px); }
+
+/* Visually hidden, still read by screen readers */
+.sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

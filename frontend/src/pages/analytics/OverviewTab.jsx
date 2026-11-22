@@ -1,3 +1,5 @@
+import { lazy, Suspense } from 'react';
+import { useT } from '../../i18n';
 import getCategoryEmoji from '../../utils/categoryEmoji';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Legend, AreaChart, Area, ReferenceLine } from 'recharts';
 import { motion } from 'framer-motion';
@@ -5,11 +7,34 @@ import { TrendingUp, Activity, PieChart as PieIcon } from 'lucide-react';
 import { formatCurrency } from '../../utils/format';
 
 // Analytics → income vs spending, top categories and the month at a glance.
+// Three.js bars (own chunk, loaded with Analytics).
+const CashflowBarsScene = lazy(() => import('../../three/CashflowBarsScene'));
+
 export default function OverviewTab({ COLORS, CustomTooltip, data, monthCatData, monthExpense, monthIncome, monthSavings, setActiveTab, setDrillCat }) {
+  const t = useT();
   return (
     <>
       <div key="overview">
         <div className="bento-grid">
+          {(data.monthlyTrends || []).length > 0 && (
+            <figure className="bento-item col-span-12 an3d-card" aria-label={t('an3d.title')}>
+              <figcaption className="an3d-head">
+                <h3>{t('an3d.title')}</h3>
+                <span className="an3d-legend" aria-hidden="true">
+                  <span><i className="is-income" />{t('an3d.income')}</span>
+                  <span><i className="is-spending" />{t('an3d.spending')}</span>
+                </span>
+              </figcaption>
+              <Suspense fallback={<div className="an3d-stage" />}>
+                <CashflowBarsScene className="an3d-stage" months={(data.monthlyTrends || []).slice(-6)} />
+              </Suspense>
+              <ul className="sr-only">
+                {(data.monthlyTrends || []).slice(-6).map((m) => (
+                  <li key={m.month}>{t('an3d.summary', { month: m.month, income: formatCurrency(m.Income || 0), spending: formatCurrency(m.Expense || 0) })}</li>
+                ))}
+              </ul>
+            </figure>
+          )}
           <div className="bento-item col-span-12" style={{ flexDirection:'column', minHeight:320 }}>
             <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
               <Activity className="text-cyan" size={20}/>

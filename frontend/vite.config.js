@@ -203,6 +203,7 @@ export default defineConfig({
             { name: 'motion', priority: 70, test: /[\\/]node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/ },
             // Feature-only libraries: loaded when the feature is opened.
             { name: 'charts', priority: 50, test: /[\\/]node_modules[\\/](recharts|d3-[^/\\]+|victory[^/\\]*|decimal\.js-light|eventemitter3|@reduxjs|redux|reselect|immer|use-sync-external-store|es-toolkit)[\\/]/ },
+            { name: 'three', priority: 50, test: /[\\/]node_modules[\\/]three[\\/]/ },
             { name: 'xlsx', priority: 50, test: /[\\/]node_modules[\\/]xlsx[\\/]/ },
             { name: 'export', priority: 50, test: /[\\/]node_modules[\\/](jspdf|html2canvas|dompurify|canvg|fflate|core-js|raf|rgbcolor|stackblur-canvas|svg-pathdata|performance-now|@babel[\\/]runtime|regenerator-runtime)[\\/]/ },
           ],

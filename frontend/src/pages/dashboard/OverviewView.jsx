@@ -1,3 +1,4 @@
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { updateRecurringTransaction } from '../../utils/api';
 import { todayYMD } from '../../utils/dates';
 import { TrendingUp, TrendingDown, Landmark, Activity, Zap, ChevronDown, ArrowRight, ArrowUpRight } from 'lucide-react';
@@ -8,8 +9,20 @@ import { formatCurrency, haptic } from '../../utils/format';
 import getCategoryEmoji from '../../utils/categoryEmoji';
 import toast from 'react-hot-toast';
 
+// Three.js coin stacks (own chunk, loaded with the Dashboard).
+const CoinStacksScene = lazy(() => import('../../three/CoinStacksScene'));
+
 // Dashboard → the Overview view (net worth, safe-to-spend, monthly KPIs, recent activity).
 export default function OverviewView({ monthlyExpense, monthlyIncome, navigate, netWorth, netWorthTrend, recentTxns, recurringRules, safeToSpendData, savingsRate, setPopupTx, setRecurringRules, setShowAdvancedInsights, setShowNWBreakdown, setSummaryPopup, showAdvancedInsights, t, totalAssets, totalLiabilities }) {
+  // Coin stacks only where there's room beside the numbers (> 420px); on
+  // small phones Three.js isn't loaded at all.
+  const [wide, setWide] = useState(() => typeof window !== 'undefined' && window.matchMedia('(min-width: 421px)').matches);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 421px)');
+    const on = (e) => setWide(e.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
   return (
     <>
       <>
@@ -29,6 +42,11 @@ export default function OverviewView({ monthlyExpense, monthlyIncome, navigate, 
               <div className="dash-nw-orb" />
               <div className="dash-nw-orb is-alt" />
             </div>
+            {wide && (
+              <Suspense fallback={null}>
+                <CoinStacksScene className="dash-nw-3d" assets={totalAssets} debt={totalLiabilities} />
+              </Suspense>
+            )}
             <div className="dash-card-head z1">
               <span className="dash-eyebrow">{t('dash.netWorth')}</span>
               <span className="dash-icon-chip"><Landmark size={18} /></span>

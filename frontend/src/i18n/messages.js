@@ -10,6 +10,10 @@ export const LANGUAGES = [
 
 export const MESSAGES = {
   en: {
+    "an3d.title": "Last 6 months",
+    "an3d.income": "Income",
+    "an3d.spending": "Spending",
+    "an3d.summary": "{month}: income {income}, spending {spending}",
     "undo.undo": "Undo",
     "undo.restored": "Restored",
     "demo.title": "You're looking at demo data",
@@ -165,6 +169,10 @@ export const MESSAGES = {
   },
 
   si: {
+    "an3d.title": "පසුගිය මාස 6",
+    "an3d.income": "ආදායම",
+    "an3d.spending": "වියදම",
+    "an3d.summary": "{month}: ආදායම {income}, වියදම {spending}",
     "undo.undo": "අහෝසි කරන්න",
     "undo.restored": "ප්‍රතිසාධනය කළා",
     "demo.title": "ඔබ බලන්නේ ආදර්ශ දත්ත",
@@ -320,6 +328,10 @@ export const MESSAGES = {
   },
 
   ta: {
+    "an3d.title": "கடந்த 6 மாதங்கள்",
+    "an3d.income": "வருமானம்",
+    "an3d.spending": "செலவு",
+    "an3d.summary": "{month}: வருமானம் {income}, செலவு {spending}",
     "undo.undo": "செயல்தவிர்",
     "undo.restored": "மீட்டமைக்கப்பட்டது",
     "demo.title": "நீங்கள் பார்ப்பது மாதிரித் தரவு",

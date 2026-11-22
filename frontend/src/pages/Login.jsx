@@ -1,6 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import useTilt3D from '../motion/useTilt3D';
 import './login.css';
+
+// Three.js vault (own chunk). Loaded once the page is idle so sign-in paints first.
+const VaultScene = lazy(() => import('../three/VaultScene'));
 import { Link } from 'react-router-dom';
 import { auth } from '../utils/firebase';
 import {
@@ -16,6 +19,19 @@ import toast from 'react-hot-toast';
 import { registerUserPresence } from '../utils/adminService';
 
 function Login({ onLogin }) {
+  // Load the WebGL vault only where the brand panel shows (> 960px) and once
+  // the browser is idle, so the sign-in form always paints first.
+  const [show3d, setShow3d] = useState(false);
+  useEffect(() => {
+    if (!window.matchMedia('(min-width: 961px)').matches) return undefined;
+    const go = () => setShow3d(true);
+    if ('requestIdleCallback' in window) {
+      const id = window.requestIdleCallback(go, { timeout: 2500 });
+      return () => window.cancelIdleCallback(id);
+    }
+    const id = setTimeout(go, 1200);
+    return () => clearTimeout(id);
+  }, []);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -169,6 +185,17 @@ function Login({ onLogin }) {
     }
   };
 
+  // Flat 3D-styled card: shown while the WebGL vault loads and where WebGL isn't available.
+  const cssCard = (
+          <div className="login-card3d" data-tilt>
+              <div className="login-card3d-bg"><span className="orb" /><span className="orb is-alt" /><span className="grid" /></div>
+              <div className="z1 login-card3d-top"><span>Net worth</span><Landmark size={18} /></div>
+              <div className="z3 login-card3d-value">Your money,<br />in one place</div>
+              <div className="z2 login-card3d-bars"><i style={{ '--w': '72%' }} /><i style={{ '--w': '46%' }} /><i style={{ '--w': '88%' }} /></div>
+              <div className="z1 login-card3d-foot"><span>Accounts · Budgets · Goals</span><ShieldCheck size={15} /></div>
+            </div>
+  );
+
   return (
     <div className="login" ref={sceneRef}>
       <div className="login-ambient" aria-hidden="true" />
@@ -177,13 +204,11 @@ function Login({ onLogin }) {
       <aside className="login-brand" aria-hidden="true">
         <div className="login-logo"><Landmark size={22} /> Vault Manager</div>
         <div className="login-stage">
-          <div className="login-card3d" data-tilt>
-            <div className="login-card3d-bg"><span className="orb" /><span className="orb is-alt" /><span className="grid" /></div>
-            <div className="z1 login-card3d-top"><span>Net worth</span><Landmark size={18} /></div>
-            <div className="z3 login-card3d-value">Your money,<br />in one place</div>
-            <div className="z2 login-card3d-bars"><i style={{ '--w': '72%' }} /><i style={{ '--w': '46%' }} /><i style={{ '--w': '88%' }} /></div>
-            <div className="z1 login-card3d-foot"><span>Accounts · Budgets · Goals</span><ShieldCheck size={15} /></div>
-          </div>
+          {show3d ? (
+            <Suspense fallback={cssCard}>
+              <VaultScene className="login-vault" fallback={cssCard} />
+            </Suspense>
+          ) : cssCard}
         </div>
         <ul className="login-points">
           <li><ShieldCheck size={16} /> Two-factor sign-in &amp; encrypted backups</li>
