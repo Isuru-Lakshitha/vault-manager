@@ -12,7 +12,12 @@
         "allowConstantExport": true
       }
     ],
-    "no-undef": "error"
+    "no-undef": "error",
+    "react/purity": "off",
+    "react/set-state-in-effect": "off",
+    "react/immutability": "off",
+    "react/preserve-manual-memoization": "off",
+    "react/refs": "off"
   },
   "env": {
     "browser": true,
