@@ -150,14 +150,26 @@ const tsText = (ts) => {
  * Plain-text diagnostics for a support request. Contains app version, browser
  * and error messages, never the user's email, uid or financial data.
  */
-export function buildDiagnosticsReport(logs, { appVersion = 'unknown', userAgent = '', page = '' } = {}) {
+/** Masks things that must never reach a public report: the user's uid,
+ *  email addresses and long document-id-like strings (Firebase errors can
+ *  include full document paths). */
+export function scrubReportText(text, uid = auth?.currentUser?.uid) {
+  let out = String(text || '');
+  if (uid) out = out.split(uid).join('<uid>');
+  return out
+    .replace(/[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+/g, '<email>')
+    .replace(/\b[A-Za-z0-9_-]{20,}\b/g, '<id>');
+}
+
+export function buildDiagnosticsReport(logs, { appVersion = 'unknown', userAgent = '', page = '', uid } = {}) {
+  const scrub = (t) => scrubReportText(t, uid);
   const lines = [
     `App version: ${appVersion}`,
     `Browser: ${userAgent}`.slice(0, 300),
-    page ? `Page: ${page}` : null,
+    page ? `Page: ${scrub(page)}` : null,
     `Recent errors: ${logs.length}`,
     '',
-    ...logs.slice(0, 10).map((l, i) => `${i + 1}. [${l.level || 'error'}] ${tsText(l.ts)} ${String(l.message || '').slice(0, 300)}${l.context ? `\n   at ${String(l.context).slice(0, 160)}` : ''}`),
+    ...logs.slice(0, 10).map((l, i) => `${i + 1}. [${l.level || 'error'}] ${tsText(l.ts)} ${scrub(String(l.message || '').slice(0, 300))}${l.context ? `\n   at ${scrub(String(l.context).slice(0, 160))}` : ''}`),
   ];
   return lines.filter((x) => x !== null).join('\n');
 }

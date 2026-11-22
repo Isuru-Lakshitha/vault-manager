@@ -448,3 +448,16 @@ test('diagnostics report carries version and errors but no account details', () 
   assert.ok(url.startsWith('https://github.com/Isuru-Lakshitha/vault-manager/issues/new?'));
   assert.match(decodeURIComponent(url), /Boom/);
 });
+
+import { scrubReportText } from '../src/utils/errorLogger.js';
+
+test('problem reports mask uid, emails and document ids', () => {
+  const uid = 'AbCdEfGhIjKlMnOpQrStUvWx1234';
+  const msg = `No document to update: projects/p/databases/(default)/documents/users/${uid}/bills/x7Kq9Lm2Np4Rs6Tu8Vw0Yz for jane.doe@example.com`;
+  const out = scrubReportText(msg, uid);
+  assert.doesNotMatch(out, new RegExp(uid));
+  assert.doesNotMatch(out, /jane\.doe@example\.com/);
+  assert.doesNotMatch(out, /x7Kq9Lm2Np4Rs6Tu8Vw0Yz/);
+  assert.match(out, /users\/<uid>\/bills\/<id>/);
+  assert.equal(scrubReportText('Budget amount must be positive', uid), 'Budget amount must be positive');
+});
