@@ -33,7 +33,7 @@ export default function SummaryBreakdownModal({ popup, onClose, transactions, mo
         {(() => {
           const thisMo = todayYMD().substring(0, 7);
           const txList = (transactions || []).filter(t => {
-            if (!t || t.reversed_at || t.reversal_of || t.is_transfer_fee || !t.date || !t.date.startsWith(thisMo)) return false;
+            if (!t || t.reversed_at || t.reversal_of || !t.date || !t.date.startsWith(thisMo)) return false;
             if (popup.type === 'Income') return t.type === 'Income';
             return t.type === 'Expense' || t.type === 'Loan Payment';
           });

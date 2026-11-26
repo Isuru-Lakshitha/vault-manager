@@ -72,7 +72,7 @@ export default function Budget503020View({ analyticsData }) {
     const currentMonth = todayYMD().slice(0, 7);
     if (analyticsData.allTransactions && Array.isArray(analyticsData.allTransactions)) {
       const monthIncomes = analyticsData.allTransactions.filter(
-        t => !t.reversed_at && !t.reversal_of && !t.is_transfer_fee &&
+        t => !t.reversed_at && !t.reversal_of &&
           t.type === 'Income' && t.date && t.date.startsWith(currentMonth)
       );
       if (monthIncomes.length > 0) {

@@ -34,10 +34,19 @@ export default function AllTransactionsTab({ accounts, anomalyCount, anomalyMap,
       <>
         {/* Summary strip */}
         <motion.div className="monthly-strip stat-grid" initial={{opacity:0,y:-8}} animate={{opacity:1,y:0}} style={{ marginBottom:'1.25rem' }}>
-          <StatCard label={stats.isAccountView ? 'Inflow' : 'Income'} value={`+${formatCurrency(stats.income)}`} tone="pos" />
-          <StatCard label={stats.isAccountView ? 'Outflow' : 'Expenses'} value={`-${formatCurrency(stats.expense)}`} tone="neg" />
-          <StatCard label={stats.isAccountView ? 'Net movement' : 'Net'} value={`${stats.net >= 0 ? '+' : ''}${formatCurrency(stats.net)}`} tone={stats.net >= 0 ? 'pos' : 'neg'} />
+          <StatCard label={stats.isAccountView ? 'Inflow' : 'Income'} value={stats.income == null ? '—' : `+${formatCurrency(stats.income)}`} tone="pos" />
+          <StatCard label={stats.isAccountView ? 'Outflow' : 'Expenses'} value={stats.expense == null ? '—' : `-${formatCurrency(stats.expense)}`} tone="neg" />
+          <StatCard label={stats.isAccountView ? 'Net movement' : 'Net'} value={stats.net == null ? '—' : `${stats.net >= 0 ? '+' : ''}${formatCurrency(stats.net)}`} tone={(stats.net ?? 0) >= 0 ? 'pos' : 'neg'} />
           <StatCard label="Records" value={stats.count} tone="accent" />
+          {(stats.converted || stats.unavailable || stats.loadingRates) && (
+            <p style={{ gridColumn: '1 / -1', margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              {stats.loadingRates
+                ? 'Converting other currencies…'
+                : stats.unavailable
+                ? 'Totals hidden: some rows are in another currency and exchange rates are unavailable. Reconnect to see them.'
+                : 'Totals include other currencies, converted at current exchange rates.'}
+            </p>
+          )}
           {/* Daily Spend Limit badge */}
           {(() => {
             const limit = parseFloat(localStorage.getItem('vm_daily_limit') || '0');

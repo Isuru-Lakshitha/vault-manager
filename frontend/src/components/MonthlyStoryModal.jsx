@@ -26,7 +26,7 @@ export default function MonthlyStoryModal({ isOpen, onClose, analyticsData, tran
 
     // Filter active, non-reversed transactions to current month
     const monthTxns = (analyticsData.allTransactions || transactions || []).filter(
-      t => !t.reversed_at && !t.reversal_of && !t.is_transfer_fee && t.date && t.date.startsWith(currentMonthKey)
+      t => !t.reversed_at && !t.reversal_of && t.date && t.date.startsWith(currentMonthKey)
     );
 
     const isOutflow = t => t.type === 'Expense' || t.type === 'Loan Payment';

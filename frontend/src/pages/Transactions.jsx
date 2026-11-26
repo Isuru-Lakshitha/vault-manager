@@ -4,14 +4,14 @@ import { findDemoFeedLeftovers } from '../utils/bankFeedImport';
 import { toCSV } from '../utils/csv';
 import RecurringRulesTab from './transactions/RecurringRulesTab';
 
-import { transactionCurrency } from '../utils/reportingCurrency';
+import { transactionCurrency, reportingTransactions } from '../utils/reportingCurrency';
 import { Segmented, Button } from '../components/ui';
 
 import { auditStatus, summarizePayments, isActivePayment, isEditableTransaction, accountMovement } from '../utils/ledgerReporting.js';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import useLiveData from '../utils/useLiveData';
 import { useSearchParams } from 'react-router-dom';
-import { fetchTransactions, createTransaction, updateTransaction, deleteTransaction, fetchAccounts, fetchLoans, getCache, invalidateCache, fetchRecurringTransactions, createRecurringTransaction, deleteRecurringTransaction, applyPendingRecurring, confirmApplyRecurring, payLoan, updateAccount } from '../utils/api';
+import { fetchTransactions, createTransaction, updateTransaction, deleteTransaction, fetchAccounts, fetchLoans, getCache, invalidateCache, fetchRecurringTransactions, createRecurringTransaction, deleteRecurringTransaction, applyPendingRecurring, confirmApplyRecurring, payLoan, updateAccount, fetchExchangeRates } from '../utils/api';
 import { Plus, RefreshCw, X, ChevronDown } from 'lucide-react';
 import PageWrapper from '../components/PageWrapper';
 import Modal from '../components/Modal';
@@ -46,6 +46,7 @@ const Transactions = () => {
 
   const [transactions, setTransactions] = useState(() => getCache('transactions') || []);
   const [accounts, setAccounts] = useState(() => getCache('accounts') || []);
+  const [rates, setRates] = useState(undefined); // undefined = still loading
   const [loans, setLoans] = useState(() => getCache('loans') || []);
   const [recurringRules, setRecurringRules] = useState(() => getCache('recurring') || []);
   const [pendingRecurring, setPendingRecurring] = useState([]);
@@ -221,9 +222,11 @@ const Transactions = () => {
   const loadData = async (silent) => {
     try {
       if (silent !== true) setLoading(true);
-      const [txs, accs, lns, rules] = await Promise.all([
-        fetchTransactions(), fetchAccounts(), fetchLoans(), fetchRecurringTransactions()
+      const [txs, accs, lns, rules, fx] = await Promise.all([
+        fetchTransactions(), fetchAccounts(), fetchLoans(), fetchRecurringTransactions(),
+        fetchExchangeRates().catch(() => null)
       ]);
+      setRates(fx);
       setTransactions(txs);
       setAccounts(accs);
       setLoans(lns);
@@ -580,8 +583,9 @@ const Transactions = () => {
 
   const handleApplyRecurring = async () => {
     try {
-      await confirmApplyRecurring(pendingRecurring);
-      toast.success(`Applied ${pendingRecurring.length} recurring transaction(s)!`);
+      const { applied = [], failed = [] } = await confirmApplyRecurring(pendingRecurring) || {};
+      if (applied.length) toast.success(`Applied ${applied.length} recurring transaction(s)!`);
+      if (failed.length) toast.error(`${failed.length} not applied: ${failed.map(f => `${f.rule.name || f.rule.category || 'Rule'} (${f.message})`).join(', ')}`);
       setPendingRecurring([]); loadData();
     } catch (err) { toast.error(err?.message || 'Failed to apply recurring transactions'); }
   };
@@ -691,9 +695,24 @@ const Transactions = () => {
     return map;
   }, [filterAccount, accounts, transactions]);
 
+  /* Totals across accounts: rows in other currencies are converted to the main
+     currency first. If rates are missing the totals are left blank (null)
+     rather than adding different currencies together. */
+  const summarizeAll = useCallback((rows) => {
+    const base = getCurrency();
+    const foreign = rows.some(t => transactionCurrency(t, accounts, base) !== base);
+    if (!foreign) return summarizePayments(rows);
+    try {
+      return { ...summarizePayments(reportingTransactions(rows, accounts, base, rates)), count: rows.length, converted: true };
+    } catch {
+      const loading = rates === undefined;
+      return { income: null, expense: null, net: null, count: rows.length, unavailable: !loading, loadingRates: loading };
+    }
+  }, [accounts, rates]);
+
   /* Summary stats: global portfolio summary or account-specific cashflow */
   const stats = useMemo(() => {
-    if (filterAccount === 'All') return summarizePayments(filtered);
+    if (filterAccount === 'All') return summarizeAll(filtered);
     const active = filtered.filter(isActivePayment);
     let inflow = 0;
     let outflow = 0;
@@ -711,7 +730,7 @@ const Transactions = () => {
       count: filtered.length,
       isAccountView: true,
     };
-  }, [filtered, filterAccount]);
+  }, [filtered, filterAccount, summarizeAll]);
 
   /* Windowed slice for fast initial DOM mount (60 rows default unless searching) */
   const [visibleLimit, setVisibleLimit] = useState(60);
@@ -873,7 +892,7 @@ const Transactions = () => {
   const handleExportCSV = () => {
     const sourceRows = selectedIds.size > 0 ? filtered.filter(tx => selectedIds.has(tx.id)) : filtered;
     if (!sourceRows.length) { toast.error('No transactions to export'); return; }
-    const sumStats = summarizePayments(sourceRows);
+    const sumStats = summarizeAll(sourceRows);
     const rows = toCSV([
       ['Date', 'Type', 'Category', 'Amount', 'Currency', 'Fee', 'From', 'To', 'Notes'],
       ...sourceRows.map(tx => [
@@ -882,7 +901,7 @@ const Transactions = () => {
         getAccountName(tx.from_account_id), getAccountName(tx.to_account_id), tx.notes || '',
       ]),
       [],
-      ['SUMMARY', `Records: ${sourceRows.length}`, `Income: ${sumStats.income}`, `Expense: ${sumStats.expense}`, `Net: ${sumStats.net}`],
+      ['SUMMARY', `Records: ${sourceRows.length}`, `Income: ${sumStats.income ?? 'n/a (exchange rates unavailable)'}`, `Expense: ${sumStats.expense ?? 'n/a'}`, `Net: ${sumStats.net ?? 'n/a'}`, sumStats.converted ? `Totals in ${getCurrency()} at current rates` : ''],
     ]);
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([rows], { type: 'text/csv;charset=utf-8' }));
@@ -897,7 +916,7 @@ const Transactions = () => {
     if (!sourceRows.length) { toast.error('No transactions to export'); return; }
     try {
       const XLSX = await import('xlsx');
-      const sumStats = summarizePayments(sourceRows);
+      const sumStats = summarizeAll(sourceRows);
       const rows = sourceRows.map(tx => ({
         Date: tx.date,
         Type: tx.type,
@@ -911,12 +930,12 @@ const Transactions = () => {
       rows.push({
         Date: 'SUMMARY',
         Type: `${sourceRows.length} records`,
-        Category: `In: ${sumStats.income} | Out: ${sumStats.expense}`,
-        Amount: sumStats.net,
+        Category: sumStats.unavailable ? 'Totals n/a (exchange rates unavailable)' : `In: ${sumStats.income} | Out: ${sumStats.expense}`,
+        Amount: sumStats.net ?? '',
         Fee: 0,
         From: '',
         To: '',
-        Notes: 'Net Cash Flow',
+        Notes: sumStats.converted ? `Net Cash Flow (in ${getCurrency()} at current rates)` : 'Net Cash Flow',
       });
       const byCat = new Map();
       sourceRows.forEach(tx => {

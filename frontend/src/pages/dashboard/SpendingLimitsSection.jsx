@@ -16,7 +16,7 @@ export default function SpendingLimitsSection({ capForm, dailyLimit, editingCaps
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
         const sevenDaysKey = toYMD(sevenDaysAgo);
 
-        const activeExp = transactions.filter(t => !isInternalMove(t) && t && !t.reversed_at && !t.reversal_of && !t.is_transfer_fee && (t.type === 'Expense' || t.type === 'Loan Payment'));
+        const activeExp = transactions.filter(t => !isInternalMove(t) && t && !t.reversed_at && !t.reversal_of && (t.type === 'Expense' || t.type === 'Loan Payment'));
         const todaySpent = activeExp
           .filter(t => t.date === todayKey)
           .reduce((s, t) => s + (Number(t.amount) || 0), 0);

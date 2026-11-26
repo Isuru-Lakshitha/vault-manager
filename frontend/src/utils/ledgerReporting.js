@@ -41,6 +41,8 @@ export function auditStatus(tx) {
 export function isInternalMove(tx) {
   if (!tx) return false;
   if (tx.internal_move === true) return true;
+  // A balance correction fixes the ledger; it is not money earned or spent.
+  if (tx.reconciliation === true) return true;
   if (tx.credit_card_id && tx.category === 'Credit Card Payment') return true;
   if (tx.goal_id && tx.category === 'Goal Contribution') return true;
   if (tx.goal_id && tx.category === 'Goal Deduction' && tx.type === 'Income') return true;

@@ -17,7 +17,7 @@ const parseLocalYMD = (str) => {
   return Number.isNaN(d.getTime()) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
 };
 
-const isActiveTx = (t) => Boolean(t && !t.reversed_at && !t.reversal_of && !t.is_transfer_fee);
+const isActiveTx = (t) => Boolean(t && !t.reversed_at && !t.reversal_of);
 
 const toBaseAmount = (amount, currency, baseCurrency, rates) => {
   const val = parseFloat(amount) || 0;
@@ -347,7 +347,7 @@ export function detectAnomalies(transactions = []) {
 
   // Filter active expenses (exclude reversed/reversal/fee entries)
   const expenses = transactions
-    .filter(t => !isInternalMove(t) && isActiveTx(t) && t.type === 'Expense' && (parseFloat(t.amount) || 0) > 0)
+    .filter(t => !isInternalMove(t) && isActiveTx(t) && !t.is_transfer_fee && t.type === 'Expense' && (parseFloat(t.amount) || 0) > 0)
     .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
   // 1. Duplicate detection: same amount + same notes/merchant/category within 36h

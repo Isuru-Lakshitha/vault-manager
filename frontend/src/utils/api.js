@@ -8,6 +8,8 @@ import { addMoney, subMoney } from './money.js';
 import { db, auth } from './firebase';
 import { collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, query, where, runTransaction, writeBatch, serverTimestamp, onSnapshot, deleteField } from "firebase/firestore";
 import { executeRulesOnTransaction, DEFAULT_RULES } from './rulesEngine';
+import { pendingRecurringRules } from './recurringDue.js';
+export { pendingRecurringRules };
 import { todayYMD } from './dates';
 import { formatCurrency, getCurrency } from './format';
 
@@ -857,7 +859,26 @@ export const payRecurringRule = async (rule, paymentData = {}) => {
         recurring_month: month
       };
       if (current.loan_id) entry.loan_id = String(current.loan_id);
-      if (type === 'Transfer' && current.destination_amount) entry.destination_amount = current.destination_amount;
+      if (type === 'Transfer') {
+        // A cross-currency transfer must credit what was actually received. The
+        // stored amount only applies when the payment matches the rule exactly.
+        const fromCur = accounts[source]?.currency;
+        const toCur = accounts[destination]?.currency;
+        const explicit = Number(paymentData.destination_amount);
+        const matchesRule = amount === Number(current.amount) && String(destination) === String(current.to_account_id ?? '');
+        if (fromCur && toCur && fromCur === toCur) {
+          // Same currency: the destination receives exactly what was sent.
+        } else if (explicit > 0) {
+          entry.destination_amount = roundMoney(explicit);
+        } else if (matchesRule && Number(current.destination_amount) > 0) {
+          entry.destination_amount = Number(current.destination_amount);
+        } else if (fromCur && toCur) {
+          throw new Error('This transfer is between two currencies. Enter the amount received.');
+        }
+        if (shouldUpdateEst && entry.destination_amount && amount > 0) {
+          updates.destination_amount = roundMoney(updates.amount * entry.destination_amount / amount);
+        }
+      }
       const fee = transferFee(entry, paymentRef.id, uid);
       entry.fee_transaction_id = fee ? feeRef.id : null;
 
@@ -883,28 +904,37 @@ export const payRecurringRule = async (rule, paymentData = {}) => {
 
 // Check and apply pending recurring transactions for the current month
 export const applyPendingRecurring = async () => {
-  const currentMonth = todayYMD().substring(0, 7); // "YYYY-MM"
   const rules = await fetchRecurringTransactions();
-  const pending = rules.filter(r => r.last_applied_month !== currentMonth);
-  return pending; // Return list so UI can show a confirmation dialog
+  return pendingRecurringRules(rules, todayYMD()); // UI shows a confirmation dialog
 };
 
 export const confirmApplyRecurring = async (rules) => {
   const currentMonth = todayYMD().substring(0, 7);
   const today = todayYMD();
-  for (const rule of rules) {
-    const dayStr = rule.day_of_month ? String(rule.day_of_month).padStart(2, '0') : today.substring(8, 10);
+  const [y, m] = currentMonth.split('-').map(Number);
+  const daysInMonth = new Date(y, m, 0).getDate();
+  const applied = [];
+  const failed = [];
+  for (const rule of pendingRecurringRules(rules, today)) {
+    const dom = parseInt(rule.day_of_month, 10);
+    const dayStr = dom ? String(Math.min(dom, daysInMonth)).padStart(2, '0') : today.substring(8, 10);
     const candidateDate = `${currentMonth}-${dayStr}`;
     const txDate = candidateDate <= today ? candidateDate : today;
-    await payRecurringRule(rule, {
-      amount: rule.amount,
-      date: txDate,
-      account_id: rule.type === 'Income' ? rule.to_account_id : rule.from_account_id,
-      notes: `[Auto] ${rule.notes || rule.category || ''}`,
-      skipIfPaid: true,
-    });
+    try {
+      const res = await payRecurringRule(rule, {
+        amount: rule.amount,
+        date: txDate,
+        account_id: rule.type === 'Income' ? rule.to_account_id : rule.from_account_id,
+        notes: `[Auto] ${rule.notes || rule.category || ''}`,
+        skipIfPaid: true,
+      });
+      if (!res?.alreadyPaid) applied.push(rule);
+    } catch (err) {
+      // One bad rule (archived account, missing loan…) must not stop the rest.
+      failed.push({ rule, message: err?.message || 'Failed' });
+    }
   }
-  return { success: true };
+  return { success: failed.length === 0, applied, failed };
 };
 
 // --- LOANS ---
@@ -1471,7 +1501,8 @@ const _computeAnalyticsSync = ({ rawTransactions, accounts, loans, goals, budget
   const budgetAlerts = budgets.filter(b => {
     const limit = Number(b.amount || b.limit_amount) || 0;
     const mKey = b.month || currentMonthKey;
-    const mMap = monthlyExpensesByCategory[mKey] || currentMonthExpensesByCategory;
+    // A month with no spending yet has nothing over budget (never borrow another month's).
+    const mMap = monthlyExpensesByCategory[mKey] || {};
     const spent = getCategorySpendFromMap(mMap, b.category);
     return limit > 0 && spent > limit;
   });

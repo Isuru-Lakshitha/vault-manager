@@ -50,7 +50,7 @@ export function monthCloseReport({ transactions = [], budgets = [], month }) {
     if (t.reconciliation) { adjustments += t.type === 'Income' ? c : -c; continue; }
     if (isInternalMove(t)) continue; // card payments, goal savings: not spending
     if (t.type === 'Income') income += c;
-    else if (t.type === 'Expense') {
+    else if (t.type === 'Expense' || t.type === 'Loan Payment') {
       expense += c;
       const key = categoryKey(t.category) || 'uncategorised';
       const row = byCategory.get(key) || { category: t.category || 'Uncategorised', cents: 0 };

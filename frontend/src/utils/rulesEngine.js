@@ -3,6 +3,15 @@
  * Allows conditional pattern matching and automated action execution
  * across incoming and historical transactions.
  */
+import { isInternalMove } from './ledgerReporting.js';
+
+// Rows the app writes itself (card payments, goal moves, fees, reversals,
+// balance corrections, invoice settlements). Their category decides how they
+// are reported, so a matching rule must never re-label them.
+export const isSystemTransaction = (tx) => Boolean(tx) && (
+  isInternalMove(tx) || tx.is_transfer_fee || tx.reversal_of || tx.reversed_by ||
+  tx.reconciliation || tx.invoice_id
+);
 
 export const RULE_FIELDS = [
   { value: 'description', label: 'Description / Merchant / Note' },
@@ -183,7 +192,7 @@ export const applyRuleActions = (rule, tx) => {
  * @returns {{ transaction: Object, matchedRules: Array }}
  */
 export const executeRulesOnTransaction = (rules, tx) => {
-  if (!Array.isArray(rules) || rules.length === 0 || !tx) {
+  if (!Array.isArray(rules) || rules.length === 0 || !tx || isSystemTransaction(tx)) {
     return { transaction: tx, matchedRules: [] };
   }
 

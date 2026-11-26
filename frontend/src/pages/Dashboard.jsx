@@ -391,8 +391,8 @@ const Dashboard = () => {
     const cur = tx.currency || accounts.find(a => String(a.id) === String(accId))?.currency || baseCurrency;
     return toBase(tx.amount, cur);
   }, [accounts, baseCurrency, toBase]);
-  const monthlyIncome  = transactions.filter(tx => !isInternalMove(tx) && !tx.reversed_at && !tx.reversal_of && !tx.is_transfer_fee && tx.type === 'Income' && tx.date?.startsWith(currentMonth)).reduce((s, tx) => s + txToBase(tx), 0);
-  const monthlyExpense = transactions.filter(tx => !isInternalMove(tx) && !tx.reversed_at && !tx.reversal_of && !tx.is_transfer_fee && (tx.type === 'Expense' || tx.type === 'Loan Payment') && tx.date?.startsWith(currentMonth)).reduce((s, tx) => s + txToBase(tx), 0);
+  const monthlyIncome  = transactions.filter(tx => !isInternalMove(tx) && !tx.reversed_at && !tx.reversal_of && tx.type === 'Income' && tx.date?.startsWith(currentMonth)).reduce((s, tx) => s + txToBase(tx), 0);
+  const monthlyExpense = transactions.filter(tx => !isInternalMove(tx) && !tx.reversed_at && !tx.reversal_of && (tx.type === 'Expense' || tx.type === 'Loan Payment') && tx.date?.startsWith(currentMonth)).reduce((s, tx) => s + txToBase(tx), 0);
   const monthlySavings = monthlyIncome - monthlyExpense;
   const savingsRate = monthlyIncome > 0 ? Math.round((monthlySavings / monthlyIncome) * 100) : 0;
 
@@ -513,7 +513,7 @@ const Dashboard = () => {
     const expMap = {};
     (analytics?.categoryData || []).forEach(c => { expMap[c.category] = c.total; });
     const dayOfMonth = new Date().getDate();
-    const activeTxns = transactions.filter(t => t && !t.reversed_at && !t.reversal_of && !t.is_transfer_fee);
+    const activeTxns = transactions.filter(t => t && !t.reversed_at && !t.reversal_of);
     const activeDaysSet = new Set(
       activeTxns
         .filter(t => !isInternalMove(t) && (t.type === 'Expense' || t.type === 'Loan Payment') && t.date?.startsWith(currentMonth))
@@ -538,7 +538,7 @@ const Dashboard = () => {
 
   let summaryCard = null;
   if (showSummary && transactions.length > 0) {
-    const activeTxns = transactions.filter(tx => tx && !tx.reversed_at && !tx.reversal_of && !tx.is_transfer_fee);
+    const activeTxns = transactions.filter(tx => tx && !tx.reversed_at && !tx.reversal_of);
     const lastMonthTxns = activeTxns.filter(tx => tx.date?.startsWith(showSummary));
     const [sy, sm] = showSummary.split('-').map(Number);
     const prevMonthDate = new Date(sy, sm - 2, 1);
@@ -1032,7 +1032,7 @@ const Dashboard = () => {
               // Build daily spend map for this month
               const monthStr = toYMD(now).substring(0, 7);
               const spendMap = {};
-              transactions.filter(t => !isInternalMove(t) && t && !t.reversed_at && !t.reversal_of && !t.is_transfer_fee && t.date?.startsWith(monthStr) && (t.type === 'Expense' || t.type === 'Loan Payment'))
+              transactions.filter(t => !isInternalMove(t) && t && !t.reversed_at && !t.reversal_of && t.date?.startsWith(monthStr) && (t.type === 'Expense' || t.type === 'Loan Payment'))
                 .forEach(t => { spendMap[t.date] = (spendMap[t.date] || 0) + t.amount; });
               const maxSpend = Math.max(...Object.values(spendMap), 1);
               const DAYS = ['S','M','T','W','T','F','S'];

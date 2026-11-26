@@ -128,14 +128,14 @@ export const generateMonthlyStatement = async ({
   const monthName = monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
   const todayFormatted = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
 
-  // Filter active (non-reversed, non-fee) transactions for this month
-  const monthTxs = transactions.filter(t => t && !t.reversed_at && !t.reversal_of && !t.is_transfer_fee && t.date && t.date.startsWith(month));
+  // Active (non-reversed) transactions for this month; transfer fees are real spending
+  const monthTxs = transactions.filter(t => t && !t.reversed_at && !t.reversal_of && t.date && t.date.startsWith(month));
   const incomeTxs = monthTxs.filter(t => !isInternalMove(t) && t.type === 'Income');
   const expenseTxs = monthTxs.filter(t => !isInternalMove(t) && (t.type === 'Expense' || t.type === 'Loan Payment'));
 
-  const totalIncome = incomeTxs.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
-  const totalExpense = expenseTxs.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
-  const netSavings = totalIncome - totalExpense;
+  const totalIncome = Math.round(incomeTxs.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0) * 100) / 100;
+  const totalExpense = Math.round(expenseTxs.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0) * 100) / 100;
+  const netSavings = Math.round((totalIncome - totalExpense) * 100) / 100;
   const savingsRate = totalIncome > 0 ? Math.round((netSavings / totalIncome) * 100) : 0;
 
   // Category breakdown (supports split transactions)

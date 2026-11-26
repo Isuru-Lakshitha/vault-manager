@@ -75,7 +75,12 @@ export default function PayReminderModal({ state, setState, accounts, onConfirm 
             <CurrencyInput
               required
               value={state.amount}
-              onChange={v => setState(p => ({ ...p, amount: v }))}
+              onChange={v => setState(p => ({
+                ...p,
+                amount: v,
+                // A new sent amount makes the old received amount stale.
+                ...(p.rule?.type === 'Transfer' && Number(v) !== Number(p.amount) ? { destination_amount: '' } : {}),
+              }))}
             />
           </div>
           <div>
@@ -99,7 +104,7 @@ export default function PayReminderModal({ state, setState, accounts, onConfirm 
           </label>
           <select
             value={state.account_id}
-            onChange={e => setState(p => ({ ...p, account_id: e.target.value }))}
+            onChange={e => setState(p => ({ ...p, account_id: e.target.value, destination_amount: '' }))}
             style={{ width: '100%' }}
           >
             {accounts.map(a => (
@@ -115,7 +120,7 @@ export default function PayReminderModal({ state, setState, accounts, onConfirm 
               </label>
               <select
                 value={state.to_account_id}
-                onChange={e => setState(p => ({ ...p, to_account_id: e.target.value }))}
+                onChange={e => setState(p => ({ ...p, to_account_id: e.target.value, destination_amount: '' }))}
                 style={{ width: '100%' }}
               >
                 <option value="">— Select destination account —</option>
@@ -125,6 +130,24 @@ export default function PayReminderModal({ state, setState, accounts, onConfirm 
                     <option key={a.id} value={a.id}>{a.name} — Available: {formatCurrency(a.balance)}</option>
                   ))}
               </select>
+              {(() => {
+                const from = accounts.find(a => String(a.id) === String(state.account_id));
+                const to = accounts.find(a => String(a.id) === String(state.to_account_id));
+                if (!from?.currency || !to?.currency || from.currency === to.currency) return null;
+                return (
+                  <div style={{ marginTop: '0.65rem' }}>
+                    <label htmlFor="pay-received-amount" style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.78rem', fontWeight: 600 }}>
+                      {`Amount received (${to.currency})`}
+                    </label>
+                    <CurrencyInput
+                      id="pay-received-amount"
+                      required
+                      value={state.destination_amount}
+                      onChange={v => setState(p => ({ ...p, destination_amount: v }))}
+                    />
+                  </div>
+                );
+              })()}
             </div>
           )}
 
