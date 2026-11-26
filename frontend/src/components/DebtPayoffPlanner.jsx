@@ -29,10 +29,13 @@ const simulatePayoff = (loans, extraPayment, method, toBase = v => v) => {
   let months = 0;
   let totalInterest = 0;
   const MAX_MONTHS = 360;
+  // Snowball/avalanche: the monthly budget stays the same, so a paid-off
+  // loan's minimum rolls onto the next loan instead of disappearing.
+  const monthlyBudget = extraPayment + balances.reduce((s, b) => s + (b.balance > 0.005 ? b.minPayment : 0), 0);
 
   while (balances.some(b => b.balance > 0.005) && months < MAX_MONTHS) {
     months++;
-    let budgetLeft = extraPayment + balances.reduce((s, b) => s + (b.balance > 0.005 ? b.minPayment : 0), 0);
+    let budgetLeft = monthlyBudget;
 
     balances = balances.map(b => {
       if (b.balance <= 0.005) {

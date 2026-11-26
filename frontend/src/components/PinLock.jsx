@@ -4,13 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Landmark, Delete, Lock, LogOut, Fingerprint } from 'lucide-react';
 import { haptic } from '../utils/format';
 
-/* ─── SHA-256 helper ─────────────────────────────────────────────────────── */
-async function sha256(message) {
-  const msgBuffer = new TextEncoder().encode(message + 'vm_salt_2025');
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-}
+import { verifyPin as checkPin, MAX_PIN_ATTEMPTS } from '../utils/pinHash';
+
+const readFails = () => { try { return Number(localStorage.getItem('vm_pin_fails')) || 0; } catch { return 0; } };
 
 /* ─── Keypad layout ──────────────────────────────────────────────────────── */
 const KEYS = [
@@ -122,6 +118,7 @@ export default function PinLock({ onUnlock, onSignOut }) {
         }
       });
       if (assertion) {
+        localStorage.removeItem('vm_pin_fails');
         onUnlock();
       }
     } catch (err) {
@@ -146,14 +143,26 @@ export default function PinLock({ onUnlock, onSignOut }) {
   const verifyPin = useCallback(async (attempt) => {
     setChecking(true);
     const stored = localStorage.getItem('vm_pin_hash');
-    const hash   = await sha256(attempt);
+    const { ok, upgraded } = await checkPin(attempt, stored);
 
-    if (hash === stored) {
+    if (ok) {
+      if (upgraded) localStorage.setItem('vm_pin_hash', upgraded);
+      localStorage.removeItem('vm_pin_fails');
       onUnlock();
     } else {
+      const fails = readFails() + 1;
+      localStorage.setItem('vm_pin_fails', String(fails));
+      if (fails >= MAX_PIN_ATTEMPTS) {
+        // Too many wrong tries: sign out, so the next person must log in again.
+        localStorage.removeItem('vm_pin_fails');
+        setChecking(false);
+        onSignOut?.();
+        return;
+      }
       haptic(50);
       setShaking(true);
-      setError('Incorrect PIN');
+      const left = MAX_PIN_ATTEMPTS - fails;
+      setError(`Incorrect PIN · ${left} ${left === 1 ? 'try' : 'tries'} left`);
       setTimeout(() => {
         setPin('');
         setError('');
@@ -161,7 +170,7 @@ export default function PinLock({ onUnlock, onSignOut }) {
       }, 900);
     }
     setChecking(false);
-  }, [onUnlock]);
+  }, [onUnlock, onSignOut]);
 
   const handleKey = useCallback(async (label) => {
     if (checking) return;

@@ -40,6 +40,17 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
     fetchIous().then(setIous).catch(() => {});
   });
 
+  // Save an IOU; on failure say so and reload the real list instead of
+  // leaving the screen showing a change that was never stored.
+  const safeSaveIou = async (item) => {
+    try { await saveIou(item); return true; }
+    catch (err) {
+      toast.error(err?.message || 'Couldn’t save the IOU');
+      fetchIous().then(setIous).catch(() => {});
+      return false;
+    }
+  };
+
   const handleAddIou = async (e) => {
     e.preventDefault();
     if (!person.trim() || amount <= 0) {
@@ -61,7 +72,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
     setReason('');
     setSplitTotal(0);
     haptic();
-    await saveIou(newItem);
+    if (!(await safeSaveIou(newItem))) return;
     toast.success('IOU added & synced!');
   };
 
@@ -89,7 +100,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
     }
     setIous(prev => prev.map(x => x.id === item.id ? updatedItem : x));
     haptic();
-    await saveIou(updatedItem);
+    if (!(await safeSaveIou(updatedItem))) return;
     if (targetAccId) {
       toast.success(`Settled & logged ${formatCurrency(item.amount)} in account!`);
       if (onReload) onReload();
@@ -121,7 +132,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
           notes: `Partial IOU settlement with ${item.person}: ${item.reason}`,
           from_account_id: item.direction === 'i_owe' ? targetAccId : '',
           to_account_id: item.direction === 'owed_to_me' ? targetAccId : '',
-        });
+        }, `iou-part-${String(item.id).replace(/[^a-zA-Z0-9-]/g, '-')}-${Math.round(item.amount * 100)}-${Math.round(payAmt * 100)}`.slice(0, 80));
       } catch (err) {
         toast.error(err?.message || 'Failed to log partial settlement transaction');
         return;
@@ -131,7 +142,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
     setPartPayId(null);
     setPartPayAmt(0);
     haptic();
-    await saveIou(updatedItem);
+    if (!(await safeSaveIou(updatedItem))) return;
     if (targetAccId) {
       toast.success(`Logged ${formatCurrency(payAmt)} partial settlement (${formatCurrency(remainingAmt)} remaining)`);
       if (onReload) onReload();

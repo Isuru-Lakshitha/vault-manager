@@ -342,12 +342,14 @@ const Dashboard = () => {
       if (currentRates) { setRates(currentRates); localStorage.setItem('vm_fx_rates', JSON.stringify(currentRates)); }
       const baseCur = getCurrency();
       const isDebtAcc = (a) => ['Credit Card', 'Loan', 'Mortgage', 'Liability'].includes(a.type);
+      let snapMissingRate = false;
       const snapToBase = (amt, cur) => {
         const v = Number(amt) || 0;
         const c = cur || baseCur;
         if (c === baseCur) return v;
         const cv = convertCurrency(v, c, baseCur, currentRates);
-        return Number.isFinite(cv) ? cv : v;
+        if (!Number.isFinite(cv)) { snapMissingRate = true; return 0; }
+        return cv;
       };
       const assets = (anl.accounts || []).filter(a => !isDebtAcc(a)).reduce((s, a) => s + snapToBase(a.balance, a.currency), 0);
       const loanDebt = (anl.loans || []).filter(l => l.status === 'Active')
@@ -355,7 +357,8 @@ const Dashboard = () => {
       const cardAccDebt = (anl.accounts || []).filter(isDebtAcc).reduce((s, a) => s + Math.abs(snapToBase(a.balance, a.currency)), 0);
       const dedicatedCardDebt = (cds || []).reduce((s, c) => s + Math.max(0, snapToBase(c.balance ?? c.current_balance, c.currency)), 0);
       const liabilities = loanDebt + cardAccDebt + dedicatedCardDebt;
-      recordNetWorthSnapshot(assets - liabilities, assets, liabilities).catch(() => {});
+      // Never save a net worth that had to leave out (or guess) foreign money.
+      if (!snapMissingRate) recordNetWorthSnapshot(assets - liabilities, assets, liabilities).catch(() => {});
 
       // Fetch real net worth history (non-blocking)
       fetchNetWorthHistory().then(hist => setNetWorthHistory(hist || [])).catch(() => {});
@@ -374,8 +377,17 @@ const Dashboard = () => {
     const c = cur || baseCurrency;
     if (c === baseCurrency) return v;
     const cv = convertCurrency(v, c, baseCurrency, rates);
-    return Number.isFinite(cv) ? cv : v;
+    // No rate: leave it out (and say so below) rather than count it at face value.
+    return Number.isFinite(cv) ? cv : 0;
   }, [baseCurrency, rates]);
+  const missingRateCurrencies = useMemo(() => {
+    const curs = new Set();
+    const check = (cur) => { if (cur && cur !== baseCurrency && !Number.isFinite(convertCurrency(1, cur, baseCurrency, rates))) curs.add(cur); };
+    accounts.forEach(a => check(a.currency));
+    loans.forEach(l => check(l.currency));
+    creditCards.forEach(c => check(c.currency));
+    return [...curs];
+  }, [accounts, loans, creditCards, baseCurrency, rates]);
 
   // KPIs
   const totalAssets = accounts.filter(a => !isDebtAccount(a)).reduce((s, a) => s + toBase(a.balance, a.currency), 0);
@@ -731,6 +743,12 @@ const Dashboard = () => {
                 </div>
               </motion.div>
             ))}
+
+            {missingRateCurrencies.length > 0 && (
+              <div role="status" style={{ margin: '0 0 1rem', padding: '0.6rem 0.9rem', borderRadius: 10, border: '1px solid rgba(245,158,11,0.4)', background: 'rgba(245,158,11,0.08)', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                Exchange rates are unavailable, so money in {missingRateCurrencies.join(', ')} is left out of your net worth and totals. Reconnect to include it.
+              </div>
+            )}
 
             {/* ── MINIMALIST FOCUS MODE (Default: Clean Hero, 3-Stat Pulse, Recent Activity, Collapsible Drawer) ── */}
             {isMinimalistView && <OverviewView monthlyExpense={monthlyExpense} monthlyIncome={monthlyIncome} navigate={navigate} netWorth={netWorth} netWorthTrend={netWorthTrend} recentTxns={recentTxns} recurringRules={recurringRules} safeToSpendData={safeToSpendData} savingsRate={savingsRate} setPopupTx={setPopupTx} setRecurringRules={setRecurringRules} setShowAdvancedInsights={setShowAdvancedInsights} setShowNWBreakdown={setShowNWBreakdown} setSummaryPopup={setSummaryPopup} showAdvancedInsights={showAdvancedInsights} t={t} totalAssets={totalAssets} totalLiabilities={totalLiabilities} />}

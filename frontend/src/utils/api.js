@@ -394,6 +394,11 @@ const changeTransaction = async (id, updates) => {
       if (next.loan_id != null && next.loan_id !== '') next.loan_id = String(next.loan_id);
       if (next.goal_id != null && next.goal_id !== '') next.goal_id = String(next.goal_id);
       if (next.type !== 'Transfer' || next.destination_amount == null || next.destination_amount === '') delete next.destination_amount;
+      // A card charge is paid by the card, not a bank account: adding an account
+      // would take the money twice (from the bank and on the card balance).
+      if (next.credit_card_charge_id && !next.credit_card_id && (next.from_account_id || next.to_account_id) &&
+          !(old.from_account_id || old.to_account_id))
+        throw new Error('This is a credit card purchase, so it can’t also come from an account. Pay the card from the Credit Cards page instead.');
       const allowOptionalAcct = Boolean(
         next.credit_card_charge_id ||
         (!next.from_account_id && !old.from_account_id && (next.loan_id || next.goal_id || next.bill_id || next.recurring_rule_id)) ||
@@ -501,17 +506,24 @@ const changeTransaction = async (id, updates) => {
         Number(next.destination_amount || 0) !== Number(old.destination_amount || 0);
       if (financialChanged && Array.isArray(old.reversal_context)) {
         const hasNonAccountTarget = old.reversal_context.some(t => !String(t.path || '').startsWith('accounts/'));
-        if (hasNonAccountTarget) {
+        // Moving a payment to another account leaves its loan/goal/card/bill
+        // effect unchanged, so that part of the undo snapshot stays valid.
+        const onlyAccountChanged =
+          Number(next.amount) === Number(old.amount) && next.type === old.type &&
+          Number(next.fee_amount || 0) === Number(old.fee_amount || 0) &&
+          Number(next.destination_amount || 0) === Number(old.destination_amount || 0);
+        if (hasNonAccountTarget && !onlyAccountChanged) {
           next.reversal_context = null;
         } else {
-          next.reversal_context = Object.entries(accounts)
+          const keptTargets = old.reversal_context.filter(t => !String(t.path || '').startsWith('accounts/'));
+          next.reversal_context = [...keptTargets, ...Object.entries(accounts)
             .filter(([aid, acc]) => acc.balance !== preNextBalances[aid])
             .map(([aid, acc]) => ({
               path: `accounts/${aid}`,
               before: { balance: preNextBalances[aid] },
               absent: [],
               after: { balance: acc.balance },
-            }));
+            }))];
         }
       }
     }
@@ -562,8 +574,9 @@ const changeTransaction = async (id, updates) => {
           txn.update(targetGoalRef, { current_amount: newCur, is_achieved: newCur >= (targetGoalSnap.data().target_amount || 0) });
         }
         if (targetLoanSnap?.exists() && targetLoanSnap.data().uid === uid) {
-          const newPrin = roundMoney((targetLoanSnap.data().principal_amount || 0) + (Number(old.amount) || 0));
-          txn.update(targetLoanRef, { principal_amount: newPrin, status: 'Active' });
+          // Without the snapshot we can't tell how much of this payment was
+          // interest, so adding it all back to the principal would be a guess.
+          throw new Error('This older loan payment has no undo record. Edit the loan balance on the Loans page instead of deleting it.');
         }
         if (targetCardSnap?.exists() && targetCardSnap.data().uid === uid) {
           const delta = isCardCharge ? -(Number(old.amount) || 0) : (Number(old.amount) || 0);
@@ -980,6 +993,17 @@ export const createLoan = async (data) => {
 };
 
 export const updateLoan = async (id, data) => {
+  if (data && data.last_interest_calc_date) {
+    // Interest up to the saved date is already accrued (and maybe paid).
+    // Moving that date back — e.g. by fixing a typo in the start date — would
+    // charge the same days' interest again, so keep the later date.
+    const snap = await getDoc(doc(db, 'loans', String(id)));
+    const saved = snap.exists() ? snap.data().last_interest_calc_date : null;
+    if (saved && data.last_interest_calc_date < saved) {
+      data = { ...data };
+      delete data.last_interest_calc_date;
+    }
+  }
   _patchCache('loans', old => old ? old.map(l => String(l.id) === String(id) ? { ...l, ...data } : l) : old);
   invalidateCache('analytics');
   const res = await updateDoc(doc(db, 'loans', String(id)), data);
@@ -1629,7 +1653,8 @@ export const fetchInvestments = async () => cachedFetch('investments', async () 
 
 export const createInvestment = async (data) => {
   const uid = await getUserId();
-  const res = await addDoc(collection(db, 'users', uid, 'investments'), { ...data, created_at: serverTimestamp() });
+  // Prices and cost are in this currency for good, even if the display currency changes later.
+  const res = await addDoc(collection(db, 'users', uid, 'investments'), { ...data, currency: data.currency || getCurrency(), created_at: serverTimestamp() });
   invalidateCache('investments');
   return res;
 };
@@ -2085,7 +2110,8 @@ export const saveSharedTab = async (tabData) => {
     try {
       await setDoc(doc(db, 'users', uid, 'shared_tabs', id), payload);
     } catch (err) {
-      console.warn('Saved shared tab locally:', err);
+      invalidateCache('shared_tabs');
+      throw new Error(`Couldn’t save the shared tab: ${err?.message || 'unknown error'}`);
     }
   }
   _emit('shared_tabs');
@@ -2116,8 +2142,16 @@ export const fetchIous = async () => cachedFetch('ious', async () => {
   const scopedKey = `vm_ious:${uid}`;
   try {
     const snap = await getDocs(collection(db, 'users', uid, 'ious'));
-    if (!snap.empty) {
+    // A confirmed server answer is the truth, even when it's empty: falling
+    // back to this device's copy would bring back IOUs deleted elsewhere.
+    if (!snap.empty || !snap.metadata.fromCache) {
       const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      if (snap.empty) {
+        try {
+          const local = JSON.parse(localStorage.getItem(scopedKey) || '[]');
+          if (Array.isArray(local) && local.length) localStorage.setItem(`vm_ious_unsynced:${uid}`, JSON.stringify(local));
+        } catch { /* unreadable copy */ }
+      }
       try { localStorage.setItem(scopedKey, JSON.stringify(docs)); } catch {}
       return docs;
     }
@@ -2157,7 +2191,8 @@ export const saveIou = async (iouData) => {
     try {
       await setDoc(doc(db, 'users', uid, 'ious', id), payload);
     } catch (err) {
-      console.warn('Saved IOU locally:', err);
+      invalidateCache('ious');
+      throw new Error(`Couldn’t save the IOU: ${err?.message || 'unknown error'}`);
     }
   }
   _emit('ious');
@@ -2174,7 +2209,10 @@ export const deleteIou = async (iouId) => {
     } catch {}
     try {
       await deleteDoc(doc(db, 'users', uid, 'ious', iouId));
-    } catch {}
+    } catch (err) {
+      invalidateCache('ious');
+      throw new Error(`Couldn’t delete the IOU: ${err?.message || 'unknown error'}`);
+    }
   }
   _emit('ious');
   return true;

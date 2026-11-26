@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Old one-off scripts kept locally, not in the repo
+patch_settings.cjs
+patch_transactions.cjs
+test-firestore.js

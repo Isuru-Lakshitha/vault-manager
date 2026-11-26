@@ -74,6 +74,12 @@ function simplifyDebts(members, expenses) {
   return { balances, settlements };
 }
 
+// Save a shared tab; returns the saved tab, or null after telling the user it failed.
+const safeSaveTab = async (tab) => {
+  try { return await saveSharedTab(tab); }
+  catch (err) { toast.error(err?.message || 'Couldn’t save the shared tab'); return null; }
+};
+
 export default function SplitSettleModal({ isOpen, onClose }) {
   const [tabs, setTabs] = useState([]);
   const [activeTabId, setActiveTabId] = useState(null);
@@ -112,12 +118,9 @@ export default function SplitSettleModal({ isOpen, onClose }) {
           id: 'tab_household_default',
           name: '🏠 Household & Shared',
           members: ['Me', 'Partner'],
-          expenses: [
-            { id: 'exp_1', title: 'Groceries & Supplies', amount: 85.50, paidBy: 'Me', date: todayYMD() },
-            { id: 'exp_2', title: 'Electricity & Utilities', amount: 62.00, paidBy: 'Partner', date: todayYMD() },
-          ],
+          expenses: [],
         };
-        await saveSharedTab(initialTab);
+        if (!(await safeSaveTab(initialTab))) return;
         setTabs([initialTab]);
         setActiveTabId(initialTab.id);
       }
@@ -158,7 +161,8 @@ export default function SplitSettleModal({ isOpen, onClose }) {
       expenses: [],
     };
 
-    const saved = await saveSharedTab(newTab);
+    const saved = await safeSaveTab(newTab);
+    if (!saved) return;
     setTabs(prev => [saved, ...prev]);
     setActiveTabId(saved.id);
     setNewTabModal(false);
@@ -187,7 +191,7 @@ export default function SplitSettleModal({ isOpen, onClose }) {
       expenses: [newExp, ...(activeTab.expenses || [])],
     };
 
-    await saveSharedTab(updatedTab);
+    if (!(await safeSaveTab(updatedTab))) return;
     setTabs(prev => prev.map(t => t.id === updatedTab.id ? updatedTab : t));
     setNewExpModal(false);
     setExpForm({ title: '', amount: '', paidBy: activeTab.members[0] || 'Me', date: todayYMD() });
@@ -202,7 +206,7 @@ export default function SplitSettleModal({ isOpen, onClose }) {
       ...activeTab,
       expenses: activeTab.expenses.filter(e => e.id !== expId),
     };
-    await saveSharedTab(updatedTab);
+    if (!(await safeSaveTab(updatedTab))) return;
     setTabs(prev => prev.map(t => t.id === updatedTab.id ? updatedTab : t));
     haptic();
   };
@@ -237,7 +241,7 @@ export default function SplitSettleModal({ isOpen, onClose }) {
       expenses: [settlementExp, ...activeTab.expenses],
     };
 
-    await saveSharedTab(updatedTab);
+    if (!(await safeSaveTab(updatedTab))) return;
     setTabs(prev => prev.map(t => t.id === updatedTab.id ? updatedTab : t));
 
     // Optionally log real transaction

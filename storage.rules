@@ -1,13 +1,14 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // Each user can only read/write their own receipts. Images only, max 5 MB.
+    // Each user can only read/write their own receipts. Photos only (no SVG, which can carry scripts), max 5 MB.
+    // Note: not deployed yet; firebase.json has no storage entry and the app doesn't upload files.
     match /receipts/{uid}/{fileName} {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow write: if request.auth != null && request.auth.uid == uid
                    && (request.resource == null
                        || (request.resource.size < 5 * 1024 * 1024
-                           && request.resource.contentType.matches('image/.*')));
+                           && request.resource.contentType.matches('image/(jpeg|png|webp|heic|heif|gif)')));
       allow delete: if request.auth != null && request.auth.uid == uid;
     }
   }

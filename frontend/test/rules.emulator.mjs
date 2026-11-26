@@ -79,3 +79,35 @@ test('users can delete their own user_directory entry while foreign users cannot
  await denied(deleteDoc(doc(bob,'user_directory','alice')));
  await deleteDoc(doc(alice,'user_directory','alice'));
 });
+test('nobody can create or take over another user\'s prefs doc', async () => {
+ await denied(setDoc(doc(bob, 'user_prefs', 'alice'), { uid: 'bob', currency: 'USD' }));
+ await denied(setDoc(doc(bob, 'user_prefs', 'alice'), { currency: 'USD' }));
+ await setDoc(doc(alice, 'user_prefs', 'alice'), { currency: 'LKR' }, { merge: true });
+ await denied(getDoc(doc(bob, 'user_prefs', 'alice')));
+ await denied(setDoc(doc(alice, 'user_prefs', 'alice'), { uid: 'bob' }, { merge: true }));
+});
+test('draft transaction ids belong to their owner only', async () => {
+ await denied(setDoc(doc(bob, 'transactions', `alice_draft_${prefix}`), { ...tx, uid: 'bob', from_account_id: account('bob'), to_account_id: null, type: 'Expense' }));
+ await setDoc(doc(alice, 'transactions', `alice_draft_${prefix}`), { ...tx });
+});
+test('net worth snapshots must be numeric and use the owner id', async () => {
+ const today = '2026-11-26';
+ await setDoc(doc(alice, 'net_worth_snapshots', `alice_${prefix}`), { uid: 'alice', date: today, netWorth: 10, assets: 20, liabilities: 10 });
+ await denied(setDoc(doc(alice, 'net_worth_snapshots', `bob_${prefix}`), { uid: 'alice', date: today, netWorth: 10, assets: 20, liabilities: 10 }));
+ await denied(setDoc(doc(alice, 'net_worth_snapshots', `alice_${prefix}x`), { uid: 'alice', date: today, netWorth: 'lots', assets: 20, liabilities: 10 }));
+});
+test('a suspended user cannot read or write their data or remove the suspension', async () => {
+ const carol = client('carol');
+ await setDoc(doc(carol, 'user_directory', 'carol'), { uid: 'carol', email: 'carol@example.com', created_at: '2026-11-26', last_active: '2026-11-26' });
+ await setDoc(doc(carol, 'accounts', account('carol')), { uid: 'carol', name: 'Bank', type: 'Bank', balance: 10 });
+ // Suspend as the emulator admin (rules bypass), the same effect as the admin panel.
+ const res = await fetch(`http://${host}/v1/projects/demo-money-manager/databases/(default)/documents/user_directory/carol?updateMask.fieldPaths=status`, {
+  method: 'PATCH', headers: { Authorization: 'Bearer owner', 'Content-Type': 'application/json' },
+  body: JSON.stringify({ fields: { status: { stringValue: 'Suspended' } } }),
+ });
+ assert.equal(res.ok, true);
+ await denied(getDoc(doc(carol, 'accounts', account('carol'))));
+ await denied(setDoc(doc(carol, 'accounts', account('carol2')), { uid: 'carol', name: 'New', type: 'Bank', balance: 0 }));
+ await denied(setDoc(doc(carol, 'users', 'carol', 'ious', 'x'), { amount: 1 }));
+ await denied(deleteDoc(doc(carol, 'user_directory', 'carol')));
+});

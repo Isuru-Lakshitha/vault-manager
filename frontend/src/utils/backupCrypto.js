@@ -12,6 +12,7 @@ import {
   fetchSharedTabs,
   fetchInvoices,
   fetchReceipts,
+  fetchIous,
 } from './api';
 import { todayYMD } from './dates';
 
@@ -63,11 +64,16 @@ async function deriveAesKey(password, saltBuffer, iterations = 100000) {
 /**
  * Encrypts a JSON backup object using Web Crypto API (AES-256-GCM + PBKDF2)
  */
+export const BACKUP_ITERATIONS = 600000;
+export const MIN_BACKUP_PASSPHRASE = 12;
+
 export async function encryptVaultBackup(payloadObj, password) {
+  if (String(password || '').length < MIN_BACKUP_PASSPHRASE)
+    throw new Error(`Use a passphrase of at least ${MIN_BACKUP_PASSPHRASE} characters.`);
   const enc = new TextEncoder();
   const salt = crypto.getRandomValues(new Uint8Array(16));
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const iterations = 100000;
+  const iterations = BACKUP_ITERATIONS;
   const key = await deriveAesKey(password, salt.buffer, iterations);
   const plaintext = enc.encode(JSON.stringify(payloadObj));
   const cipherBuffer = await crypto.subtle.encrypt(
@@ -99,7 +105,9 @@ export async function decryptVaultBackup(encryptedObj, password) {
   const salt = base64ToBuf(encryptedObj.salt);
   const iv = new Uint8Array(base64ToBuf(encryptedObj.iv));
   const ciphertext = base64ToBuf(encryptedObj.ciphertext);
-  const iterations = encryptedObj.iterations || 100000;
+  // Older backups used 100k. Refuse odd values a tampered file might carry.
+  const iterations = Number(encryptedObj.iterations) || 100000;
+  if (!Number.isInteger(iterations) || iterations < 100000 || iterations > 5000000) throw new Error('This backup file looks damaged.');
   const key = await deriveAesKey(password, salt, iterations);
 
   const plainBuffer = await crypto.subtle.decrypt(
@@ -184,6 +192,7 @@ export async function buildVaultBackup(password = '') {
     shared_tabs,
     invoices,
     receipts,
+    ious,
   ] = await Promise.all([
     fetchAccounts(),
     fetchTransactions(),
@@ -198,6 +207,7 @@ export async function buildVaultBackup(password = '') {
     fetchSharedTabs(),
     fetchInvoices(),
     fetchReceipts(),
+    fetchIous(),
   ]);
 
   const rawPayload = {
@@ -216,6 +226,7 @@ export async function buildVaultBackup(password = '') {
     shared_tabs: shared_tabs || [],
     invoices: invoices || [],
     receipts: receipts || [],
+    ious: ious || [],
   };
 
   const dateStr = todayYMD();

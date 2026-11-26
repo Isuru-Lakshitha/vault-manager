@@ -1,6 +1,9 @@
-const sections = ['accounts','loans','goals','credit_cards','bills','receipts','budgets','investments','rules','shared_tabs','invoices','recurring_transactions','transactions'];
-const links = { invoice_id:'invoices',payment_transaction_id:'transactions', reversal_of:'transactions', reversed_by:'transactions', from_account_id:'accounts',to_account_id:'accounts',account_id:'accounts',loan_id:'loans',goal_id:'goals',credit_card_id:'credit_cards',bill_id:'bills',parent_transaction_id:'transactions',fee_transaction_id:'transactions',recurring_rule_id:'recurring_transactions' };
-const nested = new Set(['bills','investments','rules','shared_tabs','invoices']);
+const sections = ['accounts','loans','goals','credit_cards','bills','receipts','budgets','investments','rules','shared_tabs','invoices','ious','recurring_transactions','transactions'];
+const links = { invoice_id:'invoices',payment_transaction_id:'transactions', reversal_of:'transactions', reversed_by:'transactions', from_account_id:'accounts',to_account_id:'accounts',account_id:'accounts',loan_id:'loans',goal_id:'goals',credit_card_id:'credit_cards',credit_card_charge_id:'credit_cards',bill_id:'bills',parent_transaction_id:'transactions',fee_transaction_id:'transactions',recurring_rule_id:'recurring_transactions' };
+const nested = new Set(['bills','investments','rules','shared_tabs','invoices','ious']);
+// History pointers that may name a record that no longer exists: remap when
+// possible, otherwise clear them (never keep an id from the old login).
+const softLinks = { last_paid_account_id:'accounts' };
 export async function backupFingerprint(backup) {
   const digest = await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(backup)));
   return Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('').slice(0,24);
@@ -30,6 +33,13 @@ export function planBackupImport(input, uid, fingerprint, { legacyIds = false } 
       if(!mapped) throw new Error(`${section}/${id}: missing ${target} reference (${field})`);
       data[field]=mapped;
     }
+    for (const [field, target] of Object.entries(softLinks)) if (data[field]) data[field] = maps[target].get(String(data[field])) || null;
+    if (Array.isArray(data.round_up_ids)) data.round_up_ids = data.round_up_ids.map(x => maps.transactions.get(String(x))).filter(Boolean);
+    if (Array.isArray(data.payment_history)) data.payment_history = data.payment_history.map(h => ({
+      ...h,
+      transaction_id: h?.transaction_id ? (maps.transactions.get(String(h.transaction_id)) || null) : (h?.transaction_id ?? null),
+      account_id: h?.account_id ? (maps.accounts.get(String(h.account_id)) || null) : (h?.account_id ?? null),
+    }));
     if (data.reversal_context) {
       if (!Array.isArray(data.reversal_context)) throw new Error('Invalid payment audit snapshot');
       data.reversal_context = data.reversal_context.map(target => {

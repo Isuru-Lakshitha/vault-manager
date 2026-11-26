@@ -1,4 +1,5 @@
 import { useT, useLang, setLang, LANGUAGES } from '../i18n';
+import { hashPin } from '../utils/pinHash';
 import { backupToDrive, isDriveBackupAvailable, lastDriveBackup } from '../utils/driveBackup';
 import { PageHeader, Segmented } from '../components/ui';
 import { backupFingerprint, planBackupImport } from '../utils/backupPlan';
@@ -88,12 +89,6 @@ const Toggle = ({ checked, onChange, label }) => (
 );
 
 // Simple SHA-256 hash for PIN storage
-const hashPin = async (pin) => {
-  const msgBuffer = new TextEncoder().encode(pin + 'vm_salt_2025');
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-};
 
 const Settings = () => {
   const t = useT();
@@ -379,6 +374,7 @@ const Settings = () => {
           if (next === pinFirst) {
             const hash = await hashPin(next);
             localStorage.setItem('vm_pin_hash', hash);
+            localStorage.removeItem('vm_pin_fails');
             setPinEnabled(true);
             setShowPinSetup(false);
             toast.success('PIN set successfully 🔒');
@@ -490,7 +486,13 @@ const Settings = () => {
         let plan = planBackupImport(json, uid, fingerprint);
         const legacy = planBackupImport(json, uid, fingerprint, { legacyIds: true });
         const sections = [...new Set(plan.groups.flat().map(row => row.path.length === 4 ? row.path[2] : row.path[0]))];
-        const nested = new Set(['bills','investments','rules','shared_tabs','invoices']);
+        const nested = new Set(['bills','investments','rules','shared_tabs','invoices','ious']);
+        // A backup made from this same login: its records are still here under
+        // their original ids, so restoring would create a second copy of everything.
+        const liveAccounts = await getDocs(query(collection(db, 'accounts'), where('uid', '==', uid)));
+        const liveIds = new Set(liveAccounts.docs.map(d => d.id));
+        const stillHere = (json.accounts || []).filter(a => liveIds.has(String(a.id))).length;
+        if (stillHere > 0) throw new Error(`This backup came from the data you already have here (${stillHere} of its accounts still exist). Restoring it would duplicate your accounts and transactions. Restore it only into a new or different login.`);
         const snapshots = await Promise.all(sections.map(section => getDocs(query(
           collection(db, ...(nested.has(section) ? ['users',uid,section] : [section])),
           where('uid','==',uid), where('import_id','==',fingerprint)
@@ -1217,7 +1219,9 @@ const Settings = () => {
                 type="password"
                 value={backupPassphrase}
                 onChange={e => setBackupPassphrase(e.target.value)}
-                placeholder="Optional passphrase for AES-256 encryption..."
+                placeholder="Optional passphrase (12+ characters) to encrypt the backup"
+                aria-label="Backup passphrase, at least 12 characters"
+                minLength={12}
                 style={{
                   flex: '1 1 220px',
                   background: 'rgba(0,0,0,0.25)',

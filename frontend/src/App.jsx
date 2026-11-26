@@ -378,9 +378,31 @@ function App() {
 
   const handleLogout = useCallback(async () => {
     setPinLocked(false);
+    try { localStorage.removeItem('vm_pin_fails'); } catch { /* private mode */ }
+    // Remove the offline copy of this user's financial data from the device,
+    // so the next person on a shared phone or computer can't read it. Changes
+    // still waiting to sync are kept (copy not cleared) rather than lost.
+    let terminated = false;
+    if (apiIfLoaded()) {
+      try {
+        const [{ db }, fs] = await Promise.all([import('./utils/firebase'), import('firebase/firestore')]);
+        const synced = typeof fs.waitForPendingWrites === 'function'
+          ? await Promise.race([fs.waitForPendingWrites(db).then(() => true), new Promise(r => setTimeout(() => r(false), 4000))])
+          : false;
+        if (synced && typeof fs.terminate === 'function' && typeof fs.clearIndexedDbPersistence === 'function') {
+          await fs.terminate(db);
+          terminated = true;
+          await fs.clearIndexedDbPersistence(db);
+        }
+      } catch (err) {
+        // e.g. another tab still has the app open; it is cleared next time.
+        console.warn('Could not clear offline data:', err);
+      }
+    }
     try {
       await auth.signOut();
     } catch (error) { console.error('Error signing out: ', error); }
+    if (terminated) window.location.reload();
   }, []);
 
   // Show PIN lock screen on inactivity (instead of immediate logout)

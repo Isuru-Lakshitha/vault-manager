@@ -167,9 +167,11 @@ const Investments = () => {
     try {
       const ids = cryptos.map(inv => CRYPTO_ID_MAP[inv.symbol?.toUpperCase()] || inv.symbol?.toLowerCase()).filter(Boolean);
       const uniqueIds = [...new Set(ids)];
-      const currencyCode = getCurrency();
-      const baseCur = (currencyCode || 'USD').toLowerCase();
-      const url = `https://api.coingecko.com/api/v3/simple/price?ids=${uniqueIds.join(',')}&vs_currencies=${baseCur},usd`;
+      // Each holding is priced in its own currency (older holdings without one
+      // were entered in the display currency; they get it stamped below).
+      const curOf = inv => (inv.currency || getCurrency() || 'USD');
+      const vsCurs = [...new Set([...cryptos.map(inv => curOf(inv).toLowerCase()), 'usd'])];
+      const url = `https://api.coingecko.com/api/v3/simple/price?ids=${uniqueIds.join(',')}&vs_currencies=${vsCurs.join(',')}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('API error');
       const data = await res.json();
@@ -177,7 +179,8 @@ const Investments = () => {
       const needsUsdConversion = cryptos.some(inv => {
         const cgId = CRYPTO_ID_MAP[inv.symbol?.toUpperCase()] || inv.symbol?.toLowerCase();
         const pd = data[cgId];
-        return pd && pd[baseCur] == null && pd['usd'] != null && baseCur !== 'usd';
+        const cur = curOf(inv).toLowerCase();
+        return pd && pd[cur] == null && pd['usd'] != null && cur !== 'usd';
       });
       const fxRates = needsUsdConversion ? await fetchExchangeRates().catch(() => null) : null;
 
@@ -187,16 +190,18 @@ const Investments = () => {
         const cgId = CRYPTO_ID_MAP[inv.symbol?.toUpperCase()] || inv.symbol?.toLowerCase();
         const priceData = data[cgId];
         if (priceData) {
+          const invCur = curOf(inv);
+          const baseCur = invCur.toLowerCase();
           let newPrice = priceData[baseCur];
           if (newPrice == null && priceData['usd'] != null) {
             if (baseCur === 'usd') newPrice = priceData['usd'];
             else if (fxRates) {
-              const converted = convertCurrency(priceData['usd'], 'USD', currencyCode, fxRates);
+              const converted = convertCurrency(priceData['usd'], 'USD', invCur, fxRates);
               if (Number.isFinite(converted)) newPrice = converted;
             }
           }
-          if (Number.isFinite(newPrice) && Math.abs(newPrice - inv.current_price) > 0.0001) {
-            updates.push(updateInvestment(inv.id, { ...inv, current_price: newPrice }));
+          if (Number.isFinite(newPrice) && (Math.abs(newPrice - inv.current_price) > 0.0001 || !inv.currency)) {
+            updates.push(updateInvestment(inv.id, { ...inv, currency: invCur, current_price: newPrice }));
           }
         }
       }
