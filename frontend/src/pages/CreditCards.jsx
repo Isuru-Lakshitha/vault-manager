@@ -202,7 +202,12 @@ const CreditCards = () => {
         apr: roundMoney(Number(formData.apr) || 0),
         min_payment_pct: roundMoney(Number(formData.min_payment_pct) || 2),
       };
-      if (editMode) { await updateCreditCard(currentId, data); toast.success('Card updated'); }
+      if (editMode) {
+        // The balance only changes through charges and payments, so a stale
+        // form value can never wipe out a charge saved meanwhile.
+        const { balance: _balance, ...details } = data;
+        await updateCreditCard(currentId, details); toast.success('Card updated');
+      }
       else { await createCreditCard(data); toast.success('Card added'); }
       setIsModalOpen(false); load();
     } catch { toast.error('Failed to save card'); }
@@ -630,7 +635,11 @@ const CreditCards = () => {
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem' }}>
             <div><label style={{ display:'block', marginBottom:'0.4rem' }}>{`Credit Limit (${getCurrencyLabel()})`}</label><CurrencyInput required value={formData.credit_limit} onChange={v => setFormData({...formData, credit_limit:v})}/></div>
-            <div><label style={{ display:'block', marginBottom:'0.4rem' }}>{`Current Balance (${getCurrencyLabel()})`}</label><CurrencyInput required value={formData.balance} onChange={v => setFormData({...formData, balance:v})}/></div>
+            {editMode ? (
+              <div><span style={{ display:'block', marginBottom:'0.4rem' }}>{`Current Balance (${getCurrencyLabel()})`}</span><strong>{formatCurrency(formData.balance || 0)}</strong><small style={{ display:'block', marginTop:'0.3rem', color:'var(--text-muted)' }}>Use Charge or Pay to change the balance.</small></div>
+            ) : (
+              <div><label style={{ display:'block', marginBottom:'0.4rem' }}>{`Current Balance (${getCurrencyLabel()})`}</label><CurrencyInput required value={formData.balance} onChange={v => setFormData({...formData, balance:v})}/></div>
+            )}
           </div>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'1rem' }}>
             <div><label style={{ display:'block', marginBottom:'0.4rem' }}>APR (%)</label><input type="number" step="0.01" min="0" max="100" value={formData.apr} onChange={e => setFormData({...formData, apr:e.target.value})} placeholder="18.99"/></div>

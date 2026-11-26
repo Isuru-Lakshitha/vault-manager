@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { saveUserPrefs, fetchAccounts, fetchTransactions, fetchBudgets, fetchGoals, fetchLoans, fetchBills, fetchInvestments, getUserId, migrateDataAddUid, deleteTransaction, invalidateCache } from '../utils/api';
 import { loadDemoPortfolio, removeDemoPortfolio } from '../utils/demoData';
 import { db, auth } from '../utils/firebase';
+import { signOutAndClear } from '../utils/signOut';
 import { runTransaction, doc, collection, query, where, getDocs } from 'firebase/firestore';
 import Modal from '../components/Modal';
 import { isSuperAdmin } from '../utils/adminService';
@@ -399,8 +400,7 @@ const Settings = () => {
 
   const handleLogout = async () => {
     try {
-      await auth.signOut();
-      toast.success('Signed out successfully');
+      if (!(await signOutAndClear())) toast.success('Signed out successfully');
     } catch { toast.error('Failed to sign out'); }
   };
   

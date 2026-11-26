@@ -26,7 +26,6 @@ export const USER_SUBCOLLECTIONS = [
   'invoices',
   'ious',
   'error_logs',
-  'audit_log',
 ];
 
 /**

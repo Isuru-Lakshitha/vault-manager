@@ -73,6 +73,18 @@ test('card payment atomically updates card, account and transaction',async()=>{
  await assert.rejects(api.recordCardPayment({id:'card'},100,'bank'));assert.equal(records.get('accounts/bank').balance,975);
  failCommit=true;await assert.rejects(api.recordCardPayment({id:'card'},10,'bank'));assert.equal(records.get('credit_cards/card').balance,55);
 });
+test('card payment with no source account reduces only the card balance',async()=>{
+ records.set('credit_cards/card',{uid:'alice',name:'Visa',balance:80,currency:'LKR'});
+ const bankBefore=records.get('accounts/bank').balance;
+ await api.recordCardPayment({id:'card'},30,null);
+ assert.equal(records.get('credit_cards/card').balance,50);assert.equal(records.get('accounts/bank').balance,bankBefore);
+ const [[,p]]=txs();assert.ok(p.from_account_id==null);assert.equal(p.credit_card_id,'card');assert.equal(p.currency,'LKR');
+});
+test('card edits cannot overwrite the balance',async()=>{
+ records.set('credit_cards/card',{uid:'alice',name:'Visa',balance:80});
+ await assert.rejects(api.updateCreditCard('card',{name:'Visa Gold',balance:10}),/charge or payment/);
+ assert.equal(records.get('credit_cards/card').balance,80);
+});
 test('card charge atomically updates card balance and optionally logs category expense without bank deduction',async()=>{
  records.set('credit_cards/card',{uid:'alice',name:'Visa',balance:80});
  await api.recordCardCharge({id:'card',name:'Visa'},{amount:45,date:'2026-10-21',category:'Groceries',notes:'Keells',logTransaction:true});

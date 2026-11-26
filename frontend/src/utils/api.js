@@ -1773,9 +1773,12 @@ export const createCreditCard = async (data) => {
   return { id: docRef.id };
 };
 
+// Card details only. The balance changes through recordCardCharge/recordCardPayment,
+// which read the live value inside a transaction.
 export const updateCreditCard = async (id, data) => {
+  if (Object.hasOwn(data || {}, 'balance')) throw new Error('Use a charge or payment to change the card balance');
+  await updateDoc(doc(db, 'credit_cards', String(id)), data);
   _patchCache('credit_cards', old => old ? old.map(c => c.id === id ? { ...c, ...data } : c) : old);
-  return updateDoc(doc(db, 'credit_cards', String(id)), data);
 };
 
 export const deleteCreditCard = id => deleteLinkedRecord('credit_cards', id, ['credit_card_id', 'credit_card_charge_id']);
@@ -1817,7 +1820,7 @@ export const recordCardPayment = async (card, amount, fromAccountId) => {
   const payAmt = Number(amount);
   const date = todayYMD();
   const cleanAccId = fromAccountId != null && fromAccountId !== '' ? String(fromAccountId) : null;
-  validateTransaction({ type: 'Expense', amount: payAmt, date, from_account_id: cleanAccId });
+  validateTransaction({ type: 'Expense', amount: payAmt, date, from_account_id: cleanAccId || 'mark-only' });
   const cardRef = doc(db, 'credit_cards', String(card.id));
   await auditedPayment(db, async txn => {
     const snap = await txn.get(cardRef);
@@ -1825,10 +1828,11 @@ export const recordCardPayment = async (card, amount, fromAccountId) => {
     if (roundMoney(payAmt) > roundMoney(Number(snap.data().balance) || 0)) throw new Error('Payment exceeds the card balance');
     const accounts = await _getAccountsForTxn(txn, new Set([cleanAccId]));
     if (Object.values(accounts).some(a => a.archived)) throw new Error('Restore the archived account before recording a payment');
-    requireMatchingCurrency(snap.data(), accounts[cleanAccId]);
-    const payment = { type: 'Expense', amount: payAmt, date, from_account_id: cleanAccId,
+    if (cleanAccId) requireMatchingCurrency(snap.data(), accounts[cleanAccId]);
+    const currency = snap.data().currency || accounts[cleanAccId]?.currency || getCurrency();
+    const payment = { type: 'Expense', amount: payAmt, currency, date, from_account_id: cleanAccId,
       to_account_id: null, credit_card_id: String(card.id), category: 'Credit Card Payment', notes: `Payment to ${snap.data().name}`, uid };
-    _mutateBalances(accounts, payment);
+    if (cleanAccId) _mutateBalances(accounts, payment);
     for (const account of Object.values(accounts)) txn.update(account.ref, { balance: account.balance });
     txn.update(cardRef, { balance: roundMoney(snap.data().balance - payAmt) });
     txn.set(doc(collection(db, 'transactions')), payment);

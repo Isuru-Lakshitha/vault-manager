@@ -7,6 +7,8 @@ import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { spring } from '../motion/presets';
 import { apiIfLoaded, loadApi } from '../utils/lazyData';
 import { auth } from '../utils/firebaseApp';
+import { signOutAndClear } from '../utils/signOut';
+import { toast } from 'react-hot-toast';
 import { useStealthMode } from '../utils/format';
 import { isSuperAdminUser as isSuperAdmin } from '../utils/adminLite';
 import { isStandalone, triggerInstallPrompt } from '../utils/pwaInstall';
@@ -19,8 +21,9 @@ const Sidebar = ({ isOpen, onSearchOpen }) => {
   const location = useLocation();
   const [isStealth, toggleStealth] = useStealthMode();
   const handleLogout = async () => {
-    await auth.signOut();
-    navigate('/');
+    try {
+      if (!(await signOutAndClear({ redirectTo: '/' }))) navigate('/');
+    } catch { toast.error('Could not sign out. Check your connection and try again.'); }
   };
   // Desktop with a mouse: an icon rail that opens on hover/focus (overlaying
   // the page) unless pinned open. Touch devices always get the full sidebar.
@@ -107,8 +110,9 @@ const MoreSheet = ({ open, onClose, badges }) => {
   }, [open]);
 
   const logout = async () => {
-    await auth.signOut();
-    navigate('/');
+    try {
+      if (!(await signOutAndClear({ redirectTo: '/' }))) navigate('/');
+    } catch { toast.error('Could not sign out. Check your connection and try again.'); }
   };
 
   return createPortal(

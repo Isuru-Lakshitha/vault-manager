@@ -4,8 +4,11 @@ import App from './App.jsx'
 import { installGlobalErrorHandlers } from './utils/errorLogger'
 import { initLiquidGlass } from './motion/liquidGlass'
 import { loadApi } from './utils/lazyData'
+import { retryPendingOfflineWipe } from './utils/signOut'
 
 installGlobalErrorHandlers();
+// Finish removing offline data that a previous sign-out couldn't (another tab had it open).
+retryPendingOfflineWipe();
 // Returning signed-in users: start fetching the data layer right away instead
 // of waiting for Auth to restore the session (the sign-in page doesn't need it).
 try { if (localStorage.getItem('vm_signed_in') === '1') loadApi().catch(() => {}); } catch {}

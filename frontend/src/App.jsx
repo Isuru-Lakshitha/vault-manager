@@ -23,6 +23,7 @@ import { auth } from './utils/firebaseApp';
 import { loadApi, apiIfLoaded, loadAdmin, adminIfStarted, loadNotifications } from './utils/lazyData';
 import { getMaintenanceMode, isSuperAdminUser as isSuperAdmin } from './utils/adminLite';
 import { getSessionTimeoutMinutes } from './utils/sessionTimeout';
+import { signOutAndClear, clearAfterSessionEnded, cancelPendingOfflineWipe } from './utils/signOut';
 
 // Auto-retry lazy component imports on chunk mismatch after new deploy
 const lazyWithRetry = (importFn) =>
@@ -378,31 +379,7 @@ function App() {
 
   const handleLogout = useCallback(async () => {
     setPinLocked(false);
-    try { localStorage.removeItem('vm_pin_fails'); } catch { /* private mode */ }
-    // Remove the offline copy of this user's financial data from the device,
-    // so the next person on a shared phone or computer can't read it. Changes
-    // still waiting to sync are kept (copy not cleared) rather than lost.
-    let terminated = false;
-    if (apiIfLoaded()) {
-      try {
-        const [{ db }, fs] = await Promise.all([import('./utils/firebase'), import('firebase/firestore')]);
-        const synced = typeof fs.waitForPendingWrites === 'function'
-          ? await Promise.race([fs.waitForPendingWrites(db).then(() => true), new Promise(r => setTimeout(() => r(false), 4000))])
-          : false;
-        if (synced && typeof fs.terminate === 'function' && typeof fs.clearIndexedDbPersistence === 'function') {
-          await fs.terminate(db);
-          terminated = true;
-          await fs.clearIndexedDbPersistence(db);
-        }
-      } catch (err) {
-        // e.g. another tab still has the app open; it is cleared next time.
-        console.warn('Could not clear offline data:', err);
-      }
-    }
-    try {
-      await auth.signOut();
-    } catch (error) { console.error('Error signing out: ', error); }
-    if (terminated) window.location.reload();
+    try { await signOutAndClear(); } catch { toast.error('Could not sign out. Check your connection and try again.'); }
   }, []);
 
   // Show PIN lock screen on inactivity (instead of immediate logout)
@@ -438,9 +415,12 @@ function App() {
       setIsInitializing(false);
     }, 1500);
 
+    let signedInUid = auth.currentUser?.uid || null;
     const unsubscribe = auth.onAuthStateChanged((user) => {
       clearTimeout(fallbackTimer);
       if (user) {
+        signedInUid = user.uid;
+        cancelPendingOfflineWipe();
         setIsAuthenticated(true);
         setPinLocked(false);
         setIsInitializing(false);
@@ -480,6 +460,10 @@ function App() {
         try { localStorage.removeItem('vm_signed_in'); } catch {}
         const api = apiIfLoaded();
         if (api) { api.stopLiveSync(); api.invalidateCache(); }
+        // Signed out elsewhere (other tab, expired login, deleted account):
+        // remove the offline data too. A no-op after this tab's own Sign out.
+        clearAfterSessionEnded(signedInUid).catch(() => {});
+        signedInUid = null;
         // Only if it was started: signed-out visitors must not download it.
         adminIfStarted()?.then(({ stopSystemConfigSync }) => stopSystemConfigSync()).catch(() => {});
       }

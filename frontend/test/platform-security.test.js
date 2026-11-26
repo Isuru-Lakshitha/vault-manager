@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   truncateField,
   buildErrorLogPayload,
@@ -91,5 +92,23 @@ test('accountService lists all user collections and subcollections for GDPR expo
   assert.ok(USER_TOP_LEVEL_COLLECTIONS.includes('accounts'));
   assert.ok(USER_TOP_LEVEL_COLLECTIONS.includes('transactions'));
   assert.ok(USER_SUBCOLLECTIONS.includes('error_logs'));
-  assert.ok(USER_SUBCOLLECTIONS.includes('audit_log'));
+});
+
+test('every collection that export & deletion reads is allowed by firestore.rules', () => {
+  const rules = readFileSync(new URL('../../firestore.rules', import.meta.url), 'utf8');
+  const userStart = rules.indexOf('    match /users/{userId}');
+  const nextTopLevel = rules.indexOf('\n    match /', userStart + 1);
+  const userBlock = rules.slice(userStart + '    match /users/{userId}'.length, nextTopLevel === -1 ? undefined : nextTopLevel);
+  const sectionList = userBlock.match(/section in \[([^\]]*)\]/);
+  assert.ok(sectionList, 'users/{uid}/{section} rule not found');
+  const allowedSub = new Set([
+    ...[...userBlock.matchAll(/match \/(\w+)\/\{\w+\}/g)].map(m => m[1]),
+    ...[...sectionList[1].matchAll(/'(\w+)'/g)].map(m => m[1]),
+  ]);
+  for (const name of USER_SUBCOLLECTIONS) {
+    assert.ok(allowedSub.has(name), `users/{uid}/${name} is read by export/delete but blocked by firestore.rules`);
+  }
+  for (const name of USER_TOP_LEVEL_COLLECTIONS) {
+    assert.match(rules, new RegExp(`match /${name}/\\{\\w+\\}`), `${name} has no firestore.rules match`);
+  }
 });
