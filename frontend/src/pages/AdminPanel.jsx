@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ShieldAlert, ShieldCheck, Crown, Users, Database, Activity, RefreshCw, Download, Trash2, Megaphone, Lock, Unlock, CheckCircle2, Sparkles } from 'lucide-react';
 import PageWrapper from '../components/PageWrapper';
-import { auth } from '../utils/firebase';
+import { auth } from '../utils/firebaseApp';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import {
   SUPER_ADMIN_EMAIL,

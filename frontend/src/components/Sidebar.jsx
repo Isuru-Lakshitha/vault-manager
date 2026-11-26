@@ -5,10 +5,10 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { spring } from '../motion/presets';
-import { getCache } from '../utils/api';
-import { auth } from '../utils/firebase';
+import { apiIfLoaded, loadApi } from '../utils/lazyData';
+import { auth } from '../utils/firebaseApp';
 import { useStealthMode } from '../utils/format';
-import { isSuperAdmin } from '../utils/adminService';
+import { isSuperAdminUser as isSuperAdmin } from '../utils/adminLite';
 import { isStandalone, triggerInstallPrompt } from '../utils/pwaInstall';
 import { NAV_ITEMS } from './navItems';
 
@@ -318,7 +318,7 @@ const BottomNav = () => {
   useEffect(() => {
     const compute = () => {
       const today = new Date(); today.setHours(0,0,0,0);
-      const bills = getCache('bills') || [];
+      const bills = apiIfLoaded()?.getCache('bills') || [];
       const due = bills.filter(b => {
         if (b.paid) return false;
         const d = new Date(b.due_date + 'T00:00:00');
@@ -329,7 +329,9 @@ const BottomNav = () => {
     compute();
     const id = setInterval(compute, 60000);
     window.addEventListener('vm:data-changed', compute);
-    return () => { clearInterval(id); window.removeEventListener('vm:data-changed', compute); };
+    let live = true;
+    loadApi().then(() => { if (live) compute(); }).catch(() => {}); // data layer loads after sign-in
+    return () => { live = false; clearInterval(id); window.removeEventListener('vm:data-changed', compute); };
   }, []);
 
   // The mobile header's menu button opens this sheet

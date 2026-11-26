@@ -51,7 +51,7 @@ html body .btn-ghost:hover { background: var(--mm-surface-2, rgba(127, 127, 127,
 /* ---------- Empty state ---------- */
 .ui-empty { display: grid; justify-items: center; gap: 0.5rem; text-align: center; padding: 2.5rem 1.25rem; font-family: Inter, sans-serif; }
 .ui-empty-icon { display: grid; place-items: center; width: 48px; height: 48px; border-radius: 16px; color: var(--mm-accent); background: color-mix(in srgb, var(--mm-accent) 12%, transparent); }
-.ui-empty h3 { margin: 0.25rem 0 0; font-size: 1rem; color: var(--mm-text); }
+.ui-empty :is(h2, h3) { margin: 0.25rem 0 0; font-size: 1rem; color: var(--mm-text); }
 .ui-empty p { margin: 0; max-width: 38ch; font-size: 0.84rem; line-height: 1.5; color: var(--mm-text-2); }
 .ui-empty-action { margin-top: 0.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
 
@@ -175,7 +175,7 @@ body.light-mode .set-row-icon { color: color-mix(in srgb, var(--row-color, var(-
 /* Analytics 3D card */
 .an3d-card { flex-direction: column; margin: 0; gap: 0.5rem; }
 .an3d-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-.an3d-head h3 { margin: 0; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.3px; color: var(--mm-text); }
+.an3d-head :is(h2, h3) { margin: 0; font-size: 0.85rem; font-weight: 600; letter-spacing: 0.3px; color: var(--mm-text); }
 .an3d-legend { display: inline-flex; gap: 1rem; font: 500 0.76rem Inter, sans-serif; color: var(--mm-text-2); }
 .an3d-legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
 .an3d-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }

@@ -7,6 +7,7 @@ import { InsightBudgets } from '../components/InsightPanels';
 import useLiveData from '../utils/useLiveData';
 import { fetchBudgets, createBudget, updateBudget, deleteBudget, fetchAnalytics, getCategorySpendFromMap, getCache } from '../utils/api';
 import { todayYMD } from '../utils/dates';
+import { roundMoney } from '../utils/money';
 import { Plus, Target, Edit2, Trash2, AlertTriangle, ShieldCheck, Activity, RefreshCw, Sparkles } from 'lucide-react';
 import getCategoryEmoji from '../utils/categoryEmoji';
 import PageWrapper from '../components/PageWrapper';
@@ -169,7 +170,7 @@ const Budgets = () => {
           const leftover = includeSurplus ? Math.max(0, (b.amount || 0) - spentInCat) : 0;
           await createBudget({
             category: b.category,
-            amount: Math.round((b.amount || 0) + leftover),
+            amount: roundMoney((b.amount || 0) + leftover),
             month: destMonth,
             rollover: includeSurplus,
           });
@@ -180,21 +181,10 @@ const Budgets = () => {
         return;
       }
 
-      // If all existing budgets are from an older month, update their month stamp to destMonth
-      const outdated = budgets.filter(b => b.month && b.month !== destMonth);
-      if (outdated.length > 0) {
-        for (const b of outdated) {
-          const spentInCat = getBudgetSpent(b);
-          const includeSurplus = rolloverSurplus || !!b.rollover;
-          const leftover = includeSurplus ? Math.max(0, (b.amount || 0) - spentInCat) : 0;
-          await updateBudget(b.id, {
-            ...b,
-            amount: Math.round((b.amount || 0) + leftover),
-            month: destMonth,
-          });
-        }
-        toast.success(`🔄 Rolled ${outdated.length} budget${outdated.length > 1 ? 's' : ''} forward to ${destMonth}!`);
-        loadData();
+      // Every category already has a budget for destMonth. Never move an
+      // older month's budget (that would erase it from that month's history).
+      if (budgets.some(b => b.month && b.month !== destMonth)) {
+        toast(`All categories already have a budget for ${destMonth}.`);
         return;
       }
 

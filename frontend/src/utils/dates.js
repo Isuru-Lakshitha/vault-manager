@@ -17,3 +17,18 @@ export const toYMD = (date = new Date()) => {
 
 /** Today's local date as 'YYYY-MM-DD'. */
 export const todayYMD = () => toYMD(new Date());
+
+/**
+ * Add whole months, clamping to the last day of the target month, so
+ * Jan 31 + 1 month is Feb 28/29 (plain setMonth would roll over to Mar 3).
+ */
+export const addMonthsClamped = (date, months) => {
+  const d = date instanceof Date ? new Date(date.getTime()) : new Date(date);
+  if (isNaN(d.getTime())) return d;
+  const day = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + months);
+  const lastDay = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  d.setDate(Math.min(day, lastDay));
+  return d;
+};

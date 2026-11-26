@@ -6,6 +6,7 @@ import { BarChart2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '../../utils/format';
 import { todayYMD } from '../../utils/dates';
+import { isInternalMove } from '../../utils/ledgerReporting.js';
 
 // Analytics → category breakdown and drill-down.
 export default function CategoriesTab({ COLORS, CustomTooltip, budgets, data, drillCat, filteredTxns, monthCatData, navigate, selectedMonth, setBudgets, setDrillCat }) {
@@ -16,7 +17,7 @@ export default function CategoriesTab({ COLORS, CustomTooltip, budgets, data, dr
           <div className="bento-item col-span-8" style={{ flexDirection:'column', minHeight:400 }}>
             <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
               <BarChart2 className="text-cyan" size={18}/>
-              <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>TOP EXPENSE CATEGORIES</h3>
+              <h2 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>TOP EXPENSE CATEGORIES</h2>
               <span style={{ fontSize:'0.72rem', color:'var(--text-muted)', marginLeft:'auto' }}>Tap a bar to drill in</span>
             </div>
             <ResponsiveContainer width="100%" height={360}>
@@ -37,7 +38,7 @@ export default function CategoriesTab({ COLORS, CustomTooltip, budgets, data, dr
           </div>
           <div className="bento-item col-span-4" style={{ flexDirection:'column', padding:'1.5rem' }}>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'1rem' }}>
-              <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600, color:'var(--mm-success)' }}>BREAKDOWN</h3>
+              <h2 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600, color:'var(--mm-success)' }}>BREAKDOWN</h2>
               {drillCat && <button onClick={() => setDrillCat(null)} style={{ background:'none', border:'none', color:'var(--text-muted)', cursor:'pointer', fontSize:'0.75rem' }}>✕ Clear</button>}
             </div>
             <div style={{ display:'flex', flexDirection:'column', gap:'0.75rem', overflowY:'auto', maxHeight:380 }}>
@@ -68,7 +69,7 @@ export default function CategoriesTab({ COLORS, CustomTooltip, budgets, data, dr
           {/* Drill-down panel: transactions for selected category */}
           {drillCat && (() => {
             const txs = [];
-            filteredTxns.filter(t => t.type === 'Expense' || t.type === 'Loan Payment').forEach(t => {
+            filteredTxns.filter(t => !isInternalMove(t) && (t.type === 'Expense' || t.type === 'Loan Payment')).forEach(t => {
               const validSplits = t.isSplit !== false && Array.isArray(t.splits)
                 ? t.splits.filter(sp => (Number(sp?.amount) || 0) > 0)
                 : [];
@@ -88,7 +89,7 @@ export default function CategoriesTab({ COLORS, CustomTooltip, budgets, data, dr
                 style={{ flexDirection:'column', padding:'1.5rem', border:`1px solid ${catColor}44`, background:`${catColor}08` }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'0.75rem', marginBottom:'1.25rem', flexWrap:'wrap' }}>
                   <span style={{ fontSize:'1.5rem' }}>{getCategoryEmoji(drillCat)}</span>
-                  <h3 style={{ margin:0, fontSize:'1rem', fontWeight:700, color:catColor }}>{drillCat}</h3>
+                  <h2 style={{ margin:0, fontSize:'1rem', fontWeight:700, color:catColor }}>{drillCat}</h2>
                   <span style={{ fontSize:'0.75rem', color:'var(--text-muted)' }}>{txs.length} transactions</span>
                   <div style={{ marginLeft:'auto', display:'flex', alignItems:'center', gap:'0.5rem', flexWrap:'wrap' }}>
                     <button

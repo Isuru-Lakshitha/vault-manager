@@ -7,6 +7,7 @@
  */
 
 import { convertCurrency } from './format.js';
+import { isInternalMove } from './ledgerReporting.js';
 
 const parseLocalYMD = (str) => {
   if (!str) return null;
@@ -273,7 +274,7 @@ export function calculateSafeToSpend({
 
   // 8. Live Today's Spend & Tomorrow's Adjusted Allowance (excludes reserved bill/recurring/loan/card/goal payments)
   const spentToday = (transactions || [])
-    .filter(t => isActiveTx(t) && t.type === 'Expense' && t.date === todayKey &&
+    .filter(t => !isInternalMove(t) && isActiveTx(t) && t.type === 'Expense' && t.date === todayKey &&
       !t.recurring_rule_id && !t.bill_id && !t.loan_id && !t.credit_card_id && !t.goal_id &&
       t.category !== 'Balance Adjustment' && t.category !== 'Reconciliation')
     .reduce((s, t) => s + toBaseAmount(t.amount, t.currency, baseCurrency, rates), 0);
@@ -346,7 +347,7 @@ export function detectAnomalies(transactions = []) {
 
   // Filter active expenses (exclude reversed/reversal/fee entries)
   const expenses = transactions
-    .filter(t => isActiveTx(t) && t.type === 'Expense' && (parseFloat(t.amount) || 0) > 0)
+    .filter(t => !isInternalMove(t) && isActiveTx(t) && t.type === 'Expense' && (parseFloat(t.amount) || 0) > 0)
     .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 
   // 1. Duplicate detection: same amount + same notes/merchant/category within 36h
@@ -459,7 +460,7 @@ export function generateFinancialDigest({
   twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
   const activeExpenses = (transactions || []).filter(
-    t => isActiveTx(t) && (t.type === 'Expense' || t.type === 'Loan Payment')
+    t => !isInternalMove(t) && isActiveTx(t) && (t.type === 'Expense' || t.type === 'Loan Payment')
   );
 
   const thisWeekSpend = activeExpenses
@@ -558,7 +559,7 @@ export function calculateEmergencyRunway(accounts = [], transactions = [], { bas
   ninetyDaysAgo.setDate(now.getDate() - 90);
 
   const outflowTxs = (transactions || []).filter(
-    t => isActiveTx(t) && (t.type === 'Expense' || t.type === 'Loan Payment')
+    t => !isInternalMove(t) && isActiveTx(t) && (t.type === 'Expense' || t.type === 'Loan Payment')
   );
 
   const expenses90d = outflowTxs

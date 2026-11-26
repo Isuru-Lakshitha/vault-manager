@@ -1,4 +1,4 @@
-import { requireMatchingCurrency } from './ledgerReporting.js';
+import { requireMatchingCurrency, isInternalMove } from './ledgerReporting.js';
 import { reportingTransactions, transactionCurrency } from './reportingCurrency.js';
 import { parseExchangeRates, currencyRate } from './exchangeRates.js';
 import { calculateLoanPayment } from './loanPayment.js';
@@ -595,9 +595,10 @@ const changeTransaction = async (id, updates) => {
         txn.update(targetGoalRef, { current_amount: newCur, is_achieved: newCur >= (targetGoalSnap.data().target_amount || 0) });
       }
       if (targetLoanSnap?.exists() && targetLoanSnap.data().uid === uid) {
-        const delta = roundMoney(Number(old.amount) - Number(next.amount));
-        const newPrin = Math.max(0, roundMoney((targetLoanSnap.data().principal_amount || 0) + delta));
-        txn.update(targetLoanRef, { principal_amount: newPrin, status: newPrin <= 0 ? 'Paid' : 'Active' });
+        // A loan payment was split into interest and principal when it was
+        // made; shifting only the principal here would leave that split
+        // wrong. Reversing and paying again recalculates it properly.
+        throw new Error('To change a loan payment amount, delete it and record the payment again.');
       }
       if (targetCardSnap?.exists() && targetCardSnap.data().uid === uid) {
         const delta = isCardCharge
@@ -1133,7 +1134,7 @@ export const updateGoal = async (id, data) => {
 
 export const deleteGoal = id => deleteLinkedRecord('goals', id, 'goal_id');
 
-export const contributeGoal = async (goalId, { amount, account_id, note }) => {
+export const contributeGoal = async (goalId, { amount, account_id, note, round_up_ids }) => {
   const numAmount = parseFloat((Number(amount) || 0).toFixed(2));
   if (numAmount <= 0) throw new Error('Invalid contribution amount');
   const goalRef = doc(db, 'goals', String(goalId));
@@ -1176,6 +1177,8 @@ export const contributeGoal = async (goalId, { amount, account_id, note }) => {
       from_account_id: account_id != null && account_id !== '' ? String(account_id) : null,
       to_account_id: null,
       fee_amount: 0,
+      // Round-up: which expenses this covered, so they're never rounded twice.
+      ...(Array.isArray(round_up_ids) && round_up_ids.length ? { round_up_ids: round_up_ids.slice(0, 500).map(String) } : {}),
       uid
     });
   });
@@ -1283,6 +1286,9 @@ const _computeAnalyticsSync = ({ rawTransactions, accounts, loans, goals, budget
     if (!monthlyExpensesByCategory[month]) monthlyExpensesByCategory[month] = {};
 
     const amount = Number(tx.amount) || 0;
+    // Card payments, goal savings and balance corrections aren't income or
+    // spending (matches Month close and the Transactions totals).
+    if (isInternalMove(tx) || tx.reconciliation) return;
 
     if (tx.type === 'Expense' || tx.type === 'Loan Payment') {
       const validSplits = tx.isSplit !== false && Array.isArray(tx.splits)
@@ -1315,6 +1321,14 @@ const _computeAnalyticsSync = ({ rawTransactions, accounts, loans, goals, budget
       monthlyMap[month].Income = (monthlyMap[month].Income || 0) + amount;
     }
   });
+
+  // Sums above are plain floats (0.1 + 0.2 = 0.30000000000000004): round to
+  // cents so totals and budget checks compare exact amounts.
+  const roundAll = (obj) => { for (const k of Object.keys(obj)) obj[k] = roundMoney(obj[k]); };
+  roundAll(expensesByCategory); roundAll(incomeBySource); roundAll(dailySpend);
+  Object.values(monthlyExpensesByCategory).forEach(roundAll);
+  Object.values(monthlyMap).forEach(m => { m.Income = roundMoney(m.Income); m.Expense = roundMoney(m.Expense); });
+  totalIncome = roundMoney(totalIncome); totalExpense = roundMoney(totalExpense);
 
   // Sort months chronologically
   const sortedMonths = Object.values(monthlyMap).sort((a, b) => a.month.localeCompare(b.month));

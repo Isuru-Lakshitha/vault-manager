@@ -23,6 +23,7 @@ import TotpMfaPanel from '../components/TotpMfaPanel';
 import AccountDataRightsPanel from '../components/AccountDataRightsPanel';
 import DiagnosticsPanel from '../components/DiagnosticsPanel';
 import { getSessionTimeoutMinutes, setSessionTimeoutMinutes, SESSION_TIMEOUT_OPTIONS } from '../utils/sessionTimeout';
+import { isInternalMove } from '../utils/ledgerReporting.js';
 
 
 const SUGGESTED_CATEGORIES = [
@@ -253,7 +254,7 @@ const Settings = () => {
           fetchAccounts(), fetchTransactions(), fetchBudgets(), fetchGoals(), fetchLoans(), fetchBills(), fetchInvestments(),
         ]);
         const totalBalance = accs.reduce((s, a) => s + (a.balance || 0), 0);
-        const totalSpent = txs.filter(t => t.type === 'Expense').reduce((s, t) => s + (t.amount || 0), 0);
+        const totalSpent = txs.filter(t => !isInternalMove(t) && t.type === 'Expense').reduce((s, t) => s + (t.amount || 0), 0);
         setDataStats({
           accounts: accs.length, transactions: txs.length, budgets: bud.length,
           goals: gls.length, loans: lns.length, bills: bls.length, investments: inv.length,

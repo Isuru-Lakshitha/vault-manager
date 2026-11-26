@@ -11,32 +11,22 @@ import {
 } from './api';
 import { todayYMD } from './dates';
 
-export const SUPER_ADMIN_EMAIL = 'isuru@moneymanager.app';
+import { SUPER_ADMIN_EMAIL, isSuperAdminUser, CONFIG_CACHE_KEY, readConfigCache, getMaintenanceMode } from './adminLite.js';
+
+export { SUPER_ADMIN_EMAIL, getMaintenanceMode };
 
 /**
  * Checks whether the currently authenticated user (or provided user) is the Super Admin.
  * NOTE: this only controls what the UI shows. Real enforcement for global writes
  * (system_config, user_directory) lives in firestore.rules.
  */
-export const isSuperAdmin = (user = auth.currentUser) => {
-  if (!user) return false;
-  const email = (user.email || '').toLowerCase().trim();
-  return email === SUPER_ADMIN_EMAIL.toLowerCase();
-};
+export const isSuperAdmin = (user = auth.currentUser) => isSuperAdminUser(user);
 
 // ─── GLOBAL SYSTEM CONFIG (announcement + maintenance) ─────────────
 // Stored in Firestore at system_config/global so it reaches every signed-in
 // user, and mirrored to localStorage so the UI can read it synchronously.
-const CONFIG_CACHE_KEY = 'vm_system_config';
 const configRef = () => doc(db, 'system_config', 'global');
 
-const readConfigCache = () => {
-  try {
-    const raw = localStorage.getItem(CONFIG_CACHE_KEY);
-    if (raw) return JSON.parse(raw) || {};
-  } catch {}
-  return {};
-};
 
 const writeConfigCache = (config) => {
   const prev = readConfigCache();
@@ -103,7 +93,6 @@ export const clearSystemAnnouncement = async () => {
 /**
  * Maintenance Mode Management
  */
-export const getMaintenanceMode = () => readConfigCache().maintenance || { active: false, reason: '' };
 
 export const setMaintenanceMode = async (active, reason = 'Scheduled system maintenance in progress.') => {
   const maintenance = {

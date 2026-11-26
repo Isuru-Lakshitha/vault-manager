@@ -1,6 +1,10 @@
 // @ts-check
-import { db, auth } from './firebase.js';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { auth } from './firebaseApp.js';
+
+// Firestore is loaded on first use, so installing the handlers at startup
+// doesn't pull the database library into the first page load.
+const loadDb = () => Promise.all([import('./firebase.js'), import('firebase/firestore')])
+  .then(([{ db }, fs]) => ({ db, ...fs }));
 
 const APP_VERSION = '2.1.0';
 const MAX_LOGS_PER_SESSION = 10;
@@ -81,6 +85,7 @@ export async function logError(error, meta = {}) {
     if (!uid) return false;
     const payload = buildErrorLogPayload(error, meta);
     if (!shouldRecordError(payload)) return false;
+    const { db, collection, addDoc, serverTimestamp } = await loadDb();
     await addDoc(collection(db, 'users', uid, 'error_logs'), {
       ...payload,
       ts: serverTimestamp(),
@@ -127,7 +132,7 @@ const REPO_ISSUES = 'https://github.com/Isuru-Lakshitha/vault-manager/issues/new
 export async function fetchMyErrorLogs(max = 25) {
   const uid = auth?.currentUser?.uid;
   if (!uid) return [];
-  const { getDocs, query, orderBy, limit } = await import('firebase/firestore');
+  const { db, collection, getDocs, query, orderBy, limit } = await loadDb();
   const snap = await getDocs(query(collection(db, 'users', uid, 'error_logs'), orderBy('ts', 'desc'), limit(max)));
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 }
@@ -136,7 +141,7 @@ export async function fetchMyErrorLogs(max = 25) {
 export async function clearMyErrorLogs(ids) {
   const uid = auth?.currentUser?.uid;
   if (!uid) return 0;
-  const { doc, deleteDoc } = await import('firebase/firestore');
+  const { db, doc, deleteDoc } = await loadDb();
   await Promise.all(ids.map((id) => deleteDoc(doc(db, 'users', uid, 'error_logs', id))));
   return ids.length;
 }

@@ -5,7 +5,7 @@ import './login.css';
 // Three.js vault (own chunk). Loaded once the page is idle so sign-in paints first.
 const VaultScene = lazy(() => import('../three/VaultScene'));
 import { Link } from 'react-router-dom';
-import { auth } from '../utils/firebase';
+import { auth } from '../utils/firebaseApp';
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -16,7 +16,7 @@ import {
 } from 'firebase/auth';
 import { Eye, EyeOff, ShieldCheck, Landmark, Cloud, TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { registerUserPresence } from '../utils/adminService';
+import { loadAdmin } from '../utils/lazyData';
 
 function Login({ onLogin }) {
   // Load the WebGL vault only where the brand panel shows (> 960px) and once
@@ -139,7 +139,7 @@ function Login({ onLogin }) {
         try {
           localStorage.setItem('vm_first_time_user_' + userCredential.user.uid, 'true');
         } catch {}
-        registerUserPresence(userCredential.user).catch(() => {});
+        loadAdmin().then(({ registerUserPresence }) => registerUserPresence(userCredential.user)).catch(() => {});
         try {
           await sendEmailVerification(userCredential.user);
           toast.success("Verification link sent! Please check your inbox.");

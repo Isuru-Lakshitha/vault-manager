@@ -29,10 +29,29 @@ export function auditStatus(tx) {
 }
 
 /**
+ * True for rows that only move money between the user's own places, so they
+ * are not income or spending: paying a credit card (the card charges are
+ * already counted as spending), saving into a goal, and taking goal money
+ * back into an account. Counting them would double spending (charge +
+ * payment) and make saving look like spending.
+ * A goal withdrawal with no account (money spent straight from the goal)
+ * is real spending and still counts.
+ * @param {Record<string, any>} tx
+ */
+export function isInternalMove(tx) {
+  if (!tx) return false;
+  if (tx.internal_move === true) return true;
+  if (tx.credit_card_id && tx.category === 'Credit Card Payment') return true;
+  if (tx.goal_id && tx.category === 'Goal Contribution') return true;
+  if (tx.goal_id && tx.category === 'Goal Deduction' && tx.type === 'Income') return true;
+  return false;
+}
+
+/**
  * @param {Array<Record<string, any>>} rows
  */
 export function summarizePayments(rows) {
-  const active = rows.filter(isActivePayment);
+  const active = rows.filter(t => isActivePayment(t) && !isInternalMove(t));
   const incomeCents = active.filter(t => t.type === 'Income').reduce((sum, t) => sum + toCents(t.amount), 0);
   const expenseCents = active.filter(t => ['Expense', 'Loan Payment'].includes(t.type)).reduce((sum, t) => sum + toCents(t.amount), 0);
   return {

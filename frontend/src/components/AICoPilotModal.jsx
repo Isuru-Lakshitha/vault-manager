@@ -10,6 +10,7 @@ import { calculateSafeToSpend, calculateEmergencyRunway } from '../utils/financi
 
 import { formatCurrency, getCurrencyLabel, haptic } from '../utils/format';
 import 'react-hot-toast';
+import { isInternalMove } from '../utils/ledgerReporting.js';
 
 const SUGGESTED_QUERIES = [
   { icon: '🛍️', text: 'Can I afford an upcoming purchase?' },
@@ -69,11 +70,11 @@ export default function AICoPilotModal({ isOpen, onClose }) {
         thirtyDaysAgo.setDate(now.getDate() - 30);
 
         const recentTxs = transactions.filter(t => new Date(t.date) >= thirtyDaysAgo);
-        const income30d = recentTxs.filter(t => t.type === 'Income').reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
-        const expense30d = recentTxs.filter(t => t.type === 'Expense').reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
+        const income30d = recentTxs.filter(t => !isInternalMove(t) && t.type === 'Income').reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
+        const expense30d = recentTxs.filter(t => !isInternalMove(t) && t.type === 'Expense').reduce((s, t) => s + (parseFloat(t.amount) || 0), 0);
 
         const categoryMap = {};
-        recentTxs.filter(t => t.type === 'Expense').forEach(t => {
+        recentTxs.filter(t => !isInternalMove(t) && t.type === 'Expense').forEach(t => {
           const cat = t.category || 'Uncategorized';
           categoryMap[cat] = (categoryMap[cat] || 0) + (parseFloat(t.amount) || 0);
         });

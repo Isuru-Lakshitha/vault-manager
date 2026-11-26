@@ -42,7 +42,7 @@ export default function CashflowTab({ dailyForecast, forecastLoading }) {
               <div className="bento-item col-span-12" style={{ flexDirection:'column', minHeight:340 }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
                   <CalendarDays size={20} style={{ color:'var(--mm-success)' }}/>
-                  <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>60-DAY DAILY BALANCE PROJECTION</h3>
+                  <h2 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>60-DAY DAILY BALANCE PROJECTION</h2>
                   <span style={{ marginLeft:'auto', fontSize:'0.68rem', color:'var(--text-secondary)', letterSpacing:'1px' }}>BILLS + RECURRING TRANSACTIONS APPLIED</span>
                 </div>
                 {dailyForecast.length === 0 ? (

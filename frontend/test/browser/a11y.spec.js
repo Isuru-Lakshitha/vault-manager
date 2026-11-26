@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-// Automated WCAG 2.1 AA check (axe-core) for every page, in both themes.
-// Fails on serious or critical problems: missing labels, low contrast,
-// invalid ARIA, etc.
+// Automated accessibility check (axe-core) for every page, in both themes,
+// on desktop and phone: WCAG 2.1 AA, WCAG 2.2 AA (touch target size) and
+// axe best practices such as heading order. Fails on moderate, serious or
+// critical problems: missing labels, low contrast, invalid ARIA, etc.
 const PAGES = ['dashboard', 'accounts', 'transactions', 'cards', 'budgets', 'goals', 'bills', 'recurring', 'loans', 'investments', 'analytics', 'settings', 'login', 'shell'];
 
 test.beforeEach(async ({ page }) => {
@@ -21,11 +22,14 @@ for (const theme of ['dark', 'light']) {
       await page.waitForTimeout(500);
       await page.evaluate(() => document.getAnimations().forEach((a) => { try { a.finish(); } catch { /* infinite */ } }));
       const result = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'])
         .exclude('#root > header') // the harness's own link bar, not app UI
+        // The harness wraps every page in its own <main>, so these landmark
+        // rules would only ever flag the test page, not the app.
+        .disableRules(['landmark-main-is-top-level', 'landmark-no-duplicate-main', 'landmark-unique'])
         .analyze();
       const serious = result.violations
-        .filter((v) => v.impact === 'serious' || v.impact === 'critical')
+        .filter((v) => ['moderate', 'serious', 'critical'].includes(v.impact))
         .map((v) => `${v.id} (${v.nodes.length}): ${v.help}\n    ${v.nodes.slice(0, 6).map((n) => `${n.target.join(' ')} :: ${(n.any[0]?.message || n.failureSummary || '').split('\n')[0].slice(0, 140)} :: ${n.html.slice(0, 120)}`).join('\n    ')}`);
       expect(serious, serious.join('\n')).toEqual([]);
     });

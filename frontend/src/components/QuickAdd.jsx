@@ -1,6 +1,6 @@
 import { useT } from '../i18n';
 import { saveDraft } from '../utils/offlineDrafts.js';
-import { auth } from '../utils/firebase';
+import { auth } from '../utils/firebaseApp';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { createTransaction, fetchAccounts, fetchTransactions, getCache } from '../utils/api';
 import Modal from './Modal';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth } from '../utils/firebase';
+import { auth } from '../utils/firebaseApp';
 import { fetchAccounts, fetchTransactions } from '../utils/api';
 import { auditLedger } from '../utils/ledgerReporting';
 import { exportAllUserData, deleteAccountAndData } from '../utils/accountService';

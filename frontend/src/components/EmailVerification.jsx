@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, CheckCircle2, RefreshCw, LogOut, Landmark, AlertCircle } from 'lucide-react';
 import { sendEmailVerification } from 'firebase/auth';
-import { auth } from '../utils/firebase';
+import { auth } from '../utils/firebaseApp';
 import { haptic } from '../utils/format';
 import toast from 'react-hot-toast';
 

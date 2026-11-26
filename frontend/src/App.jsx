@@ -9,23 +9,19 @@ import { Toaster, toast } from 'react-hot-toast';
 import Sidebar from './components/Sidebar';
 import { NAV_ITEMS } from './components/navItems';
 import BillsHubTabs from './components/BillsHubTabs';
-import BudgetWatcher from './components/BudgetWatcher';
 import { useT, setLang } from './i18n';
 import Login from './pages/Login';
 import EmailVerification from './components/EmailVerification';
 import { Menu, Landmark, Plus, Eye, EyeOff, Cloud, Sparkles, Download } from 'lucide-react';
-import OfflineBanner from './components/OfflineBanner';
 import PrivacyShield from './components/PrivacyShield';
 import ErrorBoundary from './components/ErrorBoundary';
 import InstallPrompt from './components/InstallPrompt';
 import { isStandalone, triggerInstallPrompt } from './utils/pwaInstall';
-import QuickAdd from './components/QuickAdd';
 import PWAUpdateBanner from './components/PWAUpdateBanner';
 import { useStealthMode } from './utils/format';
-import { auth } from './utils/firebase';
-import { fetchUserPrefs, prefetchAll, startLiveSync, stopLiveSync, invalidateCache, fetchBills } from './utils/api';
-import { getMaintenanceMode, isSuperAdmin, startSystemConfigSync, stopSystemConfigSync, registerUserPresence } from './utils/adminService';
-import { checkFinancialTriggers } from './utils/notificationService';
+import { auth } from './utils/firebaseApp';
+import { loadApi, apiIfLoaded, loadAdmin, adminIfStarted, loadNotifications } from './utils/lazyData';
+import { getMaintenanceMode, isSuperAdminUser as isSuperAdmin } from './utils/adminLite';
 import { getSessionTimeoutMinutes } from './utils/sessionTimeout';
 
 // Auto-retry lazy component imports on chunk mismatch after new deploy
@@ -57,6 +53,10 @@ const lazyWithRetry = (importFn) =>
 // Fetched as soon as sign-in is confirmed (not on the sign-in screen, where
 // its charts library would only slow the first paint).
 let dashboardChunkPromise = null;
+// Signed-in-only widgets that need the data layer: loaded after sign-in.
+const OfflineBanner = lazy(() => import('./components/OfflineBanner'));
+const BudgetWatcher = lazy(() => import('./components/BudgetWatcher'));
+const QuickAdd = lazy(() => import('./components/QuickAdd'));
 const importDashboard = () => (dashboardChunkPromise ??= import('./pages/Dashboard'));
 const pageImporters = {
   Dashboard: importDashboard,
@@ -220,7 +220,7 @@ function App() {
 
   const handlePullRefresh = useCallback(async () => {
     try {
-      await prefetchAll();
+      await (await loadApi()).prefetchAll();
       window.dispatchEvent(new Event('vm:data-changed'));
       toast.success('Up to date', { duration: 1500 });
     } catch {
@@ -426,19 +426,27 @@ function App() {
         try {
           importDashboard().catch(() => {});
           preloadAllRouteChunks();
-          startLiveSync(user.uid);
-          startSystemConfigSync();
-          registerUserPresence(user).catch(() => {});
-          fetchUserPrefs(user.uid).then(prefs => {
-            if (prefs?.theme) setThemePref(prefs.theme);
-            if (prefs?.currency) localStorage.setItem('vm_currency', prefs.currency);
-            if (prefs?.lang) setLang(prefs.lang);
+          try { localStorage.setItem('vm_signed_in', '1'); } catch {}
+          loadAdmin().then(({ startSystemConfigSync, registerUserPresence }) => {
+            startSystemConfigSync();
+            registerUserPresence(user).catch(() => {});
           }).catch(() => {});
-          Promise.resolve(prefetchAll()).then(async () => {
-            try {
-              const bills = await fetchBills().catch(() => []);
-              checkFinancialTriggers({ bills });
-            } catch {}
+          loadApi().then(({ startLiveSync, fetchUserPrefs, prefetchAll, fetchBills }) => {
+            // Signed out while the module was loading: don't start syncing.
+            if (auth.currentUser?.uid !== user.uid) return;
+            startLiveSync(user.uid);
+            fetchUserPrefs(user.uid).then(prefs => {
+              if (prefs?.theme) setThemePref(prefs.theme);
+              if (prefs?.currency) localStorage.setItem('vm_currency', prefs.currency);
+              if (prefs?.lang) setLang(prefs.lang);
+            }).catch(() => {});
+            Promise.resolve(prefetchAll()).then(async () => {
+              try {
+                const bills = await fetchBills().catch(() => []);
+                const { checkFinancialTriggers } = await loadNotifications();
+                checkFinancialTriggers({ bills });
+              } catch {}
+            }).catch(() => {});
           }).catch(() => {});
         } catch {}
       } else {
@@ -447,9 +455,11 @@ function App() {
         setIsInitializing(false);
         if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
         if (pinTimerRef.current) clearTimeout(pinTimerRef.current);
-        stopLiveSync();
-        stopSystemConfigSync();
-        invalidateCache();
+        try { localStorage.removeItem('vm_signed_in'); } catch {}
+        const api = apiIfLoaded();
+        if (api) { api.stopLiveSync(); api.invalidateCache(); }
+        // Only if it was started: signed-out visitors must not download it.
+        adminIfStarted()?.then(({ stopSystemConfigSync }) => stopSystemConfigSync()).catch(() => {});
       }
     });
     return () => {
@@ -619,8 +629,10 @@ function App() {
   return (
     <div className="app-container">
       <PWAUpdateBanner />
-      <OfflineBanner />
-      <BudgetWatcher />
+      <Suspense fallback={null}>
+        <OfflineBanner />
+        <BudgetWatcher />
+      </Suspense>
       <PrivacyShield />
       <a href="#main-content" className="skip-link">{t('shell.skip')}</a>
       <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)} />
@@ -679,7 +691,7 @@ function App() {
               className="menu-toggle header-secondary-tool"
               onClick={async () => {
                 toast.promise(
-                  prefetchAll().then(() => window.dispatchEvent(new Event('vm:data-changed'))),
+                  loadApi().then((api) => api.prefetchAll()).then(() => window.dispatchEvent(new Event('vm:data-changed'))),
                   {
                     loading: 'Syncing with cloud...',
                     success: syncStatus.online
@@ -859,7 +871,9 @@ function App() {
       >
         <Plus size={26} color="#0a1628" strokeWidth={2.5} />
       </button>
-      <QuickAdd open={quickAddOpen} onClose={() => setQuickAddOpen(false)} />
+      <Suspense fallback={null}>
+        <QuickAdd open={quickAddOpen} onClose={() => setQuickAddOpen(false)} />
+      </Suspense>
       <InstallPrompt />
     </div>
   );

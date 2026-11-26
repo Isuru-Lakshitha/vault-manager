@@ -70,6 +70,9 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
     const targetAccId = selectedAccountId || accounts[0]?.id || '';
     if (targetAccId) {
       try {
+        // Fixed id per IOU: settling the same IOU again (another tab or
+        // device, or a retry) finds the existing entry and never moves the
+        // money twice.
         await createTransaction({
           type: item.direction === 'owed_to_me' ? 'Income' : 'Expense',
           amount: item.amount,
@@ -78,7 +81,7 @@ const IouTrackerTab = ({ accounts = [], onReload }) => {
           notes: `Settled IOU with ${item.person}: ${item.reason}`,
           from_account_id: item.direction === 'i_owe' ? targetAccId : '',
           to_account_id: item.direction === 'owed_to_me' ? targetAccId : ''
-        });
+        }, `iou-settle-${String(item.id).replace(/[^a-zA-Z0-9-]/g, '-')}`.slice(0, 80));
       } catch (err) {
         toast.error(err?.message || 'Failed to log settlement transaction');
         return;

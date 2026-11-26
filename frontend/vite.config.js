@@ -199,6 +199,10 @@ export default defineConfig({
             { name: 'firebase-firestore', priority: 90, test: /[\\/]node_modules[\\/](@firebase[\\/]firestore|firebase[\\/]firestore)/ },
             { name: 'firebase-auth', priority: 90, test: /[\\/]node_modules[\\/](@firebase[\\/]auth|firebase[\\/]auth)/ },
             { name: 'firebase-storage', priority: 90, test: /[\\/]node_modules[\\/](@firebase[\\/]storage|firebase[\\/]storage)/ },
+            // Shared Firebase plumbing is claimed first (priority 95) so the
+            // firestore group can't pull it in as a dependency; otherwise the
+            // sign-in page would have to download the whole Firestore chunk.
+            { name: 'firebase-core', priority: 95, test: /[\\/]node_modules[\\/](@firebase[\\/](app|app-check|util|logger|component|installations)|firebase[\\/](app|app-check)|idb|tslib)[\\/]/ },
             { name: 'firebase-core', priority: 80, test: /[\\/]node_modules[\\/](@firebase|firebase)[\\/]/ },
             { name: 'motion', priority: 70, test: /[\\/]node_modules[\\/](framer-motion|motion-dom|motion-utils)[\\/]/ },
             // Feature-only libraries: loaded when the feature is opened.

@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
 import 'framer-motion';
 import { Upload, CheckCircle } from 'lucide-react';
-import { createTransaction } from '../utils/api';
+import { createTransaction, fetchTransactions } from '../utils/api';
 import getCategoryEmoji from '../utils/categoryEmoji';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '../utils/format';
-import { toYMD, todayYMD } from '../utils/dates';
+import { rowsToTransactions, withoutDuplicates } from '../utils/statementImport';
 
 
 
@@ -38,6 +38,7 @@ const CSVImporter = ({ accounts, onImported, onClose }) => {
   const [importing, setImporting] = useState(false);
   const [accountId, setAccountId] = useState(accounts[0]?.id || '');
   const [defaultType, setDefaultType] = useState('Expense');
+  const [dateOrder, setDateOrder] = useState('DMY');
 
   const handleFile = (e) => {
     const file = e.target.files[0];
@@ -61,39 +62,26 @@ const CSVImporter = ({ accounts, onImported, onClose }) => {
 
   const buildPreview = () => {
     if (!parsed) return;
-    const rows = parsed.rows.slice(0, 50).map(row => {
-      const dateRaw = mapping.date >= 0 ? row[mapping.date] : '';
-      const desc    = mapping.description >= 0 ? row[mapping.description] : 'Imported';
-      const amtRaw  = mapping.amount >= 0 ? row[mapping.amount] : '0';
-      const typeRaw = mapping.type >= 0 ? row[mapping.type] : defaultType;
-
-      // Parse date
-      let date = new Date(dateRaw);
-      if (isNaN(date)) { const parts = dateRaw.split(/[/.-]/); date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); }
-      const dateStr = isNaN(date) ? todayYMD() : toYMD(date);
-
-      const amount = Math.abs(parseFloat(amtRaw.replace(/[^0-9.-]/g, '')) || 0);
-      const txType = /credit|cr|income|deposit/i.test(typeRaw) ? 'Income' : 'Expense';
-
-      return { date: dateStr, category: desc.substring(0, 30), amount, type: txType,
-        from_account_id: txType === 'Expense' ? accountId : '',
-        to_account_id: txType === 'Income' ? accountId : '',
-        notes: desc };
-    }).filter(r => r.amount > 0);
-    setPreview(rows);
+    const { transactions, skipped } = rowsToTransactions(parsed.rows, mapping, { defaultType, accountId, dateOrder });
+    if (skipped.length) toast.error(`${skipped.length} row${skipped.length > 1 ? 's' : ''} skipped: date not recognised (row ${skipped.slice(0, 5).join(', ')}${skipped.length > 5 ? '…' : ''})`);
+    setPreview(transactions);
     setStep('preview');
   };
 
   const doImport = async () => {
     setImporting(true);
     let success = 0, fail = 0;
-    for (const tx of preview) {
+    // Skip rows already in the ledger, so importing the same file twice
+    // doesn't double every transaction.
+    const existing = await fetchTransactions().catch(() => []);
+    const { fresh, duplicates } = withoutDuplicates(preview, existing || []);
+    for (const tx of fresh) {
       try { await createTransaction(tx); success++; }
       catch { fail++; }
     }
     setImporting(false);
     setStep('done');
-    toast.success(`Imported ${success} transactions${fail > 0 ? `, ${fail} failed` : ''}`);
+    toast.success(`Imported ${success} transactions${duplicates > 0 ? `, ${duplicates} already there` : ''}${fail > 0 ? `, ${fail} failed` : ''}`);
     if (onImported) onImported();
   };
 
@@ -150,6 +138,13 @@ const CSVImporter = ({ accounts, onImported, onClose }) => {
               <select value={defaultType} onChange={e => setDefaultType(e.target.value)} style={{ width:'100%', padding:'0.6rem' }}>
                 <option value="Expense">Expense</option>
                 <option value="Income">Income</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="csv-date-order" style={{ display:'block', marginBottom:'0.4rem', fontSize:'0.8rem' }}>Date format</label>
+              <select id="csv-date-order" value={dateOrder} onChange={e => setDateOrder(e.target.value)} style={{ width:'100%', padding:'0.6rem' }}>
+                <option value="DMY">Day / Month / Year (05/03 = 5 March)</option>
+                <option value="MDY">Month / Day / Year (05/03 = May 3)</option>
               </select>
             </div>
           </div>

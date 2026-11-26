@@ -1,4 +1,5 @@
 import { useT } from '../i18n';
+import { roundMoney } from '../utils/money';
 import { removeItemWithUndo, itemLabel } from '../components/undoToast';
 import { PageHeader, StatGrid, StatCard, Button, EmptyState } from '../components/ui';
 import MoreSection from '../components/MoreSection';
@@ -195,10 +196,11 @@ const CreditCards = () => {
     try {
       const data = {
         ...formData,
-        credit_limit: parseFloat(parseFloat(formData.credit_limit).toFixed(2)),
-        balance: parseFloat(parseFloat(formData.balance).toFixed(2)),
-        apr: parseFloat(parseFloat(formData.apr).toFixed(2)),
-        min_payment_pct: parseFloat(parseFloat(formData.min_payment_pct).toFixed(2)),
+        // Blank optional fields must not store NaN.
+        credit_limit: roundMoney(Number(formData.credit_limit) || 0),
+        balance: roundMoney(Number(formData.balance) || 0),
+        apr: roundMoney(Number(formData.apr) || 0),
+        min_payment_pct: roundMoney(Number(formData.min_payment_pct) || 2),
       };
       if (editMode) { await updateCreditCard(currentId, data); toast.success('Card updated'); }
       else { await createCreditCard(data); toast.success('Card added'); }
@@ -234,11 +236,14 @@ const CreditCards = () => {
     setPaying(true);
     try {
       await recordCardPayment(payModal, parseFloat(payAmount), payAccountId);
+      // The payment is saved at this point. If only the date roll fails, say
+      // so instead of "Payment failed" (a retry would pay twice).
       if (rollDueNextMonth && (payModal.due_date || payModal.statement_date)) {
         const updates = {};
         if (payModal.due_date) updates.due_date = rollDateNextMonth(payModal.due_date);
         if (payModal.statement_date) updates.statement_date = rollDateNextMonth(payModal.statement_date);
-        await updateCreditCard(payModal.id, updates);
+        try { await updateCreditCard(payModal.id, updates); }
+        catch { toast.error('Payment saved, but the due date was not moved. Edit the card to update it.'); }
       }
       const selAcc = accounts.find(a => String(a.id) === String(payAccountId));
       toast.success(

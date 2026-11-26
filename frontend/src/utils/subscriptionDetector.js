@@ -3,6 +3,7 @@
  * Scans transaction history to identify repeat expenses occurring at regular intervals (monthly/weekly).
  */
 
+import { isInternalMove } from './ledgerReporting.js';
 const parseLocalYMD = (str) => {
   if (!str) return null;
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(str));
@@ -23,7 +24,7 @@ export const detectUnmanagedSubscriptions = (transactions = [], bills = [], recu
 
   // Consider only active expenses with positive amount (exclude reversed, reversal, and fee rows)
   const expenseTxs = transactions
-    .filter(t => t && !t.reversed_at && !t.reversal_of && !t.is_transfer_fee && t.type === 'Expense' && Number(t.amount) > 0 && t.date)
+    .filter(t => !isInternalMove(t) && t && !t.reversed_at && !t.reversal_of && !t.is_transfer_fee && t.type === 'Expense' && Number(t.amount) > 0 && t.date)
     .sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
   // Helper to normalize merchant/notes

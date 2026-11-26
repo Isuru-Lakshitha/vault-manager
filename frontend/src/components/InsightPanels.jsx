@@ -42,7 +42,7 @@ export function InsightBills({ bills }) {
   return (
     <div className="ins-grid" aria-label="Bill insights">
       <section className="bento-card ins-card ins-wide">
-        <header><h3>Due timeline</h3><small>unpaid, by week</small></header>
+        <header><h2>Due timeline</h2><small>unpaid, by week</small></header>
         {data.buckets.map((b) => (
           <div key={b.label} className="ins-row" title={`${b.n} bill${b.n === 1 ? '' : 's'}`}>
             <span className="ins-row-top"><span>{b.label} <em>{b.n || ''}</em></span><b>{formatCurrency(b.amt)}</b></span>
@@ -51,7 +51,7 @@ export function InsightBills({ bills }) {
         ))}
       </section>
       <section className="bento-card ins-card">
-        <header><h3>Paid vs unpaid</h3><small>{data.paid} / {data.total} paid</small></header>
+        <header><h2>Paid vs unpaid</h2><small>{data.paid} / {data.total} paid</small></header>
         <div className="ins-ratio" aria-hidden="true">
           <span className="is-good" style={{ width: `${paidPct}%` }} />
           <span className="is-bad" style={{ width: `${100 - paidPct}%` }} />
@@ -79,7 +79,7 @@ export function InsightBudgets({ budgets, getSpent }) {
   return (
     <div className="ins-grid ins-single" aria-label="Budget insights">
       <section className="bento-card ins-card">
-        <header><h3>{over ? 'Over budget' : 'Closest to limit'}</h3><small>{over ? `${over} over limit` : 'top categories by usage'}</small></header>
+        <header><h2>{over ? 'Over budget' : 'Closest to limit'}</h2><small>{over ? `${over} over limit` : 'top categories by usage'}</small></header>
         {rows.map((r) => (
           <div key={r.id} className="ins-row">
             <span className="ins-row-top"><span>{getCategoryEmoji(r.category)} {r.category}</span><b>{formatCurrency(r.spent)} / {formatCurrency(r.amount)} · {Math.round(r.pct)}%</b></span>
@@ -106,7 +106,7 @@ export function InsightLoans({ loans }) {
   return (
     <div className="ins-grid" aria-label="Loan insights">
       <section className="bento-card ins-card ins-wide">
-        <header><h3>Remaining principal</h3><small>{formatCurrency(data.total)} total</small></header>
+        <header><h2>Remaining principal</h2><small>{formatCurrency(data.total)} total</small></header>
         {data.rows.map((r) => (
           <div key={r.id ?? r.name} className="ins-row">
             <span className="ins-row-top"><span>{r.name}</span><b>{formatCurrency(r.principal)}</b></span>
@@ -115,7 +115,7 @@ export function InsightLoans({ loans }) {
         ))}
       </section>
       <section className="bento-card ins-card">
-        <header><h3>Next payment</h3><small>soonest due</small></header>
+        <header><h2>Next payment</h2><small>soonest due</small></header>
         {data.next ? (
           <dl className="ins-facts">
             <div><dt>Loan</dt><dd>{data.next.item_name || data.next.type}</dd></div>
@@ -152,7 +152,7 @@ export function InsightAccounts({ accounts }) {
   return (
     <div className="ins-grid" aria-label="Account insights">
       <section className="bento-card ins-card ins-wide">
-        <header><h3>Account concentration</h3><small>top {data.rows.length} of {data.count} active</small></header>
+        <header><h2>Account concentration</h2><small>top {data.rows.length} of {data.count} active</small></header>
         {data.rows.map((r) => (
           <div key={r.id ?? r.name} className="ins-row">
             <span className="ins-row-top"><span>{r.name} <em>{r.type}</em></span><b>{formatCurrency(r.bal)}</b></span>
@@ -161,7 +161,7 @@ export function InsightAccounts({ accounts }) {
         ))}
       </section>
       <section className="bento-card ins-card">
-        <header><h3>Liquidity mix</h3><small>cash & bank vs credit</small></header>
+        <header><h2>Liquidity mix</h2><small>cash & bank vs credit</small></header>
         <div className="ins-ratio" aria-hidden="true">
           <span className="is-good" style={{ width: `${liquidPct}%` }} />
           <span className="is-bad" style={{ width: `${100 - liquidPct}%` }} />
@@ -200,7 +200,7 @@ export function InsightCreditCards({ cards }) {
   return (
     <div className="ins-grid" aria-label="Credit card insights">
       <section className="bento-card ins-card ins-wide">
-        <header><h3>Utilization by card</h3><small>keep under 30% for optimal score</small></header>
+        <header><h2>Utilization by card</h2><small>keep under 30% for optimal score</small></header>
         {data.rows.map((r) => (
           <div key={r.id ?? r.name} className="ins-row">
             <span className="ins-row-top"><span>{r.name}</span><b>{formatCurrency(r.bal)} / {formatCurrency(r.limit)} · {Math.round(r.pct)}%</b></span>
@@ -209,7 +209,7 @@ export function InsightCreditCards({ cards }) {
         ))}
       </section>
       <section className="bento-card ins-card">
-        <header><h3>Next statement due</h3><small>active balance</small></header>
+        <header><h2>Next statement due</h2><small>active balance</small></header>
         {data.nextDue ? (
           <dl className="ins-facts">
             <div><dt>Card</dt><dd>{data.nextDue.name}</dd></div>
@@ -251,7 +251,7 @@ export function InsightInvestments({ investments }) {
   return (
     <div className="ins-grid" aria-label="Investment insights">
       <section className="bento-card ins-card ins-wide">
-        <header><h3>Unrealized P&L by holding</h3><small>largest movers</small></header>
+        <header><h2>Unrealized P&L by holding</h2><small>largest movers</small></header>
         {data.rows.map((r) => (
           <div key={r.id ?? r.name} className="ins-row">
             <span className="ins-row-top">
@@ -265,7 +265,7 @@ export function InsightInvestments({ investments }) {
         ))}
       </section>
       <section className="bento-card ins-card">
-        <header><h3>Win / loss breadth</h3><small>{data.winners} / {data.total} in profit</small></header>
+        <header><h2>Win / loss breadth</h2><small>{data.winners} / {data.total} in profit</small></header>
         <div className="ins-ratio" aria-hidden="true">
           <span className="is-good" style={{ width: `${winPct}%` }} />
           <span className="is-bad" style={{ width: `${100 - winPct}%` }} />
@@ -303,7 +303,7 @@ export function InsightGoals({ goals }) {
   return (
     <div className="ins-grid ins-single" aria-label="Goal insights">
       <section className="bento-card ins-card">
-        <header><h3>Goal completion</h3><small>{data.completed} / {data.total} reached</small></header>
+        <header><h2>Goal completion</h2><small>{data.completed} / {data.total} reached</small></header>
         {data.rows.map((r) => (
           <div key={r.id ?? r.name} className="ins-row">
             <span className="ins-row-top"><span>{r.icon} {r.name}</span><b>{formatCurrency(r.cur)} / {formatCurrency(r.tgt)} · {Math.round(r.pct)}%</b></span>
@@ -350,7 +350,7 @@ export function InsightRecurring({ rules, currentMonth }) {
   return (
     <div className="ins-grid" aria-label="Recurring insights">
       <section className="bento-card ins-card ins-wide">
-        <header><h3>Largest remaining reminders</h3><small>{data.paidCount} / {data.totalCount} settled this month</small></header>
+        <header><h2>Largest remaining reminders</h2><small>{data.paidCount} / {data.totalCount} settled this month</small></header>
         {data.rows.length ? data.rows.map((r) => (
           <div key={r.id ?? r.name} className="ins-row">
             <span className="ins-row-top"><span>{r.name} <em>{r.when}</em></span><b>{formatCurrency(r.amt)}</b></span>
@@ -359,7 +359,7 @@ export function InsightRecurring({ rules, currentMonth }) {
         )) : <p className="ins-empty">All monthly reminders are settled for this cycle.</p>}
       </section>
       <section className="bento-card ins-card">
-        <header><h3>Fixed vs variable mix</h3><small>monthly outflow</small></header>
+        <header><h2>Fixed vs variable mix</h2><small>monthly outflow</small></header>
         <div className="ins-ratio" aria-hidden="true">
           <span className="is-good" style={{ width: `${fixedPct}%` }} />
           <span style={{ width: `${100 - fixedPct}%`, background: 'var(--mm-warning)' }} />

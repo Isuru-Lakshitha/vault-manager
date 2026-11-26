@@ -4,7 +4,7 @@ import FuturisticDropdown from '../../components/FuturisticDropdown';
 import { formatCurrency } from '../../utils/format';
 
 // Goals → spare-change round-up simulator.
-export default function RoundUpModal({ goals, handleApplyRoundUp, isRoundUpModalOpen, recentExpenses, roundUpGoalId, roundUpIncrement, setIsRoundUpModalOpen, setRoundUpGoalId, setRoundUpIncrement, simulatedRoundUpTotal }) {
+export default function RoundUpModal({ accounts = [], roundUpAccountId, setRoundUpAccountId, goals, handleApplyRoundUp, isRoundUpModalOpen, recentExpenses, roundUpGoalId, roundUpIncrement, setIsRoundUpModalOpen, setRoundUpGoalId, setRoundUpIncrement, simulatedRoundUpTotal }) {
   return (
     <Modal
       isOpen={isRoundUpModalOpen}
@@ -74,6 +74,15 @@ export default function RoundUpModal({ goals, handleApplyRoundUp, isRoundUpModal
             value={roundUpGoalId}
             onChange={val => setRoundUpGoalId(val)}
           />
+        </div>
+
+        <div>
+          <label htmlFor="roundup-account" style={{ display: 'block', marginBottom: '0.4rem', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+            Take the spare change from:
+          </label>
+          <select id="roundup-account" value={roundUpAccountId} onChange={e => setRoundUpAccountId(e.target.value)} style={{ width: '100%', padding: '0.6rem' }}>
+            {accounts.map(a => <option key={a.id} value={a.id}>{a.name} ({formatCurrency(a.balance)})</option>)}
+          </select>
         </div>
 
         <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>

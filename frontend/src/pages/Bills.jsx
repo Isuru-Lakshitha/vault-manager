@@ -18,7 +18,7 @@ import toast from 'react-hot-toast';
 import { fetchBills, createBill, updateBill, deleteBill, payBill, fetchAccounts, fetchTransactions, getCache } from '../utils/api';
 import { detectUnmanagedSubscriptions } from '../utils/subscriptionDetector';
 import { formatCurrency, getCurrencyLabel } from '../utils/format';
-import { toYMD, todayYMD } from '../utils/dates';
+import { toYMD, todayYMD, addMonthsClamped } from '../utils/dates';
 
 
 const daysUntil = (dateStr) => {
@@ -73,9 +73,9 @@ const Bills = () => {
   const handleAddDetectedBill = async (sub) => {
     try {
       const today = new Date();
-      const nextDue = new Date(sub.lastDate || today);
+      let nextDue = new Date(sub.lastDate || today);
       if (sub.cadence === 'Weekly') nextDue.setDate(nextDue.getDate() + 7);
-      else nextDue.setMonth(nextDue.getMonth() + 1);
+      else nextDue = addMonthsClamped(nextDue, 1);
 
       await createBill({
         name: sub.name,
@@ -114,7 +114,7 @@ const Bills = () => {
     setQuickPayingId(payModalBill.id);
     try {
       const payAmt = Number(payModalData.amount);
-      await payBill(payModalBill, { ...payModalData, amount: payAmt, force: true });
+      await payBill(payModalBill, { ...payModalData, amount: payAmt });
       const selAcc = accounts.find(a => String(a.id) === String(payModalData.account_id));
       if (selAcc) {
         const afterBal = (parseFloat(selAcc.balance) || 0) - payAmt;
@@ -124,8 +124,10 @@ const Bills = () => {
       }
       setPayModalBill(null);
       load();
-    } catch {
-      toast.error('Payment failed');
+    } catch (err) {
+      // e.g. the bill was already paid in another tab: show why and refresh.
+      toast.error(err?.message || 'Payment failed');
+      load();
     } finally {
       setQuickPayingId(null);
     }
@@ -133,7 +135,7 @@ const Bills = () => {
 
   const openAdd = () => {
     setEditMode(false); setCurrentId(null);
-    const nextMonth = new Date(); nextMonth.setMonth(nextMonth.getMonth() + 1);
+    const nextMonth = addMonthsClamped(new Date(), 1);
     setFormData({ name: '', amount: 0, due_date: toYMD(nextMonth), frequency: 'Monthly', category: 'Other', paid: false });
     setIsModalOpen(true);
   };

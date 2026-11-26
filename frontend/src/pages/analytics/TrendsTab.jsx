@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { BarChart2 } from 'lucide-react';
 import { formatCurrency } from '../../utils/format';
 import { todayYMD } from '../../utils/dates';
+import { isInternalMove } from '../../utils/ledgerReporting.js';
 
 // Analytics → month-by-month trends.
 export default function TrendsTab({ CustomTooltip, budgets, data, filteredTxns, selectedMonth }) {
@@ -14,7 +15,7 @@ export default function TrendsTab({ CustomTooltip, budgets, data, filteredTxns, 
           <div className="bento-item col-span-12" style={{ flexDirection:'column', minHeight:320 }}>
             <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
               <BarChart2 className="text-success" size={18}/>
-              <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>INCOME VS EXPENSES</h3>
+              <h2 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>INCOME VS EXPENSES</h2>
             </div>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={data.monthlyTrends||[]} margin={{ top:10, right:10, left:0, bottom:0 }}>
@@ -29,7 +30,7 @@ export default function TrendsTab({ CustomTooltip, budgets, data, filteredTxns, 
             </ResponsiveContainer>
           </div>
           <div className="bento-item col-span-12" style={{ flexDirection:'column', padding:'1.5rem' }}>
-            <h3 style={{ margin:'0 0 1.25rem', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600, color:'var(--mm-success)' }}>MONTH-OVER-MONTH</h3>
+            <h2 style={{ margin:'0 0 1.25rem', letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600, color:'var(--mm-success)' }}>MONTH-OVER-MONTH</h2>
             <div style={{ overflowX:'auto' }}>
               <table style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.8rem' }}>
                 <thead><tr style={{ borderBottom:'1px solid rgba(74,222,128,0.15)' }}>
@@ -58,7 +59,7 @@ export default function TrendsTab({ CustomTooltip, budgets, data, filteredTxns, 
           {/* Budget vs Actual */}
           {budgets.length > 0 && (() => {
             const actualByCategory = {};
-            filteredTxns.filter(tx => tx.type === 'Expense' || tx.type === 'Loan Payment').forEach(tx => {
+            filteredTxns.filter(tx => !isInternalMove(tx) && (tx.type === 'Expense' || tx.type === 'Loan Payment')).forEach(tx => {
               const validSplits = tx.isSplit !== false && Array.isArray(tx.splits)
                 ? tx.splits.filter(sp => (Number(sp?.amount) || 0) > 0)
                 : [];
@@ -91,9 +92,9 @@ export default function TrendsTab({ CustomTooltip, budgets, data, filteredTxns, 
               <div className="bento-item col-span-12" style={{ flexDirection:'column', marginTop:'0.75rem' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
                   <span style={{ fontSize:'1.1rem' }}>🎯</span>
-                  <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>
+                  <h2 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>
                     BUDGET VS ACTUAL {selectedMonth ? `— ${new Date(selectedMonth+'-01').toLocaleDateString('en-US',{month:'long',year:'numeric'})}` : '(All Time)'}
-                  </h3>
+                  </h2>
                 </div>
                 <div style={{ display:'flex', flexDirection:'column', gap:'0.875rem' }}>
                   {rows.map(r => (

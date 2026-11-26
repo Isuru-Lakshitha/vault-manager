@@ -1,4 +1,4 @@
-import { auth } from '../utils/firebase';
+import { auth } from '../utils/firebaseApp';
 import { readDrafts, syncDrafts, removeDraft } from '../utils/offlineDrafts.js';
 import { useState, useEffect } from 'react';
 import { WifiOff } from 'lucide-react';

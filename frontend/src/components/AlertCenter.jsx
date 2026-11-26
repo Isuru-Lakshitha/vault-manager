@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, CheckCircle, AlertTriangle, X, ShieldAlert, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { auth } from '../utils/firebase';
+import { auth } from '../utils/firebaseApp';
 import { getCache } from '../utils/api';
 import {
   computeAlerts, loadAlertState, saveAlertState, dismissAlert, snoozeAlert, filterVisible,

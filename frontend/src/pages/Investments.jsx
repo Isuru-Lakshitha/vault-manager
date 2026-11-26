@@ -374,7 +374,7 @@ const Investments = () => {
                 <table tabIndex={0} aria-label="Holdings" style={{ width:'100%', borderCollapse:'collapse', fontSize:'0.82rem' }}>
                   <thead><tr style={{ borderBottom:'1px solid rgba(74,222,128,0.15)' }}>
                     {['Name','Type','Qty','Buy Price','Current Price','Value','P&L','CAGR',''].map(h => (
-                      <th key={h} style={{ textAlign:'left', padding:'0.6rem 1rem', color:'var(--text-muted)', fontWeight:600, fontSize:'0.7rem', letterSpacing:'1px' }}>{h}</th>
+                      <th key={h || 'actions'} style={{ textAlign:'left', padding:'0.6rem 1rem', color:'var(--text-muted)', fontWeight:600, fontSize:'0.7rem', letterSpacing:'1px' }}>{h || <span className="sr-only">Actions</span>}</th>
                     ))}
                   </tr></thead>
                   <tbody>
@@ -503,9 +503,9 @@ const Investments = () => {
                 <div className="bento-item col-span-12 heavy-section-deferred" style={{ flexDirection: 'column', gap: '1.1rem', marginTop: '1.5rem', padding: '1.5rem', border: '1px solid var(--mm-border-subtle, rgba(255,255,255,0.08))', background: 'var(--bg-surface)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
                     <div>
-                      <h3 style={{ margin: 0, fontSize: '0.88rem', fontWeight: 700, letterSpacing: '1px', color: 'var(--mm-success)' }}>
+                      <h2 style={{ margin: 0, fontSize: '0.88rem', fontWeight: 700, letterSpacing: '1px', color: 'var(--mm-success)' }}>
                         🚀 COMPOUND WEALTH & FIRE PROJECTOR
-                      </h3>
+                      </h2>
                       <span style={{ fontSize: '0.74rem', color: 'var(--text-secondary)' }}>
                         Starting from your current portfolio ({formatCurrency(pv)}) with monthly compounding
                       </span>

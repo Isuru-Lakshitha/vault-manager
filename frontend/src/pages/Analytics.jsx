@@ -18,12 +18,13 @@ import { TrendingUp, TrendingDown, Activity, Download, Lightbulb, Flame, DollarS
 import toast from 'react-hot-toast';
 import { formatCurrency, getCurrency, convertCurrency } from '../utils/format';
 import MonthlyStoryModal from '../components/MonthlyStoryModal';
-import { toYMD, todayYMD } from '../utils/dates';
+import { toYMD, todayYMD, addMonthsClamped } from '../utils/dates';
 import OverviewTab from './analytics/OverviewTab';
 import WeekdayTab from './analytics/WeekdayTab';
 import CategoriesTab from './analytics/CategoriesTab';
 import TrendsTab from './analytics/TrendsTab';
 import CashflowTab from './analytics/CashflowTab';
+import { isInternalMove } from '../utils/ledgerReporting.js';
 
 const COLORS = ['#4ade80','#818cf8','#a78bfa','#f472b6','#fb923c','#fbbf24','#38bdf8','#14b8a6','#e879f9','#f87171'];
 
@@ -80,7 +81,7 @@ const buildForecast = (momComparison) => {
   const avgIncome  = last3.reduce((s, m) => s + m.income, 0) / last3.length;
   const avgExpense = last3.reduce((s, m) => s + m.expense, 0) / last3.length;
   const projected  = avgIncome - avgExpense;
-  const nextDate   = new Date(); nextDate.setMonth(nextDate.getMonth() + 1);
+  const nextDate   = addMonthsClamped(new Date(), 1);
   const nextMonth  = toYMD(nextDate).substring(0, 7);
   return { nextMonth, avgIncome, avgExpense, projected };
 };
@@ -394,7 +395,7 @@ const Analytics = () => {
 
   const monthCatData = (() => {
     const map = {};
-    filteredTxns.filter(tx => tx.type === 'Expense' || tx.type === 'Loan Payment').forEach(tx => {
+    filteredTxns.filter(tx => !isInternalMove(tx) && (tx.type === 'Expense' || tx.type === 'Loan Payment')).forEach(tx => {
       const validSplits = tx.isSplit !== false && Array.isArray(tx.splits)
         ? tx.splits.filter(sp => (Number(sp?.amount) || 0) > 0)
         : [];
@@ -411,8 +412,8 @@ const Analytics = () => {
     return Object.entries(map).map(([category, total]) => ({ category, total: parseFloat(total.toFixed(2)) })).sort((a,b) => b.total - a.total);
   })();
 
-  const monthIncome  = filteredTxns.filter(tx => tx.type === 'Income').reduce((s,tx) => s + tx.amount, 0);
-  const monthExpense = filteredTxns.filter(tx => tx.type === 'Expense' || tx.type === 'Loan Payment').reduce((s,tx) => s + tx.amount, 0);
+  const monthIncome  = filteredTxns.filter(tx => !isInternalMove(tx) && tx.type === 'Income').reduce((s,tx) => s + tx.amount, 0);
+  const monthExpense = filteredTxns.filter(tx => !isInternalMove(tx) && (tx.type === 'Expense' || tx.type === 'Loan Payment')).reduce((s,tx) => s + tx.amount, 0);
   const monthSavings = monthIncome - monthExpense;
   const monthSavingsRate = monthIncome > 0 ? Math.round((monthSavings / monthIncome) * 100) : 0;
 
@@ -708,11 +709,11 @@ const Analytics = () => {
                 <motion.div key="heatmap" initial={{opacity:0,y:12}} animate={{opacity:1,y:0}} transition={{duration:0.35}}>
                   <div className="bento-item col-span-12" style={{ flexDirection:'column', padding:'1.75rem', marginBottom:'1.25rem' }}>
                     <div style={{ fontSize:'0.75rem', letterSpacing:'0.3px', fontWeight:600, color:'var(--text-secondary)', marginBottom:'1.25rem' }}>SPENDING ACTIVITY — LAST 12 MONTHS</div>
-                    <SpendingHeatmap dailyData={(data?.allTransactions || []).filter(t => t.type === 'Expense' || t.type === 'Loan Payment').map(t => ({ date: t.date, amount: t.amount }))} />
+                    <SpendingHeatmap dailyData={(data?.allTransactions || []).filter(t => !isInternalMove(t) && (t.type === 'Expense' || t.type === 'Loan Payment')).map(t => ({ date: t.date, amount: t.amount }))} />
                     <div style={{ marginTop:'1.5rem', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(160px,1fr))', gap:'1rem' }}>
                       {(() => {
                         const daily = {};
-                        (data?.allTransactions || []).filter(t => t.type === 'Expense' || t.type === 'Loan Payment').forEach(t => { daily[t.date] = (daily[t.date]||0)+t.amount; });
+                        (data?.allTransactions || []).filter(t => !isInternalMove(t) && (t.type === 'Expense' || t.type === 'Loan Payment')).forEach(t => { daily[t.date] = (daily[t.date]||0)+t.amount; });
                         const amounts = Object.values(daily);
                         if (!amounts.length) return null;
                         const avg = amounts.reduce((s,a)=>s+a,0)/amounts.length;
@@ -874,9 +875,9 @@ const Analytics = () => {
                 const allTx = data?.allTransactions || [];
                 const targetYear = selectedMonth ? selectedMonth.slice(0, 4) : new Date().getFullYear().toString();
                 const yearTx = allTx.filter(tx => (tx.date || '').startsWith(targetYear));
-                const grossIncome = yearTx.filter(tx => tx.type === 'Income').reduce((s, tx) => s + (tx.amount || 0), 0);
+                const grossIncome = yearTx.filter(tx => !isInternalMove(tx) && tx.type === 'Income').reduce((s, tx) => s + (tx.amount || 0), 0);
                 const deductibleTx = yearTx.filter(tx =>
-                  tx.type === 'Expense' && (
+                  !isInternalMove(tx) && tx.type === 'Expense' && (
                     tx.is_tax_deductible ||
                     tx.tax_deductible ||
                     (tx.tags || []).some(t => /tax|business|deduct|office|work/i.test(t)) ||

@@ -579,7 +579,7 @@ const Accounts = () => {
                             {acc.currency && acc.currency !== baseCurrency && <span className="acc-chip">{acc.currency}</span>}
                             {acc.archived && <span className="acc-chip">Archived</span>}
                           </div>
-                          <h3 className="acc-card-name" title={acc.name}>{acc.name}</h3>
+                          <h2 className="acc-card-name" title={acc.name}>{acc.name}</h2>
                         </div>
                       </header>
 

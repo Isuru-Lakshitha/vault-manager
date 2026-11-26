@@ -1,5 +1,12 @@
 import { formatCurrency } from './format';
 import { toYMD, todayYMD } from './dates';
+import { isInternalMove } from './ledgerReporting.js';
+import { toCSV } from './csv.js';
+
+// Escape text before it goes into the report's HTML: notes, names and
+// categories can come from imported bank files, so they must never be read
+// as markup (an <img onerror=...> in a note would otherwise run).
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 /**
  * PDF Report Generator
@@ -39,13 +46,13 @@ export const generatePDFReport = async (data) => {
         { label: 'Total Income',    val: fmt(data.totalIncome),   color: '#10b981' },
         { label: 'Total Expenses',  val: fmt(data.totalExpense),  color: '#f43f5e' },
         { label: 'Net Savings',     val: fmt(data.netSavings),    color: data.netSavings >= 0 ? '#6366f1' : '#f43f5e' },
-        { label: 'Savings Rate',    val: `${data.savingsRate}%`,  color: '#6366f1' },
+        { label: 'Savings Rate',    val: `${esc(data.savingsRate)}%`,  color: '#6366f1' },
         { label: 'Avg Monthly Spend', val: fmt(data.avgMonthlySpend), color: '#f59e0b' },
         { label: 'Categories',      val: (data.categoryData||[]).length, color: '#06b6d4' },
       ].map(c => `
-        <div style="background: #f8f9ff; border-radius: 10px; padding: 16px; border-left: 4px solid ${c.color};">
-          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 6px;">${c.label}</div>
-          <div style="font-size: 22px; font-weight: 700; color: ${c.color};">${c.val}</div>
+        <div style="background: #f8f9ff; border-radius: 10px; padding: 16px; border-left: 4px solid ${esc(c.color)};">
+          <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 6px;">${esc(c.label)}</div>
+          <div style="font-size: 22px; font-weight: 700; color: ${esc(c.color)};">${esc(c.val)}</div>
         </div>
       `).join('')}
     </div>
@@ -64,9 +71,9 @@ export const generatePDFReport = async (data) => {
         ${(data.categoryData||[]).slice(0,8).map((c, i) => `
           <tr style="border-bottom: 1px solid #f0f0f0;">
             <td style="padding: 9px 12px; color: #aaa;">${i+1}</td>
-            <td style="padding: 9px 12px; font-weight: 600;">${c.category}</td>
+            <td style="padding: 9px 12px; font-weight: 600;">${esc(c.category)}</td>
             <td style="padding: 9px 12px; text-align:right; color: #f43f5e; font-weight: 600;">${fmt(c.total)}</td>
-            <td style="padding: 9px 12px; text-align:right; color: #888;">${c.pct}%</td>
+            <td style="padding: 9px 12px; text-align:right; color: #888;">${esc(c.pct)}%</td>
           </tr>
         `).join('')}
       </tbody>
@@ -76,8 +83,8 @@ export const generatePDFReport = async (data) => {
     <div style="display: flex; flex-direction: column; gap: 10px;">
       ${(data.recommendations||[]).slice(0,4).map(r => `
         <div style="padding: 12px 16px; border-radius: 8px; background: #f8f9ff; border-left: 3px solid #6366f1; font-size: 13px;">
-          <strong>${r.icon} ${r.title}</strong><br/>
-          <span style="color: #555; line-height: 1.6;">${r.body}</span>
+          <strong>${esc(r.icon)} ${esc(r.title)}</strong><br/>
+          <span style="color: #555; line-height: 1.6;">${esc(r.body)}</span>
         </div>
       `).join('')}
     </div>
@@ -123,8 +130,8 @@ export const generateMonthlyStatement = async ({
 
   // Filter active (non-reversed, non-fee) transactions for this month
   const monthTxs = transactions.filter(t => t && !t.reversed_at && !t.reversal_of && !t.is_transfer_fee && t.date && t.date.startsWith(month));
-  const incomeTxs = monthTxs.filter(t => t.type === 'Income');
-  const expenseTxs = monthTxs.filter(t => t.type === 'Expense' || t.type === 'Loan Payment');
+  const incomeTxs = monthTxs.filter(t => !isInternalMove(t) && t.type === 'Income');
+  const expenseTxs = monthTxs.filter(t => !isInternalMove(t) && (t.type === 'Expense' || t.type === 'Loan Payment'));
 
   const totalIncome = incomeTxs.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
   const totalExpense = expenseTxs.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
@@ -173,7 +180,7 @@ export const generateMonthlyStatement = async ({
       <div style="text-align: right; color: #64748b; font-size: 12px; line-height: 1.5;">
         <div><strong>Statement Period:</strong> ${monthName}</div>
         <div><strong>Generated:</strong> ${todayFormatted}</div>
-        <div><strong>User:</strong> ${userEmail}</div>
+        <div><strong>User:</strong> ${esc(userEmail)}</div>
       </div>
     </div>
 
@@ -210,9 +217,9 @@ export const generateMonthlyStatement = async ({
       <tbody>
         ${catList.length > 0 ? catList.map(c => `
           <tr style="border-bottom: 1px solid #f1f5f9;">
-            <td style="padding: 7px 10px; font-weight: 600; color: #334155;">${c.cat}</td>
+            <td style="padding: 7px 10px; font-weight: 600; color: #334155;">${esc(c.cat)}</td>
             <td style="padding: 7px 10px; text-align:right; color: #f43f5e; font-weight: 700;">${fmt(c.amount)}</td>
-            <td style="padding: 7px 10px; text-align:right; color: #64748b;">${c.pct}%</td>
+            <td style="padding: 7px 10px; text-align:right; color: #64748b;">${esc(c.pct)}%</td>
           </tr>
         `).join('') : `<tr><td colspan="3" style="padding: 10px; text-align:center; color:#94a3b8;">No expenses recorded in this period.</td></tr>`}
       </tbody>
@@ -232,9 +239,9 @@ export const generateMonthlyStatement = async ({
       <tbody>
         ${topExpenses.length > 0 ? topExpenses.map(t => `
           <tr style="border-bottom: 1px solid #f1f5f9;">
-            <td style="padding: 7px 10px; color: #64748b;">${t.date}</td>
-            <td style="padding: 7px 10px; font-weight: 600; color: #1e293b;">${t.notes || 'Expense'}</td>
-            <td style="padding: 7px 10px; color: #64748b;">${t.category || '-'}</td>
+            <td style="padding: 7px 10px; color: #64748b;">${esc(t.date)}</td>
+            <td style="padding: 7px 10px; font-weight: 600; color: #1e293b;">${esc(t.notes || 'Expense')}</td>
+            <td style="padding: 7px 10px; color: #64748b;">${esc(t.category || '-')}</td>
             <td style="padding: 7px 10px; text-align:right; color: #f43f5e; font-weight: 700;">${fmt(t.amount)}</td>
           </tr>
         `).join('') : `<tr><td colspan="4" style="padding: 10px; text-align:center; color:#94a3b8;">No transactions found.</td></tr>`}
@@ -246,7 +253,7 @@ export const generateMonthlyStatement = async ({
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 24px;">
       ${accounts.slice(0, 6).map(a => `
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px;">
-          <div style="font-size: 11px; color: #64748b; font-weight: 500;">${a.name} (${a.type || 'Account'})</div>
+          <div style="font-size: 11px; color: #64748b; font-weight: 500;">${esc(a.name)} (${esc(a.type || 'Account')})</div>
           <div style="font-size: 14px; font-weight: 700; color: #1e293b; margin-top: 2px;">${fmt(a.balance)}</div>
         </div>
       `).join('')}
@@ -318,7 +325,7 @@ export const generatePaymentVoucherPDF = async (tx, accountName) => {
           ${tx.type === 'Income' ? '+' : tx.type === 'Transfer' ? '↔' : '-'}${fmt(tx.amount)}
         </div>
         <div style="font-size: 12px; color: #475569; font-weight: 600;">
-          ${tx.type.toUpperCase()} · ${tx.category || 'General'}
+          ${esc(tx.type.toUpperCase())} · ${esc(tx.category || 'General')}
         </div>
       </div>
 
@@ -331,11 +338,11 @@ export const generatePaymentVoucherPDF = async (tx, accountName) => {
           </tr>
           <tr style="border-bottom: 1px solid #f1f5f9;">
             <td style="padding: 10px 0; color: #64748b; font-weight: 500;">Account / Method</td>
-            <td style="padding: 10px 0; color: #0f172a; font-weight: 600; text-align: right;">${accountName || 'Primary Asset Account'}</td>
+            <td style="padding: 10px 0; color: #0f172a; font-weight: 600; text-align: right;">${esc(accountName || "Primary Asset Account")}</td>
           </tr>
           <tr style="border-bottom: 1px solid #f1f5f9;">
             <td style="padding: 10px 0; color: #64748b; font-weight: 500;">Classification / Category</td>
-            <td style="padding: 10px 0; color: #0f172a; font-weight: 600; text-align: right;">${tx.category || 'Uncategorized'}</td>
+            <td style="padding: 10px 0; color: #0f172a; font-weight: 600; text-align: right;">${esc(tx.category || 'Uncategorized')}</td>
           </tr>
           ${tx.fee_amount ? `
           <tr style="border-bottom: 1px solid #f1f5f9;">
@@ -346,7 +353,7 @@ export const generatePaymentVoucherPDF = async (tx, accountName) => {
           <tr>
             <td style="padding: 10px 0; color: #64748b; font-weight: 500; vertical-align: top;">Notes / Narrative</td>
             <td style="padding: 10px 0; color: #334155; text-align: right; font-style: italic;">
-              ${tx.notes || 'No memo logged for this entry.'}
+              ${esc(tx.notes || 'No memo logged for this entry.')}
             </td>
           </tr>
         </tbody>
@@ -358,7 +365,7 @@ export const generatePaymentVoucherPDF = async (tx, accountName) => {
         <div style="font-size: 11px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase;">Split Allocation</div>
         ${tx.splits.map(s => `
           <div style="display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; color: #334155;">
-            <span>${s.category}</span>
+            <span>${esc(s.category)}</span>
             <span style="font-weight: 600;">${fmt(s.amount)}</span>
           </div>
         `).join('')}
@@ -447,7 +454,7 @@ export const generateTaxSchedulePDF = async ({ taxYear, transactions = [], taxBr
       </div>
       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
         <div style="font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 600;">Deductible Items</div>
-        <div style="font-size: 18px; font-weight: 700; color: #0f172a; margin-top: 4px;">${transactions.length} Records</div>
+        <div style="font-size: 18px; font-weight: 700; color: #0f172a; margin-top: 4px;">${esc(transactions.length)} Records</div>
       </div>
       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
         <div style="font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 600;">Capital Gains Net</div>
@@ -471,7 +478,7 @@ export const generateTaxSchedulePDF = async ({ taxYear, transactions = [], taxBr
         <tbody>
           ${Object.entries(byCategory).map(([cat, amt]) => `
             <tr style="border-bottom: 1px solid #f1f5f9;">
-              <td style="padding: 6px 10px; font-weight: 500;">${cat}</td>
+              <td style="padding: 6px 10px; font-weight: 500;">${esc(cat)}</td>
               <td style="padding: 6px 10px; text-align: right; font-weight: 600;">${fmt(amt)}</td>
               <td style="padding: 6px 10px; text-align: right; color: #64748b;">${totalDeductions > 0 ? ((amt / totalDeductions) * 100).toFixed(1) : 0}%</td>
             </tr>
@@ -495,9 +502,9 @@ export const generateTaxSchedulePDF = async ({ taxYear, transactions = [], taxBr
         <tbody>
           ${transactions.slice(0, 35).map(t => `
             <tr style="border-bottom: 1px solid #f8fafc;">
-              <td style="padding: 5px 8px; color: #64748b;">${t.date}</td>
-              <td style="padding: 5px 8px; font-weight: 500;">${t.notes || t.category || 'Transaction'}</td>
-              <td style="padding: 5px 8px; color: #0284c7;">${t.tax_category || 'Business'}</td>
+              <td style="padding: 5px 8px; color: #64748b;">${esc(t.date)}</td>
+              <td style="padding: 5px 8px; font-weight: 500;">${esc(t.notes || t.category || 'Transaction')}</td>
+              <td style="padding: 5px 8px; color: #0284c7;">${esc(t.tax_category || 'Business')}</td>
               <td style="padding: 5px 8px; text-align: right; font-weight: 600;">${fmt(t.amount)}</td>
             </tr>
           `).join('')}
@@ -539,17 +546,19 @@ export const generateTaxSchedulePDF = async ({ taxYear, transactions = [], taxBr
  */
 export const exportTaxDeductionsCSV = ({ taxYear, transactions = [] }) => {
   const headers = ['Date', 'Description', 'Category', 'Tax Category', 'Amount', 'Tax Deductible', 'Tags'];
+  // toCSV quotes every value and neutralises =/+/-/@ so a note can't run as
+  // a spreadsheet formula when the accountant opens the file.
   const rows = transactions.map(t => [
-    `"${t.date || ''}"`,
-    `"${(t.notes || t.category || '').replace(/"/g, '""')}"`,
-    `"${(t.category || '').replace(/"/g, '""')}"`,
-    `"${(t.tax_category || 'Business').replace(/"/g, '""')}"`,
+    t.date || '',
+    t.notes || t.category || '',
+    t.category || '',
+    t.tax_category || 'Business',
     parseFloat(t.amount || 0).toFixed(2),
-    '"Yes"',
-    `"${Array.isArray(t.tags) ? t.tags.join('; ') : (t.tags || '')}"`
+    'Yes',
+    Array.isArray(t.tags) ? t.tags.join('; ') : (t.tags || ''),
   ]);
 
-  const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const csvContent = toCSV([headers, ...rows]);
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -587,17 +596,17 @@ export const generateInvoicePDF = async (inv) => {
     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; border-bottom: 3px solid #0f172a; padding-bottom: 20px;">
       <div>
         <div style="font-size: 26px; font-weight: 800; color: #0f172a; font-family: 'Outfit', sans-serif;">
-          ${inv.senderName || 'Freelance Services'}
+          ${esc(inv.senderName || 'Freelance Services')}
         </div>
         <div style="font-size: 12px; color: #64748b; margin-top: 3px;">
-          ${inv.senderEmail || ''} · ${inv.senderAddress || ''}
+          ${esc(inv.senderEmail || '')} · ${esc(inv.senderAddress || '')}
         </div>
       </div>
       <div style="text-align: right;">
         <div style="font-size: 28px; font-weight: 800; color: #0f172a; font-family: 'Outfit', sans-serif; letter-spacing: 1px;">INVOICE</div>
-        <div style="font-size: 13px; font-weight: 600; color: #64748b;"># ${inv.invoiceNumber || 'INV-001'}</div>
+        <div style="font-size: 13px; font-weight: 600; color: #64748b;"># ${esc(inv.invoiceNumber || 'INV-001')}</div>
         <span style="display: inline-block; margin-top: 6px; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; text-transform: uppercase; background: ${inv.status === 'Paid' ? '#dcfce7' : '#fef3c7'}; color: ${inv.status === 'Paid' ? '#166534' : '#92400e'};">
-          ${inv.status || 'SENT'}
+          ${esc(inv.status || 'SENT')}
         </span>
       </div>
     </div>
@@ -606,10 +615,10 @@ export const generateInvoicePDF = async (inv) => {
     <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; margin-bottom: 32px;">
       <div>
         <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #94a3b8; letter-spacing: 1.5px; margin-bottom: 6px;">BILL TO</div>
-        <div style="font-size: 15px; font-weight: 700; color: #0f172a;">${inv.clientName || 'Valued Client'}</div>
-        <div style="font-size: 12px; color: #475569; margin-top: 2px;">${inv.clientCompany || ''}</div>
-        <div style="font-size: 12px; color: #64748b;">${inv.clientEmail || ''}</div>
-        <div style="font-size: 12px; color: #64748b;">${inv.clientAddress || ''}</div>
+        <div style="font-size: 15px; font-weight: 700; color: #0f172a;">${esc(inv.clientName || 'Valued Client')}</div>
+        <div style="font-size: 12px; color: #475569; margin-top: 2px;">${esc(inv.clientCompany || '')}</div>
+        <div style="font-size: 12px; color: #64748b;">${esc(inv.clientEmail || '')}</div>
+        <div style="font-size: 12px; color: #64748b;">${esc(inv.clientAddress || '')}</div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
         <div style="display: flex; justify-content: space-between;">
@@ -618,7 +627,7 @@ export const generateInvoicePDF = async (inv) => {
         </div>
         <div style="display: flex; justify-content: space-between;">
           <span style="color: #64748b;">Due Date:</span>
-          <strong style="color: #dc2626;">${inv.dueDate || 'Upon Receipt'}</strong>
+          <strong style="color: #dc2626;">${esc(inv.dueDate || 'Upon Receipt')}</strong>
         </div>
       </div>
     </div>
@@ -636,8 +645,8 @@ export const generateInvoicePDF = async (inv) => {
       <tbody>
         ${(inv.items || []).map((it, idx) => `
           <tr style="border-bottom: 1px solid #f1f5f9; background: ${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
-            <td style="padding: 10px 12px; font-weight: 500; color: #1e293b;">${it.description || 'Service'}</td>
-            <td style="padding: 10px 12px; text-align: center; color: #64748b;">${it.quantity || 1}</td>
+            <td style="padding: 10px 12px; font-weight: 500; color: #1e293b;">${esc(it.description || 'Service')}</td>
+            <td style="padding: 10px 12px; text-align: center; color: #64748b;">${esc(it.quantity || 1)}</td>
             <td style="padding: 10px 12px; text-align: right; color: #64748b;">${fmt(it.unitPrice || 0)}</td>
             <td style="padding: 10px 12px; text-align: right; font-weight: 600; color: #0f172a;">${fmt((parseFloat(it.quantity) || 1) * (parseFloat(it.unitPrice) || 0))}</td>
           </tr>
@@ -668,7 +677,7 @@ export const generateInvoicePDF = async (inv) => {
     <!-- Payment Terms & Bank Instructions -->
     <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 24px;">
       <div style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 4px;">Payment Instructions</div>
-      <div style="font-size: 11px; color: #334155; white-space: pre-wrap;">${inv.paymentNotes || 'Please transfer payment to the account details provided upon receipt.'}</div>
+      <div style="font-size: 11px; color: #334155; white-space: pre-wrap;">${esc(inv.paymentNotes || 'Please transfer payment to the account details provided upon receipt.')}</div>
     </div>
 
     <!-- Digital Footer -->
@@ -764,7 +773,7 @@ export const generateExecutiveFinancialDossierPDF = async ({
       <div>
         <div style="font-size: 11px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #6366f1; margin-bottom: 4px;">Institutional Wealth Intelligence</div>
         <h1 style="margin: 0; font-size: 24px; font-weight: 800; color: #0f172a; font-family: 'Outfit', sans-serif;">Executive Financial Statement & P&L</h1>
-        <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Prepared for: <strong>${userName}</strong> • Period: <strong>${periodLabel}</strong></div>
+        <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Prepared for: <strong>${esc(userName)}</strong> • Period: <strong>${esc(periodLabel)}</strong></div>
       </div>
       <div style="text-align: right; font-size: 11px; color: #64748b;">
         <div>Certified As Of: <strong>${today}</strong></div>
@@ -850,7 +859,7 @@ export const generateExecutiveFinancialDossierPDF = async ({
           const share = expense > 0 ? ((cat.total / expense) * 100).toFixed(1) : 0;
           return `
             <tr style="border-bottom: 1px solid #f1f5f9; background: ${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
-              <td style="padding: 8px 10px; font-weight: 600; color: #1e293b;">${cat.category || 'General'}</td>
+              <td style="padding: 8px 10px; font-weight: 600; color: #1e293b;">${esc(cat.category || 'General')}</td>
               <td style="padding: 8px 10px; text-align: right; color: #0f172a;">${fmt(cat.total)}</td>
               <td style="padding: 8px 10px; text-align: right; color: #64748b;">${fmt(cat.total / 12)}</td>
               <td style="padding: 8px 10px; text-align: right; font-weight: 700; color: #4338ca;">${share}%</td>

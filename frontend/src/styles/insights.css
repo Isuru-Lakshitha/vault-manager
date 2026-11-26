@@ -2,7 +2,7 @@
 .ins-grid { display: grid; gap: 14px; grid-template-columns: 2fr 1fr; margin-bottom: 1.25rem; }
 .ins-grid.ins-single { grid-template-columns: 1fr; }
 .ins-card header { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; margin-bottom: .8rem; }
-.ins-card h3 { font-size: .82rem; margin: 0; letter-spacing: -.01em; }
+.ins-card :is(h2, h3) { font-size: .82rem; margin: 0; letter-spacing: -.01em; }
 .ins-card header small { color: var(--text-muted); font-size: .68rem; }
 .ins-empty { color: var(--text-muted); font-size: .78rem; margin: 0; }
 @media (max-width: 900px) { .ins-grid { grid-template-columns: 1fr; } }

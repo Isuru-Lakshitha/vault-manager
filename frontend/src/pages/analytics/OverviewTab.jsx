@@ -19,7 +19,7 @@ export default function OverviewTab({ COLORS, CustomTooltip, data, monthCatData,
           {(data.monthlyTrends || []).length > 0 && (
             <figure className="bento-item col-span-12 an3d-card" aria-label={t('an3d.title')}>
               <figcaption className="an3d-head">
-                <h3>{t('an3d.title')}</h3>
+                <h2>{t('an3d.title')}</h2>
                 <span className="an3d-legend" aria-hidden="true">
                   <span><i className="is-income" />{t('an3d.income')}</span>
                   <span><i className="is-spending" />{t('an3d.spending')}</span>
@@ -38,7 +38,7 @@ export default function OverviewTab({ COLORS, CustomTooltip, data, monthCatData,
           <div className="bento-item col-span-12" style={{ flexDirection:'column', minHeight:320 }}>
             <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
               <Activity className="text-cyan" size={20}/>
-              <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>CASH FLOW TIMELINE</h3>
+              <h2 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>CASH FLOW TIMELINE</h2>
             </div>
             {(data.monthlyTrends||[]).length===0 ? (
               <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}><p className="text-muted" >NO DATA</p></div>
@@ -145,9 +145,9 @@ export default function OverviewTab({ COLORS, CustomTooltip, data, monthCatData,
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
                       <span style={{ fontSize: '1.15rem' }}>🌊</span>
-                      <h3 style={{ margin: 0, letterSpacing: '0.4px', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                      <h2 style={{ margin: 0, letterSpacing: '0.4px', fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                         WHERE DID MY MONEY GO? — MONTHLY CASH-FLOW WATERFALL
-                      </h3>
+                      </h2>
                     </div>
                     <p style={{ margin: '0.25rem 0 0', fontSize: '0.76rem', color: 'var(--text-muted)' }}>
                       Step-by-step cascade from Total Income down to Net Retained Savings &amp; 50/30/20 benchmark check
@@ -235,7 +235,7 @@ export default function OverviewTab({ COLORS, CustomTooltip, data, monthCatData,
           <div className="bento-item col-span-6" style={{ flexDirection:'column', minHeight:300 }}>
             <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
               <PieIcon className="text-purple" size={18}/>
-              <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>EXPENSE DISTRIBUTION</h3>
+              <h2 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>EXPENSE DISTRIBUTION</h2>
             </div>
             {monthCatData.length===0 ? (
               <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}><p className="text-muted" >NO DATA</p></div>
@@ -254,7 +254,7 @@ export default function OverviewTab({ COLORS, CustomTooltip, data, monthCatData,
           <div className="bento-item col-span-6" style={{ flexDirection:'column', minHeight:300 }}>
             <div style={{ display:'flex', alignItems:'center', gap:'0.6rem', marginBottom:'1.25rem' }}>
               <TrendingUp className="text-success" size={18}/>
-              <h3 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>INCOME SOURCES</h3>
+              <h2 style={{ margin:0, letterSpacing:'0.3px', fontSize:'0.85rem', fontWeight:600 }}>INCOME SOURCES</h2>
             </div>
             {(data.incomeSourceData||[]).length===0 ? (
               <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}><p className="text-muted" >NO DATA</p></div>

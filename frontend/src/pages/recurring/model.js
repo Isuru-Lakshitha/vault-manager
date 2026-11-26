@@ -59,8 +59,11 @@ export const getRuleUrgency = (rule, currentMonth) => {
   }
 
   const isFlexible = (rule.schedule_mode || (rule.day_of_month ? 'fixed' : 'flexible')) === 'flexible';
-  const todayDom = new Date().getDate();
-  const dom = parseInt(rule.day_of_month, 10) || 1;
+  const now = new Date();
+  const todayDom = now.getDate();
+  // A rule on day 29-31 falls on the month's last day in shorter months.
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const dom = Math.min(parseInt(rule.day_of_month, 10) || 1, daysInMonth);
 
   if (!isFlexible && rule.day_of_month) {
     const diff = dom - todayDom;

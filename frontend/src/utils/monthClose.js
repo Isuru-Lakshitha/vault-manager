@@ -2,6 +2,8 @@
  * Monthly close: a once-a-month review of the month that just ended.
  * Pure functions; amounts are expected in one (reporting) currency.
  */
+import { isInternalMove } from './ledgerReporting.js';
+
 const UNCATEGORISED = new Set(['', 'other', 'others', 'uncategorized', 'uncategorised', 'general', 'misc', 'miscellaneous']);
 
 export const categoryKey = (cat) => String(cat || '')
@@ -46,6 +48,7 @@ export function monthCloseReport({ transactions = [], budgets = [], month }) {
   for (const t of inMonth) {
     const c = cents(t.amount);
     if (t.reconciliation) { adjustments += t.type === 'Income' ? c : -c; continue; }
+    if (isInternalMove(t)) continue; // card payments, goal savings: not spending
     if (t.type === 'Income') income += c;
     else if (t.type === 'Expense') {
       expense += c;
