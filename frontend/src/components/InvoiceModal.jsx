@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { invoiceTotals } from '../utils/invoiceTotals';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Plus, Trash2, Download, CheckCircle2, Edit3 } from 'lucide-react';
 import Modal from './Modal';
@@ -111,9 +112,9 @@ export default function InvoiceModal({ isOpen, onClose }) {
       await generateInvoicePDF(inv);
       toast.success('Invoice PDF generated! 📥');
       haptic();
-    } catch {
-  toast.error('Failed to generate PDF');
-} finally {
+    } catch (err) {
+      toast.error(err?.message || 'Failed to generate PDF');
+    } finally {
       setGeneratingPDFId(null);
     }
   };
@@ -378,10 +379,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
 
                   {/* Totals Preview in Editor */}
                   {(() => {
-                    const subtotal = editingInvoice.items.reduce((s, it) => s + ((parseFloat(it.quantity) || 1) * (parseFloat(it.unitPrice) || 0)), 0);
-                    const taxRate = parseFloat(editingInvoice.taxRate || 0);
-                    const taxAmt = subtotal * (taxRate / 100);
-                    const grandTotal = subtotal + taxAmt;
+                    const { total: grandTotal, valid: totalsValid } = invoiceTotals(editingInvoice);
                     return (
                       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.75rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.05)', gap: '1.5rem', fontSize: '0.8rem' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -399,6 +397,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
                           <span style={{ color: 'var(--text-secondary)' }}>Total:</span>
                           <strong style={{ color: 'var(--mm-success)', fontSize: '1rem' }}>{formatCurrency(grandTotal, {currency:editingInvoice.currency || 'LKR'})}</strong>
                         </div>
+                        {!totalsValid && <span role="alert" style={{ color: 'var(--mm-danger)', alignSelf: 'center' }}>Every line needs a quantity above 0.</span>}
                       </div>
                     );
                   })()}
@@ -425,9 +424,7 @@ export default function InvoiceModal({ isOpen, onClose }) {
             </div>
           ) : (
             filteredInvoices.map(inv => {
-              const subtotal = (inv.items || []).reduce((s, it) => s + ((parseFloat(it.quantity) || 1) * (parseFloat(it.unitPrice) || 0)), 0);
-              const taxAmt = subtotal * ((parseFloat(inv.taxRate) || 0) / 100);
-              const grandTotal = subtotal + taxAmt;
+              const { total: grandTotal } = invoiceTotals(inv);
               const statusCfg = STATUS_COLORS[inv.status] || STATUS_COLORS.Draft;
 
               return (

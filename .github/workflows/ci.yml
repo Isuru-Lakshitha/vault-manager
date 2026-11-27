@@ -42,6 +42,9 @@ jobs:
       - name: Run browser tests (isolated harness, no Firebase needed)
         run: npm run test:browser
 
+      - name: Check dependencies for known vulnerabilities (high and above)
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v7
@@ -49,6 +52,32 @@ jobs:
           name: playwright-report
           path: frontend/test-results
           retention-days: 7
+
+  backend:
+    name: Backend tests & audit
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run backend tests
+        run: npm test
+
+      - name: Check dependencies for known vulnerabilities (high and above)
+        run: npm audit --omit=dev --audit-level=high
 
   rules:
     name: Firestore security rules

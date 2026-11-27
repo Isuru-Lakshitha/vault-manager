@@ -1,6 +1,6 @@
 import { applyAccent, applyTheme, setThemePref } from './utils/theme';
 import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link } from 'react-router-dom';
 import { MotionConfig } from 'framer-motion';
 import { PageLoading, AppSplash } from './motion/RouteFeedback';
 import PullToRefresh from './motion/PullToRefresh';
@@ -16,14 +16,17 @@ import { Menu, Landmark, Plus, Eye, EyeOff, Cloud, Sparkles, Download } from 'lu
 import PrivacyShield from './components/PrivacyShield';
 import ErrorBoundary from './components/ErrorBoundary';
 import InstallPrompt from './components/InstallPrompt';
-import { isStandalone, triggerInstallPrompt } from './utils/pwaInstall';
+import { isStandalone, triggerInstallPrompt, isNativeApp } from './utils/pwaInstall';
 import PWAUpdateBanner from './components/PWAUpdateBanner';
 import { useStealthMode } from './utils/format';
 import { auth } from './utils/firebaseApp';
 import { loadApi, apiIfLoaded, loadAdmin, adminIfStarted, loadNotifications } from './utils/lazyData';
-import { getMaintenanceMode, isSuperAdminUser as isSuperAdmin } from './utils/adminLite';
+import { getMaintenanceMode, isSuperAdminUser as isSuperAdmin, loadAdminClaim } from './utils/adminLite';
 import { getSessionTimeoutMinutes } from './utils/sessionTimeout';
 import { signOutAndClear, clearAfterSessionEnded, cancelPendingOfflineWipe } from './utils/signOut';
+import { mergeClosedMonths } from './utils/closedMonths';
+import { optimisticUid, optimisticVerified, rememberSession, forgetSession } from './utils/lastSession';
+import { isGuest, GUEST_SIGN_OUT_WARNING, deleteGuestAndSignOut } from './utils/guestAccount';
 
 // Auto-retry lazy component imports on chunk mismatch after new deploy
 const lazyWithRetry = (importFn) =>
@@ -58,6 +61,7 @@ let dashboardChunkPromise = null;
 const OfflineBanner = lazy(() => import('./components/OfflineBanner'));
 const BudgetWatcher = lazy(() => import('./components/BudgetWatcher'));
 const QuickAdd = lazy(() => import('./components/QuickAdd'));
+const GuestImportPrompt = lazy(() => import('./components/GuestImportPrompt'));
 const importDashboard = () => (dashboardChunkPromise ??= import('./pages/Dashboard'));
 const pageImporters = {
   Dashboard: importDashboard,
@@ -162,8 +166,12 @@ const AnimatedRoutes = () => (
 
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => !!auth.currentUser);
-  const [isInitializing, setIsInitializing] = useState(() => !auth.currentUser);
+  // Returning user: open straight into the app (cached data) while Firebase
+  // re-checks the session with Google, instead of a splash screen meanwhile.
+  const [optimisticUser, setOptimisticUser] = useState(() => (auth.currentUser ? null : optimisticUid()));
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!auth.currentUser || !!optimisticUser);
+  const [, setAdminTick] = useState(0);
+  const [isInitializing, setIsInitializing] = useState(() => !auth.currentUser && !optimisticUser);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
@@ -179,7 +187,15 @@ function App() {
   const [receiptScannerOpen, setReceiptScannerOpen] = useState(false);
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [securityAuditOpen, setSecurityAuditOpen] = useState(false);
-  const [pinLocked, setPinLocked] = useState(false);
+  // With a PIN set, opening the app asks for it before showing any money.
+  const [pinLocked, setPinLocked] = useState(() => {
+    try {
+      const uid = auth.currentUser?.uid || optimisticUid();
+      const owner = localStorage.getItem('vm_pin_owner');
+      // A PIN set by another account on this phone must not lock this one out.
+      return !!uid && !!localStorage.getItem('vm_pin_hash') && (!owner || owner === uid);
+    } catch { return false; }
+  });
   const [isAppInstalled, setIsAppInstalled] = useState(() => isStandalone());
   const [syncStatus, setSyncStatus] = useState(() => ({ online: navigator.onLine, pendingCount: 0, syncing: false }));
   const [maintenanceState, setMaintenanceState] = useState(() => getMaintenanceMode());
@@ -378,6 +394,12 @@ function App() {
   }, [toggleStealth]);
 
   const handleLogout = useCallback(async () => {
+    if (isGuest()) {
+      // Reached from the PIN screen ("Forgot PIN? Sign out"): a guest can't sign back in.
+      if (!window.confirm(GUEST_SIGN_OUT_WARNING)) return;
+      try { await deleteGuestAndSignOut(); } catch (err) { toast.error(err?.message || 'Could not delete the guest data. Check your connection.'); }
+      return;
+    }
     setPinLocked(false);
     try { await signOutAndClear(); } catch { toast.error('Could not sign out. Check your connection and try again.'); }
   }, []);
@@ -389,10 +411,11 @@ function App() {
     if (hasPinSet) {
       setPinLocked(true);
       if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
-      if (timeoutMins > 0) {
+      if (timeoutMins > 0 && !isGuest()) {
         logoutTimerRef.current = setTimeout(handleLogout, timeoutMins * 60 * 1000);
       }
-    } else if (timeoutMins > 0) {
+    } else if (timeoutMins > 0 && !isGuest()) {
+      // A guest can't sign back in, so idling never signs them out (PIN lock still works).
       handleLogout();
     }
   }, [handleLogout]);
@@ -404,7 +427,7 @@ function App() {
     const timeoutMins = getSessionTimeoutMinutes(auth.currentUser?.uid);
     if (hasPinSet) {
       pinTimerRef.current = setTimeout(triggerPinLock, getPinLockTimeout());
-    } else if (timeoutMins > 0) {
+    } else if (timeoutMins > 0 && !isGuest()) {
       logoutTimerRef.current = setTimeout(handleLogout, timeoutMins * 60 * 1000);
     }
   }, [triggerPinLock, handleLogout]);
@@ -415,20 +438,22 @@ function App() {
       setIsInitializing(false);
     }, 1500);
 
-    let signedInUid = auth.currentUser?.uid || null;
+    let signedInUid = auth.currentUser?.uid || optimisticUid();
     const unsubscribe = auth.onAuthStateChanged((user) => {
       clearTimeout(fallbackTimer);
       if (user) {
         signedInUid = user.uid;
+        setOptimisticUser(null);
+        // Admin comes from a custom claim on the ID token; re-render once known.
+        loadAdminClaim(user).then(isAdmin => { if (isAdmin) setAdminTick(n => n + 1); }).catch(() => {});
         cancelPendingOfflineWipe();
         setIsAuthenticated(true);
-        setPinLocked(false);
         setIsInitializing(false);
         resetTimer();
         try {
           importDashboard().catch(() => {});
           preloadAllRouteChunks();
-          try { localStorage.setItem('vm_signed_in', '1'); } catch {}
+          rememberSession(user.uid, user.emailVerified || user.isAnonymous);
           loadAdmin().then(({ startSystemConfigSync, registerUserPresence }) => {
             startSystemConfigSync();
             registerUserPresence(user).catch(() => {});
@@ -438,6 +463,8 @@ function App() {
             if (auth.currentUser?.uid !== user.uid) return;
             startLiveSync(user.uid);
             fetchUserPrefs(user.uid).then(prefs => {
+              // Keep this user's closed-month locks current on this device.
+              mergeClosedMonths(user.uid, prefs?.closed_months);
               if (prefs?.theme) setThemePref(prefs.theme);
               if (prefs?.currency) localStorage.setItem('vm_currency', prefs.currency);
               if (prefs?.lang) setLang(prefs.lang);
@@ -457,7 +484,8 @@ function App() {
         setIsInitializing(false);
         if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
         if (pinTimerRef.current) clearTimeout(pinTimerRef.current);
-        try { localStorage.removeItem('vm_signed_in'); } catch {}
+        setOptimisticUser(null);
+        forgetSession();
         const api = apiIfLoaded();
         if (api) { api.stopLiveSync(); api.invalidateCache(); }
         // Signed out elsewhere (other tab, expired login, deleted account):
@@ -556,13 +584,16 @@ function App() {
     return <Login onLogin={() => { setPinLocked(false); resetTimer(); }} />;
   }
 
-  // Email Verification Guard (Super Admin isuru@moneymanager.app is always verified/exempt)
-  const isEmailVerified = auth.currentUser?.emailVerified || isSuperAdmin(auth.currentUser);
+  // Email Verification Guard (the Super Admin is exempt)
+  const isEmailVerified = auth.currentUser
+    ? (auth.currentUser.emailVerified || auth.currentUser.isAnonymous || isSuperAdmin(auth.currentUser))
+    : (!!optimisticUser && optimisticVerified());
   if (!isEmailVerified) {
     return (
       <EmailVerification
         user={auth.currentUser}
         onVerified={() => {
+          if (auth.currentUser) rememberSession(auth.currentUser.uid, true);
           setIsAuthenticated(true);
           resetTimer();
         }}
@@ -571,7 +602,7 @@ function App() {
     );
   }
 
-  // Global Maintenance Lock (Super Admin isuru@moneymanager.app always bypasses)
+  // Global Maintenance Lock (the Super Admin always bypasses)
   const maintMode = maintenanceState;
   if (maintMode?.active && !isSuperAdmin(auth.currentUser)) {
     return (
@@ -634,11 +665,19 @@ function App() {
 
   return (
     <div className="app-container">
-      <PWAUpdateBanner />
+      {/* The Android app updates through the Play Store, not a service worker. */}
+      {!isNativeApp() && <PWAUpdateBanner />}
       <Suspense fallback={null}>
         <OfflineBanner />
         <BudgetWatcher />
+        {auth.currentUser && !auth.currentUser.isAnonymous && <GuestImportPrompt key={auth.currentUser.uid} />}
       </Suspense>
+      {isGuest() && (
+        <div className="guest-banner" role="status">
+          <span>Guest profile: your data is kept only while you stay signed in on this device.</span>
+          <Link to="/settings#guest-account">Save to an account</Link>
+        </div>
+      )}
       <PrivacyShield />
       <a href="#main-content" className="skip-link">{t('shell.skip')}</a>
       <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)} />
@@ -880,7 +919,7 @@ function App() {
       <Suspense fallback={null}>
         <QuickAdd open={quickAddOpen} onClose={() => setQuickAddOpen(false)} />
       </Suspense>
-      <InstallPrompt />
+      {!isNativeApp() && <InstallPrompt />}
     </div>
   );
 }

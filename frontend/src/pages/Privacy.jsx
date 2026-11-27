@@ -17,7 +17,7 @@ const Privacy = () => {
       icon: Lock,
       color: '#818cf8',
       title: '2. Zero Third-Party Selling or Ad Tracking',
-      body: 'Money Manager does not sell, rent, or share your financial data with advertisers, data brokers, or third-party analytics networks. Optional local backups can be encrypted on your device using PBKDF2 (250,000 iterations) + AES-256-GCM before saving.',
+      body: 'Money Manager does not sell, rent, or share your financial data with advertisers, data brokers, or third-party analytics networks. Optional local backups can be encrypted on your device using PBKDF2 (600,000 iterations) + AES-256-GCM before saving.',
     },
     {
       icon: ShieldCheck,
@@ -41,7 +41,8 @@ const Privacy = () => {
 
   return (
     <PageWrapper>
-      <div style={{ maxWidth: 780, margin: '0 auto', padding: '1.5rem 1rem 4rem' }}>
+      {/* Leave room for the phone's status bar (Android app, iOS home-screen app). */}
+      <div style={{ maxWidth: 780, margin: '0 auto', padding: 'calc(1.5rem + env(safe-area-inset-top, 0px)) 1rem 4rem' }}>
         <button
           type="button"
           onClick={() => navigate(-1)}

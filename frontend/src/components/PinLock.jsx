@@ -5,6 +5,7 @@ import { Landmark, Delete, Lock, LogOut, Fingerprint } from 'lucide-react';
 import { haptic } from '../utils/format';
 
 import { verifyPin as checkPin, MAX_PIN_ATTEMPTS } from '../utils/pinHash';
+import { isGuest } from '../utils/guestAccount';
 
 const readFails = () => { try { return Number(localStorage.getItem('vm_pin_fails')) || 0; } catch { return 0; } };
 
@@ -97,6 +98,7 @@ export default function PinLock({ onUnlock, onSignOut }) {
   const [error, setError]       = useState('');
   const [shaking, setShaking]   = useState(false);
   const [checking, setChecking] = useState(false);
+  const [cooldownUntil, setCooldownUntil] = useState(0);
   const [hasBiometric, setHasBiometric] = useState(false);
 
   // Helper to trigger biometric
@@ -153,9 +155,17 @@ export default function PinLock({ onUnlock, onSignOut }) {
       const fails = readFails() + 1;
       localStorage.setItem('vm_pin_fails', String(fails));
       if (fails >= MAX_PIN_ATTEMPTS) {
-        // Too many wrong tries: sign out, so the next person must log in again.
         localStorage.removeItem('vm_pin_fails');
         setChecking(false);
+        if (isGuest()) {
+          // A guest can't sign back in, so wrong tries pause the keypad instead of deleting their data.
+          setError('Too many wrong tries. Wait 60 seconds.');
+          setPin('');
+          setCooldownUntil(Date.now() + 60000);
+          setTimeout(() => setError(''), 60000);
+          return;
+        }
+        // Too many wrong tries: sign out, so the next person must log in again.
         onSignOut?.();
         return;
       }
@@ -173,7 +183,7 @@ export default function PinLock({ onUnlock, onSignOut }) {
   }, [onUnlock, onSignOut]);
 
   const handleKey = useCallback(async (label) => {
-    if (checking) return;
+    if (checking || Date.now() < cooldownUntil) return;
     haptic();
 
     if (label === 'del') {
@@ -197,7 +207,7 @@ export default function PinLock({ onUnlock, onSignOut }) {
         await verifyPin(next);
       }
     }
-  }, [pin, checking, verifyPin]);
+  }, [pin, checking, verifyPin, cooldownUntil]);
 
   /* Keyboard support */
   useEffect(() => {

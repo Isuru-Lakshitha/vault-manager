@@ -1,0 +1,85 @@
+apply plugin: 'com.android.application'
+
+// Upload key for Google Play. keystore.properties (never committed) holds:
+//   storeFile=/absolute/path/to/vault-manager-upload.jks
+//   storePassword=...   keyAlias=upload   keyPassword=...
+// See keystore.properties.example. Without it, release builds are signed with
+// the debug key (fine for testing an APK on your own phone); bundles refuse to build.
+def keystorePropsFile = rootProject.file('keystore.properties')
+def keystoreProps = new Properties()
+if (keystorePropsFile.exists()) keystorePropsFile.withInputStream { keystoreProps.load(it) }
+
+// A Play Store bundle must be signed with the real upload key: stop instead of
+// quietly signing it with the debug key.
+if (!keystorePropsFile.exists() && gradle.startParameter.taskNames.any { it.toLowerCase().contains('bundle') }) {
+    throw new GradleException('keystore.properties is missing, so this bundle cannot be signed for Google Play. Create the upload key first (see keystore.properties.example).')
+}
+
+android {
+    namespace = "app.vaultmanager.isuru"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "app.vaultmanager.isuru"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        // versionName comes from frontend/package.json. versionCode is the UTC
+        // build time (yyMMddHH), so every upload to Google Play is higher than
+        // the last without a manual bump. It fits Play's limit until 2099.
+        versionCode new Date().format('yyMMddHH', TimeZone.getTimeZone('UTC')).toInteger()
+        versionName new groovy.json.JsonSlurper().parse(rootProject.file('../package.json')).version
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    signingConfigs {
+        release {
+            if (keystorePropsFile.exists()) {
+                storeFile file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
+    buildTypes {
+        release {
+            // Smaller, faster app: remove unused code and resources.
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig keystorePropsFile.exists() ? signingConfigs.release : signingConfigs.debug
+        }
+    }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

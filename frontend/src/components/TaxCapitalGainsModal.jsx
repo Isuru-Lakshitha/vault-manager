@@ -134,13 +134,15 @@ export default function TaxCapitalGainsModal({ isOpen, onClose }) {
   };
 
   const handleDownloadCSV = async () => {
-    const { exportTaxDeductionsCSV } = await import('../utils/pdfReport');
-    exportTaxDeductionsCSV({
-      taxYear: selectedYear,
-      transactions: deductibleTxs,
-    });
-    toast.success('Tax CSV downloaded for your accountant!');
-    haptic();
+    try {
+      const { exportTaxDeductionsCSV } = await import('../utils/pdfReport');
+      await exportTaxDeductionsCSV({
+        taxYear: selectedYear,
+        transactions: deductibleTxs,
+      });
+      toast.success('Tax CSV downloaded for your accountant!');
+      haptic();
+    } catch (err) { toast.error(err?.message || 'Export failed'); }
   };
 
   return (

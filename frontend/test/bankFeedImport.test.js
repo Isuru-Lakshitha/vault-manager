@@ -42,3 +42,33 @@ test('real purchases with similar names are never matched', () => {
   assert.deepEqual(findDemoFeedLeftovers(txs), []);
   assert.deepEqual(findDemoFeedLeftovers(null), []);
 });
+
+import { bankRowRefs, bankImportRequestId, isAlreadyImported } from '../src/utils/bankFeedImport.js';
+
+test('row references are stable and keep identical same-day purchases apart', () => {
+  const rows = [
+    { fitId: 'F123', date: '2026-11-01', amount: 5, notes: 'Coffee', type: 'Expense' },
+    { fitId: '', date: '2026-11-01', amount: 5, notes: 'Coffee', type: 'Expense' },
+    { fitId: '', date: '2026-11-01', amount: 5, notes: 'coffee ', type: 'Expense' },
+  ];
+  const a = bankRowRefs(rows), b = bankRowRefs(structuredClone(rows));
+  assert.deepEqual(a, b);
+  assert.equal(a[0], 'fitid:F123');
+  assert.notEqual(a[1], a[2]);
+});
+
+test('import ids are deterministic, valid for createTransaction and differ by account', () => {
+  const id = bankImportRequestId('acc1', 'fitid:F123');
+  assert.equal(id, bankImportRequestId('acc1', 'fitid:F123'));
+  assert.notEqual(id, bankImportRequestId('acc2', 'fitid:F123'));
+  assert.match(id, /^[a-zA-Z0-9-]{1,80}$/);
+});
+
+test('earlier imports match exactly; hand-typed entries match on amount and date or description', () => {
+  const row = { date: '2026-11-02', amount: 5, notes: 'Coffee' };
+  const imported = [{ bank_ref: 'fitid:OTHER', from_account_id: 'acc1', date: '2026-11-02', amount: 5, notes: 'Coffee' }];
+  assert.equal(isAlreadyImported(imported, row, 'fitid:NEW', 'acc1'), false, 'a second real purchase is not a duplicate');
+  assert.equal(isAlreadyImported(imported, row, 'fitid:OTHER', 'acc1'), true);
+  assert.equal(isAlreadyImported([{ date: '2026-11-02', amount: 5, notes: 'cafe' }], row, 'x', 'acc1'), true);
+  assert.equal(isAlreadyImported([{ date: '2026-11-03', amount: 5.5, notes: 'Coffee' }], row, 'x', 'acc1'), false);
+});

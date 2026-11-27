@@ -37,3 +37,54 @@ export function findDemoFeedLeftovers(transactions) {
     && norm(t.type) === norm(d.type)
   )));
 }
+
+// 53-bit string hash (cyrb53). Two seeds together give ~106 bits, so two
+// different bank rows practically never share an import id.
+function cyrb53(str, seed = 0) {
+  let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+  for (let i = 0; i < str.length; i++) {
+    const ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+}
+
+/*
+ * A stable reference for each statement row: the bank's own transaction id
+ * (OFX FITID) when it has one, otherwise date + amount + description plus a
+ * counter, so two genuine identical purchases on one day stay separate.
+ * The same file always gives the same references.
+ */
+export function bankRowRefs(rows) {
+  const seen = new Map();
+  return (rows || []).map((tx) => {
+    if (tx?.fitId) return `fitid:${String(tx.fitId).trim().slice(0, 200)}`;
+    const base = `${tx?.date || ''}|${Number(tx?.amount) || 0}|${norm(tx?.notes).slice(0, 200)}|${tx?.type || ''}`;
+    const n = (seen.get(base) || 0) + 1;
+    seen.set(base, n);
+    return `row:${base}|${n}`;
+  });
+}
+
+/** Import id for createTransaction: the same row into the same account is saved once. */
+export function bankImportRequestId(accountId, ref) {
+  const key = `${accountId}|${ref}`;
+  return `bank-${cyrb53(key, 1)}-${cyrb53(key, 2)}`;
+}
+
+/*
+ * Is this statement row already in the ledger? Earlier imports carry their
+ * bank_ref, so they match exactly. Entries typed in by hand have none, so
+ * they are matched on amount plus the same date or the same description.
+ */
+export function isAlreadyImported(existingTxs, row, ref, accountId) {
+  return (existingTxs || []).some((t) => {
+    if (t?.bank_ref) return t.bank_ref === ref && String(t.from_account_id || t.to_account_id || '') === String(accountId || '');
+    const sameAmount = Math.abs((parseFloat(t?.amount) || 0) - (parseFloat(row?.amount) || 0)) < 0.005;
+    if (!sameAmount) return false;
+    return t?.date === row?.date || norm(t?.notes) === norm(row?.notes);
+  });
+}

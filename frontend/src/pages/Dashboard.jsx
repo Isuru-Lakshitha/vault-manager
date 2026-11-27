@@ -40,6 +40,7 @@ import OverviewView from './dashboard/OverviewView';
 import { isInternalMove } from '../utils/ledgerReporting.js';
 import SpendingLimitsSection from './dashboard/SpendingLimitsSection';
 import NetWorthSection from './dashboard/NetWorthSection';
+import { optimisticUid } from '../utils/lastSession';
 
 const COLORS = ['#4ade80','#a78bfa','#818cf8','#fb923c','#fbbf24'];
 
@@ -90,7 +91,8 @@ const readCachedDashboard = () => {
         cds: getCache('credit_cards') || [],
       };
     }
-    const uid = auth.currentUser?.uid;
+    // Before Firebase has re-checked the session, use the last signed-in user.
+    const uid = auth.currentUser?.uid || optimisticUid();
     if (uid) {
       const raw = localStorage.getItem('vm_dash_snapshot_' + uid);
       if (raw) return JSON.parse(raw);

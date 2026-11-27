@@ -15,6 +15,7 @@ import {
   fetchIous,
 } from './api';
 import { todayYMD } from './dates';
+import { saveFile } from './saveFile.js';
 
 const LAST_BACKUP_KEY = 'vm_last_backup_ts';
 const BACKUP_SNOOZE_KEY = 'vm_backup_snooze_until';
@@ -252,14 +253,8 @@ export async function exportFullVaultBackup(arg = '') {
   const password = typeof arg === 'string' ? arg : (arg?.password || '');
   const { payload: finalPayload, filename, counts } = await buildVaultBackup(password);
   const blob = new Blob([JSON.stringify(finalPayload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  // Throws if the file wasn't saved, so the reminder is only reset for a real backup.
+  await saveFile(blob, filename);
 
   markBackupCompleted();
   return { encrypted: !!(password && password.trim().length > 0), filename, counts };

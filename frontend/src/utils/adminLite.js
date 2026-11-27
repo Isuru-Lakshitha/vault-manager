@@ -3,12 +3,27 @@
 
 export const SUPER_ADMIN_EMAIL = 'isuru@moneymanager.app';
 
-/** UI-only check (real enforcement is in firestore.rules). */
-export const isSuperAdminUser = (user) => {
-  if (!user) return false;
-  const email = (user.email || '').toLowerCase().trim();
-  return email === SUPER_ADMIN_EMAIL.toLowerCase();
+// Admin is an `admin: true` custom claim on the account (set once with
+// backend/set-admin.js), read from the signed-in user's ID token.
+const adminClaims = new Map();
+
+/**
+ * Read the admin claim for this user from their ID token and remember it, so
+ * isSuperAdminUser() can answer synchronously while rendering.
+ * @returns {Promise<boolean>}
+ */
+export const loadAdminClaim = async (user) => {
+  if (!user?.getIdTokenResult) return false;
+  try {
+    const { claims } = await user.getIdTokenResult();
+    const isAdmin = claims?.admin === true;
+    adminClaims.set(user.uid, isAdmin);
+    return isAdmin;
+  } catch { return adminClaims.get(user.uid) === true; }
 };
+
+/** UI-only check (real enforcement is in firestore.rules). */
+export const isSuperAdminUser = (user) => !!user && adminClaims.get(user.uid) === true;
 
 // system_config/global is mirrored to localStorage so the UI can read it
 // synchronously before Firestore has loaded.

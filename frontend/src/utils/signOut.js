@@ -1,6 +1,7 @@
 import { auth } from './firebaseApp.js';
 import { apiIfLoaded } from './lazyData.js';
 import { toast } from 'react-hot-toast';
+import { optimisticUid } from './lastSession.js';
 
 // Set when the offline copy could not be removed (usually because another tab
 // still had it open). The next start with nobody signed in retries the wipe.
@@ -104,7 +105,7 @@ export async function signOutAndClear({ redirectTo } = {}) {
   try { localStorage.removeItem('vm_pin_fails'); } catch { /* private mode */ }
   signingOut = true;
   try {
-    removeCachedFinancialKeys(auth.currentUser?.uid);
+    removeCachedFinancialKeys(auth.currentUser?.uid || optimisticUid());
     const terminated = await clearOfflineCopy();
     try {
       await auth.signOut();

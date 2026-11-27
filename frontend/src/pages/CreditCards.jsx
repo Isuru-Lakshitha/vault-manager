@@ -15,7 +15,9 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import CurrencyInput from '../components/CurrencyInput';
 import toast from 'react-hot-toast';
 import { fetchCreditCards, createCreditCard, updateCreditCard, deleteCreditCard, recordCardPayment, recordCardCharge, fetchAccounts, getCache } from '../utils/api';
-import { formatCurrency, getCurrencyLabel } from '../utils/format';
+import { formatCurrency, getCurrencyLabel, getCurrency } from '../utils/format';
+import { baseConverter, readCachedRates, missingRateNote } from '../utils/balanceSheet';
+import { addMoney, subMoney } from '../utils/money';
 import { predictCategory } from '../utils/autoCategorize';
 import { todayYMD } from '../utils/dates';
 
@@ -286,11 +288,14 @@ const CreditCards = () => {
   };
 
   // Aggregate stats
-  const totalLimit = cards.reduce((s, c) => s + (c.credit_limit || 0), 0);
-  const totalBalance = cards.reduce((s, c) => s + (c.balance || 0), 0);
-  const totalAvailable = totalLimit - totalBalance;
+  // Cards can be in different currencies: convert before adding them up.
+  const { toBase, missing: missingRates } = baseConverter(getCurrency(), readCachedRates());
+  const totalLimit = addMoney(...cards.map(c => toBase(c.credit_limit || 0, c.currency)));
+  const totalBalance = addMoney(...cards.map(c => toBase(c.balance || 0, c.currency)));
+  const totalAvailable = subMoney(totalLimit, totalBalance);
   const overallUtil = totalLimit > 0 ? (totalBalance / totalLimit) * 100 : 0;
-  const totalMinPayment = cards.reduce((s, c) => s + getCardMinPayment(c.balance, c.min_payment_pct), 0);
+  const totalMinPayment = addMoney(...cards.map(c => toBase(getCardMinPayment(c.balance, c.min_payment_pct), c.currency)));
+  const ratesNote = missingRateNote(missingRates);
   const dueThisWeek = cards.filter(c => { const d = daysUntil(c.due_date); return d !== null && d >= 0 && d <= 7; });
 
   const rankedCards = useMemo(() => {
@@ -314,11 +319,11 @@ const CreditCards = () => {
             {/* Summary strip */}
             {cards.length > 0 && (
               <StatGrid className="cc-stats">
-                <StatCard label="Total limit" value={formatCurrency(totalLimit)} tone="accent" />
-                <StatCard label="Total owed" value={formatCurrency(totalBalance)} tone="neg" />
-                <StatCard label="Available credit" value={formatCurrency(totalAvailable)} tone="pos" />
+                <StatCard label="Total limit" value={formatCurrency(totalLimit)} tone="accent" sub={ratesNote} />
+                <StatCard label="Total owed" value={formatCurrency(totalBalance)} tone="neg" sub={ratesNote} />
+                <StatCard label="Available credit" value={formatCurrency(totalAvailable)} tone="pos" sub={ratesNote} />
                 <StatCard label="Overall utilisation" value={`${overallUtil.toFixed(1)}%`} tone={overallUtil >= 70 ? 'neg' : overallUtil >= 30 ? 'warn' : 'pos'} />
-                <StatCard label="Min payments due" value={formatCurrency(parseFloat(totalMinPayment.toFixed(2)))} tone="warn" />
+                <StatCard label="Min payments due" value={formatCurrency(parseFloat(totalMinPayment.toFixed(2)))} tone="warn" sub={ratesNote} />
                 <StatCard label="Due this week" value={dueThisWeek.length > 0 ? `${dueThisWeek.length} card${dueThisWeek.length > 1 ? 's' : ''}` : 'None'} tone={dueThisWeek.length > 0 ? 'neg' : 'pos'} />
               </StatGrid>
             )}
@@ -805,7 +810,7 @@ const CreditCards = () => {
           </div>
           <label style={{ display:'flex', alignItems:'center', gap:'0.55rem', padding:'0.6rem 0.75rem', borderRadius:10, background:'rgba(56,189,248,0.08)', border:'1px solid rgba(56,189,248,0.25)', fontSize:'0.76rem', color:'var(--text-secondary)', cursor:'pointer' }}>
             <input type="checkbox" checked={chargeLogTx} onChange={e => setChargeLogTx(e.target.checked)} style={{ width:15, height:15, accentColor:'#38bdf8' }} />
-            <span>📊 Also record in Transactions &amp; Category Budgets (no bank deduction until card payment)</span>
+            <span>📊 Count as spending in reports &amp; category budgets (no bank deduction until card payment). Unticked, it's still listed in Transactions as a card balance adjustment.</span>
           </label>
           <div style={{ display:'flex', justifyContent:'flex-end', gap:'0.75rem' }}>
             <button className="btn btn-secondary" onClick={() => setChargeModal(null)}>Cancel</button>

@@ -5,14 +5,37 @@ import { installGlobalErrorHandlers } from './utils/errorLogger'
 import { initLiquidGlass } from './motion/liquidGlass'
 import { loadApi } from './utils/lazyData'
 import { retryPendingOfflineWipe } from './utils/signOut'
+import { closeTopBackLayer } from './utils/backLayers'
 
 installGlobalErrorHandlers();
 // Finish removing offline data that a previous sign-out couldn't (another tab had it open).
 retryPendingOfflineWipe();
 // Returning signed-in users: start fetching the data layer right away instead
 // of waiting for Auth to restore the session (the sign-in page doesn't need it).
-try { if (localStorage.getItem('vm_signed_in') === '1') loadApi().catch(() => {}); } catch {}
+try {
+  if (localStorage.getItem('vm_signed_in') === '1') {
+    loadApi().catch(() => {});
+    // Returning users open on the Dashboard: fetch it alongside the app shell.
+    import('./pages/Dashboard').catch(() => {});
+  }
+} catch {}
 initLiquidGlass();
+
+// Android app: the phone's Back button goes back a page, and leaves the app
+// from the first page (instead of closing it from anywhere).
+if (window.Capacitor?.isNativePlatform?.()) {
+  import('@capacitor/app').then(({ App: NativeApp }) => {
+    NativeApp.addListener('backButton', ({ canGoBack }) => {
+      // An open modal or sheet closes first; typed-in data stays on the page.
+      if (closeTopBackLayer()) return;
+      // The WebView often reports canGoBack=false for in-app page changes, so
+      // also use React Router's own position in the history (state.idx).
+      const idx = window.history.state?.idx;
+      if (canGoBack || (typeof idx === 'number' && idx > 0)) window.history.back();
+      else NativeApp.exitApp();
+    });
+  }).catch(() => {});
+}
 
 // Build stamp: generated at build time (vite.config.js). A new value on each
 // deploy flushes stale service-worker caches on client devices.

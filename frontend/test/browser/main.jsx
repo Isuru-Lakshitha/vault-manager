@@ -25,6 +25,7 @@ import QuickAdd from '../../src/components/QuickAdd';
 import InvoiceModal from '../../src/components/InvoiceModal';
 import OfflineBanner from '../../src/components/OfflineBanner';
 import '../../src/styles/index.css';
+import { closeTopBackLayer } from '../../src/utils/backLayers';
 export function Fixture() {
  const [quick,setQuick]=useState(false);
  const mainRef=useRef(null);
@@ -32,5 +33,9 @@ export function Fixture() {
  const [invoices,setInvoices]=useState(false);
  useEffect(()=>{const open=()=>setInvoices(true);window.addEventListener('vm:open-invoices',open);return ()=>window.removeEventListener('vm:open-invoices',open);},[]);
  return <BrowserRouter><Toaster/><OfflineBanner/><header style={{padding:24,display:'flex',flexWrap:'wrap',gap:20}}><strong>Isolated browser test</strong><Link to="/test/browser/dashboard">Dashboard</Link><Link to="/test/browser/accounts">Accounts</Link><Link to="/test/browser/transactions">Transactions</Link><Link to="/test/browser/cards">Cards</Link><Link to="/test/browser/settings">Settings</Link><Link to="/test/browser/analytics">Analytics</Link><Link to="/test/browser/budgets">Budgets</Link><Link to="/test/browser/goals">Goals</Link><Link to="/test/browser/bills">Bills</Link><Link to="/test/browser/loans">Loans</Link><Link to="/test/browser/investments">Investments</Link><Link to="/test/browser/recurring">Recurring</Link><button onClick={()=>setQuick(true)}>Quick Add</button></header><main ref={mainRef} style={{padding:24}}><PullToRefresh scrollRef={mainRef} onRefresh={refresh}/><Routes><Route path="/test/browser/banksync" element={<BankSyncModal isOpen onClose={()=>{}}/>}/><Route path="/test/browser/shell" element={<ShellFixture/>}/><Route path="/test/browser/login" element={<Login onLogin={()=>{}}/>}/><Route path="/test/browser/dashboard" element={<Dashboard/>}/><Route path="/test/browser/accounts" element={<Accounts/>}/><Route path="/test/browser/transactions" element={<Transactions/>}/><Route path="/test/browser/cards" element={<CreditCards/>}/><Route path="/test/browser/analytics" element={<Analytics/>}/><Route path="/test/browser/budgets" element={<Budgets/>}/><Route path="/test/browser/goals" element={<Goals/>}/><Route path="/test/browser/bills" element={<BillsHubTabs><Bills/></BillsHubTabs>}/><Route path="/test/browser/loans" element={<Loans/>}/><Route path="/test/browser/investments" element={<Investments/>}/><Route path="/test/browser/recurring" element={<BillsHubTabs><Recurring/></BillsHubTabs>}/><Route path="/test/browser/settings" element={<Settings/>}/><Route path="*" element={<Accounts/>}/></Routes></main><InvoiceModal isOpen={invoices} onClose={()=>setInvoices(false)}/><QuickAdd open={quick} onClose={()=>setQuick(false)}/></BrowserRouter>;
+}
+// Same Back-button handling as src/main.jsx, so the harness can be checked inside the Android app too.
+if (window.Capacitor?.isNativePlatform?.()) {
+ import('@capacitor/app').then(({App:NativeApp})=>NativeApp.addListener('backButton',({canGoBack})=>{if(closeTopBackLayer())return;const idx=window.history.state?.idx;if(canGoBack||(typeof idx==='number'&&idx>0))window.history.back();else NativeApp.exitApp();}));
 }
 createRoot(document.getElementById('root')).render(<Fixture/>);

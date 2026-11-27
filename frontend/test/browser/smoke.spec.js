@@ -124,3 +124,13 @@ test('Diagnostics lists logged errors, offers a report and can clear them', asyn
   await page.getByRole('button', { name: 'Clear' }).click();
   await expect(page.getByText('No problems recorded')).toBeVisible();
 });
+
+test('sign-in offers a guest profile that needs no sign-up', async ({ page }) => {
+  await page.goto('/test/browser/login');
+  const guest = page.getByRole('button', { name: 'Continue as guest' });
+  await expect(guest).toBeVisible();
+  await expect(page.getByText('No sign-up. Save your data to an account later.')).toBeVisible();
+  // Creating an account hides the guest option.
+  await page.getByRole('button', { name: 'Create an account' }).click();
+  await expect(guest).toHaveCount(0);
+});

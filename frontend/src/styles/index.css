@@ -11,6 +11,7 @@
    Feature styles (insights, transactions, accounts) are imported by the
    component that owns them.
    ========================================================================== */
+@import './fonts.css';
 @import './base.css';
 @import './theme-professional.css';
 @import './theme-minimal.css';

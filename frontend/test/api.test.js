@@ -11,6 +11,7 @@ const adapter = {
  doc:(base,...parts)=>{ const path=base.path ? `${base.path}/${parts[0] || `id${++sequence}`}` : parts.join('/'); return {path,id:path.split('/').at(-1)}; },
  getDoc:async ref=>snapshot(ref.path), where:(field,operator,value)=>({field,value}),
  query:(base,...filters)=>({...base,filters}),
+ deleteDoc:async ref=>{records.delete(ref.path)},
  getDocs:async ref=>{
   if (failReads) throw new Error('Offline');
   const docs=[...records.keys()].filter(key=>key.startsWith(ref.path+'/') && !key.slice(ref.path.length+1).includes('/'))
@@ -34,7 +35,7 @@ const adapter = {
 globalThis.__vaultTest=adapter;globalThis.window={dispatchEvent(){}};globalThis.CustomEvent=class {};
 const modules={
  './firebase':`export const {db,auth}=globalThis.__vaultTest;`,
- 'firebase/firestore':`export const {collection,doc,getDoc,getDocs,query,where,runTransaction}=globalThis.__vaultTest; export const deleteField=()=>null; export const setDoc=()=>{},addDoc=()=>{},updateDoc=()=>{},deleteDoc=()=>{},orderBy=()=>{},writeBatch=()=>{},serverTimestamp=()=>{},onSnapshot=()=>{};`,
+ 'firebase/firestore':`export const {collection,doc,getDoc,getDocs,query,where,runTransaction,deleteDoc}=globalThis.__vaultTest; export const getDocsFromServer=globalThis.__vaultTest.getDocs; export const deleteField=()=>null; export const setDoc=()=>{},addDoc=()=>{},updateDoc=()=>{},orderBy=()=>{},writeBatch=()=>{},serverTimestamp=()=>{},onSnapshot=()=>{};`,
  './rulesEngine':`export const DEFAULT_RULES=[]; export const executeRulesOnTransaction=(_,transaction)=>({transaction});`,
  './dates':`export const todayYMD=()=> '2026-10-21';`, './format':`export const formatCurrency=String; export const getCurrency=()=> 'LKR';`
 };
@@ -84,6 +85,48 @@ test('card edits cannot overwrite the balance',async()=>{
  records.set('credit_cards/card',{uid:'alice',name:'Visa',balance:80});
  await assert.rejects(api.updateCreditCard('card',{name:'Visa Gold',balance:10}),/charge or payment/);
  assert.equal(records.get('credit_cards/card').balance,80);
+});
+test('mark all bills paid is all-or-nothing and refuses stale cycles',async()=>{
+ records.set('users/alice/bills/b1',{name:'Power',amount:100,due_date:'2026-01-31',frequency:'Monthly',paid:false});
+ records.set('users/alice/bills/b2',{name:'Gym',amount:50,due_date:'2026-02-10',frequency:'Once',paid:false});
+ const opened=[{id:'b1',due_date:'2026-01-31'},{id:'b2',due_date:'2026-02-10'}];
+ records.get('users/alice/bills/b2').paid=true;
+ await assert.rejects(api.markBillsPaid(opened),/Gym.*changed/);
+ assert.equal(records.get('users/alice/bills/b1').due_date,'2026-01-31','first bill must not change when the second fails');
+ records.get('users/alice/bills/b2').paid=false;
+ assert.equal(await api.markBillsPaid(opened,{date:'2026-01-30'}),2);
+ const b1=records.get('users/alice/bills/b1'),b2=records.get('users/alice/bills/b2');
+ assert.equal(b1.due_date,'2026-02-28');assert.equal(b1.paid,false);assert.equal(b1.last_paid_amount,100);assert.equal(b1.last_paid_date,'2026-01-30');
+ assert.equal(b2.paid,true);assert.equal(b2.name,'Gym');assert.equal(txs().length,0);
+});
+test('goal contributions and withdrawals add up in exact cents',async()=>{
+ records.set('goals/g',{uid:'alice',name:'Trip',current_amount:0.1,target_amount:0.3});
+ records.get('accounts/bank').balance=0.3;
+ await api.contributeGoal('g',{amount:0.2,account_id:'bank'});
+ assert.equal(records.get('goals/g').current_amount,0.3);assert.equal(records.get('goals/g').is_achieved,true);
+ assert.equal(records.get('accounts/bank').balance,0.1);
+ await api.withdrawGoal('g',{amount:0.1,account_id:'bank'});
+ assert.equal(records.get('goals/g').current_amount,0.2);assert.equal(records.get('accounts/bank').balance,0.2);
+});
+test('transactions in a closed month cannot be added, edited or deleted',async()=>{
+ storage.set('vm_closed_months:alice',JSON.stringify({'2026-09':{closed_at:'2026-10-01'}}));
+ const exp={type:'Expense',amount:10,date:'2026-09-15',from_account_id:'bank',category:'Food'};
+ await assert.rejects(api.createTransaction(exp),/2026-09 is closed/);assert.equal(txs().length,0);assert.equal(records.get('accounts/bank').balance,1000);
+ const {item}=await api.createTransaction({...exp,date:'2026-10-02'});
+ await assert.rejects(api.updateTransaction(item.id,{date:'2026-09-30'}),/closed/);
+ records.set('transactions/old',{...exp,uid:'alice'});
+ await assert.rejects(api.deleteTransaction('old'),/closed/);assert.ok(records.has('transactions/old'));
+});
+test('a receipt image is deleted only when no transaction uses it any more',async()=>{
+ records.set('receipts/alice_abc',{uid:'alice',data:'data:image/png;base64,AA'});
+ const exp={type:'Expense',amount:5,date:'2026-10-21',from_account_id:'bank',category:'Food',receipt_url:'receipt:alice_abc'};
+ records.set('transactions/r1',{...exp,uid:'alice'});records.set('transactions/r2',{...exp,uid:'alice'});
+ await api.deleteTransaction('r1');await new Promise(r=>setTimeout(r,5));
+ assert.ok(records.has('receipts/alice_abc'),'still used by r2');
+ await api.updateTransaction('r2',{receipt_url:''});await new Promise(r=>setTimeout(r,5));
+ assert.equal(records.has('receipts/alice_abc'),false);
+ records.set('receipts/bob_x',{uid:'bob'});
+ assert.equal(await api.releaseReceipt('receipt:bob_x'),false);assert.ok(records.has('receipts/bob_x'),'never touches another user');
 });
 test('card charge atomically updates card balance and optionally logs category expense without bank deduction',async()=>{
  records.set('credit_cards/card',{uid:'alice',name:'Visa',balance:80});

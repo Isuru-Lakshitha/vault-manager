@@ -7,6 +7,7 @@ import { exportAllUserData, deleteAccountAndData } from '../utils/accountService
 import { formatCurrency } from '../utils/format';
 import { ShieldCheck, Download, Trash2, FileText, CheckCircle2, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { saveFile } from '../utils/saveFile';
 
 const AccountDataRightsPanel = () => {
   const navigate = useNavigate();
@@ -44,14 +45,7 @@ const AccountDataRightsPanel = () => {
     try {
       const data = await exportAllUserData(uid);
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `vaultmanager-complete-export-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      await saveFile(blob, `vaultmanager-complete-export-${new Date().toISOString().slice(0, 10)}.json`);
       toast.success('Complete account data exported');
     } catch (err) {
       toast.error(err?.message || 'Failed to export data');
@@ -277,9 +271,10 @@ const AccountDataRightsPanel = () => {
         {showDeleteConfirm && (
           <form onSubmit={handlePermanentDelete} style={{ marginTop: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             <div style={{ fontSize: '0.78rem', color: '#fca5a5' }}>
-              This action is irreversible. Enter your password and type <strong>DELETE</strong> below to permanently erase your vault:
+              This action is irreversible. {auth.currentUser?.isAnonymous ? 'Type' : 'Enter your password and type'} <strong>DELETE</strong> below to permanently erase your vault:
             </div>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {!auth.currentUser?.isAnonymous && (
               <input
                 type="password"
                 value={deletePassword}
@@ -296,6 +291,7 @@ const AccountDataRightsPanel = () => {
                   fontSize: '0.82rem',
                 }}
               />
+              )}
               <input
                 type="text"
                 value={deleteText}

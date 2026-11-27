@@ -27,10 +27,12 @@ export default function SecurityAuditModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  const handleExport = () => {
-    const ok = exportAuditLogsCSV();
-    if (ok) toast.success('Audit log CSV exported!');
-    else toast.error('No logs to export');
+  const handleExport = async () => {
+    try {
+      const ok = await exportAuditLogsCSV();
+      if (ok) toast.success('Audit log CSV exported!');
+      else toast.error('No logs to export');
+    } catch (err) { toast.error(err?.message || 'Export failed'); }
   };
 
   const handleClear = () => {

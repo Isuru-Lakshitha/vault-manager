@@ -18,14 +18,18 @@ import { runTransaction, doc, collection, query, where, getDocs } from 'firebase
 import Modal from '../components/Modal';
 import { isSuperAdmin } from '../utils/adminService';
 import { requestNotificationPermission, sendNotification, getNotificationPermission } from '../utils/notificationService';
-import { isStandalone, isIOS, triggerInstallPrompt } from '../utils/pwaInstall';
+import { isStandalone, isIOS, triggerInstallPrompt, isNativeApp } from '../utils/pwaInstall';
 import { exportFullVaultBackup, decryptVaultBackup, getBackupHealthStatus } from '../utils/backupCrypto';
 import { getBackupReminderDays, setBackupReminderDays } from '../utils/alertEngine';
 import TotpMfaPanel from '../components/TotpMfaPanel';
 import AccountDataRightsPanel from '../components/AccountDataRightsPanel';
+import ClosedMonthsPanel from '../components/ClosedMonthsPanel';
+import GuestAccountPanel from '../components/GuestAccountPanel';
+import { isGuest, GUEST_SIGN_OUT_WARNING, deleteGuestAndSignOut } from '../utils/guestAccount';
 import DiagnosticsPanel from '../components/DiagnosticsPanel';
 import { getSessionTimeoutMinutes, setSessionTimeoutMinutes, SESSION_TIMEOUT_OPTIONS } from '../utils/sessionTimeout';
 import { isInternalMove } from '../utils/ledgerReporting.js';
+import { optimisticUid } from '../utils/lastSession';
 
 
 const SUGGESTED_CATEGORIES = [
@@ -112,7 +116,7 @@ const Settings = () => {
   const [notifications, setNotifications] = useState(() => localStorage.getItem('vm_notifications') === 'true');
   const [notifPerm, setNotifPerm] = useState(() => getNotificationPermission());
   const [pinEnabled, setPinEnabled] = useState(() => !!localStorage.getItem('vm_pin_hash'));
-  const [sessionTimeoutMins, setSessionTimeoutMins] = useState(() => getSessionTimeoutMinutes(auth.currentUser?.uid));
+  const [sessionTimeoutMins, setSessionTimeoutMins] = useState(() => getSessionTimeoutMinutes(auth.currentUser?.uid || optimisticUid()));
   const [privacyShield, setPrivacyShield] = useState(() => localStorage.getItem('vm_privacy_shield') !== 'false');
   const [showPinSetup, setShowPinSetup] = useState(false);
   const [pinStep, setPinStep] = useState('enter'); // 'enter' | 'confirm'
@@ -375,6 +379,7 @@ const Settings = () => {
           if (next === pinFirst) {
             const hash = await hashPin(next);
             localStorage.setItem('vm_pin_hash', hash);
+            if (auth.currentUser?.uid) localStorage.setItem('vm_pin_owner', auth.currentUser.uid);
             localStorage.removeItem('vm_pin_fails');
             setPinEnabled(true);
             setShowPinSetup(false);
@@ -394,11 +399,17 @@ const Settings = () => {
 
   const handleRemovePin = () => {
     localStorage.removeItem('vm_pin_hash');
+    localStorage.removeItem('vm_pin_owner');
     setPinEnabled(false);
     toast.success('PIN removed');
   };
 
   const handleLogout = async () => {
+    if (isGuest()) {
+      if (!window.confirm(GUEST_SIGN_OUT_WARNING)) return;
+      try { await deleteGuestAndSignOut(); } catch (err) { toast.error(err?.message || 'Could not delete the guest data. Check your connection.'); }
+      return;
+    }
     try {
       if (!(await signOutAndClear())) toast.success('Signed out successfully');
     } catch { toast.error('Failed to sign out'); }
@@ -558,6 +569,7 @@ const Settings = () => {
     <PageWrapper>
       <div>
         <PageHeader title={t('nav.settings')} subtitle={<>Preferences, security &amp; data{saving ? ' · Saving…' : ''}</>} />
+        <GuestAccountPanel />
 
         <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 680 }}>
 
@@ -736,7 +748,7 @@ const Settings = () => {
                 <div style={{ minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-                      {isStandalone() ? 'Installed as Web App' : 'Install as Mobile Web App'}
+                      {isNativeApp() ? 'Android app' : isStandalone() ? 'Installed as Web App' : 'Install as Mobile Web App'}
                     </span>
                     <span style={{
                       fontSize: '0.62rem', fontWeight: 800, padding: '2px 7px', borderRadius: 6,
@@ -744,12 +756,12 @@ const Settings = () => {
                       color: isStandalone() ? 'var(--mm-success)' : 'var(--mm-warning)',
                       letterSpacing: '0.5px'
                     }}>
-                      {isStandalone() ? 'STANDALONE MODE' : 'BROWSER MODE'}
+                      {isNativeApp() ? 'INSTALLED' : isStandalone() ? 'STANDALONE MODE' : 'BROWSER MODE'}
                     </span>
                   </div>
                   <div style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', marginTop: 3, lineHeight: 1.4 }}>
                     {isStandalone()
-                      ? 'Vault Manager is running as a full standalone app with offline database caching & home screen icon.'
+                      ? (isNativeApp() ? 'Vault Manager is installed from the Android app, with offline data and updates through the Play Store.' : 'Vault Manager is running as a full standalone app with offline database caching & home screen icon.')
                       : isIOS()
                       ? 'Add to your iPhone/iPad home screen via Safari for a distraction-free, full-screen financial experience.'
                       : 'Add to your Android home screen or desktop for 1-tap instant launch and zero-latency access.'}
@@ -1099,7 +1111,7 @@ const Settings = () => {
             </select>
           </SettingsRow>
 
-          <TotpMfaPanel />
+          {!isGuest() && <TotpMfaPanel />}
 
           <SettingsRow icon={ShieldCheck} label="Multitasking Privacy Shield" description="Blur screen when switching apps on mobile or backgrounding tabs" color="#4ade80">
             <Toggle label="Multitasking Privacy Shield" checked={privacyShield} onChange={handlePrivacyShieldToggle} color="#4ade80" />
@@ -1393,6 +1405,9 @@ const Settings = () => {
           <AccountDataRightsPanel />
 
           {/* DATA STATISTICS */}
+          </div></details>
+          <details className="quiet-section settings-disclosure"><summary>Closed months</summary><div className="quiet-section-content">
+            <ClosedMonthsPanel />
           </div></details>
           <details className="quiet-section settings-disclosure"><summary>{t('diag.title')}</summary><div className="quiet-section-content">
             <DiagnosticsPanel />

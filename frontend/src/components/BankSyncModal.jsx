@@ -8,7 +8,9 @@ import { formatCurrency, haptic } from '../utils/format';
 import { parseAnyBankFile } from '../utils/bankFileParser';
 import toast from 'react-hot-toast';
 import { todayYMD } from '../utils/dates';
-import { FEED_SOURCE, importableEntries, DEMO_FEED as MOCK_INCOMING_FEED } from '../utils/bankFeedImport';
+import { auth } from '../utils/firebaseApp';
+import { localClosedMonths, isMonthLocked } from '../utils/closedMonths';
+import { FEED_SOURCE, importableEntries, bankRowRefs, bankImportRequestId, isAlreadyImported, DEMO_FEED as MOCK_INCOMING_FEED } from '../utils/bankFeedImport';
 
 // Demo-only sample data. Never written to the ledger (see utils/bankFeedImport).
 const MOCK_BANKS = [
@@ -59,28 +61,23 @@ export default function BankSyncModal({ isOpen, onClose }) {
         }
 
         const targetAccId = selectedAccountId || accounts[0]?.id || '';
+        const refs = bankRowRefs(result.transactions);
         const processedItems = result.transactions.map((tx, idx) => {
+          const { fitId: _fitId, ...row } = tx;
           const item = {
-            ...tx,
-            id: `bank_import_${Date.now()}_${idx}`,
+            ...row,
+            bank_ref: refs[idx],
             from_account_id: tx.type === 'Expense' ? targetAccId : '',
             to_account_id: tx.type === 'Income' ? targetAccId : '',
           };
 
           const { transaction: ruleEnhanced, matchedRules } = executeRulesOnTransaction(rules, item);
 
-          // Duplicate check: Match amount, date, or fitId
-          const isDuplicate = existingTxs.some(existing => {
-            const sameAmount = Math.abs((parseFloat(existing.amount) || 0) - (parseFloat(tx.amount) || 0)) < 0.01;
-            const sameDate = existing.date === tx.date;
-            const sameDesc = (existing.notes || '').toLowerCase().trim() === (tx.notes || '').toLowerCase().trim();
-            return (sameAmount && sameDate) || (sameAmount && sameDesc);
-          });
-
           return {
             item: ruleEnhanced,
+            requestId: bankImportRequestId(targetAccId, refs[idx]),
             matchedRules: matchedRules.map(r => r.name),
-            isDuplicate,
+            isDuplicate: isAlreadyImported(existingTxs, tx, refs[idx], targetAccId),
           };
         });
 
@@ -144,24 +141,35 @@ export default function BankSyncModal({ isOpen, onClose }) {
       toast.error('Sample data can’t be imported. Upload a statement file from your bank instead.');
       return;
     }
-    const toImport = importableEntries(syncedFeed, feedSource);
+    const all = importableEntries(syncedFeed, feedSource);
+    // Rows dated in a closed month are left out (reopen the month to add them).
+    const closed = localClosedMonths(auth.currentUser?.uid);
+    const toImport = all.filter(e => !isMonthLocked(closed[String(e.item.date || '').slice(0, 7)]));
+    const skippedClosed = all.length - toImport.length;
+    if (skippedClosed) toast(`${skippedClosed} row${skippedClosed > 1 ? 's are' : ' is'} in a closed month and won't be imported. Reopen the month in Settings to add ${skippedClosed > 1 ? 'them' : 'it'}.`, { icon: '🔒', duration: 8000 });
     if (toImport.length === 0) {
       toast('All transactions already imported or marked duplicates', { icon: 'ℹ️' });
       return;
     }
 
-    try {
-      for (const entry of toImport) {
-        await createTransaction(entry.item);
+    // Rows are saved one by one, each with a fixed import id, so a retry after
+    // a failure skips rows that were already saved instead of duplicating them.
+    let saved = 0;
+    for (const entry of toImport) {
+      try {
+        await createTransaction(entry.item, entry.requestId);
+        saved++;
+        setSyncedFeed(feed => feed && feed.map(e => (e === entry ? { ...e, isDuplicate: true } : e)));
+      } catch (err) {
+        toast.error(`Imported ${saved} of ${toImport.length}. Stopped at "${entry.item.notes || entry.item.date}": ${err?.message || 'save failed'}. Fix it and press Import again; saved rows won't be added twice.`, { duration: 9000 });
+        return;
       }
-      toast.success(`Imported ${toImport.length} transactions`);
-      haptic();
-      setSyncedFeed(null);
-      setFeedSource(null);
-      onClose();
-    } catch {
-  toast.error('Failed to import feed transactions');
-}
+    }
+    toast.success(`Imported ${saved} transactions`);
+    haptic();
+    setSyncedFeed(null);
+    setFeedSource(null);
+    onClose();
   };
 
   return (

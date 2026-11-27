@@ -54,7 +54,7 @@ const [, setLoading] = useState(true);
           const unitVal = parseFloat(i.current_value);
           const rawVal = Number.isFinite(unitVal) && unitVal > 0
             ? unitVal
-            : (parseFloat(i.current_price ?? i.buy_price) || 0) * (parseFloat(i.quantity) || 1);
+            : (parseFloat(i.current_price ?? i.buy_price) || 0) * (parseFloat(i.quantity) || 0);
           return s + toBase(rawVal, i.currency);
         }, 0);
         const liquidCash = (accounts || [])

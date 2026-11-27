@@ -1,4 +1,5 @@
 import { todayYMD } from './dates';
+import { saveFile } from './saveFile.js';
 /**
  * Enterprise Audit Logger & Activity Tracker
  * Logs critical mutations, session access, and data exports.
@@ -56,15 +57,8 @@ export function exportAuditLogsCSV() {
     `"${(l.device || '').replace(/"/g, '""')}"`
   ]);
 
-  const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement('a');
-  link.setAttribute('href', encodedUri);
-  link.setAttribute('download', `Security_Audit_Log_${todayYMD()}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  return true;
+  const csvContent = [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+  return saveFile(new Blob([csvContent], { type: 'text/csv;charset=utf-8' }), `Security_Audit_Log_${todayYMD()}.csv`).then(() => true);
 }
 
 function getDeviceSummary() {

@@ -1,0 +1,14 @@
+{
+  "appId": "app.vaultmanager.isuru",
+  "appName": "Vault Manager",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  },
+  "backgroundColor": "#0d1422"
+}

@@ -19,7 +19,8 @@ const FOLDER = 'Vault Manager backups';
 const LAST_KEY = 'vm_drive_last_backup';
 
 export const driveClientId = () => import.meta.env?.VITE_GOOGLE_CLIENT_ID || '';
-export const isDriveBackupAvailable = () => !!driveClientId();
+// Google blocks its sign-in inside app WebViews, so Drive backup is web-only for now.
+export const isDriveBackupAvailable = () => !!driveClientId() && !(typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.());
 export const lastDriveBackup = () => { try { return localStorage.getItem(LAST_KEY); } catch { return null; } };
 
 let gisPromise = null;

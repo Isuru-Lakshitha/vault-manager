@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
 import { X } from 'lucide-react';
+import { useBackLayer } from '../utils/backLayers';
 
 const backdropVariants = {
   hidden: { opacity: 0 },
@@ -59,6 +60,9 @@ const Modal = ({ isOpen, onClose, title, children }) => {
       };
     }
   }, [isOpen]);
+
+  // The phone's Back button closes the modal instead of leaving the page.
+  useBackLayer(isOpen, onClose);
 
   // Close on Escape key
   useEffect(() => {

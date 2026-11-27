@@ -3,10 +3,12 @@ import { reportingTransactions, transactionCurrency } from './reportingCurrency.
 import { parseExchangeRates, currencyRate } from './exchangeRates.js';
 import { calculateLoanPayment } from './loanPayment.js';
 import { advanceBill } from './billSchedule.js';
+import { invoiceTotals } from './invoiceTotals.js';
+import { assertMonthsOpen } from './closedMonths.js';
 import { validateTransaction, mutateBalances as _mutateBalances, transferFee, roundMoney } from './transactionLedger.js';
 import { addMoney, subMoney } from './money.js';
 import { db, auth } from './firebase';
-import { collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, query, where, runTransaction, writeBatch, serverTimestamp, onSnapshot, deleteField } from "firebase/firestore";
+import { collection, doc, getDocs, getDocsFromServer, getDoc, setDoc, addDoc, updateDoc, deleteDoc, query, where, runTransaction, writeBatch, serverTimestamp, onSnapshot, deleteField } from "firebase/firestore";
 import { executeRulesOnTransaction, DEFAULT_RULES } from './rulesEngine';
 import { pendingRecurringRules } from './recurringDue.js';
 export { pendingRecurringRules };
@@ -344,6 +346,8 @@ export const createTransaction = async (data, requestId = null, expectedUid = nu
       const existing = await txn.get(ref);
       if (existing.exists()) { if (existing.data().uid !== uid) throw new Error('Payment belongs to another user'); return; }
     }
+    // After the "already saved" check, so a saved draft is still cleaned up.
+    assertMonthsOpen(uid, payload.date);
     const accounts = await _getAccountsForTxn(txn, new Set(_txAccountIds(payload)));
     if (Object.values(accounts).some(a => a.archived)) throw new Error('Restore the archived account before recording a payment');
     _normalizeTransferAmounts(accounts, payload);
@@ -384,6 +388,7 @@ const changeTransaction = async (id, updates) => {
     const old = snap.data();
     assertEditable(old);
     const next = updates ? { ...old, ...updates, uid, is_transfer_fee: false, parent_transaction_id: null } : null;
+    assertMonthsOpen(uid, old.date, next?.date);
     if (next) {
       if ((old.loan_id || old.goal_id || old.bill_id || old.credit_card_id || old.credit_card_charge_id) && next.type !== old.type) {
         throw new Error('Cannot change the transaction type of a linked loan, goal, bill, or card entry');
@@ -541,6 +546,7 @@ const changeTransaction = async (id, updates) => {
               const update = { ...target.before };
               for (const key of target.absent || []) update[key] = deleteField();
               if (targetRef.path.startsWith('recurring_transactions/')) update.reversal_sequence = (current.data().reversal_sequence || 0) + 1;
+              if (targetRef.path.startsWith('credit_cards/') && Object.hasOwn(update, 'balance')) Object.assign(update, cardLedger(id, 'delete'));
               txn.update(targetRef, update);
             } else if (targetRef.path.startsWith('loans/')) {
               throw new Error('A later payment or change affects this loan. Delete or reverse newer loan payments first.');
@@ -550,7 +556,7 @@ const changeTransaction = async (id, updates) => {
               txn.update(targetRef, { current_amount: newCur, is_achieved: newCur >= (current.data().target_amount || 0) });
             } else if (targetRef.path.startsWith('credit_cards/')) {
               const delta = isCardCharge ? -(Number(old.amount) || 0) : (Number(old.amount) || 0);
-              txn.update(targetRef, { balance: Math.max(0, roundMoney((current.data().balance || 0) + delta)) });
+              txn.update(targetRef, { balance: Math.max(0, roundMoney((current.data().balance || 0) + delta)), ...cardLedger(id, 'delete') });
             } else if (targetRef.path.startsWith('recurring_transactions/')) {
               const data = current.data();
               const nextHist = (data.payment_history || []).filter(h => String(h.transaction_id) !== String(id));
@@ -581,7 +587,7 @@ const changeTransaction = async (id, updates) => {
         if (targetCardSnap?.exists() && targetCardSnap.data().uid === uid) {
           const delta = isCardCharge ? -(Number(old.amount) || 0) : (Number(old.amount) || 0);
           const newBal = Math.max(0, roundMoney((targetCardSnap.data().balance || 0) + delta));
-          txn.update(targetCardRef, { balance: newBal });
+          txn.update(targetCardRef, { balance: newBal, ...cardLedger(id, 'delete') });
         }
         if (targetBillSnap?.exists()) {
           txn.update(targetBillRef, { paid: false });
@@ -620,7 +626,7 @@ const changeTransaction = async (id, updates) => {
           ? roundMoney(Number(next.amount) - Number(old.amount))
           : roundMoney(Number(old.amount) - Number(next.amount));
         const newBal = Math.max(0, roundMoney((targetCardSnap.data().balance || 0) + delta));
-        txn.update(targetCardRef, { balance: newBal });
+        txn.update(targetCardRef, { balance: newBal, ...cardLedger(id, 'update') });
       }
       if (targetRuleSnap?.exists() && targetRuleSnap.data().uid === uid) {
         const data = targetRuleSnap.data();
@@ -648,6 +654,10 @@ const changeTransaction = async (id, updates) => {
   if (original.bill_id || updates?.bill_id) invalidateCache('bills');
   if (original.recurring_rule_id || updates?.recurring_rule_id) invalidateCache('recurring');
   refreshLedger();
+  // The receipt image this transaction pointed to may now be unused.
+  if (!updates || (Object.hasOwn(updates, 'receipt_url') && updates.receipt_url !== original.receipt_url)) {
+    releaseReceipt(original.receipt_url).catch(() => {});
+  }
   return { success: true };
 };
 export const deleteTransaction = id => changeTransaction(id, null);
@@ -692,6 +702,10 @@ export const updateRecurringTransaction = async (id, data) => {
 // Pay a single recurring rule for the current (or chosen) month — strictly manual, supports variable amounts, account choice & Gold Loan payments
 // Capture affected fields inside the same commit as the payment. Existing payments
 // without these snapshots remain protected from unsafe guessed reversals.
+// Card balance changes name the transaction that explains them; firestore.rules
+// checks the change matches it (see validCardBalanceChange).
+const cardLedger = (txId, op) => ({ last_ledger_ref: String(txId), last_ledger_op: op });
+
 const auditedPayment = async (database, callback) => runTransaction(database, async transaction => {
   const snapshots = new Map(), writes = [], targets = [];
   let primaryTxId = null;
@@ -707,7 +721,8 @@ const auditedPayment = async (database, callback) => runTransaction(database, as
         ...changes,
         ...(ref.path.startsWith('accounts/')
           ? (Object.hasOwn(changes, 'balance') && primaryTxId ? { last_ledger_ref: String(primaryTxId), last_ledger_op: 'create' } : {})
-          : { has_payment_history: true })
+          : { has_payment_history: true,
+              ...(ref.path.startsWith('credit_cards/') && Object.hasOwn(changes, 'balance') && primaryTxId ? cardLedger(primaryTxId, 'create') : {}) })
       }));
     },
     set: (ref, data) => {
@@ -730,6 +745,7 @@ export const reversePayment = async (id, reason) => {
     if (!snap.exists() || snap.data().uid !== uid) throw new Error('Payment not found');
     const payment = snap.data();
     if (existing.exists() || payment.reversed_at) throw new Error('Payment already reversed');
+    assertMonthsOpen(uid, payment.date);
     if (!payment.reversal_context?.length || payment.reversal_of) throw new Error('This older payment has no safe reversal snapshot');
     const changes = [];
     for (const target of payment.reversal_context) {
@@ -745,6 +761,7 @@ export const reversePayment = async (id, reason) => {
         update = { ...target.before };
         for (const key of target.absent) update[key] = deleteField();
         if (parts[0] === 'recurring_transactions') update.reversal_sequence = (current.data().reversal_sequence || 0) + 1;
+        if (parts[0] === 'credit_cards' && Object.hasOwn(update, 'balance')) Object.assign(update, cardLedger(id, 'reverse_payment'));
       }
       changes.push([targetRef, update]);
     }
@@ -769,6 +786,7 @@ export const payRecurringRule = async (rule, paymentData = {}) => {
   const uid = await getUserId();
   if (!uid) throw new Error('Sign in to continue');
   const date = paymentData.date || todayYMD();
+  assertMonthsOpen(uid, date);
   const month = date.slice(0, 7);
   const ruleRef = doc(db, 'recurring_transactions', String(rule.id));
 
@@ -1032,6 +1050,7 @@ export const payLoan = async (loanId, { amount, date, account_id }) => {
   const payAmt = Number(amount);
   const cleanAccId = account_id != null && account_id !== '' && account_id !== 'mark-only' ? String(account_id) : null;
   validateTransaction({ type: 'Loan Payment', amount: payAmt, date, from_account_id: cleanAccId || 'mark-only' });
+  assertMonthsOpen(uid, date);
   const loanRef = doc(db, 'loans', String(loanId));
   let linkedRules = [];
   try {
@@ -1146,8 +1165,8 @@ export const deleteBudget = async (id) => {
 export const fetchGoals = () => cachedFetch('goals', () => fetchCollection('goals'));
 export const createGoal = async (data) => {
   const uid = await getUserId();
-  const current_amount = parseFloat((Number(data.current_amount) || 0).toFixed(2));
-  const target_amount = parseFloat((Number(data.target_amount) || 0).toFixed(2));
+  const current_amount = roundMoney(Number(data.current_amount) || 0);
+  const target_amount = roundMoney(Number(data.target_amount) || 0);
   const goalPayload = {
     ...data, currency: data.currency || getCurrency(),
     current_amount,
@@ -1172,10 +1191,10 @@ export const createGoal = async (data) => {
 export const updateGoal = async (id, data) => {
   const updatedData = { ...data };
   if (data.target_amount !== undefined) {
-    updatedData.target_amount = parseFloat((Number(data.target_amount) || 0).toFixed(2));
+    updatedData.target_amount = roundMoney(Number(data.target_amount) || 0);
   }
   if (data.current_amount !== undefined) {
-    updatedData.current_amount = parseFloat((Number(data.current_amount) || 0).toFixed(2));
+    updatedData.current_amount = roundMoney(Number(data.current_amount) || 0);
   }
   if (updatedData.target_amount !== undefined && updatedData.current_amount !== undefined) {
     updatedData.is_achieved = updatedData.current_amount >= updatedData.target_amount;
@@ -1189,7 +1208,7 @@ export const updateGoal = async (id, data) => {
 export const deleteGoal = id => deleteLinkedRecord('goals', id, 'goal_id');
 
 export const contributeGoal = async (goalId, { amount, account_id, note, round_up_ids }) => {
-  const numAmount = parseFloat((Number(amount) || 0).toFixed(2));
+  const numAmount = roundMoney(Number(amount) || 0);
   if (numAmount <= 0) throw new Error('Invalid contribution amount');
   const goalRef = doc(db, 'goals', String(goalId));
   const uid = await getUserId();
@@ -1208,13 +1227,13 @@ export const contributeGoal = async (goalId, { amount, account_id, note, round_u
       requireMatchingCurrency(goal, accSnap.data());
       if (accSnap.exists()) {
         const curBal = Number(accSnap.data().balance) || 0;
-        const newBal = parseFloat((curBal - numAmount).toFixed(2));
+        const newBal = subMoney(curBal, numAmount);
         txn.update(accRef, { balance: newBal });
       }
     }
 
     // Add to goal's current amount
-    const newAmount = parseFloat(((goal.current_amount || 0) + numAmount).toFixed(2));
+    const newAmount = addMoney(Number(goal.current_amount) || 0, numAmount);
     const targetAmt = goal.target_amount || 0;
     const isAchieved = targetAmt > 0 && newAmount >= targetAmt;
     txn.update(goalRef, { current_amount: newAmount, is_achieved: isAchieved });
@@ -1242,7 +1261,7 @@ export const contributeGoal = async (goalId, { amount, account_id, note, round_u
 };
 
 export const withdrawGoal = async (goalId, { amount, account_id, reason }) => {
-  const numAmount = parseFloat((Number(amount) || 0).toFixed(2));
+  const numAmount = roundMoney(Number(amount) || 0);
   if (numAmount <= 0) throw new Error('Invalid withdrawal amount');
   const goalRef = doc(db, 'goals', String(goalId));
   const uid = await getUserId();
@@ -1252,7 +1271,7 @@ export const withdrawGoal = async (goalId, { amount, account_id, reason }) => {
     const goal = goalSnap.data();
     if (goal.uid !== uid) throw new Error('Goal not found');
 
-    const currentBal = goal.current_amount || 0;
+    const currentBal = roundMoney(Number(goal.current_amount) || 0);
     const withdrawAmt = Math.min(numAmount, currentBal);
     if (withdrawAmt <= 0) throw new Error('Insufficient goal funds to withdraw');
 
@@ -1265,12 +1284,12 @@ export const withdrawGoal = async (goalId, { amount, account_id, reason }) => {
       requireMatchingCurrency(goal, accSnap.data());
       if (accSnap.exists()) {
         const curBal = Number(accSnap.data().balance) || 0;
-        const newBal = parseFloat((curBal + withdrawAmt).toFixed(2));
+        const newBal = addMoney(curBal, withdrawAmt);
         txn.update(accRef, { balance: newBal });
       }
     }
 
-    const newAmount = Math.max(0, parseFloat((currentBal - withdrawAmt).toFixed(2)));
+    const newAmount = Math.max(0, subMoney(currentBal, withdrawAmt));
     const targetAmt = goal.target_amount || 0;
     const isAchieved = targetAmt > 0 && newAmount >= targetAmt;
     txn.update(goalRef, { current_amount: newAmount, is_achieved: isAchieved });
@@ -1618,6 +1637,7 @@ export const payBill = async (bill, payment) => {
   const date = payment.date || todayYMD();
   const cleanAccId = payment.account_id != null && payment.account_id !== '' ? String(payment.account_id) : null;
   validateTransaction({ type: 'Expense', amount, date, from_account_id: cleanAccId || 'mark-only' });
+  assertMonthsOpen(uid, date);
   const ref = doc(db, 'users', uid, 'bills', String(bill.id));
   await auditedPayment(db, async txn => {
     const snap = await txn.get(ref);
@@ -1641,6 +1661,34 @@ export const payBill = async (bill, payment) => {
   });
   invalidateCache('bills', 'accounts', 'transactions', 'analytics');
   refreshLedger();
+};
+
+// Mark bills paid without an account deduction, all together or not at all.
+// Each bill is re-read so a cycle that changed meanwhile (paid elsewhere,
+// edited) is refused instead of overwritten with stale data.
+export const markBillsPaid = async (bills, { date = todayYMD() } = {}) => {
+  const uid = await getUserId();
+  if (!uid) throw new Error('Sign in to continue');
+  if (!Array.isArray(bills) || bills.length === 0) return 0;
+  if (bills.length > 400) throw new Error('Too many bills at once. Mark them in smaller groups.');
+  await runTransaction(db, async txn => {
+    const refs = bills.map(b => doc(db, 'users', uid, 'bills', String(b.id)));
+    const snaps = await Promise.all(refs.map(ref => txn.get(ref)));
+    snaps.forEach((snap, i) => {
+      if (!snap.exists()) throw new Error('A bill was deleted. Refresh and try again.');
+      const current = snap.data();
+      if (current.paid || current.due_date !== bills[i].due_date) {
+        throw new Error(`"${current.name || 'A bill'}" changed since you opened this page. Refresh and try again.`);
+      }
+    });
+    snaps.forEach((snap, i) => {
+      const current = snap.data();
+      const amount = roundMoney(Number(current.amount) || 0);
+      txn.update(refs[i], { ...advanceBill(current), last_paid_date: date, last_paid_amount: amount });
+    });
+  });
+  invalidateCache('bills');
+  return bills.length;
 };
 
 // ─── INVESTMENTS ─────────────────────────────────────────────────
@@ -1783,32 +1831,36 @@ export const updateCreditCard = async (id, data) => {
 
 export const deleteCreditCard = id => deleteLinkedRecord('credit_cards', id, ['credit_card_id', 'credit_card_charge_id']);
 
-// Record a credit card charge: atomically increases card balance and optionally records a category expense in transactions
+// Record a credit card charge: atomically increases the card balance and records the charge
 export const recordCardCharge = async (card, { amount, date, category, notes, logTransaction = true } = {}) => {
   const uid = await getUserId();
   if (!uid) throw new Error('Sign in to continue');
   const chargeAmt = roundMoney(Number(amount));
   if (!Number.isFinite(chargeAmt) || chargeAmt <= 0) throw new Error('Enter a valid charge amount');
   const chargeDate = date || todayYMD();
+  assertMonthsOpen(uid, chargeDate);
   const cardRef = doc(db, 'credit_cards', String(card.id));
   await runTransaction(db, async txn => {
     const snap = await txn.get(cardRef);
     if (!snap.exists() || snap.data().uid !== uid) throw new Error('Credit card not found');
-    txn.update(cardRef, { balance: roundMoney((Number(snap.data().balance) || 0) + chargeAmt) });
-    if (logTransaction) {
-      txn.set(doc(collection(db, 'transactions')), {
-        uid,
-        type: 'Expense',
-        amount: chargeAmt,
-        currency: snap.data().currency || card.currency || getCurrency(),
-        date: chargeDate,
-        category: category || 'Shopping',
-        notes: `${notes ? `${notes} · ` : ''}[Card: ${snap.data().name || card.name}]`,
-        from_account_id: null,
-        to_account_id: null,
-        credit_card_charge_id: String(card.id),
-      });
-    }
+    const txRef = doc(collection(db, 'transactions'));
+    txn.update(cardRef, { balance: roundMoney((Number(snap.data().balance) || 0) + chargeAmt), ...cardLedger(txRef.id, 'create') });
+    // Always record the charge so the balance change has a ledger entry. When
+    // the user chose not to log it as spending, it's an internal move: kept
+    // in history but left out of income/spending reports.
+    txn.set(txRef, {
+      uid,
+      type: 'Expense',
+      amount: chargeAmt,
+      currency: snap.data().currency || card.currency || getCurrency(),
+      date: chargeDate,
+      category: logTransaction ? (category || 'Shopping') : 'Card balance adjustment',
+      notes: `${notes ? `${notes} · ` : ''}[Card: ${snap.data().name || card.name}]`,
+      from_account_id: null,
+      to_account_id: null,
+      credit_card_charge_id: String(card.id),
+      ...(logTransaction ? {} : { internal_move: true }),
+    });
   });
   invalidateCache('credit_cards', 'transactions', 'analytics');
   refreshLedger();
@@ -1958,11 +2010,19 @@ export const resolveReceipt = async (value) => {
   return data;
 };
 
-export const deleteReceipt = async (value) => {
-  if (!value || !value.startsWith('receipt:')) return;
+// Delete a stored receipt image once no transaction points to it any more.
+// The same photo can back several transactions (images are de-duplicated),
+// so it's counted on the server first; offline, nothing is deleted.
+export const releaseReceipt = async (value) => {
+  if (typeof value !== 'string' || !value.startsWith('receipt:')) return false;
   const id = value.slice(8);
-  delete _receiptCache[id];
-  try { await deleteDoc(doc(db, 'receipts', id)); } catch {}
+  const uid = await getUserId();
+  if (!uid || !id.startsWith(`${uid}_`)) return false;
+  const users = await getDocsFromServer(query(collection(db, 'transactions'), where('uid', '==', uid), where('receipt_url', '==', value)));
+  if (!users.empty) return false;
+  await deleteDoc(doc(db, 'receipts', id));
+  delete _receiptCache[`${uid}:${id}`];
+  return true;
 };
 
 // ─── BATCH TRANSACTION UPDATE ──────────────────────────────────────
@@ -2255,16 +2315,9 @@ export const settleInvoice = async (id, accountId) => {
     if (!account.exists() || account.data().uid !== uid) throw new Error('Account not found');
     if (account.data().archived) throw new Error('Choose an active account');
     requireMatchingCurrency(inv, account.data());
-    if (!Array.isArray(inv.items) || !inv.items.length) throw new Error('Invoice needs line items');
-    let subtotal = 0;
-    for (const item of inv.items) {
-      const quantity = Number(item.quantity), price = Number(item.unitPrice);
-      if (!Number.isFinite(quantity) || quantity <= 0 || !Number.isFinite(price) || price < 0) throw new Error('Invalid invoice line item');
-      subtotal += roundMoney(quantity * price);
-    }
-    const tax = Number(inv.taxRate || 0);
-    if (!Number.isFinite(tax) || tax < 0 || tax > 100) throw new Error('Invalid invoice tax rate');
-    const amount = roundMoney(subtotal * (1 + tax / 100));
+    const totals = invoiceTotals(inv);
+    if (!totals.valid) throw new Error(totals.error);
+    const amount = totals.total;
     if (!Number.isFinite(amount) || amount <= 0 || amount > 1e12) throw new Error('Invalid invoice total');
     const date = todayYMD(), now = new Date().toISOString();
     txn.update(accountRef, { balance: addMoney(account.data().balance, amount), last_ledger_ref: String(paymentRef.id), last_ledger_op: 'create' });

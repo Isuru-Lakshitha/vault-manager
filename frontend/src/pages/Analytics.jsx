@@ -4,7 +4,7 @@ import ToolMenu from '../components/ToolMenu';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useLiveData from '../utils/useLiveData';
-import { fetchAnalytics, fetchBills, fetchRecurringTransactions, fetchBudgets, fetchAccounts, fetchLoans, getCache, fetchExchangeRates } from '../utils/api';
+import { fetchAnalytics, fetchBills, fetchRecurringTransactions, fetchBudgets, fetchAccounts, fetchLoans, fetchCreditCards, fetchInvestments, getCache, fetchExchangeRates } from '../utils/api';
 import PageWrapper from '../components/PageWrapper';
 import SkeletonLoader from '../components/SkeletonLoader';
 import AnimatedCounter from '../components/AnimatedCounter';
@@ -25,6 +25,7 @@ import CategoriesTab from './analytics/CategoriesTab';
 import TrendsTab from './analytics/TrendsTab';
 import CashflowTab from './analytics/CashflowTab';
 import { isInternalMove } from '../utils/ledgerReporting.js';
+import { saveFile, saveWorkbook } from '../utils/saveFile';
 
 const COLORS = ['#4ade80','#818cf8','#a78bfa','#f472b6','#fb923c','#fbbf24','#38bdf8','#14b8a6','#e879f9','#f87171'];
 
@@ -93,6 +94,8 @@ const parseLocalYMD = (str) => {
   const d = new Date(str);
   return Number.isNaN(d.getTime()) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
 };
+
+const cachedFxRates = () => { try { return JSON.parse(localStorage.getItem('vm_fx_rates') || 'null'); } catch { return null; } };
 
 const toBaseAmt = (amt, cur, baseCurrency, rates) => {
   const v = Number(amt) || 0;
@@ -278,8 +281,10 @@ const Analytics = () => {
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(monthRows), 'Monthly Summary');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(catRows), 'Categories');
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(loanRows), 'Loans');
-    XLSX.writeFile(wb, `VaultManager_Report_${todayYMD()}.xlsx`);
-    toast.success('Excel exported!');
+    try {
+      await saveWorkbook(XLSX, wb, `VaultManager_Report_${todayYMD()}.xlsx`);
+      toast.success('Excel exported!');
+    } catch (err) { toast.error(err?.message || 'Export failed'); }
   };
 
   const handlePDFExport = async () => {
@@ -308,7 +313,8 @@ const Analytics = () => {
         userEmail: localStorage.getItem('vm_user_email') || 'Personal Portfolio',
         accounts: accs || [],
         transactions: data.allTransactions || [],
-        budgets: budgets || []
+        budgets: budgets || [],
+        rates: await fetchExchangeRates().catch(cachedFxRates),
       });
       toast.success('Monthly statement downloaded!');
     } catch(err) { console.error(err); toast.error('Statement generation failed'); }
@@ -322,11 +328,14 @@ const Analytics = () => {
     try {
       setDossierLoading(true);
       const { generateExecutiveFinancialDossierPDF } = await import('../utils/pdfReport');
-      const [accs, lns] = await Promise.all([fetchAccounts(), fetchLoans()]);
+      const [accs, lns, cards, invs] = await Promise.all([fetchAccounts(), fetchLoans(), fetchCreditCards(), fetchInvestments()]);
       await generateExecutiveFinancialDossierPDF({
         analytics: data,
         accounts: accs || [],
         loans: lns || [],
+        creditCards: cards || [],
+        investments: invs || [],
+        rates: await fetchExchangeRates().catch(cachedFxRates),
         transactions: data.allTransactions || [],
         periodLabel: selectedMonth ? `Month of ${selectedMonth}` : 'Annual Fiscal Review',
         userName: localStorage.getItem('vm_user_name') || 'Executive Account Holder'
@@ -901,13 +910,9 @@ const Analytics = () => {
                   ]);
                   const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
                   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = `Tax_Audit_Pack_${targetYear}.csv`;
-                  a.click();
-                  URL.revokeObjectURL(url);
-                  toast.success(`Tax Audit CSV exported for ${targetYear}!`);
+                  saveFile(blob, `Tax_Audit_Pack_${targetYear}.csv`)
+                    .then(() => toast.success(`Tax Audit CSV exported for ${targetYear}!`))
+                    .catch(err => toast.error(err?.message || 'Export failed'));
                 };
 
                 return (

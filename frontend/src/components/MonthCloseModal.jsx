@@ -73,12 +73,14 @@ export default function MonthCloseModal({ isOpen, onClose, month, accounts = [],
     setBusy(true);
     const record = {
       closed_at: new Date().toISOString(),
+      // Prefs are merged field by field: clear an earlier skip or reopen.
+      skipped: false, reopened_at: null,
       income: report.income, expense: report.expense, net: report.net,
       currency: base, over_budget: report.overBudget.length,
     };
     try {
       const uid = await getUserId();
-      rememberClosedMonth(month, record);
+      rememberClosedMonth(uid, month, record);
       if (uid) await saveUserPrefs(uid, { closed_months: { [month]: record } });
       haptic(); toast.success(`${monthLabel(month)} closed`);
       onClosed?.(month, record);

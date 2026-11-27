@@ -2,10 +2,12 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CalendarCheck } from 'lucide-react';
 import { fetchUserPrefs, getUserId, saveUserPrefs } from '../utils/api';
+import { auth } from '../utils/firebaseApp';
 import { previousMonth, monthLabel, shouldOfferClose } from '../utils/monthClose';
 import { localClosedMonths, mergeClosedMonths, rememberClosedMonth } from '../utils/closedMonths';
 import { spring } from '../motion/presets';
 import { useT, useLang } from '../i18n';
+import { optimisticUid } from '../utils/lastSession';
 
 const MonthCloseModal = lazy(() => import('./MonthCloseModal'));
 
@@ -18,15 +20,15 @@ export default function MonthClosePrompt({ accounts, transactions, budgets }) {
   const month = previousMonth();
   const t = useT();
   const lang = useLang();
-  const [closed, setClosed] = useState(localClosedMonths);
+  const [closed, setClosed] = useState(() => localClosedMonths(auth.currentUser?.uid || optimisticUid()));
   const [open, setOpen] = useState(false);
   const [target, setTarget] = useState(month);
 
   useEffect(() => {
     let alive = true;
     getUserId()
-      .then((uid) => (uid ? fetchUserPrefs(uid) : null))
-      .then((prefs) => { if (alive) setClosed(mergeClosedMonths(prefs?.closed_months)); })
+      .then(async (uid) => (uid ? { uid, prefs: await fetchUserPrefs(uid) } : null))
+      .then((res) => { if (alive && res) setClosed(mergeClosedMonths(res.uid, res.prefs?.closed_months)); })
       .catch(() => {});
     const openIt = (e) => { setTarget(e?.detail?.month || month); setOpen(true); };
     window.addEventListener('vm:open-month-close', openIt);
@@ -37,10 +39,9 @@ export default function MonthClosePrompt({ accounts, transactions, budgets }) {
 
   const skip = async () => {
     const record = { skipped: true, closed_at: new Date().toISOString() };
-    rememberClosedMonth(month, record);
     setClosed((c) => ({ ...c, [month]: record }));
     const uid = await getUserId().catch(() => null);
-    if (uid) saveUserPrefs(uid, { closed_months: { [month]: record } });
+    if (uid) { rememberClosedMonth(uid, month, record); saveUserPrefs(uid, { closed_months: { [month]: record } }); }
   };
 
   return (

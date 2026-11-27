@@ -1,11 +1,17 @@
-import { formatCurrency } from './format';
+import { formatCurrency, getCurrency } from './format';
+import { computeBalanceSheet, baseConverter } from './balanceSheet.js';
+import { addMoney, subMoney } from './money.js';
+import { invoiceTotals, lineAmount } from './invoiceTotals.js';
 import { toYMD, todayYMD } from './dates';
 import { isInternalMove } from './ledgerReporting.js';
 import { toCSV } from './csv.js';
+import { saveFile, savePdf } from './saveFile.js';
 
 // Escape text before it goes into the report's HTML: notes, names and
 // categories can come from imported bank files, so they must never be read
 // as markup (an <img onerror=...> in a note would otherwise run).
+// A malformed code would make Intl.NumberFormat throw and fail the whole PDF.
+const safeCurrency = (c) => (/^[A-Z]{3}$/.test(String(c || '')) ? c : undefined);
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 /**
@@ -104,7 +110,7 @@ export const generatePDFReport = async (data) => {
   const pageWidth = pdf.internal.pageSize.getWidth();
   const imgH = (canvas.height * pageWidth) / canvas.width;
   pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgH);
-  pdf.save(`VaultManager_Report_${toYMD(now)}.pdf`);
+  await savePdf(pdf, `VaultManager_Report_${toYMD(now)}.pdf`);
 };
 
 /**
@@ -115,7 +121,8 @@ export const generateMonthlyStatement = async ({
   userEmail = 'Account Holder',
   accounts = [],
   transactions = [],
-  budgets: _budgets = []
+  budgets: _budgets = [],
+  rates = null
 }) => {
   const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
     import('jspdf'),
@@ -133,9 +140,13 @@ export const generateMonthlyStatement = async ({
   const incomeTxs = monthTxs.filter(t => !isInternalMove(t) && t.type === 'Income');
   const expenseTxs = monthTxs.filter(t => !isInternalMove(t) && (t.type === 'Expense' || t.type === 'Loan Payment'));
 
-  const totalIncome = Math.round(incomeTxs.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0) * 100) / 100;
-  const totalExpense = Math.round(expenseTxs.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0) * 100) / 100;
-  const netSavings = Math.round((totalIncome - totalExpense) * 100) / 100;
+  // Analytics transactions normally arrive already converted to the base
+  // currency; convert anyway so a raw list can never add currencies together.
+  const { toBase, missing: missingRates } = baseConverter(getCurrency(), rates);
+  const txBase = (t, amount = t.amount) => toBase(parseFloat(amount) || 0, t.currency);
+  const totalIncome = addMoney(...incomeTxs.map(t => txBase(t)));
+  const totalExpense = addMoney(...expenseTxs.map(t => txBase(t)));
+  const netSavings = subMoney(totalIncome, totalExpense);
   const savingsRate = totalIncome > 0 ? Math.round((netSavings / totalIncome) * 100) : 0;
 
   // Category breakdown (supports split transactions)
@@ -147,11 +158,11 @@ export const generateMonthlyStatement = async ({
     if (validSplits.length > 0) {
       validSplits.forEach(sp => {
         const c = sp.category || t.category || 'Other';
-        catMap[c] = (catMap[c] || 0) + (parseFloat(sp.amount) || 0);
+        catMap[c] = addMoney(catMap[c] || 0, txBase(t, sp.amount));
       });
     } else {
       const c = t.category || 'Other';
-      catMap[c] = (catMap[c] || 0) + (parseFloat(t.amount) || 0);
+      catMap[c] = addMoney(catMap[c] || 0, txBase(t));
     }
   });
   const catList = Object.entries(catMap)
@@ -159,7 +170,7 @@ export const generateMonthlyStatement = async ({
     .sort((a, b) => b.amount - a.amount);
 
   // Top 5 largest expenses
-  const topExpenses = [...expenseTxs].sort((a, b) => b.amount - a.amount).slice(0, 5);
+  const topExpenses = [...expenseTxs].sort((a, b) => txBase(b) - txBase(a)).slice(0, 5);
 
   const el = document.createElement('div');
   el.style.cssText = `
@@ -203,6 +214,7 @@ export const generateMonthlyStatement = async ({
         <div style="font-size: 18px; font-weight: 800; color: #6366f1;">${savingsRate}%</div>
       </div>
     </div>
+    ${missingRates.size ? `<div style="font-size: 11px; color: #b45309; margin: -12px 0 16px;">Not included in totals: transactions in ${esc([...missingRates].join(', '))} (no exchange rate available).</div>` : ''}
 
     <!-- Category Breakdown Table -->
     <h2 style="font-size: 14px; color: #1e1e32; margin: 0 0 12px; font-family: 'Outfit', sans-serif; text-transform: uppercase; letter-spacing: 0.5px;">Expenditure by Category</h2>
@@ -242,7 +254,7 @@ export const generateMonthlyStatement = async ({
             <td style="padding: 7px 10px; color: #64748b;">${esc(t.date)}</td>
             <td style="padding: 7px 10px; font-weight: 600; color: #1e293b;">${esc(t.notes || 'Expense')}</td>
             <td style="padding: 7px 10px; color: #64748b;">${esc(t.category || '-')}</td>
-            <td style="padding: 7px 10px; text-align:right; color: #f43f5e; font-weight: 700;">${fmt(t.amount)}</td>
+            <td style="padding: 7px 10px; text-align:right; color: #f43f5e; font-weight: 700;">${formatCurrency(t.amount, { ignoreStealth: true, decimals: 0, currency: safeCurrency(t.currency) })}</td>
           </tr>
         `).join('') : `<tr><td colspan="4" style="padding: 10px; text-align:center; color:#94a3b8;">No transactions found.</td></tr>`}
       </tbody>
@@ -254,7 +266,7 @@ export const generateMonthlyStatement = async ({
       ${accounts.slice(0, 6).map(a => `
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px;">
           <div style="font-size: 11px; color: #64748b; font-weight: 500;">${esc(a.name)} (${esc(a.type || 'Account')})</div>
-          <div style="font-size: 14px; font-weight: 700; color: #1e293b; margin-top: 2px;">${fmt(a.balance)}</div>
+          <div style="font-size: 14px; font-weight: 700; color: #1e293b; margin-top: 2px;">${formatCurrency(a.balance, { ignoreStealth: true, decimals: 0, currency: safeCurrency(a.currency) })}</div>
         </div>
       `).join('')}
     </div>
@@ -275,7 +287,7 @@ export const generateMonthlyStatement = async ({
   const pageWidth = pdf.internal.pageSize.getWidth();
   const imgH = (canvas.height * pageWidth) / canvas.width;
   pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgH);
-  pdf.save(`VaultManager_Statement_${month}.pdf`);
+  await savePdf(pdf, `VaultManager_Statement_${month}.pdf`);
 };
 
 
@@ -395,7 +407,7 @@ export const generatePaymentVoucherPDF = async (tx, accountName) => {
   const pageHeight = pdf.internal.pageSize.getHeight();
   const imgH = (canvas.height * pageWidth) / canvas.width;
   pdf.addImage(imgData, 'PNG', 0, 5, pageWidth, Math.min(imgH, pageHeight - 10));
-  pdf.save(`Payment_Voucher_${refCode}.pdf`);
+  await savePdf(pdf, `Payment_Voucher_${refCode}.pdf`);
 };
 
 /**
@@ -538,13 +550,13 @@ export const generateTaxSchedulePDF = async ({ taxYear, transactions = [], taxBr
   const pageHeight = pdf.internal.pageSize.getHeight();
   const imgH = (canvas.height * pageWidth) / canvas.width;
   pdf.addImage(imgData, 'PNG', 0, 5, pageWidth, Math.min(imgH, pageHeight - 10));
-  pdf.save(`Tax_Deduction_Schedule_${taxYear}.pdf`);
+  await savePdf(pdf, `Tax_Deduction_Schedule_${taxYear}.pdf`);
 };
 
 /**
  * Exports Tax Deductions as CSV for accountants
  */
-export const exportTaxDeductionsCSV = ({ taxYear, transactions = [] }) => {
+export const exportTaxDeductionsCSV = async ({ taxYear, transactions = [] }) => {
   const headers = ['Date', 'Description', 'Category', 'Tax Category', 'Amount', 'Tax Deductible', 'Tags'];
   // toCSV quotes every value and neutralises =/+/-/@ so a note can't run as
   // a spreadsheet formula when the accountant opens the file.
@@ -560,13 +572,7 @@ export const exportTaxDeductionsCSV = ({ taxYear, transactions = [] }) => {
 
   const csvContent = toCSV([headers, ...rows]);
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', `Tax_Deductions_${taxYear}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  return saveFile(blob, `Tax_Deductions_${taxYear}.csv`);
 };
 
 /**
@@ -586,10 +592,10 @@ export const generateInvoicePDF = async (inv) => {
     top: -9999px; left: -9999px; z-index: -1; line-height: 1.5;
   `;
 
-  const subtotal = (inv.items || []).reduce((sum, item) => sum + (parseFloat(item.quantity || 1) * parseFloat(item.unitPrice || 0)), 0);
-  const taxRate = parseFloat(inv.taxRate || 0);
-  const taxAmount = subtotal * (taxRate / 100);
-  const grandTotal = subtotal + taxAmount;
+  const totals = invoiceTotals(inv);
+  // Never send a client a total that can't be settled for that same amount.
+  if (!totals.valid) throw new Error(`${totals.error}. Every line needs a quantity above 0.`);
+  const { subtotal, taxRate, taxAmount, total: grandTotal } = totals;
 
   el.innerHTML = `
     <!-- Top Header & Branding -->
@@ -646,9 +652,9 @@ export const generateInvoicePDF = async (inv) => {
         ${(inv.items || []).map((it, idx) => `
           <tr style="border-bottom: 1px solid #f1f5f9; background: ${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
             <td style="padding: 10px 12px; font-weight: 500; color: #1e293b;">${esc(it.description || 'Service')}</td>
-            <td style="padding: 10px 12px; text-align: center; color: #64748b;">${esc(it.quantity || 1)}</td>
+            <td style="padding: 10px 12px; text-align: center; color: #64748b;">${esc(it.quantity)}</td>
             <td style="padding: 10px 12px; text-align: right; color: #64748b;">${fmt(it.unitPrice || 0)}</td>
-            <td style="padding: 10px 12px; text-align: right; font-weight: 600; color: #0f172a;">${fmt((parseFloat(it.quantity) || 1) * (parseFloat(it.unitPrice) || 0))}</td>
+            <td style="padding: 10px 12px; text-align: right; font-weight: 600; color: #0f172a;">${fmt(lineAmount(it))}</td>
           </tr>
         `).join('')}
       </tbody>
@@ -697,7 +703,7 @@ export const generateInvoicePDF = async (inv) => {
   const pageHeight = pdf.internal.pageSize.getHeight();
   const imgH = (canvas.height * pageWidth) / canvas.width;
   pdf.addImage(imgData, 'PNG', 0, 5, pageWidth, Math.min(imgH, pageHeight - 10));
-  pdf.save(`Invoice_${inv.invoiceNumber || 'INV'}.pdf`);
+  await savePdf(pdf, `Invoice_${inv.invoiceNumber || 'INV'}.pdf`);
 };
 
 /**
@@ -709,6 +715,7 @@ export const generateExecutiveFinancialDossierPDF = async ({
   loans = [],
   creditCards = [],
   investments = [],
+  rates = null,
   transactions: _transactions = [],
   periodLabel = 'Annual Fiscal Review',
   userName = 'Executive Account Holder'
@@ -721,38 +728,9 @@ export const generateExecutiveFinancialDossierPDF = async ({
   const fmt = (v) => formatCurrency(v, { ignoreStealth: true, decimals: 0 });
   const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-  // Calculate Balance Sheet Figures (without double-counting Investment accounts)
-  const DEBT_TYPES = new Set(['Credit Card', 'Loan', 'Mortgage', 'Liability']);
-  const isInvestAcc = (a) => (a.type || '').toLowerCase().includes('invest');
-
-  const liquidAssets = (accounts || [])
-    .filter(a => !DEBT_TYPES.has(a.type) && !isInvestAcc(a))
-    .reduce((s, a) => s + Math.max(0, parseFloat(a.balance) || 0), 0);
-
-  const investmentAccAssets = (accounts || [])
-    .filter(a => isInvestAcc(a))
-    .reduce((s, a) => s + Math.max(0, parseFloat(a.balance) || 0), 0);
-
-  const holdingsAssets = (investments || [])
-    .reduce((s, i) => s + Math.max(0, (parseFloat(i.current_price ?? i.buy_price) || 0) * (parseFloat(i.quantity) || 1)), 0);
-
-  const investmentAssets = investmentAccAssets + holdingsAssets;
-  const totalAssets = liquidAssets + investmentAssets;
-
-  const loanLiabilities = (loans || [])
-    .filter(l => (l.status || 'Active') === 'Active')
-    .reduce((s, l) => s + (parseFloat(l.principal_amount || l.amount) || 0) + (parseFloat(l.current_accrued_interest ?? l.unpaid_interest) || 0), 0);
-
-  const cardAccountLiabilities = (accounts || [])
-    .filter(a => DEBT_TYPES.has(a.type))
-    .reduce((s, a) => s + Math.max(0, Math.abs(parseFloat(a.balance) || 0)), 0);
-
-  const dedicatedCardLiabilities = (creditCards || [])
-    .reduce((s, c) => s + Math.max(0, parseFloat(c.balance ?? c.current_balance) || 0), 0);
-
-  const totalLiabilities = loanLiabilities + cardAccountLiabilities + dedicatedCardLiabilities;
-
-  const netWorth = totalAssets - totalLiabilities;
+  // Balance sheet figures, counted the same way as the Dashboard (see balanceSheet.js).
+  const sheet = computeBalanceSheet({ accounts, investments, loans, creditCards }, getCurrency(), rates);
+  const { liquidAssets, investmentAssets, totalAssets, totalLiabilities, netWorth, missingRateCurrencies } = sheet;
 
   // Calculate P&L Figures
   const income = parseFloat(analytics.totalIncome || 0);
@@ -842,6 +820,7 @@ export const generateExecutiveFinancialDossierPDF = async ({
         </div>
       </div>
     </div>
+    ${missingRateCurrencies.length ? `<div style="font-size: 11px; color: #b45309; margin: -12px 0 20px;">Not included: money in ${esc(missingRateCurrencies.join(', '))} (no exchange rate available).</div>` : ''}
 
     <!-- Section 3: Expenditure Breakdown Table -->
     <h2 style="font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #0f172a; margin: 0 0 10px;">II. Operating Expenditure Breakdown</h2>
@@ -892,5 +871,5 @@ export const generateExecutiveFinancialDossierPDF = async ({
   const pageHeight = pdf.internal.pageSize.getHeight();
   const imgH = (canvas.height * pageWidth) / canvas.width;
   pdf.addImage(imgData, 'PNG', 0, 5, pageWidth, Math.min(imgH, pageHeight - 10));
-  pdf.save(`Executive_Financial_Dossier_${todayYMD()}.pdf`);
+  await savePdf(pdf, `Executive_Financial_Dossier_${todayYMD()}.pdf`);
 };

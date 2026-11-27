@@ -16,7 +16,9 @@ import DebtPayoffPlanner from '../components/DebtPayoffPlanner';
 import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import CurrencyInput from '../components/CurrencyInput';
-import { formatCurrency, getCurrencyLabel, haptic } from '../utils/format';
+import { formatCurrency, getCurrencyLabel, haptic, getCurrency } from '../utils/format';
+import { baseConverter, readCachedRates, missingRateNote } from '../utils/balanceSheet';
+import { addMoney } from '../utils/money';
 import { todayYMD } from '../utils/dates';
 
 const IouTrackerTab = ({ accounts = [], onReload }) => {
@@ -712,8 +714,12 @@ const Loans = () => {
     const accountOptions = [{ value:'', label:'Do not deduct from account' }, ...accounts.map(acc => ({ value:acc.id, label:`${acc.name} (${formatCurrency(acc.balance)})` }))];
   const uniqueLoanNames = [...new Set(loans.map(l => l.item_name).filter(Boolean))];
 
-  const totalOwed = loans.reduce((s, l) => s + l.principal_amount + (l.current_accrued_interest || l.unpaid_interest || 0), 0);
-  const totalInterest = loans.reduce((s, l) => s + (l.current_accrued_interest || l.unpaid_interest || 0), 0);
+  // Loans can be in different currencies: convert before adding them up.
+  const { toBase, missing: missingRates } = baseConverter(getCurrency(), readCachedRates());
+  const loanInterest = (l) => Number(l.current_accrued_interest || l.unpaid_interest || 0);
+  const totalOwed = addMoney(...loans.map(l => toBase(addMoney(Number(l.principal_amount) || 0, loanInterest(l)), l.currency)));
+  const totalInterest = addMoney(...loans.map(l => toBase(loanInterest(l), l.currency)));
+  const ratesNote = missingRateNote(missingRates);
 
   const TABS = [
     { id:'loans', label:'My loans' },
@@ -732,8 +738,8 @@ const Loans = () => {
         {/* Summary strip */}
         {!loading && loans.length > 0 && (
           <StatGrid>
-            <StatCard label="Total owed" value={formatCurrency(totalOwed)} tone="neg" />
-            <StatCard label="Total interest" value={formatCurrency(totalInterest)} tone="warn" />
+            <StatCard label="Total owed" value={formatCurrency(totalOwed)} tone="neg" sub={ratesNote} />
+            <StatCard label="Total interest" value={formatCurrency(totalInterest)} tone="warn" sub={ratesNote} />
             <StatCard label="Active loans" value={loans.filter(l=>l.status==='Active').length} />
           </StatGrid>
         )}

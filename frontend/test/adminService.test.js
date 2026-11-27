@@ -108,17 +108,26 @@ const hooks = registerHooks({
 const admin = await import('../src/utils/adminService.js');
 hooks.deregister();
 
-beforeEach(() => {
+// Admin is an `admin: true` custom claim on the ID token, not an email.
+const tokenUser = (uid, email, claims = {}) => ({ uid, email, getIdTokenResult: async () => ({ claims }) });
+
+beforeEach(async () => {
   storage.clear();
   firestoreDocs.clear();
   dispatchedEvents.length = 0;
-  testAuth.currentUser = { email: 'isuru@moneymanager.app', uid: 'admin_uid' };
+  testAuth.currentUser = tokenUser('admin_uid', 'isuru@moneymanager.app', { admin: true });
+  await admin.loadAdminClaim(testAuth.currentUser);
 });
 
-test('isSuperAdmin correctly identifies owner and denies others', () => {
-  assert.equal(admin.isSuperAdmin({ email: 'isuru@moneymanager.app' }), true);
-  assert.equal(admin.isSuperAdmin({ email: 'ISURU@MONEYMANAGER.APP' }), true);
-  assert.equal(admin.isSuperAdmin({ email: 'other@example.com' }), false);
+test('isSuperAdmin follows the admin claim, never the email address', async () => {
+  assert.equal(admin.isSuperAdmin(testAuth.currentUser), true);
+  const sameEmailNoClaim = tokenUser('new_uid', 'isuru@moneymanager.app');
+  await admin.loadAdminClaim(sameEmailNoClaim);
+  assert.equal(admin.isSuperAdmin(sameEmailNoClaim), false, 'a re-registered admin email must not be admin');
+  const other = tokenUser('other_uid', 'other@example.com', { admin: true });
+  assert.equal(admin.isSuperAdmin(other), false, 'unknown until the claim is loaded');
+  await admin.loadAdminClaim(other);
+  assert.equal(admin.isSuperAdmin(other), true);
   assert.equal(admin.isSuperAdmin(null), false);
 });
 

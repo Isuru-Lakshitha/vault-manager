@@ -120,6 +120,9 @@ export async function deleteAccountAndData({ password, onProgress }) {
     keysToRemove.forEach(k => localStorage.removeItem(k));
   } catch {}
 
+  // A guest copy waiting on this device is part of the user's data too.
+  try { const { clearStash } = await import('./guestAccount.js'); await clearStash(); } catch { /* none */ }
+
   onProgress?.('Deleting authentication account…');
   await deleteUser(user);
   return { deletedRecords: allRefs.length };

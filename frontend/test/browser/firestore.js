@@ -20,6 +20,7 @@ export const query = (base,...filters) => ({...base,filters});
 export const orderBy = () => ({});
 export const limit = () => ({});
 export const getDocs = async ref => ({docs:[...records.keys()].filter(path=>path.startsWith(ref.path+'/') && !path.slice(ref.path.length+1).includes('/')).filter(path=>(ref.filters||[]).every(f=>!f.field || records.get(path)[f.field]===f.value)).map(path=>snap(doc(db,...path.split('/'))))});
+export const getDocsFromServer = async ref => { const r = await getDocs(ref); return { ...r, empty: r.docs.length === 0 }; };
 export const deleteField = () => ({__delete:true});
 export const serverTimestamp = () => new Date().toISOString();
 function update(source,ref,data) {const next={...source.get(ref.path)};for(const [key,value] of Object.entries(data)){if(value?.__delete)delete next[key];else next[key]=structuredClone(value);}source.set(ref.path,next);}

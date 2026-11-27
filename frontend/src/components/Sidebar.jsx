@@ -8,6 +8,8 @@ import { spring } from '../motion/presets';
 import { apiIfLoaded, loadApi } from '../utils/lazyData';
 import { auth } from '../utils/firebaseApp';
 import { signOutAndClear } from '../utils/signOut';
+import { useBackLayer } from '../utils/backLayers';
+import { isGuest, GUEST_SIGN_OUT_WARNING, deleteGuestAndSignOut } from '../utils/guestAccount';
 import { toast } from 'react-hot-toast';
 import { useStealthMode } from '../utils/format';
 import { isSuperAdminUser as isSuperAdmin } from '../utils/adminLite';
@@ -21,6 +23,11 @@ const Sidebar = ({ isOpen, onSearchOpen }) => {
   const location = useLocation();
   const [isStealth, toggleStealth] = useStealthMode();
   const handleLogout = async () => {
+    if (isGuest()) {
+      if (!window.confirm(GUEST_SIGN_OUT_WARNING)) return;
+      try { await deleteGuestAndSignOut(); } catch (err) { toast.error(err?.message || 'Could not delete the guest data. Check your connection.'); }
+      return;
+    }
     try {
       if (!(await signOutAndClear({ redirectTo: '/' }))) navigate('/');
     } catch { toast.error('Could not sign out. Check your connection and try again.'); }
@@ -100,6 +107,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
 
   // Close when the route changes (user picked a page)
   useEffect(() => { if (open) onClose(); }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+  useBackLayer(open, onClose);
 
   // Lock background scroll while open
   useEffect(() => {
@@ -110,6 +118,11 @@ const MoreSheet = ({ open, onClose, badges }) => {
   }, [open]);
 
   const logout = async () => {
+    if (isGuest()) {
+      if (!window.confirm(GUEST_SIGN_OUT_WARNING)) return;
+      try { await deleteGuestAndSignOut(); } catch (err) { toast.error(err?.message || 'Could not delete the guest data. Check your connection.'); }
+      return;
+    }
     try {
       if (!(await signOutAndClear({ redirectTo: '/' }))) navigate('/');
     } catch { toast.error('Could not sign out. Check your connection and try again.'); }
@@ -182,7 +195,7 @@ const MoreSheet = ({ open, onClose, badges }) => {
                 <Search size={17} /> Search transactions, accounts…
               </button>
 
-              {/* Super Admin Quick Launch (Exclusive to isuru@moneymanager.app) */}
+              {/* Super Admin Quick Launch (admin claim only) */}
               {isSuperAdmin(auth.currentUser) && (
                 <NavLink
                   to="/admin"

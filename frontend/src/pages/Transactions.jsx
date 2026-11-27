@@ -34,6 +34,8 @@ import { getLastAccountId, rememberAccountId } from '../utils/lastAccount';
 import TransactionFormModal from './transactions/TransactionFormModal';
 import ToolsExportMenu from './transactions/ToolsExportMenu';
 import AllTransactionsTab from './transactions/AllTransactionsTab';
+import { saveFile, saveWorkbook } from '../utils/saveFile';
+import { optimisticUid } from '../utils/lastSession';
 
 /* ─── helpers ─────────────────────────────────────────────────── */
 
@@ -740,7 +742,7 @@ const Transactions = () => {
   const toggleInsights = () => setShowInsights(v => { localStorage.setItem('vm_tx_insights', v ? '0' : '1'); return !v; });
 
   /* ── Saved filter views (per user, localStorage) ── */
-  const viewsKey = `vm_tx_views:${auth.currentUser?.uid || 'anon'}`;
+  const viewsKey = `vm_tx_views:${auth.currentUser?.uid || optimisticUid() || 'anon'}`;
   const [savedViews, setSavedViews] = useState(() => {
     try { const v = JSON.parse(localStorage.getItem(viewsKey) || '[]'); return Array.isArray(v) ? v : []; } catch { return []; }
   });
@@ -822,7 +824,7 @@ const Transactions = () => {
   };
 
   /* ── Recurring auto-detection ── */
-  const dismissKey = `vm_tx_recurring_dismissed:${auth.currentUser?.uid || 'anon'}`;
+  const dismissKey = `vm_tx_recurring_dismissed:${auth.currentUser?.uid || optimisticUid() || 'anon'}`;
   const [dismissedRecurring, setDismissedRecurring] = useState(() => {
     try { const v = JSON.parse(localStorage.getItem(dismissKey) || '[]'); return Array.isArray(v) ? v : []; } catch { return []; }
   });
@@ -903,11 +905,9 @@ const Transactions = () => {
       [],
       ['SUMMARY', `Records: ${sourceRows.length}`, `Income: ${sumStats.income ?? 'n/a (exchange rates unavailable)'}`, `Expense: ${sumStats.expense ?? 'n/a'}`, `Net: ${sumStats.net ?? 'n/a'}`, sumStats.converted ? `Totals in ${getCurrency()} at current rates` : ''],
     ]);
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([rows], { type: 'text/csv;charset=utf-8' }));
-    a.download = `transactions_${dateFrom ? `${dateFrom}_to_${dateTo||'now'}` : todayYMD()}.csv`;
-    a.click();
-    toast.success(`Exported ${sourceRows.length} transaction${sourceRows.length === 1 ? '' : 's'} to CSV!`);
+    saveFile(new Blob([rows], { type: 'text/csv;charset=utf-8' }), `transactions_${dateFrom ? `${dateFrom}_to_${dateTo||'now'}` : todayYMD()}.csv`)
+      .then(() => toast.success(`Exported ${sourceRows.length} transaction${sourceRows.length === 1 ? '' : 's'} to CSV!`))
+      .catch(err => toast.error(err?.message || 'Export failed'));
   };
 
   /* Excel (.xlsx) Export (supports Selected Rows or Filtered View + Category Summary Sheet) */
@@ -948,7 +948,7 @@ const Transactions = () => {
       if (byCat.size > 0) {
         XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(Array.from(byCat.values())), 'By Category');
       }
-      XLSX.writeFile(wb, `Transactions_${dateFrom ? `${dateFrom}_to_${dateTo||'now'}` : todayYMD()}.xlsx`);
+      await saveWorkbook(XLSX, wb, `Transactions_${dateFrom ? `${dateFrom}_to_${dateTo||'now'}` : todayYMD()}.xlsx`);
       toast.success(`Exported ${sourceRows.length} transaction${sourceRows.length === 1 ? '' : 's'} to Excel!`);
     } catch {
       toast.error('Failed to export Excel');

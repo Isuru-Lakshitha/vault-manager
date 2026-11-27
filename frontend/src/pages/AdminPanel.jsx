@@ -128,7 +128,7 @@ export default function AdminPanel() {
     };
   }, [authorized]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // 403 Forbidden screen if user is NOT isuru@moneymanager.app
+  // 403 Forbidden screen if the user has no admin claim
   if (!authorized) {
     return (
       <PageWrapper>
@@ -158,7 +158,7 @@ export default function AdminPanel() {
             403 · Super Admin Clearance Required
           </h1>
           <p style={{ margin: '0 0 1.5rem', color: 'var(--text-secondary)', fontSize: '0.95rem', maxWidth: 460 }}>
-            This Administrative Command Center is strictly restricted to <code style={{ color: '#eab308', background: 'rgba(234, 179, 8, 0.1)', padding: '2px 6px', borderRadius: 6 }}>{SUPER_ADMIN_EMAIL}</code>. Unauthorized access attempts are monitored and logged.
+            This Administrative Command Center is restricted to the platform administrator. Unauthorized access attempts are monitored and logged.
           </p>
           <button
             onClick={() => navigate('/dashboard')}

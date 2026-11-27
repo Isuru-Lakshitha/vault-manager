@@ -111,3 +111,77 @@ test('a suspended user cannot read or write their data or remove the suspension'
  await denied(setDoc(doc(carol, 'users', 'carol', 'ious', 'x'), { amount: 1 }));
  await denied(deleteDoc(doc(carol, 'user_directory', 'carol')));
 });
+
+function tokenClient(name, token) {
+ const app=initializeApp({projectId:'demo-money-manager',apiKey:'demo-key'},name);apps.push(app);
+ const db=getFirestore(app);const [hostname,port]=host.split(':');
+ connectFirestoreEmulator(db,hostname,Number(port),{mockUserToken:token});return db;
+}
+
+test('admin access follows the admin claim, not the admin email address', async () => {
+ const claimAdmin=tokenClient('claim-admin',{sub:'boss',user_id:'boss',email:'boss@example.com',admin:true});
+ const emailOnly=tokenClient('email-only',{sub:'imposter',user_id:'imposter',email:'isuru@moneymanager.app',email_verified:true});
+ await setDoc(doc(claimAdmin,'system_config','global'),{announcement:null,maintenance:null,updated_at:'2026-11-26'});
+ await denied(setDoc(doc(emailOnly,'system_config','global'),{announcement:null,maintenance:null,updated_at:'2026-11-26'}));
+});
+
+test('card balances change only together with the transaction that explains them', async () => {
+ const card=account('card'),cardRef=doc(alice,'credit_cards',card);
+ const base={uid:'alice',name:'Visa',credit_limit:1000};
+ await setDoc(cardRef,{...base,balance:100});
+ // Renaming without touching the balance needs no proof; a bare balance write is refused.
+ await setDoc(cardRef,{...base,name:'Visa Gold',balance:100});
+ await denied(setDoc(cardRef,{...base,balance:0}));
+
+ // Charge: +25 with its transaction.
+ const charge=account('charge');
+ const chargeTx={uid:'alice',type:'Expense',amount:25,date:'2026-11-20',category:'Shopping',from_account_id:null,to_account_id:null,credit_card_charge_id:card};
+ let b=writeBatch(alice);b.set(doc(alice,'transactions',charge),chargeTx);b.set(cardRef,{...base,balance:125,last_ledger_ref:charge,last_ledger_op:'create'});await b.commit();
+ // A charge whose amount doesn't match the balance change is refused.
+ const lie=account('lie');
+ b=writeBatch(alice);b.set(doc(alice,'transactions',lie),{...chargeTx,amount:1});b.set(cardRef,{...base,balance:999,last_ledger_ref:lie,last_ledger_op:'create'});await denied(b.commit());
+
+ // Payment: -25 with its transaction (no account deducted).
+ const pay=account('pay');
+ const payTx={uid:'alice',type:'Expense',amount:25,date:'2026-11-21',category:'Credit Card Payment',from_account_id:null,to_account_id:null,credit_card_id:card};
+ b=writeBatch(alice);b.set(doc(alice,'transactions',pay),payTx);b.set(cardRef,{...base,balance:100,last_ledger_ref:pay,last_ledger_op:'create'});await b.commit();
+
+ // Editing the charge 25 -> 30 moves the card by +5 only.
+ b=writeBatch(alice);b.set(doc(alice,'transactions',charge),{...chargeTx,amount:30});b.set(cardRef,{...base,balance:150,last_ledger_ref:charge,last_ledger_op:'update'});await denied(b.commit());
+ b=writeBatch(alice);b.set(doc(alice,'transactions',charge),{...chargeTx,amount:30});b.set(cardRef,{...base,balance:105,last_ledger_ref:charge,last_ledger_op:'update'});await b.commit();
+
+ // Reversing the payment puts its 25 back, once.
+ const rev=account('rev');
+ const reverse=(balance=130)=>{const w=writeBatch(alice);w.set(doc(alice,'transactions',pay),{...payTx,reversed_at:'2026-11-22T00:00:00Z',reversed_by:rev});
+  w.set(doc(alice,'transactions',rev),{uid:'alice',type:'Income',amount:25,date:'2026-11-22',category:'Payment reversal',reversal_of:pay,from_account_id:null,to_account_id:null});
+  w.set(cardRef,{...base,balance,last_ledger_ref:pay,last_ledger_op:'reverse_payment'});return w.commit();};
+ await reverse();
+ await denied(reverse(155)); // already reversed: can't add the 25 again
+ // A reversed payment can't be deleted or un-reversed to add its 25 again.
+ b=writeBatch(alice);b.delete(doc(alice,'transactions',pay));b.set(cardRef,{...base,balance:155,last_ledger_ref:pay,last_ledger_op:'delete'});await denied(b.commit());
+ await denied(setDoc(doc(alice,'transactions',pay),{...payTx,reversed_at:null}));
+ // A charge can't point at someone else's card.
+ await setDoc(doc(bob,'credit_cards',account('bobcard')),{uid:'bob',name:'Bob',credit_limit:1,balance:0});
+ await denied(setDoc(doc(alice,'transactions',account('junk')),{...chargeTx,credit_card_charge_id:account('bobcard')}));
+
+ // Deleting the 30 charge takes 30 off; with less than that left it stops at 0.
+ await setDoc(cardRef,{...base,balance:130,has_payment_history:true});
+ b=writeBatch(alice);b.delete(doc(alice,'transactions',charge));b.set(cardRef,{...base,balance:0,last_ledger_ref:charge,last_ledger_op:'delete'});await denied(b.commit());
+ b=writeBatch(alice);b.delete(doc(alice,'transactions',charge));b.set(cardRef,{...base,balance:100,last_ledger_ref:charge,last_ledger_op:'delete'});await b.commit();
+ // A charge bigger than what's left: deleting it stops the card at 0.
+ const big=account('big');
+ b=writeBatch(alice);b.set(doc(alice,'transactions',big),{...chargeTx,amount:30});b.set(cardRef,{...base,balance:130,has_payment_history:true,last_ledger_ref:big,last_ledger_op:'create'});await b.commit();
+ await setDoc(cardRef,{...base,balance:130,has_payment_history:true,last_ledger_ref:big,last_ledger_op:'create',note:'x'});
+ const c2=account('c2');
+ b=writeBatch(alice);b.set(doc(alice,'transactions',c2),{...payTx,amount:120});b.set(cardRef,{...base,balance:10,last_ledger_ref:c2,last_ledger_op:'create'});await b.commit();
+ b=writeBatch(alice);b.delete(doc(alice,'transactions',big));b.set(cardRef,{...base,balance:0,last_ledger_ref:big,last_ledger_op:'delete'});await b.commit();
+});
+
+test('guest (anonymous) users get their own data and a directory entry without an email', async () => {
+ const guest=tokenClient('guest',{sub:'guest1',user_id:'guest1',firebase:{sign_in_provider:'anonymous'}});
+ await setDoc(doc(guest,'user_directory','guest1'),{uid:'guest1',email:null,created_at:'2026-11-27',last_active:'2026-11-27'});
+ await denied(setDoc(doc(guest,'user_directory','guest1'),{uid:'guest1',email:'someone@example.com',created_at:'2026-11-27',last_active:'2026-11-27'}));
+ const acc=account('guest-acc');
+ await setDoc(doc(guest,'accounts',acc),{uid:'guest1',name:'Cash',type:'Cash',balance:0});
+ await denied(getDoc(doc(alice,'accounts',acc)));
+});

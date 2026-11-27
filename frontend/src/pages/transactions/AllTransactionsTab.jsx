@@ -147,14 +147,15 @@ export default function AllTransactionsTab({ accounts, anomalyCount, anomalyMap,
             <summary>Filters & sorting <span>{dateFrom || dateTo || filterType !== 'All' || auditFilter !== 'All' || minAmt || maxAmt || filterTag || filterTaxDeductible || filterAnomalies ? 'Filters applied' : 'Optional'}</span></summary>
             <div className="quiet-filter-controls">
           {/* Date Range & Presets */}
-          <div style={{ display:'flex', flexWrap:'nowrap', gap:'0.5rem', overflowX:'auto', WebkitOverflowScrolling:'touch', paddingBottom:'2px' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:'0.5rem', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, padding:'0.6rem 1rem' }}>
-              <input type="date" aria-label="Date from" value={dateFrom} onChange={e=>setDateFrom(e.target.value)} style={{ background:'transparent', border:'none', color:'var(--text-primary)', fontSize:'0.82rem' }}/>
+          {/* Dates take a full row on phones; the presets wrap underneath at full width. */}
+          <div style={{ display:'flex', flexWrap:'wrap', gap:'0.5rem' }}>
+            <div style={{ display:'flex', flex:'1 1 100%', alignItems:'center', gap:'0.5rem', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:10, padding:'0.6rem 1rem' }}>
+              <input type="date" aria-label="Date from" value={dateFrom} onChange={e=>setDateFrom(e.target.value)} style={{ background:'transparent', border:'none', color:'var(--text-primary)', fontSize:'0.82rem', flex:1, minWidth:0 }}/>
               <span style={{ color:'var(--text-muted)' }}>-</span>
-              <input type="date" aria-label="Date to" value={dateTo} onChange={e=>setDateTo(e.target.value)} style={{ background:'transparent', border:'none', color:'var(--text-primary)', fontSize:'0.82rem' }}/>
+              <input type="date" aria-label="Date to" value={dateTo} onChange={e=>setDateTo(e.target.value)} style={{ background:'transparent', border:'none', color:'var(--text-primary)', fontSize:'0.82rem', flex:1, minWidth:0 }}/>
             </div>
             {['All', 'This Month', 'Last 30d', 'Last 3mo', 'This Year'].map(p => (
-              <button key={p} onClick={() => handlePreset(p)} className="btn btn-secondary" style={{ whiteSpace:'nowrap', padding: '0.5rem 0.8rem', fontSize: '0.75rem', background: (p === 'All' && !dateFrom) || (p !== 'All' && dateFrom) ? 'rgba(255,255,255,0.05)' : undefined }}>{p}</button>
+              <button key={p} onClick={() => handlePreset(p)} className="btn btn-secondary" style={{ whiteSpace:'nowrap', flex:'1 0 auto', padding: '0.5rem 0.8rem', fontSize: '0.75rem', background: (p === 'All' && !dateFrom) || (p !== 'All' && dateFrom) ? 'rgba(255,255,255,0.05)' : undefined }}>{p}</button>
             ))}
           </div>
           {/* Type */}

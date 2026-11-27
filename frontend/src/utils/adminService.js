@@ -11,9 +11,10 @@ import {
 } from './api';
 import { todayYMD } from './dates';
 
-import { SUPER_ADMIN_EMAIL, isSuperAdminUser, CONFIG_CACHE_KEY, readConfigCache, getMaintenanceMode } from './adminLite.js';
+import { SUPER_ADMIN_EMAIL, isSuperAdminUser, loadAdminClaim, CONFIG_CACHE_KEY, readConfigCache, getMaintenanceMode } from './adminLite.js';
+import { saveFile } from './saveFile.js';
 
-export { SUPER_ADMIN_EMAIL, getMaintenanceMode };
+export { SUPER_ADMIN_EMAIL, getMaintenanceMode, loadAdminClaim };
 
 /**
  * Checks whether the currently authenticated user (or provided user) is the Super Admin.
@@ -112,17 +113,18 @@ export const setMaintenanceMode = async (active, reason = 'Scheduled system main
  * real accounts. Called once per session after sign-in.
  */
 export const registerUserPresence = async (user = auth.currentUser) => {
-  if (!user?.uid || !user.email) return null;
+  // Guests have no email but are listed too, so an admin can see and suspend them.
+  if (!user?.uid || (!user.email && !user.isAnonymous)) return null;
   const ref = doc(db, 'user_directory', user.uid);
   const now = new Date().toISOString();
   try {
     const snap = await getDoc(ref);
     if (snap.exists()) {
-      await updateDoc(ref, { email: user.email, last_active: now });
+      await updateDoc(ref, { email: user.email || null, last_active: now });
       return { ...snap.data(), last_active: now };
     }
     const created = user.metadata?.creationTime ? new Date(user.metadata.creationTime).toISOString() : now;
-    const entry = { uid: user.uid, email: user.email, created_at: created, last_active: now };
+    const entry = { uid: user.uid, email: user.email || null, created_at: created, last_active: now };
     await setDoc(ref, entry);
     return entry;
   } catch (err) {
@@ -132,7 +134,8 @@ export const registerUserPresence = async (user = auth.currentUser) => {
 };
 
 const toDisplayUser = (row) => {
-  const isOwner = (row.email || '').toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase();
+  // The admin is whoever holds the admin claim: that's the signed-in viewer.
+  const isOwner = isSuperAdmin() && String(row.uid) === String(auth.currentUser?.uid);
   return {
     ...row,
     role: isOwner ? 'Super Admin' : 'Member',
@@ -172,7 +175,7 @@ export const updateRegisteredUser = async (uid, changes) => {
  * account or financial data; the entry is re-created if they sign in again.
  */
 export const deleteRegisteredUser = async (user) => {
-  if ((user.email || '').toLowerCase() === SUPER_ADMIN_EMAIL.toLowerCase()) {
+  if (String(user.uid) === String(auth.currentUser?.uid)) {
     throw new Error('Cannot remove the root Super Admin account.');
   }
   await deleteDoc(doc(db, 'user_directory', String(user.uid)));
@@ -325,14 +328,7 @@ export const exportPlatformDump = async () => {
   };
 
   const blob = new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `vault_manager_master_dump_${todayYMD()}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  await saveFile(blob, `vault_manager_master_dump_${todayYMD()}.json`);
 
   logAdminAction('PLATFORM_DUMP_EXPORT', 'Master Database', 'Exported JSON system snapshot');
 };
@@ -341,7 +337,7 @@ export const exportPlatformDump = async () => {
  * Flushes volatile caches and reloads. Keeps security settings and anything that
  * may hold data not yet synced to the cloud (offline payment drafts, local copies).
  */
-const PRESERVED_KEYS = ['vm_admin_audit_log', 'vm_pin_hash', 'vm_webauthn_cred_id', 'vm_theme', 'vm_currency', 'vm_custom_categories'];
+const PRESERVED_KEYS = ['vm_admin_audit_log', 'vm_pin_hash', 'vm_pin_owner', 'vm_webauthn_cred_id', 'vm_theme', 'vm_currency', 'vm_custom_categories'];
 const PRESERVED_PREFIXES = ['vm_payment_draft', 'vm_ious:', 'vm_shared_tabs:', 'vm_transaction_rules:', 'vm_invoices:'];
 
 export const flushSystemCache = async () => {

@@ -17,6 +17,7 @@ import {
 import { Eye, EyeOff, ShieldCheck, Landmark, Cloud, TrendingUp } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { loadAdmin } from '../utils/lazyData';
+import { startGuest, readStash, clearStash } from '../utils/guestAccount';
 
 function Login({ onLogin }) {
   // Load the WebGL vault only where the brand panel shows (> 960px) and once
@@ -38,6 +39,26 @@ function Login({ onLogin }) {
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  // Guest data copied on this phone, waiting to be brought into an account.
+  const [guestStash, setGuestStash] = useState(null);
+  useEffect(() => { readStash().then(s => setGuestStash(s?.payload ? true : null)).catch(() => {}); }, []);
+
+  const handleGuest = async () => {
+    setIsLoading(true);
+    setError('');
+    try {
+      await startGuest();
+      toast.success('Guest profile ready. Create an account in Settings any time to keep your data.');
+      onLogin(true);
+    } catch (err) {
+      const code = err?.code || '';
+      setError(code === 'auth/operation-not-allowed'
+        ? 'Guest mode is not switched on yet. Please create an account or sign in.'
+        : code === 'auth/network-request-failed'
+          ? 'Guest mode needs an internet connection the first time.'
+          : (err?.message || 'Could not start a guest profile.'));
+    } finally { setIsLoading(false); }
+  };
   const [mfaResolver, setMfaResolver] = useState(null);
   const [mfaCode, setMfaCode] = useState('');
   const sceneRef = useRef(null);
@@ -327,6 +348,25 @@ function Login({ onLogin }) {
                 {isSignUp ? 'Sign in' : 'Create an account'}
               </button>
             </div>
+          )}
+
+          {!mfaResolver && !isSignUp && (
+            guestStash ? (
+              <div className="login-guest-note" role="status">
+                Guest data saved on this phone is waiting to be added to an account. Sign in with that account to add it.
+                <button type="button" className="login-link login-link--small" disabled={isLoading}
+                  onClick={async () => { if (window.confirm('Delete the guest data saved on this phone? It cannot be recovered.')) { await clearStash().catch(() => {}); setGuestStash(null); } }}>
+                  Not yours? Delete it
+                </button>
+              </div>
+            ) : (
+              <div className="login-guest">
+                <button type="button" className="login-link" onClick={handleGuest} disabled={isLoading}>
+                  Continue as guest
+                </button>
+                <span>No sign-up. Save your data to an account later.</span>
+              </div>
+            )
           )}
 
           <div className="login-foot">

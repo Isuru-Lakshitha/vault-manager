@@ -15,9 +15,11 @@ import SkeletonLoader from '../components/SkeletonLoader';
 import CurrencyInput from '../components/CurrencyInput';
 import getCategoryEmoji from '../utils/categoryEmoji';
 import toast from 'react-hot-toast';
-import { fetchBills, createBill, updateBill, deleteBill, payBill, fetchAccounts, fetchTransactions, getCache } from '../utils/api';
+import { fetchBills, createBill, updateBill, deleteBill, payBill, markBillsPaid, fetchAccounts, fetchTransactions, getCache } from '../utils/api';
 import { detectUnmanagedSubscriptions } from '../utils/subscriptionDetector';
-import { formatCurrency, getCurrencyLabel } from '../utils/format';
+import { formatCurrency, getCurrencyLabel, getCurrency } from '../utils/format';
+import { baseConverter, readCachedRates, missingRateNote } from '../utils/balanceSheet';
+import { addMoney } from '../utils/money';
 import { toYMD, todayYMD, addMonthsClamped } from '../utils/dates';
 
 
@@ -105,7 +107,6 @@ const Bills = () => {
     });
   };
 
-  const advanceBillDueDate = bill => ({ ...bill, ...advanceBill(bill) });
 
   const handleConfirmPayBill = async (e) => {
     e.preventDefault();
@@ -158,17 +159,18 @@ const Bills = () => {
   const togglePaid = async (bill) => {
     const becomingPaid = !bill.paid;
     try {
-      if (becomingPaid && bill.frequency && bill.frequency !== 'Once') {
-        const nextBillState = advanceBillDueDate(bill);
-        await updateBill(bill.id, nextBillState);
-        toast.success(`🔕 ${bill.name} marked paid — next due: ${nextBillState.due_date} (no account deduction)`);
-        load();
+      if (becomingPaid) {
+        await markBillsPaid([bill]);
+        const recurring = bill.frequency && bill.frequency !== 'Once';
+        toast.success(recurring
+          ? `🔕 ${bill.name} marked paid — next due: ${advanceBill(bill).due_date} (no account deduction)`
+          : `🔕 ${bill.name} marked paid (no account deduction)`);
       } else {
-        await updateBill(bill.id, { ...bill, paid: becomingPaid });
-        toast.success(becomingPaid ? `🔕 ${bill.name} marked paid (no account deduction)` : `🔔 ${bill.name} marked unpaid`);
-        load();
+        await updateBill(bill.id, { paid: false });
+        toast.success(`🔔 ${bill.name} marked unpaid`);
       }
-    } catch { toast.error('Failed to update bill'); }
+      load();
+    } catch (err) { toast.error(err?.message || 'Failed to update bill'); load(); }
   };
 
   const doDelete = () => {
@@ -185,7 +187,11 @@ const Bills = () => {
     });
   };
 
-  const totalUpcoming = bills.filter(b => !b.paid).reduce((s, b) => s + b.amount, 0);
+  // Summary cards add bills in different currencies, so convert them first.
+  const { toBase, missing: missingRates } = baseConverter(getCurrency(), readCachedRates());
+  const baseBills = bills.map(b => ({ ...b, amount: toBase(b.amount, b.currency) }));
+  const totalUpcoming = addMoney(...baseBills.filter(b => !b.paid).map(b => b.amount));
+  const ratesNote = missingRateNote(missingRates);
   const overdue = bills.filter(b => !b.paid && daysUntil(b.due_date) < 0).length;
 
   const paidCount = bills.filter(b => b.paid).length;
@@ -194,17 +200,10 @@ const Bills = () => {
     const unpaid = bills.filter(b => !b.paid);
     if (unpaid.length === 0) { toast('All bills already marked paid ✓'); return; }
     try {
-      await Promise.all(
-        unpaid.map(b =>
-          updateBill(
-            b.id,
-            b.frequency && b.frequency !== 'Once' ? advanceBillDueDate(b) : { ...b, paid: true }
-          )
-        )
-      );
+      await markBillsPaid(unpaid);
       toast.success(`✅ ${unpaid.length} bill${unpaid.length > 1 ? 's' : ''} marked paid & recurring cycles advanced`);
       load();
-    } catch { toast.error('Failed to mark all paid'); }
+    } catch (err) { toast.error(err?.message || 'Failed to mark all paid'); load(); }
   };
 
   return (
@@ -231,25 +230,25 @@ const Bills = () => {
             if (b.frequency === 'Yearly')  return b.amount;
             return b.amount;
           };
-          const monthlyCommit = bills.filter(b => !b.paid).reduce((s, b) => {
+          const monthlyCommit = baseBills.filter(b => !b.paid).reduce((s, b) => {
             if (b.frequency === 'Weekly')  return s + b.amount * 4.33;
             if (b.frequency === 'Monthly') return s + b.amount;
             if (b.frequency === 'Yearly')  return s + b.amount / 12;
             return s + b.amount; // Once
           }, 0);
-          const yearlyCommit = bills.reduce((s, b) => s + getAnnualAmount(b), 0);
+          const yearlyCommit = baseBills.reduce((s, b) => s + getAnnualAmount(b), 0);
           const dailyBurn = yearlyCommit / 365;
           const r10 = 0.10 / 12;
           const tenYearOpportunityCost = (yearlyCommit / 12) * ((Math.pow(1 + r10, 120) - 1) / r10);
-          const sortedByAnnual = [...bills].sort((a, b) => getAnnualAmount(b) - getAnnualAmount(a));
+          const sortedByAnnual = [...baseBills].sort((a, b) => getAnnualAmount(b) - getAnnualAmount(a));
           const topDrain = sortedByAnnual[0];
 
           return (
             <>
               <StatGrid>
-                <StatCard label="Unpaid total" value={formatCurrency(totalUpcoming)} tone="accent" />
-                <StatCard label="Monthly (approx.)" value={formatCurrency(parseFloat(monthlyCommit.toFixed(2)))} tone="warn" />
-                <StatCard label="Annual cost" value={formatCurrency(parseFloat(yearlyCommit.toFixed(2)))} />
+                <StatCard label="Unpaid total" value={formatCurrency(totalUpcoming)} tone="accent" sub={ratesNote} />
+                <StatCard label="Monthly (approx.)" value={formatCurrency(parseFloat(monthlyCommit.toFixed(2)))} tone="warn" sub={ratesNote} />
+                <StatCard label="Annual cost" value={formatCurrency(parseFloat(yearlyCommit.toFixed(2)))} sub={ratesNote} />
                 <StatCard label="Daily cost" value={`${formatCurrency(parseFloat(dailyBurn.toFixed(2)))}/day`} />
                 <StatCard label="Overdue" value={overdue > 0 ? `${overdue} overdue` : 'None'} tone={overdue > 0 ? 'neg' : 'pos'} />
                 <StatCard label="Paid" value={`${paidCount} / ${bills.length}`} tone={paidCount === bills.length && bills.length > 0 ? 'pos' : 'neutral'} />

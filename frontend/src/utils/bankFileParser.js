@@ -1,4 +1,5 @@
 import { todayYMD } from './dates.js';
+import { roundMoney } from './money.js';
 /**
  * Universal Bank Statement & Feed Parser
  * Supports:
@@ -73,11 +74,14 @@ export function parseOFX(content) {
     
     const description = [name, memo].filter(Boolean).join(' - ') || 'Bank Transaction';
     const isCredit = trnAmt > 0 || /credit|dep|deposit|interest/i.test(trnType);
-    const amount = Math.abs(trnAmt);
+    // Some banks send 3+ decimals; the ledger stores cents.
+    const amount = roundMoney(Math.abs(trnAmt));
     const date = parseOFXDate(dtPosted);
 
+    if (amount <= 0) continue; // nothing to record (e.g. 0.004 rounds to 0)
     transactions.push({
-      fitId: fitId || `ofx_${date}_${amount}_${Math.random().toString(36).substr(2, 5)}`,
+      // Empty when the bank sends none; bankRowRefs() then builds a stable one.
+      fitId: fitId || '',
       date,
       amount,
       type: isCredit ? 'Income' : 'Expense',
@@ -112,7 +116,7 @@ export function parseQIF(content) {
 
     if (code === '^') {
       // End of transaction entry
-      if (currentTx && currentTx.amount !== undefined) {
+      if (currentTx && currentTx.amount > 0) {
         transactions.push(currentTx);
       }
       currentTx = null;
@@ -137,7 +141,7 @@ export function parseQIF(content) {
       case 'T': // Amount
       case 'U': {
         const num = parseFloat(val.replace(/,/g, '')) || 0;
-        currentTx.amount = Math.abs(num);
+        currentTx.amount = roundMoney(Math.abs(num));
         currentTx.type = num >= 0 ? 'Income' : 'Expense';
         break;
       }
@@ -156,7 +160,7 @@ export function parseQIF(content) {
     }
   }
 
-  if (currentTx && currentTx.amount !== undefined) {
+  if (currentTx && currentTx.amount > 0) {
     transactions.push(currentTx);
   }
 

@@ -153,12 +153,11 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Check if the user is the platform Super Administrator
+    // Platform Super Administrator: an `admin: true` custom claim set on the
+    // account with the Admin SDK (backend/set-admin.js). Not an email
+    // address, which anyone could register again if that account were deleted.
     function isSuperAdmin() {
-      return isAuthenticated() &&
-        request.auth.token.email is string &&
-        request.auth.token.email.lower() == 'isuru@moneymanager.app' &&
-        (request.auth.token.email_verified == true || request.auth.token.firebase.sign_in_provider == 'password');
+      return isAuthenticated() && request.auth.token.get('admin', false) == true;
     }
 
     // An admin can suspend a user from the admin panel (user_directory.status).
@@ -246,7 +245,9 @@ service cloud.firestore {
       let destAmt = tx.get('destination_amount', null);
       let fromId = toIdStr(tx.get('from_account_id', null));
       let toId = toIdStr(tx.get('to_account_id', null));
-      return tx.get('is_transfer_fee', false) == true ? 0 : (
+      // A reversed payment no longer moves money (its reversal entry does), so
+      // deleting or editing it can't put the money back a second time.
+      return (tx.get('is_transfer_fee', false) == true || tx.get('reversed_at', null) != null) ? 0 : (
         tx.type == 'Income' ? (toId == accId ? amt : 0) : (
           tx.type == 'Transfer' ? (
             (fromId == accId ? -(amt + fee) : 0) + (toId == accId ? (destAmt != null ? destAmt : amt) : 0)
@@ -285,6 +286,45 @@ service cloud.firestore {
         op in ['create', 'update', 'delete', 'reverse', 'reconcile'] &&
         validLedgerOp(op, /databases/$(database)/documents/transactions/$(ref), accountId, delta);
     }
+    // Credit card balances, like account balances, may only change together
+    // with the transaction that explains the change (last_ledger_ref/op).
+    // A charge (credit_card_charge_id, no credit_card_id) adds to the card;
+    // a payment (credit_card_id) takes off it.
+    function txMovementForCard(tx, cardId) {
+      let amt = tx.get('amount', 0);
+      let chargeId = toIdStr(tx.get('credit_card_charge_id', null));
+      let payId = toIdStr(tx.get('credit_card_id', null));
+      return (tx.get('is_transfer_fee', false) == true || tx.get('reversed_at', null) != null) ? 0 : (
+        payId == cardId ? -amt : (chargeId == cardId ? amt : 0)
+      );
+    }
+    // Removing more than the balance stops at 0 (the app clamps, never negative).
+    function cardDeltaOk(delta, expected) {
+      return closeEnough(delta, expected) ||
+        (request.resource.data.balance == 0 && expected < 0 && delta <= 0 && delta > expected);
+    }
+    function validCardLedgerOp(op, txPath, cardId, delta) {
+      return (op == 'create' && !exists(txPath) && existsAfter(txPath) &&
+          getAfter(txPath).data.uid == request.auth.uid &&
+          cardDeltaOk(delta, txMovementForCard(getAfter(txPath).data, cardId))) ||
+        (op == 'update' && exists(txPath) && existsAfter(txPath) &&
+          get(txPath).data.uid == request.auth.uid && getAfter(txPath).data.uid == request.auth.uid &&
+          cardDeltaOk(delta, txMovementForCard(getAfter(txPath).data, cardId) - txMovementForCard(get(txPath).data, cardId))) ||
+        (op == 'delete' && exists(txPath) && !existsAfter(txPath) &&
+          get(txPath).data.uid == request.auth.uid &&
+          cardDeltaOk(delta, -txMovementForCard(get(txPath).data, cardId))) ||
+        (op == 'reverse_payment' && exists(txPath) && existsAfter(txPath) &&
+          get(txPath).data.uid == request.auth.uid &&
+          get(txPath).data.get('reversed_at', null) == null &&
+          getAfter(txPath).data.get('reversed_at', null) is string &&
+          cardDeltaOk(delta, -txMovementForCard(get(txPath).data, cardId)));
+    }
+    function validCardBalanceChange(cardId) {
+      let d = request.resource.data;
+      let ref = d.get('last_ledger_ref', '');
+      return ref is string && ref.size() > 0 &&
+        validCardLedgerOp(d.get('last_ledger_op', ''), /databases/$(database)/documents/transactions/$(ref), cardId, d.balance - resource.data.balance);
+    }
     function validErrorLog(d) {
       return d.keys().hasOnly(['message', 'stack', 'url', 'ua', 'ts', 'level', 'app_version', 'context']) &&
         'message' in d && d.message is string && d.message.size() >= 1 && d.message.size() <= 1000 &&
@@ -301,6 +341,7 @@ service cloud.firestore {
       let goal = d.get('goal_id', null);
       let loan = d.get('loan_id', null);
       let card = d.get('credit_card_id', null);
+      let charge = d.get('credit_card_charge_id', null);
       let sid = toIdStr(source);
       let did = toIdStr(destination);
       return positive(d.amount) &&
@@ -313,6 +354,7 @@ service cloud.firestore {
         (did == '' || ownsAccount(destination)) &&
         (loan == null || loan == '' || ownsLoan(loan)) &&
         (card == null || card == '' || ownsCard(card)) &&
+        (charge == null || charge == '' || ownsCard(charge)) &&
         (goal == null || goal == '' || ownsGoal(goal)) &&
         (
           d.type == 'Income' ||
@@ -372,7 +414,7 @@ service cloud.firestore {
         request.auth.uid == userId &&
         resource.data.uid == userId &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email', 'last_active']) &&
-        request.resource.data.email == request.auth.token.email;
+        request.resource.data.get('email', null) == request.auth.token.get('email', null);
     }
     function isAdminUserDirectoryUpdate() {
       return isSuperAdmin() &&
@@ -401,7 +443,10 @@ service cloud.firestore {
       allow list, delete: if isDocOwner();
       allow create: if isCreatingForSelf() && validTransaction(request.resource.data) &&
         (!transactionId.matches('.*_draft_.*') || transactionId.matches(request.auth.uid + '_draft_.*'));
-      allow update: if isDocOwner() && uidNotModified() && validTransaction(request.resource.data);
+      // Once reversed, a payment stays reversed (it can't be "un-reversed" and reversed again).
+      allow update: if isDocOwner() && uidNotModified() && validTransaction(request.resource.data) &&
+        (resource.data.get('reversed_at', null) == null ||
+          request.resource.data.get('reversed_at', null) == resource.data.get('reversed_at', null));
     }
 
     // Budgets
@@ -449,7 +494,8 @@ service cloud.firestore {
       allow get: if isAuthenticated() && (!exists(/databases/$(database)/documents/credit_cards/$(cardId)) || isDocOwner());
       allow list, delete: if isDocOwner();
       allow create: if isCreatingForSelf() && validCard(request.resource.data);
-      allow update: if isDocOwner() && uidNotModified() && validCard(request.resource.data);
+      allow update: if isDocOwner() && uidNotModified() && validCard(request.resource.data) &&
+        (request.resource.data.balance == resource.data.balance || validCardBalanceChange(cardId));
     }
 
     // Recurring Transactions
@@ -535,7 +581,8 @@ service cloud.firestore {
       allow create: if isAuthenticated() &&
         request.auth.uid == userId &&
         request.resource.data.uid == userId &&
-        request.resource.data.email == request.auth.token.email &&
+        // Guests (anonymous sign-in) have no email: theirs is null.
+        request.resource.data.get('email', null) == request.auth.token.get('email', null) &&
         request.resource.data.keys().hasOnly(['uid', 'email', 'created_at', 'last_active']);
       allow update: if isOwnerUserDirectoryUpdate(userId) || isAdminUserDirectoryUpdate();
       allow delete: if (isAuthenticated() && request.auth.uid == userId &&
