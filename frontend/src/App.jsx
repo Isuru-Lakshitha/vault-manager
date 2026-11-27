@@ -594,6 +594,7 @@ function App() {
         user={auth.currentUser}
         onVerified={() => {
           if (auth.currentUser) rememberSession(auth.currentUser.uid, true);
+          setAdminTick(n => n + 1); // re-render the verification guard
           setIsAuthenticated(true);
           resetTimer();
         }}

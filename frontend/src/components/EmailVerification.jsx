@@ -31,6 +31,13 @@ export default function EmailVerification({ user, onVerified, onSignOut }) {
           if (onVerified) onVerified();
           return;
         }
+        // The admin is exempt from verification. A fresh token picks up an
+        // admin claim that was set after this device signed in.
+        const { loadAdminClaim } = await import('../utils/adminLite');
+        if (await loadAdminClaim(auth.currentUser, { forceRefresh: true })) {
+          if (onVerified) onVerified();
+          return;
+        }
       }
       toast.error('Email not verified yet. Please click the link sent to your inbox.');
       haptic(50);

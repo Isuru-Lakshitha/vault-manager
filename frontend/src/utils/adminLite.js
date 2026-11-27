@@ -10,12 +10,15 @@ const adminClaims = new Map();
 /**
  * Read the admin claim for this user from their ID token and remember it, so
  * isSuperAdminUser() can answer synchronously while rendering.
+ * @param {object} [user]
+ * @param {{ forceRefresh?: boolean }} [opts]
  * @returns {Promise<boolean>}
  */
-export const loadAdminClaim = async (user) => {
+export const loadAdminClaim = async (user, { forceRefresh = false } = {}) => {
   if (!user?.getIdTokenResult) return false;
   try {
-    const { claims } = await user.getIdTokenResult();
+    // forceRefresh fetches a new token, so a claim set after sign-in shows up.
+    const { claims } = await user.getIdTokenResult(forceRefresh);
     const isAdmin = claims?.admin === true;
     adminClaims.set(user.uid, isAdmin);
     return isAdmin;

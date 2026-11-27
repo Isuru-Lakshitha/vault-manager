@@ -131,6 +131,18 @@ test('isSuperAdmin follows the admin claim, never the email address', async () =
   assert.equal(admin.isSuperAdmin(null), false);
 });
 
+test('loadAdminClaim with forceRefresh sees a claim set after sign-in', async () => {
+  // The cached token has no claim; only a refreshed token carries the new one.
+  const user = {
+    uid: 'late_admin', email: 'late@example.com',
+    getIdTokenResult: async (force) => ({ claims: force ? { admin: true } : {} }),
+  };
+  assert.equal(await admin.loadAdminClaim(user), false);
+  assert.equal(admin.isSuperAdmin(user), false);
+  assert.equal(await admin.loadAdminClaim(user, { forceRefresh: true }), true);
+  assert.equal(admin.isSuperAdmin(user), true);
+});
+
 test('system announcement publish, get, and clear', async () => {
   await admin.setSystemAnnouncement({ message: 'Scheduled Upgrade', level: 'warning' });
   const ann = admin.getSystemAnnouncement();
