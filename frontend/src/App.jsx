@@ -673,17 +673,17 @@ function App() {
         <BudgetWatcher />
         {auth.currentUser && !auth.currentUser.isAnonymous && <GuestImportPrompt key={auth.currentUser.uid} />}
       </Suspense>
-      {isGuest() && (
-        <div className="guest-banner" role="status">
-          <span>Guest profile: your data is kept only while you stay signed in on this device.</span>
-          <Link to="/settings#guest-account">Save to an account</Link>
-        </div>
-      )}
       <PrivacyShield />
       <a href="#main-content" className="skip-link">{t('shell.skip')}</a>
       <div className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`} onClick={() => setIsSidebarOpen(false)} />
       <Sidebar isOpen={isSidebarOpen} onSearchOpen={() => setSearchOpen(true)} />
       <div className="main-content-wrapper">
+        {isGuest() && (
+          <div className="guest-banner" role="status">
+            <span>Guest profile: your data is kept only while you stay signed in on this device.</span>
+            <Link to="/settings#guest-account">Save to an account</Link>
+          </div>
+        )}
         <header className="shell-topbar">
           <div className="shell-crumb">
             <h2><span key={pageTitle} className="shell-crumb-title">{pageTitle}</span></h2>
