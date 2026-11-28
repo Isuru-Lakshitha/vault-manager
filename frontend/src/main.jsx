@@ -3,6 +3,7 @@ import './styles/index.css'
 import App from './App.jsx'
 import { installGlobalErrorHandlers } from './utils/errorLogger'
 import { initLiquidGlass } from './motion/liquidGlass'
+import { applyPerfMode } from './utils/perfMode'
 import { loadApi } from './utils/lazyData'
 import { retryPendingOfflineWipe } from './utils/signOut'
 import { closeTopBackLayer } from './utils/backLayers'
@@ -19,6 +20,7 @@ try {
     import('./pages/Dashboard').catch(() => {});
   }
 } catch {}
+applyPerfMode();
 initLiquidGlass();
 
 // Android app: the phone's Back button goes back a page, and leaves the app

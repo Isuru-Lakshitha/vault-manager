@@ -10,6 +10,7 @@ import getCategoryEmoji from '../../utils/categoryEmoji';
 import toast from 'react-hot-toast';
 
 // Three.js coin stacks (own chunk, loaded with the Dashboard).
+import { isLiteEffects } from '../../utils/perfMode';
 const CoinStacksScene = lazy(() => import('../../three/CoinStacksScene'));
 
 // Dashboard → the Overview view (net worth, safe-to-spend, monthly KPIs, recent activity).
@@ -42,7 +43,7 @@ export default function OverviewView({ monthlyExpense, monthlyIncome, navigate, 
               <div className="dash-nw-orb" />
               <div className="dash-nw-orb is-alt" />
             </div>
-            {wide && (
+            {wide && !isLiteEffects() && (
               <Suspense fallback={null}>
                 <CoinStacksScene className="dash-nw-3d" assets={totalAssets} debt={totalLiabilities} />
               </Suspense>

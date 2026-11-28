@@ -5,6 +5,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, XAxis, YAxis, Cartes
 import { motion } from 'framer-motion';
 import { TrendingUp, Activity, PieChart as PieIcon } from 'lucide-react';
 import { formatCurrency } from '../../utils/format';
+import { isLiteEffects } from '../../utils/perfMode';
 
 // Analytics → income vs spending, top categories and the month at a glance.
 // Three.js bars (own chunk, loaded with Analytics).
@@ -16,7 +17,8 @@ export default function OverviewTab({ COLORS, CustomTooltip, data, monthCatData,
     <>
       <div key="overview">
         <div className="bento-grid">
-          {(data.monthlyTrends || []).length > 0 && (
+          {/* 3D card is skipped in the Android app (perf-lite); the charts below show the same data. */}
+          {(data.monthlyTrends || []).length > 0 && !isLiteEffects() && (
             <figure className="bento-item col-span-12 an3d-card" aria-label={t('an3d.title')}>
               <figcaption className="an3d-head">
                 <h2>{t('an3d.title')}</h2>

@@ -104,9 +104,13 @@ export function initLiquidGlass() {
   if (started || typeof document === 'undefined') return;
   started = true;
   const run = () => {
-    injectFilter();
-    if (supportsLens()) document.documentElement.classList.add('lg-lens');
-    setupBloom();
+    // Android app (html.perf-lite): no lens filter or pointer bloom, they make the WebView stutter.
+    const lite = document.documentElement.classList.contains('perf-lite');
+    if (!lite) {
+      injectFilter();
+      if (supportsLens()) document.documentElement.classList.add('lg-lens');
+      setupBloom();
+    }
     setupScrollState();
   };
   if (document.body) run();

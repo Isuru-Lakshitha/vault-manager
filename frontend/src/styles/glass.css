@@ -225,6 +225,27 @@ html body .shell-search { padding-inline: 0.9rem !important; }
     backdrop-filter: none !important;
   }
 }
+/* ---------- Android app: lighter visuals (html.perf-lite, utils/perfMode.js) ----------
+   The WebView stutters on backdrop blur, the SVG lens and endless decorative
+   animation, so glass becomes solid and decoration stays still. */
+html.perf-lite body :is(.bottom-nav, .shell-topbar, .mobile-header, .sidebar, .quiet-tools-panel, .dash-seg, .theme-seg, .hub-seg,
+  .ptr-indicator, .lg-toast, .lg-glass, .modal-panel, .modal-sheet, .menu-toggle, .shell-search) {
+  background: var(--mm-surface, #16191e) !important;
+}
+html.perf-lite:not(.lg-scrolled) body .shell-topbar { background: transparent !important; }
+/* :root doubles the specificity so this beats html.lg-lens body :is(...) above. */
+html.perf-lite:root body *, html.perf-lite:root body *::before, html.perf-lite:root body *::after {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+html.perf-lite :is(.glitch-text, .grid-bg-inner, .particle, .dash-nw-orb, .login-card3d, .page-enter) { animation: none !important; }
+/* Page entrance blocks: same exclusions as motion.css, and loading indicators keep spinning. */
+html.perf-lite :is(.page-enter > *, .page-enter > div > *):not([style*="opacity"], canvas, .modal-overlay, .skeleton, .animate-spin, .login-spinner) { animation: none !important; }
+html.perf-lite .neon-border::before, html.perf-lite .glitch-text::before, html.perf-lite .glitch-text::after { animation: none !important; }
+html.perf-lite :is(.lg-interactive, .bottom-nav-item, .bottom-nav-fab, .menu-toggle, .shell-search, .shell-primary,
+  .dash-seg button, .theme-seg button, .hub-seg button) { --lg-bloom: transparent; }
+html.perf-lite body :is(.shell-topbar, .mobile-header) { transition: background-color 0.2s ease !important; }
+
 @media (prefers-reduced-motion: reduce) {
   :is(.lg-interactive, .bottom-nav-item, .menu-toggle, .shell-search, .shell-primary, .dash-seg button, .theme-seg button, .hub-seg button, .bottom-nav-fab):active { scale: none !important; }
   .quiet-tools[open] > .quiet-tools-panel, .page-enter { animation: none !important; }
